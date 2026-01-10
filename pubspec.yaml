@@ -1,0 +1,42 @@
+name: heart_beat
+description: Flutter mobile application for heart rate monitoring and training session execution
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # FFI bridge to Rust
+  flutter_rust_bridge: ^2.0.0
+
+  # Background service for Android
+  flutter_background_service: ^5.0.0
+
+  # Permission handling
+  permission_handler: ^11.0.0
+
+  # Local storage
+  shared_preferences: ^2.2.0
+
+  # Device info for API level detection
+  device_info_plus: ^10.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Native UI testing
+  patrol: ^3.0.0
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets directory
+  assets:
+    - assets/
