@@ -30,7 +30,7 @@ pub enum SessionEvent {
 }
 
 /// Zone deviation status for biofeedback.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
 pub enum ZoneDeviation {
     /// Current heart rate is within the target zone
     InZone,

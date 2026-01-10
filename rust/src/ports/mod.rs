@@ -5,5 +5,7 @@
 //! traits enable dependency injection and testing with mock implementations.
 
 pub mod ble_adapter;
+pub mod notification;
 
 pub use ble_adapter::BleAdapter;
+pub use notification::*;
