@@ -6,7 +6,9 @@
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::domain::heart_rate::DiscoveredDevice;
 use crate::ports::BleAdapter;
-use anyhow::Result;
+use crate::state::{ConnectionEvent, ConnectionStateMachine};
+use anyhow::{anyhow, Result};
+use std::sync::Arc;
 use std::time::Duration;
 
 // Re-export domain types for FRB code generation
@@ -60,9 +62,45 @@ pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
 /// - Connection fails
 /// - Connection timeout (15 seconds)
 pub async fn connect_device(device_id: String) -> Result<()> {
-    // TODO: Implement using state machine
-    let _ = device_id;
-    Ok(())
+    // Create BtleplugAdapter instance
+    let adapter = Arc::new(BtleplugAdapter::new().await?);
+
+    // Create state machine with adapter
+    let mut state_machine = ConnectionStateMachine::new(adapter.clone());
+
+    // Send DeviceSelected event to initiate connection
+    state_machine.handle(ConnectionEvent::DeviceSelected {
+        device_id: device_id.clone(),
+    })?;
+
+    // Attempt to connect using the adapter
+    let connect_result = tokio::time::timeout(
+        Duration::from_secs(15),
+        adapter.connect(&device_id),
+    )
+    .await;
+
+    match connect_result {
+        Ok(Ok(())) => {
+            // Connection successful, signal the state machine
+            state_machine.handle(ConnectionEvent::ConnectionSuccess)?;
+
+            // Discover services
+            state_machine.handle(ConnectionEvent::ServicesDiscovered)?;
+
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            // Connection failed
+            state_machine.handle(ConnectionEvent::ConnectionFailed)?;
+            Err(anyhow!("Connection failed: {}", e))
+        }
+        Err(_) => {
+            // Timeout
+            state_machine.handle(ConnectionEvent::ConnectionFailed)?;
+            Err(anyhow!("Connection timeout after 15 seconds"))
+        }
+    }
 }
 
 /// Disconnect from the currently connected device.
@@ -74,8 +112,10 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 ///
 /// Returns an error if disconnection fails or no device is connected.
 pub async fn disconnect() -> Result<()> {
-    // TODO: Implement
-    Ok(())
+    // Note: In a real implementation, we would need to maintain a global
+    // connection state or pass the adapter/state machine as context.
+    // For now, this is a placeholder that assumes the caller manages state.
+    Err(anyhow!("Disconnect not yet implemented - requires global state management"))
 }
 
 /// Start mock mode for testing without hardware.
