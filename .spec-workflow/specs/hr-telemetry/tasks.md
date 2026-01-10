@@ -185,7 +185,7 @@
 
 ## Phase 8: Integration Testing
 
-- [ ] 8.1 Create integration test for full pipeline
+- [x] 8.1 Create integration test for full pipeline
   - File: `rust/tests/pipeline_integration.rs`
   - Test: mock adapter → parse → filter → output
   - Purpose: Verify end-to-end data flow
