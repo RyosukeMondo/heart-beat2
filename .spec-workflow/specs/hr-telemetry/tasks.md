@@ -147,7 +147,7 @@
   - _Requirements: 7_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with CLI expertise | Task: Create cli.rs with clap derive macros. Subcommands: scan (list devices), connect <device-id> (stream HR), mock (simulate). Add --verbose flag for debug logging. Initialize tracing subscriber | Restrictions: Use clap derive, not builder pattern | Success: cli --help shows all commands, arguments parse correctly | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 6.2 Implement scan command
+- [x] 6.2 Implement scan command
   - File: `rust/src/bin/cli.rs` (extend)
   - Use BtleplugAdapter to scan for devices
   - Display discovered devices with RSSI
