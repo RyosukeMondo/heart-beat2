@@ -127,7 +127,7 @@
   - _Requirements: 2, 6_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer | Task: Add Reconnecting state with attempts counter. Implement exponential backoff (1s, 2s, 4s). Transition to Idle after 3 failed attempts. Add reconnect_delay() helper | Restrictions: Use tokio::time::sleep for delays | Success: Reconnection attempts spaced correctly, gives up after 3 tries | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 5.3 Add state machine unit tests
+- [x] 5.3 Add state machine unit tests
   - File: `rust/src/state/connectivity.rs` (tests module)
   - Test all state transitions
   - Use mockall to mock BleAdapter
