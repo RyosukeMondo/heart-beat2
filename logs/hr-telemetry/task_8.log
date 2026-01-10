@@ -1,0 +1,30 @@
+# Iteration 8
+# Started 2026-01-10T11:00:13.194525+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Perfect! Task 3.3 has been completed successfully. I've implemented:
+
+1. **`is_valid_bpm()` function** - Validates heart rate measurements are within the physiologically plausible range of 30-220 BPM, covering:
+   - Athletic resting heart rates (~30 BPM)
+   - Normal resting heart rates (60-80 BPM)
+   - Exercise heart rates (up to ~220 BPM)
+
+2. **`filter_if_valid()` method** - Extends the KalmanFilter to only update when measurements are valid. Invalid measurements are rejected and the filter state is preserved, preventing sensor artifacts from corrupting the filter.
+
+3. **Comprehensive test coverage** - Added 12 new tests covering:
+   - Normal, athletic, and exercise heart rate ranges
+   - Boundary conditions (30 and 220 BPM)
+   - Invalid low and high values
+   - Filter behavior with valid/invalid measurements
+   - State preservation across multiple invalid measurements
+
+All 16 tests pass successfully. The implementation has been committed to git with a clear commit message.
+
+# Exit Code
+0

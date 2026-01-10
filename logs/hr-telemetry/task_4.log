@@ -1,0 +1,40 @@
+# Iteration 4
+# Started 2026-01-10T10:47:17.583574+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Perfect! I have successfully completed task 2.1 for the hr-telemetry spec. Here's what was accomplished:
+
+## Task 2.1: HR Packet Parser - Completed ✓
+
+**Implementation Summary:**
+- Implemented `parse_heart_rate()` function that parses BLE Heart Rate Measurement packets according to Bluetooth SIG specification (characteristic UUID 0x2A37)
+- Location: `rust/src/domain/heart_rate.rs:169-235`
+
+**Key Features:**
+1. **Flexible BPM Format Handling**: Supports both UINT8 and UINT16 BPM formats based on packet flags
+2. **Sensor Contact Detection**: Correctly interprets sensor contact status bits (values 0-1 = no contact, 2-3 = contact detected)
+3. **RR-Interval Extraction**: Parses multiple RR-intervals in 1/1024 second resolution for HRV analysis
+4. **Energy Expended Field**: Properly skips optional energy expended field when present
+5. **Robust Error Handling**: Returns `anyhow::Error` for malformed packets with clear error messages
+
+**Test Coverage (16 tests, all passing):**
+- Valid packet parsing (UINT8 and UINT16 formats)
+- Sensor contact bit pattern variations
+- RR-interval extraction (single and multiple)
+- Energy expended field handling
+- Error cases (empty packets, truncated data, incomplete fields)
+
+**Commits Made:**
+1. `8ae638d` - feat: implement BLE heart rate packet parser
+2. `bc80088` - chore: mark task 2.1 as completed in tasks.md
+
+The parser is production-ready and follows the design specifications. It integrates seamlessly with the HeartRateMeasurement domain type and will be called by the BLE adapter when heart rate notifications arrive.
+
+# Exit Code
+0

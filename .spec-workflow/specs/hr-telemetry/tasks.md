@@ -109,7 +109,7 @@
 
 ## Phase 5: Connection State Machine
 
-- [ ] 5.1 Define state machine with statig
+- [-] 5.1 Define state machine with statig
   - File: `rust/src/state/connectivity.rs`
   - Define ConnectionState enum and events
   - Implement state transitions using statig
