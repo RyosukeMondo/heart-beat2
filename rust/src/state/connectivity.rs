@@ -189,6 +189,29 @@ impl ConnectionState {
     }
 }
 
+/// Calculate the reconnection delay based on attempt number using exponential backoff.
+///
+/// # Delay Schedule
+/// - Attempt 1: 1 second
+/// - Attempt 2: 2 seconds
+/// - Attempt 3: 4 seconds
+///
+/// # Arguments
+/// * `attempt` - The reconnection attempt number (1-based)
+///
+/// # Returns
+/// A `Duration` representing how long to wait before the next reconnection attempt
+pub fn reconnect_delay(attempt: u8) -> std::time::Duration {
+    let delay_secs = match attempt {
+        1 => 1,
+        2 => 2,
+        3 => 4,
+        // For safety, though we shouldn't exceed 3 attempts
+        _ => 4,
+    };
+    std::time::Duration::from_secs(delay_secs)
+}
+
 /// Connection state machine that wraps the statig state machine
 pub struct ConnectionStateMachine {
     /// The underlying statig state machine (uses statig-generated State type)
@@ -411,5 +434,20 @@ mod tests {
         machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
         machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
         assert!(machine.handle(ConnectionEvent::UserDisconnect).is_ok());
+    }
+
+    #[test]
+    fn test_reconnect_delay_exponential_backoff() {
+        // Test that delays follow exponential backoff: 1s, 2s, 4s
+        assert_eq!(reconnect_delay(1), std::time::Duration::from_secs(1));
+        assert_eq!(reconnect_delay(2), std::time::Duration::from_secs(2));
+        assert_eq!(reconnect_delay(3), std::time::Duration::from_secs(4));
+    }
+
+    #[test]
+    fn test_reconnect_delay_capped() {
+        // Verify that attempts beyond 3 are capped at 4 seconds
+        assert_eq!(reconnect_delay(4), std::time::Duration::from_secs(4));
+        assert_eq!(reconnect_delay(10), std::time::Duration::from_secs(4));
     }
 }
