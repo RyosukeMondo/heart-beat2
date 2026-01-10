@@ -10,9 +10,14 @@ use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
 use std::sync::Arc;
 use std::time::Duration;
+use tokio::sync::broadcast;
 
 // Re-export domain types for FRB code generation
 pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate};
+
+// Global broadcast channel for HR data streaming
+// In production, this would be initialized once and stored in global state
+static HR_CHANNEL_CAPACITY: usize = 100;
 
 /// Scan for BLE heart rate devices.
 ///
@@ -129,4 +134,42 @@ pub async fn disconnect() -> Result<()> {
 pub async fn start_mock_mode() -> Result<()> {
     // TODO: Implement using MockAdapter
     Ok(())
+}
+
+/// Create a broadcast channel for streaming heart rate data.
+///
+/// Returns a receiver that can be used to subscribe to filtered heart rate updates.
+/// Multiple receivers can subscribe to the same channel for fan-out streaming.
+///
+/// # Implementation Note
+///
+/// This function creates a tokio broadcast channel suitable for streaming HR data
+/// to Flutter via FRB StreamSink. The full implementation requires:
+/// 1. A global state manager to hold the sender
+/// 2. Integration with the filtering pipeline (BLE -> parse -> filter -> HRV)
+/// 3. FRB StreamSink wrapper to bridge Rust receiver to Dart Stream
+///
+/// # Returns
+///
+/// A broadcast receiver that will receive FilteredHeartRate updates.
+///
+/// # Example Integration Pattern
+///
+/// ```rust,ignore
+/// // In FRB-enabled code:
+/// #[frb]
+/// pub fn create_hr_stream() -> StreamSink<FilteredHeartRate> {
+///     let rx = create_hr_broadcast_receiver();
+///     StreamSink::from_receiver(rx)
+/// }
+/// ```
+pub fn create_hr_broadcast_receiver() -> broadcast::Receiver<crate::domain::heart_rate::FilteredHeartRate> {
+    // Create a broadcast channel with capacity for 100 buffered events
+    let (tx, rx) = broadcast::channel(HR_CHANNEL_CAPACITY);
+
+    // TODO: Store tx in global state for the pipeline to send to
+    // For now, just return the receiver
+    drop(tx); // Prevent unused variable warning
+
+    rx
 }

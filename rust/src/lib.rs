@@ -36,7 +36,9 @@ pub mod ports;
 pub mod state;
 
 // Re-export commonly used types from each module
-pub use api::{connect_device, disconnect, scan_devices, start_mock_mode};
+pub use api::{
+    connect_device, create_hr_broadcast_receiver, disconnect, scan_devices, start_mock_mode,
+};
 pub use domain::{
     is_valid_bpm, parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement,
     KalmanFilter, Zone,
