@@ -156,7 +156,7 @@
   - _Requirements: 1, 7_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer | Task: Implement scan subcommand. Create BtleplugAdapter, call start_scan, wait 5 seconds, call stop_scan. Print each device: name, id, rssi. Format as table | Restrictions: Timeout after 10 seconds, handle no devices found | Success: Lists Coospo HW9 when nearby, shows "No devices found" otherwise | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [-] 6.3 Implement connect command
+- [x] 6.3 Implement connect command
   - File: `rust/src/bin/cli.rs` (extend)
   - Connect to device, stream filtered HR to stdout
   - Display raw BPM, filtered BPM, and state transitions
