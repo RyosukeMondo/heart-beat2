@@ -80,7 +80,7 @@
 
 ## Phase 4: BLE Adapter Port & Implementation
 
-- [ ] 4.1 Define BleAdapter trait
+- [x] 4.1 Define BleAdapter trait
   - File: `rust/src/ports/ble_adapter.rs`
   - Define async trait for BLE operations
   - Include scan, connect, disconnect, subscribe methods
