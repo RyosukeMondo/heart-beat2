@@ -20,6 +20,7 @@ class ZoneIndicator extends StatelessWidget {
     final zoneName = _getZoneName();
 
     return Container(
+      key: const Key('zoneIndicator'),
       width: 300,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

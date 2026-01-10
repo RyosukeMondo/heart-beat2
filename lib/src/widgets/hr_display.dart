@@ -16,6 +16,7 @@ class HrDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      key: const Key('hrDisplay'),
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

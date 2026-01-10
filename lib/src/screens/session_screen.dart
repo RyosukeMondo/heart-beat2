@@ -92,6 +92,7 @@ class _SessionScreenState extends State<SessionScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      key: const Key('sessionScreen'),
       appBar: AppBar(
         title: Text(_deviceName ?? 'Session'),
         backgroundColor: colorScheme.surfaceContainerHighest,

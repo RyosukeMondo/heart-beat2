@@ -106,6 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('settingsScreen'),
       appBar: AppBar(
         title: const Text('Settings'),
       ),
@@ -128,6 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
+                            key: const Key('maxHrField'),
                             controller: _maxHrController,
                             decoration: const InputDecoration(
                               labelText: 'Maximum Heart Rate',
