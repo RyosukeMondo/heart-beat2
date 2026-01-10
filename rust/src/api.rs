@@ -14,7 +14,7 @@ use std::time::Duration;
 use tokio::sync::broadcast;
 
 // Re-export domain types for FRB code generation
-pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate};
+pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate, Zone};
 
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
@@ -214,6 +214,55 @@ pub fn emit_hr_data(data: ApiFilteredHeartRate) -> usize {
     match tx.send(data) {
         Ok(receiver_count) => receiver_count,
         Err(_) => 0, // No receivers
+    }
+}
+
+// Accessor functions for ApiFilteredHeartRate (opaque type)
+
+/// Get the raw (unfiltered) BPM value from filtered heart rate data
+pub fn hr_raw_bpm(data: &ApiFilteredHeartRate) -> u16 {
+    data.raw_bpm
+}
+
+/// Get the filtered BPM value from filtered heart rate data
+pub fn hr_filtered_bpm(data: &ApiFilteredHeartRate) -> u16 {
+    data.filtered_bpm
+}
+
+/// Get the RMSSD heart rate variability metric in milliseconds
+pub fn hr_rmssd(data: &ApiFilteredHeartRate) -> Option<f64> {
+    data.rmssd
+}
+
+/// Get the battery level as a percentage (0-100)
+pub fn hr_battery_level(data: &ApiFilteredHeartRate) -> Option<u8> {
+    data.battery_level
+}
+
+/// Get the timestamp in milliseconds since Unix epoch
+pub fn hr_timestamp(data: &ApiFilteredHeartRate) -> u64 {
+    data.timestamp
+}
+
+/// Calculate the heart rate zone based on a maximum heart rate
+///
+/// # Arguments
+///
+/// * `data` - The filtered heart rate data
+/// * `max_hr` - The user's maximum heart rate
+///
+/// # Returns
+///
+/// The training zone (Zone1-Zone5) based on percentage of max HR
+pub fn hr_zone(data: &ApiFilteredHeartRate, max_hr: u16) -> Zone {
+    let percentage = (data.filtered_bpm as f64 / max_hr as f64) * 100.0;
+
+    match percentage {
+        p if p < 60.0 => Zone::Zone1,
+        p if p < 70.0 => Zone::Zone2,
+        p if p < 80.0 => Zone::Zone3,
+        p if p < 90.0 => Zone::Zone4,
+        _ => Zone::Zone5,
     }
 }
 

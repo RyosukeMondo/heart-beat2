@@ -105,5 +105,38 @@ Stream<ApiFilteredHeartRate> createHrStream() =>
 Future<BigInt> emitHrData({required ApiFilteredHeartRate data}) =>
     RustLib.instance.api.crateApiEmitHrData(data: data);
 
+/// Get the raw (unfiltered) BPM value from filtered heart rate data
+Future<int> hrRawBpm({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrRawBpm(data: data);
+
+/// Get the filtered BPM value from filtered heart rate data
+Future<int> hrFilteredBpm({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrFilteredBpm(data: data);
+
+/// Get the RMSSD heart rate variability metric in milliseconds
+Future<double?> hrRmssd({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrRmssd(data: data);
+
+/// Get the battery level as a percentage (0-100)
+Future<int?> hrBatteryLevel({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrBatteryLevel(data: data);
+
+/// Get the timestamp in milliseconds since Unix epoch
+Future<BigInt> hrTimestamp({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrTimestamp(data: data);
+
+/// Calculate the heart rate zone based on a maximum heart rate
+///
+/// # Arguments
+///
+/// * `data` - The filtered heart rate data
+/// * `max_hr` - The user's maximum heart rate
+///
+/// # Returns
+///
+/// The training zone (Zone1-Zone5) based on percentage of max HR
+Future<Zone> hrZone({required ApiFilteredHeartRate data, required int maxHr}) =>
+    RustLib.instance.api.crateApiHrZone(data: data, maxHr: maxHr);
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}

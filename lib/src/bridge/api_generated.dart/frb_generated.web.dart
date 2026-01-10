@@ -36,6 +36,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ApiFilteredHeartRate
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    dynamic raw,
+  );
+
+  @protected
+  ApiFilteredHeartRate
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
   );
@@ -50,10 +56,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  double dco_decode_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  int dco_decode_box_autoadd_u_8(dynamic raw);
+
+  @protected
   DiscoveredDevice dco_decode_discovered_device(dynamic raw);
 
   @protected
+  double dco_decode_f_64(dynamic raw);
+
+  @protected
   int dco_decode_i_16(dynamic raw);
+
+  @protected
+  int dco_decode_i_32(dynamic raw);
 
   @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
@@ -65,6 +83,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
+  double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
+
+  @protected
+  int dco_decode_u_16(dynamic raw);
+
+  @protected
+  BigInt dco_decode_u_64(dynamic raw);
+
+  @protected
   int dco_decode_u_8(dynamic raw);
 
   @protected
@@ -74,11 +104,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt dco_decode_usize(dynamic raw);
 
   @protected
+  Zone dco_decode_zone(dynamic raw);
+
+  @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
   ApiFilteredHeartRate
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiFilteredHeartRate
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     SseDeserializer deserializer,
   );
 
@@ -98,10 +137,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_box_autoadd_u_8(SseDeserializer deserializer);
+
+  @protected
   DiscoveredDevice sse_decode_discovered_device(SseDeserializer deserializer);
 
   @protected
+  double sse_decode_f_64(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_i_16(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
@@ -115,6 +166,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
+  double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_u_16(SseDeserializer deserializer);
+
+  @protected
+  BigInt sse_decode_u_64(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_u_8(SseDeserializer deserializer);
 
   @protected
@@ -124,7 +187,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt sse_decode_usize(SseDeserializer deserializer);
 
   @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
+  Zone sse_decode_zone(SseDeserializer deserializer);
 
   @protected
   bool sse_decode_bool(SseDeserializer deserializer);
@@ -159,6 +222,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  double cst_encode_box_autoadd_f_64(double raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_f_64(raw);
+  }
+
+  @protected
+  int cst_encode_box_autoadd_u_8(int raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_u_8(raw);
+  }
+
+  @protected
   JSAny cst_encode_discovered_device(DiscoveredDevice raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return [
@@ -187,6 +262,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  double? cst_encode_opt_box_autoadd_f_64(double? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_f_64(raw);
+  }
+
+  @protected
+  int? cst_encode_opt_box_autoadd_u_8(int? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_u_8(raw);
+  }
+
+  @protected
+  JSAny cst_encode_u_64(BigInt raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return castNativeBigInt(raw);
+  }
+
+  @protected
   JSAny cst_encode_usize(BigInt raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return castNativeBigInt(raw);
@@ -200,18 +293,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    ApiFilteredHeartRate raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   );
 
   @protected
+  double cst_encode_f_64(double raw);
+
+  @protected
   int cst_encode_i_16(int raw);
+
+  @protected
+  int cst_encode_i_32(int raw);
+
+  @protected
+  int cst_encode_u_16(int raw);
 
   @protected
   int cst_encode_u_8(int raw);
 
   @protected
   void cst_encode_unit(void raw);
+
+  @protected
+  int cst_encode_zone(Zone raw);
 
   @protected
   void sse_encode_AnyhowException(
@@ -222,6 +333,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    ApiFilteredHeartRate self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
     SseSerializer serializer,
   );
@@ -244,13 +362,25 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_u_8(int self, SseSerializer serializer);
+
+  @protected
   void sse_encode_discovered_device(
     DiscoveredDevice self,
     SseSerializer serializer,
   );
 
   @protected
+  void sse_encode_f_64(double self, SseSerializer serializer);
+
+  @protected
   void sse_encode_i_16(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_discovered_device(
@@ -268,6 +398,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_16(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_64(BigInt self, SseSerializer serializer);
+
+  @protected
   void sse_encode_u_8(int self, SseSerializer serializer);
 
   @protected
@@ -277,7 +419,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_usize(BigInt self, SseSerializer serializer);
 
   @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
+  void sse_encode_zone(Zone self, SseSerializer serializer);
 
   @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
@@ -301,6 +443,24 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__emit_hr_data(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__emit_hr_data(port_, data);
+
+  void wire__crate__api__hr_battery_level(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_battery_level(port_, data);
+
+  void wire__crate__api__hr_filtered_bpm(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_filtered_bpm(port_, data);
+
+  void wire__crate__api__hr_raw_bpm(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_raw_bpm(port_, data);
+
+  void wire__crate__api__hr_rmssd(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_rmssd(port_, data);
+
+  void wire__crate__api__hr_timestamp(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_timestamp(port_, data);
+
+  void wire__crate__api__hr_zone(NativePortType port_, int data, int max_hr) =>
+      wasmModule.wire__crate__api__hr_zone(port_, data, max_hr);
 
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
@@ -344,6 +504,28 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__disconnect(NativePortType port_);
 
   external void wire__crate__api__emit_hr_data(NativePortType port_, int data);
+
+  external void wire__crate__api__hr_battery_level(
+    NativePortType port_,
+    int data,
+  );
+
+  external void wire__crate__api__hr_filtered_bpm(
+    NativePortType port_,
+    int data,
+  );
+
+  external void wire__crate__api__hr_raw_bpm(NativePortType port_, int data);
+
+  external void wire__crate__api__hr_rmssd(NativePortType port_, int data);
+
+  external void wire__crate__api__hr_timestamp(NativePortType port_, int data);
+
+  external void wire__crate__api__hr_zone(
+    NativePortType port_,
+    int data,
+    int max_hr,
+  );
 
   external void wire__crate__api__scan_devices(NativePortType port_);
 
