@@ -138,7 +138,7 @@
 
 ## Phase 6: CLI Implementation
 
-- [ ] 6.1 Create CLI binary structure
+- [x] 6.1 Create CLI binary structure
   - File: `rust/src/bin/cli.rs`
   - Set up clap for argument parsing
   - Define subcommands: scan, connect, mock
