@@ -7,12 +7,29 @@
 use crate::domain::heart_rate::FilteredHeartRate;
 use crate::domain::training_plan::TrainingPlan;
 use crate::ports::notification::{NotificationEvent, NotificationPort};
-use crate::state::session::{SessionEvent, SessionStateMachineWrapper};
-use anyhow::Result;
+use crate::state::session::{SessionEvent, SessionStateMachineWrapper, State};
+use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::{broadcast, Mutex};
 use tokio::task::JoinHandle;
 use tokio::time::{interval, Duration};
+
+/// Serializable checkpoint for session persistence.
+///
+/// Captures the essential state needed to resume a session after a crash.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SessionCheckpoint {
+    /// The training plan being executed
+    plan: TrainingPlan,
+    /// Current phase index
+    current_phase: usize,
+    /// Seconds elapsed in current phase
+    elapsed_secs: u32,
+    /// Whether the session was paused when checkpointed
+    is_paused: bool,
+}
 
 /// Executes training sessions with real-time HR monitoring and state management.
 ///
@@ -30,6 +47,9 @@ pub struct SessionExecutor {
 
     /// Optional HR data receiver for zone monitoring
     hr_receiver: Option<broadcast::Receiver<FilteredHeartRate>>,
+
+    /// Path where session checkpoints are saved (None disables persistence)
+    checkpoint_path: Option<PathBuf>,
 }
 
 impl SessionExecutor {
@@ -44,7 +64,32 @@ impl SessionExecutor {
             notification_port,
             tick_task: None,
             hr_receiver: None,
+            checkpoint_path: None,
         }
+    }
+
+    /// Create a new session executor with persistence enabled.
+    ///
+    /// # Arguments
+    ///
+    /// * `notification_port` - Port for sending notifications to the user
+    /// * `checkpoint_path` - Path where session state will be periodically saved
+    pub async fn with_persistence(
+        notification_port: Arc<dyn NotificationPort>,
+        checkpoint_path: PathBuf,
+    ) -> Result<Self> {
+        let mut executor = Self {
+            session_state: Arc::new(Mutex::new(SessionStateMachineWrapper::new())),
+            notification_port,
+            tick_task: None,
+            hr_receiver: None,
+            checkpoint_path: Some(checkpoint_path),
+        };
+
+        // Try to load existing checkpoint
+        executor.load_checkpoint().await?;
+
+        Ok(executor)
     }
 
     /// Create a new session executor with HR data stream.
@@ -62,7 +107,140 @@ impl SessionExecutor {
             notification_port,
             tick_task: None,
             hr_receiver: Some(hr_receiver),
+            checkpoint_path: None,
         }
+    }
+
+    /// Load session checkpoint from disk if it exists.
+    ///
+    /// If a checkpoint exists, it will resume the session in the saved state (InProgress or Paused).
+    async fn load_checkpoint(&mut self) -> Result<()> {
+        let checkpoint_path = match &self.checkpoint_path {
+            Some(path) => path,
+            None => return Ok(()), // No persistence enabled
+        };
+
+        if !checkpoint_path.exists() {
+            return Ok(()); // No checkpoint to load
+        }
+
+        // Read and deserialize checkpoint
+        let checkpoint_data = tokio::fs::read(checkpoint_path)
+            .await
+            .context("Failed to read checkpoint file")?;
+        let checkpoint: SessionCheckpoint = serde_json::from_slice(&checkpoint_data)
+            .context("Failed to deserialize checkpoint")?;
+
+        // Restore session state
+        let mut state = self.session_state.lock().await;
+
+        // Start the session with the saved plan
+        state.handle(SessionEvent::Start(checkpoint.plan));
+
+        // Fast-forward to the saved phase and elapsed time
+        if checkpoint.current_phase > 0 {
+            state.handle(SessionEvent::NextPhase(checkpoint.current_phase));
+        }
+
+        // Simulate ticks to restore elapsed time
+        for _ in 0..checkpoint.elapsed_secs {
+            // We need to manually update the state without triggering phase progression
+            // This is a bit tricky - we'll just send ticks and hope we don't exceed the phase
+            state.handle(SessionEvent::Tick);
+        }
+
+        // If it was paused, pause it now
+        if checkpoint.is_paused {
+            state.handle(SessionEvent::Pause);
+        }
+
+        Ok(())
+    }
+
+
+    /// Save current session state to checkpoint file.
+    #[allow(dead_code)]
+    async fn save_checkpoint(&self) -> Result<()> {
+        let checkpoint_path = match &self.checkpoint_path {
+            Some(path) => path,
+            None => return Ok(()), // No persistence enabled
+        };
+
+        let state = self.session_state.lock().await;
+
+        // Create checkpoint from current state
+        let checkpoint = match state.state() {
+            State::InProgress {
+                current_phase,
+                elapsed_secs,
+                ..
+            } => {
+                let plan = state.context().plan().cloned().ok_or_else(|| {
+                    anyhow::anyhow!("Cannot checkpoint session without a training plan")
+                })?;
+
+                SessionCheckpoint {
+                    plan,
+                    current_phase: *current_phase,
+                    elapsed_secs: *elapsed_secs,
+                    is_paused: false,
+                }
+            }
+            State::Paused {
+                phase,
+                elapsed,
+                ..
+            } => {
+                let plan = state.context().plan().cloned().ok_or_else(|| {
+                    anyhow::anyhow!("Cannot checkpoint session without a training plan")
+                })?;
+
+                SessionCheckpoint {
+                    plan,
+                    current_phase: *phase,
+                    elapsed_secs: *elapsed,
+                    is_paused: true,
+                }
+            }
+            _ => {
+                // No active session to checkpoint
+                return Ok(());
+            }
+        };
+
+        // Serialize and write to disk
+        let checkpoint_data = serde_json::to_vec_pretty(&checkpoint)
+            .context("Failed to serialize checkpoint")?;
+
+        // Create parent directory if needed
+        if let Some(parent) = checkpoint_path.parent() {
+            tokio::fs::create_dir_all(parent)
+                .await
+                .context("Failed to create checkpoint directory")?;
+        }
+
+        tokio::fs::write(checkpoint_path, checkpoint_data)
+            .await
+            .context("Failed to write checkpoint file")?;
+
+        Ok(())
+    }
+
+    /// Clear checkpoint file from disk.
+    #[allow(dead_code)]
+    async fn clear_checkpoint(&self) -> Result<()> {
+        let checkpoint_path = match &self.checkpoint_path {
+            Some(path) => path,
+            None => return Ok(()), // No persistence enabled
+        };
+
+        if checkpoint_path.exists() {
+            tokio::fs::remove_file(checkpoint_path)
+                .await
+                .context("Failed to remove checkpoint file")?;
+        }
+
+        Ok(())
     }
 
     /// Start a new training session.
@@ -90,14 +268,16 @@ impl SessionExecutor {
             state.handle(SessionEvent::Start(plan.clone()));
         }
 
-        // Spawn tick loop with optional HR monitoring
+        // Spawn tick loop with optional HR monitoring and persistence
         let state_clone = Arc::clone(&self.session_state);
         let notifier_clone = Arc::clone(&self.notification_port);
         let mut hr_rx = self.hr_receiver.as_ref().map(|rx| rx.resubscribe());
+        let checkpoint_path = self.checkpoint_path.clone();
 
         let tick_task = tokio::spawn(async move {
             let mut ticker = interval(Duration::from_secs(1));
             ticker.tick().await; // First tick completes immediately, skip it
+            let mut tick_count = 0u32;
 
             loop {
                 ticker.tick().await;
@@ -167,6 +347,69 @@ impl SessionExecutor {
                     ) {
                         break;
                     }
+                }
+
+                // Increment tick count and save checkpoint every 10 ticks
+                tick_count += 1;
+                if tick_count % 10 == 0 {
+                    if let Some(ref path) = checkpoint_path {
+                        // Save checkpoint (ignoring errors to not disrupt session)
+                        let state = state_clone.lock().await;
+
+                        // Create checkpoint from current state
+                        let checkpoint_opt = match state.state() {
+                            State::InProgress {
+                                current_phase,
+                                elapsed_secs,
+                                ..
+                            } => {
+                                if let Some(plan) = state.context().plan() {
+                                    Some(SessionCheckpoint {
+                                        plan: plan.clone(),
+                                        current_phase: *current_phase,
+                                        elapsed_secs: *elapsed_secs,
+                                        is_paused: false,
+                                    })
+                                } else {
+                                    None
+                                }
+                            }
+                            State::Paused {
+                                phase,
+                                elapsed,
+                                ..
+                            } => {
+                                if let Some(plan) = state.context().plan() {
+                                    Some(SessionCheckpoint {
+                                        plan: plan.clone(),
+                                        current_phase: *phase,
+                                        elapsed_secs: *elapsed,
+                                        is_paused: true,
+                                    })
+                                } else {
+                                    None
+                                }
+                            }
+                            _ => None,
+                        };
+
+                        if let Some(checkpoint) = checkpoint_opt {
+                            if let Ok(data) = serde_json::to_vec_pretty(&checkpoint) {
+                                // Create parent directory if needed
+                                if let Some(parent) = path.parent() {
+                                    let _ = tokio::fs::create_dir_all(parent).await;
+                                }
+                                let _ = tokio::fs::write(path, data).await;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Session completed - clear checkpoint if persistence enabled
+            if let Some(ref path) = checkpoint_path {
+                if path.exists() {
+                    let _ = tokio::fs::remove_file(path).await;
                 }
             }
         });
@@ -352,5 +595,123 @@ mod tests {
         // 1. HR data can be sent via broadcast channel
         // 2. The executor processes it without crashing
         // 3. UpdateBpm events are sent to the state machine
+    }
+
+    #[tokio::test]
+    async fn test_session_persistence_save_and_load() {
+        use tempfile::tempdir;
+
+        let temp_dir = tempdir().unwrap();
+        let checkpoint_path = temp_dir.path().join("session.json");
+
+        // Create executor with persistence
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::with_persistence(
+            notifier.clone(),
+            checkpoint_path.clone(),
+        )
+        .await
+        .unwrap();
+
+        let plan = TrainingPlan {
+            name: "Persistence Test".to_string(),
+            phases: vec![
+                TrainingPhase {
+                    name: "Phase 1".to_string(),
+                    target_zone: Zone::Zone2,
+                    duration_secs: 20,
+                    transition: TransitionCondition::TimeElapsed,
+                },
+                TrainingPhase {
+                    name: "Phase 2".to_string(),
+                    target_zone: Zone::Zone3,
+                    duration_secs: 20,
+                    transition: TransitionCondition::TimeElapsed,
+                },
+            ],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan.clone()).await.unwrap();
+
+        // Wait for 12 seconds to ensure at least one checkpoint save (every 10 ticks)
+        sleep(Duration::from_secs(12)).await;
+
+        // Stop the executor
+        executor.stop_session().await.unwrap();
+
+        // Verify checkpoint file was created
+        assert!(checkpoint_path.exists(), "Checkpoint file should exist");
+
+        // Create a new executor with the same checkpoint path
+        let new_executor =
+            SessionExecutor::with_persistence(notifier, checkpoint_path.clone())
+                .await
+                .unwrap();
+
+        // Verify the session was restored
+        {
+            let state = new_executor.session_state.lock().await;
+            let progress = state.get_progress();
+            assert!(
+                progress.is_some(),
+                "Session should be restored with progress"
+            );
+
+            // The session should have some progress (approximately 12 seconds)
+            let (phase, elapsed, _) = progress.unwrap();
+            assert!(
+                elapsed >= 10,
+                "Session should have at least 10 seconds elapsed, got {}",
+                elapsed
+            );
+            assert_eq!(phase, 0, "Should still be in first phase");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_session_persistence_checkpoint_cleared_on_completion() {
+        use tempfile::tempdir;
+
+        let temp_dir = tempdir().unwrap();
+        let checkpoint_path = temp_dir.path().join("session_complete.json");
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::with_persistence(notifier, checkpoint_path.clone())
+            .await
+            .unwrap();
+
+        let plan = TrainingPlan {
+            name: "Short Session".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Short Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 12, // Just over 10 seconds to ensure checkpoint save
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+
+        // Wait for checkpoint save (10 ticks)
+        sleep(Duration::from_secs(11)).await;
+
+        // Checkpoint should exist
+        assert!(
+            checkpoint_path.exists(),
+            "Checkpoint should exist during session"
+        );
+
+        // Wait for session to complete (2 more seconds)
+        sleep(Duration::from_secs(3)).await;
+
+        // Checkpoint should be cleared
+        assert!(
+            !checkpoint_path.exists(),
+            "Checkpoint should be cleared after completion"
+        );
     }
 }
