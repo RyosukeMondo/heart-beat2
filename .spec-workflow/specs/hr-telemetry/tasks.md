@@ -20,7 +20,7 @@
   - _Requirements: 3, 4_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer specializing in type systems | Task: Create HeartRateMeasurement struct with bpm (u16), rr_intervals (Vec<u16>), sensor_contact (bool). Create Zone enum (Zone1-Zone5). Implement Display for logging. Add doc comments | Restrictions: No I/O dependencies, pure data types only, follow structure.md naming conventions | Success: Types compile, Display outputs readable format | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [-] 1.3 Create FilteredHeartRate and DiscoveredDevice types
+- [x] 1.3 Create FilteredHeartRate and DiscoveredDevice types
   - File: `rust/src/domain/heart_rate.rs` (extend)
   - Add FilteredHeartRate struct for processed output
   - Add DiscoveredDevice struct for scan results
