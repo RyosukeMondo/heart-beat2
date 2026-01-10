@@ -2,7 +2,7 @@
 
 ## Phase 1: Project Setup & Domain Types
 
-- [ ] 1.1 Initialize Rust project with Cargo.toml
+- [x] 1.1 Initialize Rust project with Cargo.toml
   - File: `rust/Cargo.toml`
   - Create Rust project with all required dependencies (tokio, btleplug, statig, etc.)
   - Configure binary target for CLI

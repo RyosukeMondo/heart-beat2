@@ -1,0 +1,1 @@
+{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[1618164726092124532,"build_script_build",false,3417646860104289761]],"local":[{"RerunIfChanged":{"output":"debug/build/polars-lazy-7a2af31f86c8a70f/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}

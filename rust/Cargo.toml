@@ -1,0 +1,31 @@
+[package]
+name = "heart-beat"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[[bin]]
+name = "cli"
+path = "src/bin/cli.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+flutter_rust_bridge = "2"
+btleplug = "0.11"
+cardio-rs = "0.2"
+kalman_filters = "1.0"
+statig = "0.3"
+tokio-cron-scheduler = "0.13"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+uuid = "1"
+clap = { version = "4", features = ["derive"] }
+async-trait = "0.1"
+
+[dev-dependencies]
+mockall = "0.13"
+proptest = "1.5"
