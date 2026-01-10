@@ -8,6 +8,7 @@
 
 use crate::ports::ble_adapter::BleAdapter;
 use anyhow::Result;
+use flutter_rust_bridge::frb;
 use statig::prelude::*;
 use std::sync::Arc;
 
@@ -40,6 +41,7 @@ pub enum ConnectionEvent {
 }
 
 /// Superstate representing any connected state (Connected or streaming)
+#[frb(opaque)]
 #[derive(Debug, Default)]
 pub struct ConnectedSuperstate;
 

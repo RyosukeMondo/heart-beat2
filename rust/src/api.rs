@@ -5,6 +5,7 @@
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::domain::heart_rate::DiscoveredDevice;
+use crate::frb_generated::StreamSink;
 use crate::ports::BleAdapter;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
@@ -135,7 +136,30 @@ pub async fn start_mock_mode() -> Result<()> {
     Ok(())
 }
 
-/// Get a receiver for streaming filtered heart rate data.
+/// Create a stream for receiving filtered heart rate data.
+///
+/// Sets up a stream that will receive real-time filtered heart rate measurements
+/// from the filtering pipeline. This function is used by Flutter via FRB to
+/// create a reactive data stream.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the HR data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+pub fn create_hr_stream(sink: StreamSink<ApiFilteredHeartRate>) -> Result<()> {
+    let mut rx = get_hr_stream_receiver();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data).ok();
+        }
+    });
+    Ok(())
+}
+
+/// Get a receiver for streaming filtered heart rate data (internal use).
 ///
 /// Creates a broadcast receiver that can be used to subscribe to real-time
 /// filtered heart rate measurements from the filtering pipeline.
@@ -144,37 +168,7 @@ pub async fn start_mock_mode() -> Result<()> {
 ///
 /// A tokio broadcast receiver that will receive FilteredHeartRate updates.
 /// Multiple receivers can be created for fan-out streaming to multiple consumers.
-///
-/// # Implementation Note
-///
-/// This function provides the infrastructure for HR data streaming. The broadcast
-/// sender needs to be wired to the filtering pipeline output. When integrated with
-/// Flutter using FRB v2, this would be wrapped in a function like:
-///
-/// ```rust,ignore
-/// // After running FRB codegen:
-/// use crate::frb_generated::StreamSink;
-///
-/// pub fn create_hr_stream(sink: StreamSink<FilteredHeartRate>) -> Result<()> {
-///     let mut rx = get_hr_stream_receiver();
-///     tokio::spawn(async move {
-///         while let Ok(data) = rx.recv().await {
-///             sink.add(data);
-///         }
-///     });
-///     Ok(())
-/// }
-/// ```
-///
-/// # Usage
-///
-/// To emit HR data to all subscribers:
-/// ```rust,ignore
-/// if let Ok(tx) = get_hr_broadcast_sender() {
-///     let _ = tx.send(filtered_hr_data);
-/// }
-/// ```
-pub fn get_hr_stream_receiver() -> broadcast::Receiver<ApiFilteredHeartRate> {
+fn get_hr_stream_receiver() -> broadcast::Receiver<ApiFilteredHeartRate> {
     // Get or create the global broadcast sender
     let tx = get_or_create_hr_broadcast_sender();
     tx.subscribe()

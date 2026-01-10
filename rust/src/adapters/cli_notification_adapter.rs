@@ -9,6 +9,7 @@ use crate::state::session::ZoneDeviation;
 use anyhow::Result;
 use async_trait::async_trait;
 use colored::Colorize;
+use flutter_rust_bridge::frb;
 
 /// CLI notification adapter that prints colored notifications to stdout.
 ///
@@ -22,6 +23,7 @@ use colored::Colorize;
 /// - Battery warnings: Yellow
 /// - Connection loss: Red + bold
 /// - Workout ready: Green
+#[frb(opaque)]
 #[derive(Debug, Clone, Copy, Default)]
 pub struct CliNotificationAdapter;
 

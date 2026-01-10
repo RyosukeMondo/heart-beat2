@@ -1,0 +1,22 @@
+# Flutter Rust Bridge configuration
+
+# Rust crate directory
+rust_root: rust/
+
+# Rust input module
+rust_input: crate::api
+
+# Dart output
+dart_output: lib/src/bridge/api_generated.dart
+
+# C output (for iOS/macOS)
+c_output: ios/Runner/bridge_generated.h
+
+# Additional configuration
+llvm_path:
+  - /usr/lib/llvm-14
+  - /usr/lib/llvm-15
+  - /usr/lib/llvm-16
+
+# Full dependencies to ensure all types are available
+full_dep: true

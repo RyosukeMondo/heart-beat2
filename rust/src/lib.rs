@@ -29,6 +29,8 @@
 
 #![warn(missing_docs)]
 
+mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
+
 pub mod adapters;
 pub mod api;
 pub mod domain;
@@ -38,7 +40,7 @@ pub mod state;
 
 // Re-export commonly used types from each module
 pub use api::{
-    connect_device, disconnect, emit_hr_data, get_hr_stream_receiver, scan_devices,
+    connect_device, create_hr_stream, disconnect, emit_hr_data, scan_devices,
     start_mock_mode,
 };
 pub use domain::{
