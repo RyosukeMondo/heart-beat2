@@ -10,11 +10,13 @@ use crate::ports::notification::{NotificationEvent, NotificationPort};
 use crate::state::session::{SessionEvent, SessionStateMachineWrapper, State};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::{broadcast, Mutex};
 use tokio::task::JoinHandle;
-use tokio::time::{interval, Duration};
+use tokio::time::{interval, Duration, Instant};
+use tokio_cron_scheduler::{Job, JobScheduler};
 
 /// Serializable checkpoint for session persistence.
 ///
@@ -29,6 +31,16 @@ struct SessionCheckpoint {
     elapsed_secs: u32,
     /// Whether the session was paused when checkpointed
     is_paused: bool,
+}
+
+/// Metadata for a pending scheduled session.
+#[derive(Debug, Clone)]
+struct PendingSession {
+    /// Training plan to be executed
+    #[allow(dead_code)]
+    plan: TrainingPlan,
+    /// When the session was scheduled to fire
+    scheduled_time: Instant,
 }
 
 /// Executes training sessions with real-time HR monitoring and state management.
@@ -50,6 +62,12 @@ pub struct SessionExecutor {
 
     /// Path where session checkpoints are saved (None disables persistence)
     checkpoint_path: Option<PathBuf>,
+
+    /// Cron job scheduler for scheduled workouts
+    scheduler: Option<Arc<JobScheduler>>,
+
+    /// Pending scheduled sessions awaiting user action
+    pending_sessions: Arc<Mutex<HashMap<String, PendingSession>>>,
 }
 
 impl SessionExecutor {
@@ -65,6 +83,8 @@ impl SessionExecutor {
             tick_task: None,
             hr_receiver: None,
             checkpoint_path: None,
+            scheduler: None,
+            pending_sessions: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
@@ -84,6 +104,8 @@ impl SessionExecutor {
             tick_task: None,
             hr_receiver: None,
             checkpoint_path: Some(checkpoint_path),
+            scheduler: None,
+            pending_sessions: Arc::new(Mutex::new(HashMap::new())),
         };
 
         // Try to load existing checkpoint
@@ -108,6 +130,8 @@ impl SessionExecutor {
             tick_task: None,
             hr_receiver: Some(hr_receiver),
             checkpoint_path: None,
+            scheduler: None,
+            pending_sessions: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
@@ -260,6 +284,17 @@ impl SessionExecutor {
         // Stop any existing session first
         if self.tick_task.is_some() {
             self.stop_session().await?;
+        }
+
+        // Check if this matches a pending scheduled session and remove it
+        {
+            let mut pending = self.pending_sessions.lock().await;
+            if let Some(pending_session) = pending.get(&plan.name) {
+                // Verify it's within the 10-minute window
+                if pending_session.scheduled_time.elapsed() < Duration::from_secs(600) {
+                    pending.remove(&plan.name);
+                }
+            }
         }
 
         // Send Start event to the state machine
@@ -433,6 +468,101 @@ impl SessionExecutor {
         if let Some(task) = self.tick_task.take() {
             task.abort();
         }
+
+        Ok(())
+    }
+
+    /// Schedule a training session to start at a specific time using a cron expression.
+    ///
+    /// When the scheduled time arrives, a `WorkoutReady` notification is emitted.
+    /// If the user calls `start_session` with a matching plan within 10 minutes,
+    /// the session begins. Otherwise, the scheduled session is marked as skipped.
+    ///
+    /// # Arguments
+    ///
+    /// * `plan` - The training plan to schedule
+    /// * `cron_expr` - A cron expression defining when the session should fire (e.g., "0 30 17 * * *" for 5:30 PM daily)
+    ///
+    /// # Returns
+    ///
+    /// Result indicating success or failure. Fails if the cron expression is invalid.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// // Schedule a workout for 6:00 AM every Monday, Wednesday, Friday
+    /// executor.schedule_session(plan, "0 0 6 * * MON,WED,FRI").await?;
+    /// ```
+    pub async fn schedule_session(&mut self, plan: TrainingPlan, cron_expr: &str) -> Result<()> {
+        // Initialize scheduler if not already done
+        if self.scheduler.is_none() {
+            let sched = JobScheduler::new()
+                .await
+                .context("Failed to create job scheduler")?;
+            sched.start().await.context("Failed to start scheduler")?;
+            self.scheduler = Some(Arc::new(sched));
+        }
+
+        let scheduler = self
+            .scheduler
+            .as_ref()
+            .context("Scheduler not initialized")?
+            .clone();
+
+        // Clone necessary data for the job closure
+        let plan_name = plan.name.clone();
+        let plan_clone = plan.clone();
+        let notification_port = Arc::clone(&self.notification_port);
+        let pending_sessions = Arc::clone(&self.pending_sessions);
+
+        // Create the cron job
+        let job = Job::new_async(cron_expr, move |_uuid, _lock| {
+            let plan_name = plan_name.clone();
+            let plan = plan_clone.clone();
+            let notifier = Arc::clone(&notification_port);
+            let pending = Arc::clone(&pending_sessions);
+
+            Box::pin(async move {
+                // Store the scheduled session as pending
+                let session = PendingSession {
+                    plan: plan.clone(),
+                    scheduled_time: Instant::now(),
+                };
+                {
+                    let mut pending_map = pending.lock().await;
+                    pending_map.insert(plan_name.clone(), session);
+                }
+
+                // Emit notification that workout is ready
+                let _ = notifier
+                    .notify(NotificationEvent::WorkoutReady {
+                        plan_name: plan_name.clone(),
+                    })
+                    .await;
+
+                // Spawn a task to clean up pending sessions after 10 minutes if not started
+                let pending_cleanup = Arc::clone(&pending);
+                let plan_name_cleanup = plan_name.clone();
+                tokio::spawn(async move {
+                    tokio::time::sleep(Duration::from_secs(600)).await; // 10 minutes
+
+                    let mut pending_map = pending_cleanup.lock().await;
+                    if let Some(pending_session) = pending_map.get(&plan_name_cleanup) {
+                        // Check if 10 minutes have elapsed since scheduled time
+                        if pending_session.scheduled_time.elapsed() >= Duration::from_secs(600) {
+                            pending_map.remove(&plan_name_cleanup);
+                            // Note: Could emit a "session skipped" notification here if desired
+                        }
+                    }
+                });
+            })
+        })
+        .context("Failed to create cron job with expression")?;
+
+        scheduler
+            .add(job)
+            .await
+            .context("Failed to add job to scheduler")?;
 
         Ok(())
     }
@@ -712,6 +842,136 @@ mod tests {
         assert!(
             !checkpoint_path.exists(),
             "Checkpoint should be cleared after completion"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_schedule_session_fires_notification() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier.clone());
+
+        let plan = TrainingPlan {
+            name: "Scheduled Workout".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Phase 1".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 10,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        // Schedule a session to fire every 2 seconds (for testing purposes)
+        // Note: This is not a realistic cron expression but works for testing
+        executor
+            .schedule_session(plan.clone(), "*/2 * * * * *")
+            .await
+            .unwrap();
+
+        // Wait for the first scheduled execution (up to 3 seconds)
+        sleep(Duration::from_secs(3)).await;
+
+        // Verify that a pending session was created
+        {
+            let pending = executor.pending_sessions.lock().await;
+            assert!(
+                pending.contains_key(&plan.name),
+                "Scheduled session should be in pending sessions"
+            );
+        }
+
+        // Verify that WorkoutReady notification was sent
+        let notifications = notifier.get_events().await;
+        let has_workout_ready = notifications.iter().any(|n| {
+            matches!(
+                n,
+                NotificationEvent::WorkoutReady {
+                    plan_name
+                } if *plan_name == plan.name
+            )
+        });
+        assert!(
+            has_workout_ready,
+            "Should have received WorkoutReady notification"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_scheduled_session_removed_when_started() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier.clone());
+
+        let plan = TrainingPlan {
+            name: "Scheduled Workout 2".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Phase 1".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 20,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        // Schedule a session to fire every 2 seconds
+        executor
+            .schedule_session(plan.clone(), "*/2 * * * * *")
+            .await
+            .unwrap();
+
+        // Wait for the scheduled execution
+        sleep(Duration::from_secs(3)).await;
+
+        // Verify pending session exists
+        {
+            let pending = executor.pending_sessions.lock().await;
+            assert!(
+                pending.contains_key(&plan.name),
+                "Scheduled session should be pending"
+            );
+        }
+
+        // Start the session manually
+        executor.start_session(plan.clone()).await.unwrap();
+
+        // Verify pending session was removed
+        {
+            let pending = executor.pending_sessions.lock().await;
+            assert!(
+                !pending.contains_key(&plan.name),
+                "Pending session should be removed after starting"
+            );
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_invalid_cron_expression_returns_error() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier);
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Phase 1".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 10,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        // Try to schedule with an invalid cron expression
+        let result = executor
+            .schedule_session(plan, "invalid cron expression")
+            .await;
+
+        assert!(
+            result.is_err(),
+            "Should return error for invalid cron expression"
         );
     }
 }

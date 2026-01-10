@@ -46,4 +46,5 @@ pub use domain::{
     KalmanFilter, Zone,
 };
 pub use ports::BleAdapter;
+pub use scheduler::SessionExecutor;
 pub use state::{ConnectionEvent, ConnectionState, ConnectionStateMachine};
