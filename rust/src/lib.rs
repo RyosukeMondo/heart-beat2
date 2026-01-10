@@ -19,7 +19,7 @@
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {
 //!     // Create a mock adapter for testing
-//!     let adapter = MockAdapter::new(Default::default());
+//!     let adapter = MockAdapter::new();
 //!     let mut filter = KalmanFilter::new(0.1, 2.0);
 //!
 //!     // Use the adapter to stream HR data
@@ -30,11 +30,13 @@
 #![warn(missing_docs)]
 
 pub mod adapters;
+pub mod api;
 pub mod domain;
 pub mod ports;
 pub mod state;
 
 // Re-export commonly used types from each module
+pub use api::{connect_device, disconnect, scan_devices, start_mock_mode};
 pub use domain::{
     is_valid_bpm, parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement,
     KalmanFilter, Zone,
