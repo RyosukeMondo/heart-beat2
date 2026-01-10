@@ -5,4 +5,6 @@
 
 pub mod connectivity;
 
-pub use connectivity::{ConnectionEvent, ConnectionState, ConnectionStateMachine};
+pub use connectivity::{
+    reconnect_delay, ConnectionContext, ConnectionEvent, ConnectionState, ConnectionStateMachine,
+};
