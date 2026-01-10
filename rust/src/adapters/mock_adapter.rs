@@ -91,55 +91,6 @@ impl MockAdapter {
         }
     }
 
-    /// Generate a simulated heart rate measurement packet.
-    ///
-    /// This creates a packet following the Bluetooth Heart Rate Measurement format:
-    /// - Byte 0: Flags
-    /// - Byte 1-2: Heart rate value (UINT8 or UINT16 depending on flags)
-    /// - Remaining bytes: RR-intervals (optional)
-    ///
-    /// The generated data is designed to be parsed by the same parser that handles
-    /// real BLE data, ensuring test coverage of the parsing logic.
-    fn generate_hr_packet(&self) -> Vec<u8> {
-        let mut rng = rand::thread_rng();
-
-        // Calculate BPM with noise
-        let noise: i16 = rng.gen_range(-(self.config.noise_range as i16)..=(self.config.noise_range as i16));
-        let mut bpm = (self.config.baseline_bpm as i16 + noise).max(30) as u16;
-
-        // Occasionally add spikes
-        if rng.gen::<f64>() < self.config.spike_probability {
-            bpm = (bpm + self.config.spike_magnitude).min(220);
-        }
-
-        // Flags byte:
-        // Bit 0: Heart Rate Value Format (0 = UINT8, 1 = UINT16)
-        // Bit 1-2: Sensor Contact Status (11 = contact detected)
-        // Bit 3: Energy Expended Status (0 = not present)
-        // Bit 4: RR-Interval (1 = present)
-        let flags: u8 = 0b00010110; // UINT8 format, contact detected, RR present
-
-        let mut packet = vec![flags, bpm as u8];
-
-        // Generate 1-2 realistic RR-intervals
-        // RR-interval = time between beats in 1/1024 second units
-        // For a heart rate of 70 BPM: interval ≈ 60/70 = 0.857 seconds ≈ 877 units
-        let beat_interval_ms = 60000.0 / (bpm as f64);
-        let rr_base = (beat_interval_ms * 1.024) as u16; // Convert ms to 1/1024s units
-
-        let num_intervals = rng.gen_range(1..=2);
-        for _ in 0..num_intervals {
-            let rr_noise: i16 = rng.gen_range(-50..=50);
-            let rr_interval = ((rr_base as i16 + rr_noise).max(300) as u16).min(2000);
-
-            // RR-intervals are little-endian u16
-            packet.push((rr_interval & 0xFF) as u8);
-            packet.push((rr_interval >> 8) as u8);
-        }
-
-        packet
-    }
-
     /// Simulate the HR notification stream.
     ///
     /// This spawns a background task that generates heart rate packets at the
@@ -171,7 +122,15 @@ impl MockAdapter {
         });
     }
 
-    /// Static version of generate_hr_packet for use in spawned tasks.
+    /// Generate a simulated heart rate measurement packet.
+    ///
+    /// This creates a packet following the Bluetooth Heart Rate Measurement format:
+    /// - Byte 0: Flags
+    /// - Byte 1-2: Heart rate value (UINT8 or UINT16 depending on flags)
+    /// - Remaining bytes: RR-intervals (optional)
+    ///
+    /// The generated data is designed to be parsed by the same parser that handles
+    /// real BLE data, ensuring test coverage of the parsing logic.
     fn generate_hr_packet_static(config: &MockConfig) -> Vec<u8> {
         let mut rng = rand::thread_rng();
 
@@ -434,8 +393,8 @@ mod tests {
 
     #[test]
     fn test_generate_hr_packet_format() {
-        let adapter = MockAdapter::new();
-        let packet = adapter.generate_hr_packet();
+        let config = MockConfig::default();
+        let packet = MockAdapter::generate_hr_packet_static(&config);
 
         assert!(packet.len() >= 2, "Packet should have at least flags and BPM");
 
