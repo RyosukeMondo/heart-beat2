@@ -131,6 +131,109 @@ pub struct FilteredHeartRate {
     pub timestamp: u64,
 }
 
+/// Parse a BLE Heart Rate Measurement characteristic value.
+///
+/// This function parses raw BLE packets according to the Bluetooth Heart Rate Service
+/// specification (GATT Characteristic UUID 0x2A37). The packet format is:
+///
+/// - Byte 0: Flags
+///   - Bit 0: Heart Rate Value Format (0 = UINT8, 1 = UINT16)
+///   - Bit 1-2: Sensor Contact Status (00/01 = not supported/not detected, 10/11 = supported/detected)
+///   - Bit 3: Energy Expended Status (0 = not present, 1 = present)
+///   - Bit 4: RR-Interval (0 = not present, 1 = present)
+///   - Bit 5-7: Reserved
+/// - Byte 1+: Heart Rate Value (UINT8 or UINT16 based on bit 0)
+/// - Optional: Energy Expended (UINT16) if bit 3 is set
+/// - Optional: RR-Intervals (one or more UINT16 values) if bit 4 is set
+///
+/// # Arguments
+///
+/// * `data` - Raw byte array from BLE Heart Rate Measurement characteristic
+///
+/// # Returns
+///
+/// * `Ok(HeartRateMeasurement)` - Parsed measurement on success
+/// * `Err` - If the packet is invalid or malformed
+///
+/// # Examples
+///
+/// ```
+/// use heart_beat2::domain::heart_rate::parse_heart_rate;
+///
+/// // Simple UINT8 format with sensor contact
+/// let data = &[0x06, 72]; // Flags=0x06 (sensor contact detected), BPM=72
+/// let measurement = parse_heart_rate(data).unwrap();
+/// assert_eq!(measurement.bpm, 72);
+/// assert_eq!(measurement.sensor_contact, true);
+/// ```
+pub fn parse_heart_rate(data: &[u8]) -> anyhow::Result<HeartRateMeasurement> {
+    use anyhow::bail;
+
+    // Minimum packet size is 2 bytes (flags + UINT8 BPM)
+    if data.len() < 2 {
+        bail!("Heart rate packet too short: {} bytes", data.len());
+    }
+
+    let flags = data[0];
+    let mut offset = 1;
+
+    // Bit 0: Heart Rate Value Format (0 = UINT8, 1 = UINT16)
+    let is_uint16 = (flags & 0x01) != 0;
+
+    // Parse BPM value
+    let bpm = if is_uint16 {
+        if data.len() < offset + 2 {
+            bail!("Insufficient data for UINT16 heart rate value");
+        }
+        let value = u16::from_le_bytes([data[offset], data[offset + 1]]);
+        offset += 2;
+        value
+    } else {
+        let value = data[offset] as u16;
+        offset += 1;
+        value
+    };
+
+    // Bits 1-2: Sensor Contact Status
+    // 00 or 01 = not supported or not detected
+    // 10 or 11 = supported and detected
+    let sensor_contact_bits = (flags >> 1) & 0x03;
+    let sensor_contact = sensor_contact_bits >= 2;
+
+    // Bit 3: Energy Expended Status
+    let has_energy_expended = (flags & 0x08) != 0;
+    if has_energy_expended {
+        // Skip energy expended field (UINT16)
+        if data.len() < offset + 2 {
+            bail!("Insufficient data for energy expended field");
+        }
+        offset += 2;
+    }
+
+    // Bit 4: RR-Interval present
+    let has_rr_intervals = (flags & 0x10) != 0;
+    let mut rr_intervals = Vec::new();
+
+    if has_rr_intervals {
+        // RR-intervals are UINT16 values in 1/1024 second resolution
+        while offset + 1 < data.len() {
+            if data.len() < offset + 2 {
+                // Incomplete RR-interval at end of packet - ignore it
+                break;
+            }
+            let rr = u16::from_le_bytes([data[offset], data[offset + 1]]);
+            rr_intervals.push(rr);
+            offset += 2;
+        }
+    }
+
+    Ok(HeartRateMeasurement {
+        bpm,
+        rr_intervals,
+        sensor_contact,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -169,5 +272,183 @@ mod tests {
         let display = measurement.to_string();
         assert!(display.contains("Contact: No"));
         assert!(display.contains("RR-intervals: 0"));
+    }
+
+    // Parser tests
+
+    #[test]
+    fn test_parse_heart_rate_uint8_with_contact() {
+        // Flags: 0x06 = 0b00000110 (UINT8 format, sensor contact detected)
+        // BPM: 72
+        let data = &[0x06, 72];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 72);
+        assert_eq!(result.sensor_contact, true);
+        assert_eq!(result.rr_intervals.len(), 0);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_uint8_no_contact() {
+        // Flags: 0x00 = 0b00000000 (UINT8 format, no sensor contact)
+        // BPM: 65
+        let data = &[0x00, 65];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 65);
+        assert_eq!(result.sensor_contact, false);
+        assert_eq!(result.rr_intervals.len(), 0);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_uint16_with_contact() {
+        // Flags: 0x07 = 0b00000111 (UINT16 format, sensor contact detected)
+        // BPM: 150 (0x0096 in little-endian)
+        let data = &[0x07, 0x96, 0x00];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 150);
+        assert_eq!(result.sensor_contact, true);
+        assert_eq!(result.rr_intervals.len(), 0);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_with_rr_intervals() {
+        // Flags: 0x16 = 0b00010110 (UINT8 format, sensor contact, RR-intervals present)
+        // BPM: 72
+        // RR-intervals: 820, 830, 815 (in 1/1024 second units, little-endian)
+        let data = &[
+            0x16, 72, 0x34, 0x03, // RR: 820 (0x0334)
+            0x3E, 0x03, // RR: 830 (0x033E)
+            0x2F, 0x03, // RR: 815 (0x032F)
+        ];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 72);
+        assert_eq!(result.sensor_contact, true);
+        assert_eq!(result.rr_intervals, vec![820, 830, 815]);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_with_energy_expended() {
+        // Flags: 0x0E = 0b00001110 (UINT8 format, sensor contact, energy expended)
+        // BPM: 75
+        // Energy Expended: 1234 (0x04D2 in little-endian) - should be skipped
+        let data = &[0x0E, 75, 0xD2, 0x04];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 75);
+        assert_eq!(result.sensor_contact, true);
+        assert_eq!(result.rr_intervals.len(), 0);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_with_energy_and_rr() {
+        // Flags: 0x1E = 0b00011110 (UINT8, sensor contact, energy, RR-intervals)
+        // BPM: 80
+        // Energy Expended: 500 (0x01F4)
+        // RR-intervals: 750 (0x02EE)
+        let data = &[0x1E, 80, 0xF4, 0x01, 0xEE, 0x02];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 80);
+        assert_eq!(result.sensor_contact, true);
+        assert_eq!(result.rr_intervals, vec![750]);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_packet_too_short() {
+        let data = &[0x06]; // Only flags, no BPM
+        let result = parse_heart_rate(data);
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("too short"));
+    }
+
+    #[test]
+    fn test_parse_heart_rate_empty_packet() {
+        let data = &[];
+        let result = parse_heart_rate(data);
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("too short"));
+    }
+
+    #[test]
+    fn test_parse_heart_rate_uint16_truncated() {
+        // Flags indicate UINT16 but only 1 byte of data
+        let data = &[0x01, 72];
+        let result = parse_heart_rate(data);
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Insufficient data for UINT16"));
+    }
+
+    #[test]
+    fn test_parse_heart_rate_energy_truncated() {
+        // Flags indicate energy expended but insufficient bytes
+        let data = &[0x0E, 72, 0xD2]; // Missing second byte of energy
+        let result = parse_heart_rate(data);
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Insufficient data for energy"));
+    }
+
+    #[test]
+    fn test_parse_heart_rate_rr_incomplete() {
+        // RR-intervals flag set but incomplete data (should handle gracefully)
+        // Flags: 0x16 (UINT8, sensor contact, RR-intervals)
+        // BPM: 72
+        // Partial RR-interval: only 1 byte instead of 2
+        let data = &[0x16, 72, 0x34];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 72);
+        assert_eq!(result.sensor_contact, true);
+        // Incomplete RR-interval should be ignored
+        assert_eq!(result.rr_intervals.len(), 0);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_multiple_rr_intervals() {
+        // Test with many RR-intervals
+        let data = &[
+            0x16, 70, // Flags and BPM
+            0x00, 0x03, // RR: 768
+            0x10, 0x03, // RR: 784
+            0x20, 0x03, // RR: 800
+            0x30, 0x03, // RR: 816
+            0x40, 0x03, // RR: 832
+        ];
+        let result = parse_heart_rate(data).unwrap();
+
+        assert_eq!(result.bpm, 70);
+        assert_eq!(result.rr_intervals, vec![768, 784, 800, 816, 832]);
+    }
+
+    #[test]
+    fn test_parse_heart_rate_sensor_contact_bit_patterns() {
+        // Test all sensor contact bit patterns
+        // Bits 1-2: 00 = not supported (value 0)
+        let data = &[0x00, 60];
+        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, false);
+
+        // Bits 1-2: 01 = not detected (value 1)
+        let data = &[0x02, 60];
+        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, false);
+
+        // Bits 1-2: 10 = detected (value 2)
+        let data = &[0x04, 60];
+        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, true);
+
+        // Bits 1-2: 11 = detected (value 3)
+        let data = &[0x06, 60];
+        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, true);
     }
 }
