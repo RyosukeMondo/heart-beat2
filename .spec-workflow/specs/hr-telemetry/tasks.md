@@ -202,7 +202,7 @@
   - _Requirements: 2, 6_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer | Task: Create integration test. Scenario 1: full connect/stream/disconnect. Scenario 2: simulate disconnection, verify reconnection. Use MockAdapter with configurable failure injection | Restrictions: Test realistic scenarios, not unit-level | Success: Both scenarios pass, state machine handles edge cases | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 8.3 Add coverage enforcement
+- [x] 8.3 Add coverage enforcement
   - File: `.github/workflows/ci.yml` (or similar)
   - Run cargo-tarpaulin in CI
   - Fail if coverage < 80%
