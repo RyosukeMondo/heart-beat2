@@ -392,6 +392,64 @@ impl SessionStateMachineWrapper {
     pub fn context_mut(&mut self) -> &mut SessionContext {
         &mut self.context
     }
+
+    /// Get current session progress.
+    ///
+    /// Returns (phase_index, elapsed_secs, total_phase_duration) if in progress, None otherwise.
+    pub fn get_progress(&self) -> Option<(usize, u32, u32)> {
+        if let State::InProgress {
+            current_phase,
+            elapsed_secs,
+            ..
+        } = self.machine.state()
+        {
+            if let Some(plan) = &self.context.plan {
+                if *current_phase < plan.phases.len() {
+                    let phase = &plan.phases[*current_phase];
+                    return Some((*current_phase, *elapsed_secs, phase.duration_secs));
+                }
+            }
+        }
+        None
+    }
+
+    /// Get the current training phase.
+    ///
+    /// Returns a reference to the current phase if in progress, None otherwise.
+    pub fn get_current_phase(&self) -> Option<&crate::domain::training_plan::TrainingPhase> {
+        if let State::InProgress { current_phase, .. } = self.machine.state() {
+            if let Some(plan) = &self.context.plan {
+                if *current_phase < plan.phases.len() {
+                    return Some(&plan.phases[*current_phase]);
+                }
+            }
+        }
+        None
+    }
+
+    /// Get time remaining in the current phase.
+    ///
+    /// Returns seconds left in current phase if in progress, None otherwise.
+    pub fn time_remaining(&self) -> Option<u32> {
+        if let State::InProgress {
+            current_phase,
+            elapsed_secs,
+            ..
+        } = self.machine.state()
+        {
+            if let Some(plan) = &self.context.plan {
+                if *current_phase < plan.phases.len() {
+                    let phase = &plan.phases[*current_phase];
+                    if *elapsed_secs < phase.duration_secs {
+                        return Some(phase.duration_secs - elapsed_secs);
+                    } else {
+                        return Some(0);
+                    }
+                }
+            }
+        }
+        None
+    }
 }
 
 impl Default for SessionStateMachineWrapper {
@@ -712,5 +770,121 @@ mod tests {
         // Manual stop
         machine.handle(SessionEvent::Stop);
         assert!(matches!(machine.state(), State::Completed {}));
+    }
+
+    #[test]
+    fn test_get_progress() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        // No progress when idle
+        assert_eq!(machine.get_progress(), None);
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // Should have progress after start
+        assert_eq!(machine.get_progress(), Some((0, 0, 60)));
+
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.get_progress(), Some((0, 1, 60)));
+
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.get_progress(), Some((0, 2, 60)));
+
+        // No progress when completed
+        machine.handle(SessionEvent::Stop);
+        assert_eq!(machine.get_progress(), None);
+    }
+
+    #[test]
+    fn test_get_current_phase() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        // No phase when idle
+        assert!(machine.get_current_phase().is_none());
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // Should have current phase
+        let phase = machine.get_current_phase();
+        assert!(phase.is_some());
+        assert_eq!(phase.unwrap().name, "Warmup");
+        assert_eq!(phase.unwrap().target_zone, Zone::Zone2);
+        assert_eq!(phase.unwrap().duration_secs, 60);
+
+        // No phase when completed
+        machine.handle(SessionEvent::Stop);
+        assert!(machine.get_current_phase().is_none());
+    }
+
+    #[test]
+    fn test_time_remaining() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        // No time remaining when idle
+        assert_eq!(machine.time_remaining(), None);
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 10,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // Should have full duration remaining
+        assert_eq!(machine.time_remaining(), Some(10));
+
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.time_remaining(), Some(9));
+
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.time_remaining(), Some(8));
+
+        // Tick to completion (8 more ticks to reach 10 seconds)
+        for _ in 0..8 {
+            machine.handle(SessionEvent::Tick);
+        }
+
+        // Should be completed, no time remaining
+        assert_eq!(machine.time_remaining(), None);
     }
 }
