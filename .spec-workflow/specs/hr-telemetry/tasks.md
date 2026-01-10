@@ -118,7 +118,7 @@
   - _Requirements: 6_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with state machine expertise | Task: Create ConnectionStateMachine using statig. States: Idle, Scanning, Connecting, DiscoveringServices, Connected, Reconnecting. Events: StartScan, DeviceSelected, ConnectionSuccess, ConnectionFailed, Disconnected. Implement transition logic | Restrictions: Use statig::blocking, follow HSM patterns | Success: All state transitions compile and match requirements.md R6 | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [-] 5.2 Add reconnection logic
+- [x] 5.2 Add reconnection logic
   - File: `rust/src/state/connectivity.rs` (extend)
   - Implement exponential backoff for reconnection
   - Track attempt count, max 3 retries
