@@ -33,6 +33,7 @@ pub mod adapters;
 pub mod api;
 pub mod domain;
 pub mod ports;
+pub mod scheduler;
 pub mod state;
 
 // Re-export commonly used types from each module
