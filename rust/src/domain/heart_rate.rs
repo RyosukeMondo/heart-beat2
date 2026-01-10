@@ -4,6 +4,7 @@
 //! measurements, zones, and related utilities. All types are designed to be
 //! pure data structures with no I/O dependencies.
 
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Heart rate training zones based on percentage of max heart rate.
@@ -69,6 +70,65 @@ impl fmt::Display for HeartRateMeasurement {
             self.rr_intervals.len()
         )
     }
+}
+
+/// A discovered BLE device during scanning.
+///
+/// This struct represents a device found during BLE scanning operations,
+/// containing the minimal information needed to identify and connect to the device.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiscoveredDevice {
+    /// Platform-specific device identifier.
+    ///
+    /// This is typically a UUID on iOS/macOS or a MAC address on Linux/Android.
+    pub id: String,
+
+    /// Advertised device name, if available.
+    ///
+    /// Not all devices advertise a name in their BLE advertisements.
+    pub name: Option<String>,
+
+    /// Received Signal Strength Indicator in dBm.
+    ///
+    /// Typically ranges from -100 (weak) to -30 (strong). Used to estimate
+    /// proximity and connection quality.
+    pub rssi: i16,
+}
+
+/// Heart rate data after processing through filtering and HRV calculation.
+///
+/// This struct represents the final output after raw BLE measurements have been
+/// parsed, validated, filtered, and enriched with HRV metrics. It's designed
+/// to be serializable for transmission to Flutter via Flutter Rust Bridge.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FilteredHeartRate {
+    /// Unfiltered BPM directly from the heart rate sensor.
+    pub raw_bpm: u16,
+
+    /// Kalman-filtered BPM for smoother visualization.
+    ///
+    /// This value has been processed through a Kalman filter to reduce
+    /// sensor noise and provide a more stable reading.
+    pub filtered_bpm: u16,
+
+    /// Heart Rate Variability metric (RMSSD) in milliseconds.
+    ///
+    /// Available only when RR-intervals are present in the sensor data.
+    /// RMSSD (Root Mean Square of Successive Differences) is a time-domain
+    /// HRV metric used for stress and recovery assessment.
+    pub rmssd: Option<f64>,
+
+    /// Device battery level as a percentage (0-100).
+    ///
+    /// May be `None` if the device doesn't support battery level reporting
+    /// or if it hasn't been read yet.
+    pub battery_level: Option<u8>,
+
+    /// Unix timestamp in milliseconds when this measurement was processed.
+    ///
+    /// This is the system time when the data was processed, not the sensor
+    /// measurement time.
+    pub timestamp: u64,
 }
 
 #[cfg(test)]
