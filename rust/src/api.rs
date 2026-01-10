@@ -3,8 +3,11 @@
 //! This module provides the FFI boundary between Rust core logic and Flutter UI.
 //! It orchestrates domain, state, and adapter components without containing business logic.
 
+use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::domain::heart_rate::DiscoveredDevice;
+use crate::ports::BleAdapter;
 use anyhow::Result;
+use std::time::Duration;
 
 // Re-export domain types for FRB code generation
 pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate};
@@ -25,8 +28,20 @@ pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, Fil
 /// - Scan operation fails
 /// - BLE is not available or permissions are missing
 pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
-    // TODO: Implement using BtleplugAdapter
-    Ok(Vec::new())
+    // Create btleplug adapter instance
+    let adapter = BtleplugAdapter::new().await?;
+
+    // Start scanning
+    adapter.start_scan().await?;
+
+    // Wait for scan to collect devices
+    tokio::time::sleep(Duration::from_secs(10)).await;
+
+    // Stop scanning and get results
+    adapter.stop_scan().await?;
+    let devices = adapter.get_discovered_devices().await;
+
+    Ok(devices)
 }
 
 /// Connect to a BLE heart rate device.
