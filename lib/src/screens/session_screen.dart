@@ -4,6 +4,7 @@ import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
+import '../services/background_service.dart';
 
 /// Session screen for live HR monitoring during workouts
 class SessionScreen extends StatefulWidget {
@@ -19,6 +20,8 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _isConnecting = true;
   String? _errorMessage;
   final int _maxHr = 180; // Default max HR, will be loaded from settings
+  final BackgroundService _backgroundService = BackgroundService();
+  bool _isServiceRunning = false;
 
   @override
   void didChangeDependencies() {
@@ -46,6 +49,9 @@ class _SessionScreenState extends State<SessionScreen> {
       // Create the HR stream
       final stream = api.createHrStream();
 
+      // Start background service to maintain connection during screen lock
+      await _startBackgroundService();
+
       if (!mounted) return;
 
       setState(() {
@@ -62,8 +68,21 @@ class _SessionScreenState extends State<SessionScreen> {
     }
   }
 
+  Future<void> _startBackgroundService() async {
+    final started = await _backgroundService.startService();
+    if (started && mounted) {
+      setState(() {
+        _isServiceRunning = true;
+      });
+    }
+  }
+
   @override
   void dispose() {
+    // Stop background service when leaving session
+    if (_isServiceRunning) {
+      _backgroundService.stopService();
+    }
     // Stream will be automatically cleaned up
     super.dispose();
   }
@@ -180,6 +199,11 @@ class _SessionScreenState extends State<SessionScreen> {
         final bpm = hrData['bpm'] as int;
         final zone = hrData['zone'] as Zone;
         final batteryLevel = hrData['battery'] as int?;
+
+        // Update background service notification with current BPM and zone
+        if (_isServiceRunning) {
+          _backgroundService.updateBpm(bpm, zone: zone.name);
+        }
 
         return Center(
           child: Column(
