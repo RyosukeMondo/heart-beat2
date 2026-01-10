@@ -165,7 +165,7 @@
   - _Requirements: 2, 3, 4, 7_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer | Task: Implement connect subcommand. Create state machine, connect to device. On HR notification: parse, filter, print. Format: timestamp, raw_bpm, filtered_bpm, rmssd (if available). Ctrl+C to disconnect | Restrictions: Clean disconnect on exit, handle connection loss | Success: Streams HR data in real-time, recovers from brief disconnections | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 6.4 Implement mock command
+- [x] 6.4 Implement mock command
   - File: `rust/src/bin/cli.rs` (extend)
   - Use MockAdapter to stream simulated data
   - Purpose: Test pipeline without hardware
