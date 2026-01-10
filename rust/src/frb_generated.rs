@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 395022039;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1953380541;
 
 // Section: executor
 
@@ -134,6 +134,246 @@ fn wire__crate__api__emit_hr_data_impl(
         },
     )
 }
+fn wire__crate__api__hr_battery_level_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_battery_level",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::hr_battery_level(&*api_data_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__hr_filtered_bpm_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_filtered_bpm",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::hr_filtered_bpm(&*api_data_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__hr_raw_bpm_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_raw_bpm",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::hr_raw_bpm(&*api_data_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__hr_rmssd_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_rmssd",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::hr_rmssd(&*api_data_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__hr_timestamp_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_timestamp",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::hr_timestamp(&*api_data_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__hr_zone_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
+        >,
+    >,
+    max_hr: impl CstDecode<u16>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "hr_zone",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            let api_max_hr = max_hr.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_data_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_data, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_data_guard = Some(api_data.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_data_guard = api_data_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::hr_zone(&*api_data_guard, api_max_hr))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__scan_devices_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -177,9 +417,33 @@ fn wire__crate__api__start_mock_mode_impl(port_: flutter_rust_bridge::for_genera
 
 // Section: dart2rust
 
+impl CstDecode<f64> for f64 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> f64 {
+        self
+    }
+}
 impl CstDecode<i16> for i16 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> i16 {
+        self
+    }
+}
+impl CstDecode<i32> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> i32 {
+        self
+    }
+}
+impl CstDecode<u16> for u16 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> u16 {
+        self
+    }
+}
+impl CstDecode<u64> for u64 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> u64 {
         self
     }
 }
@@ -193,6 +457,19 @@ impl CstDecode<usize> for usize {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> usize {
         self
+    }
+}
+impl CstDecode<crate::domain::heart_rate::Zone> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::domain::heart_rate::Zone {
+        match self {
+            0 => crate::domain::heart_rate::Zone::Zone1,
+            1 => crate::domain::heart_rate::Zone::Zone2,
+            2 => crate::domain::heart_rate::Zone::Zone3,
+            3 => crate::domain::heart_rate::Zone::Zone4,
+            4 => crate::domain::heart_rate::Zone::Zone5,
+            _ => unreachable!("Invalid variant for Zone: {}", self),
+        }
     }
 }
 impl SseDecode for flutter_rust_bridge::for_generated::anyhow::Error {
@@ -253,10 +530,24 @@ impl SseDecode for crate::domain::heart_rate::DiscoveredDevice {
     }
 }
 
+impl SseDecode for f64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_f64::<NativeEndian>().unwrap()
+    }
+}
+
 impl SseDecode for i16 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         deserializer.cursor.read_i16::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for i32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i32::<NativeEndian>().unwrap()
     }
 }
 
@@ -297,6 +588,42 @@ impl SseDecode for Option<String> {
     }
 }
 
+impl SseDecode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<f64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<u8> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<u8>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for u16 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u16::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for u64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u64::<NativeEndian>().unwrap()
+    }
+}
+
 impl SseDecode for u8 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -316,10 +643,18 @@ impl SseDecode for usize {
     }
 }
 
-impl SseDecode for i32 {
+impl SseDecode for crate::domain::heart_rate::Zone {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_i32::<NativeEndian>().unwrap()
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::domain::heart_rate::Zone::Zone1,
+            1 => crate::domain::heart_rate::Zone::Zone2,
+            2 => crate::domain::heart_rate::Zone::Zone3,
+            3 => crate::domain::heart_rate::Zone::Zone4,
+            4 => crate::domain::heart_rate::Zone::Zone5,
+            _ => unreachable!("Invalid variant for Zone: {}", inner),
+        };
     }
 }
 
@@ -397,6 +732,30 @@ impl flutter_rust_bridge::IntoIntoDart<crate::domain::heart_rate::DiscoveredDevi
         self
     }
 }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::domain::heart_rate::Zone {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Zone1 => 0.into_dart(),
+            Self::Zone2 => 1.into_dart(),
+            Self::Zone3 => 2.into_dart(),
+            Self::Zone4 => 3.into_dart(),
+            Self::Zone5 => 4.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::domain::heart_rate::Zone
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::domain::heart_rate::Zone>
+    for crate::domain::heart_rate::Zone
+{
+    fn into_into_dart(self) -> crate::domain::heart_rate::Zone {
+        self
+    }
+}
 
 impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -451,10 +810,24 @@ impl SseEncode for crate::domain::heart_rate::DiscoveredDevice {
     }
 }
 
+impl SseEncode for f64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_f64::<NativeEndian>(self).unwrap();
+    }
+}
+
 impl SseEncode for i16 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_i16::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for i32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
     }
 }
 
@@ -488,6 +861,40 @@ impl SseEncode for Option<String> {
     }
 }
 
+impl SseEncode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <f64>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<u8> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <u8>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for u16 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u16::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for u64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u64::<NativeEndian>(self).unwrap();
+    }
+}
+
 impl SseEncode for u8 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -510,10 +917,22 @@ impl SseEncode for usize {
     }
 }
 
-impl SseEncode for i32 {
+impl SseEncode for crate::domain::heart_rate::Zone {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
+        <i32>::sse_encode(
+            match self {
+                crate::domain::heart_rate::Zone::Zone1 => 0,
+                crate::domain::heart_rate::Zone::Zone2 => 1,
+                crate::domain::heart_rate::Zone::Zone3 => 2,
+                crate::domain::heart_rate::Zone::Zone4 => 3,
+                crate::domain::heart_rate::Zone::Zone5 => 4,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
     }
 }
 
@@ -600,6 +1019,18 @@ mod io {
             String::from_utf8(vec).unwrap()
         }
     }
+    impl CstDecode<f64> for *mut f64 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> f64 {
+            unsafe { *flutter_rust_bridge::for_generated::box_from_leak_ptr(self) }
+        }
+    }
+    impl CstDecode<u8> for *mut u8 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> u8 {
+            unsafe { *flutter_rust_bridge::for_generated::box_from_leak_ptr(self) }
+        }
+    }
     impl CstDecode<crate::domain::heart_rate::DiscoveredDevice> for wire_cst_discovered_device {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::domain::heart_rate::DiscoveredDevice {
@@ -673,6 +1104,43 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_battery_level(
+        port_: i64,
+        data: usize,
+    ) {
+        wire__crate__api__hr_battery_level_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_filtered_bpm(port_: i64, data: usize) {
+        wire__crate__api__hr_filtered_bpm_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_raw_bpm(port_: i64, data: usize) {
+        wire__crate__api__hr_raw_bpm_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_rmssd(port_: i64, data: usize) {
+        wire__crate__api__hr_rmssd_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_timestamp(port_: i64, data: usize) {
+        wire__crate__api__hr_timestamp_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__hr_zone(
+        port_: i64,
+        data: usize,
+        max_hr: u16,
+    ) {
+        wire__crate__api__hr_zone_impl(port_, data, max_hr)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__scan_devices(port_: i64) {
         wire__crate__api__scan_devices_impl(port_)
     }
@@ -698,6 +1166,16 @@ mod io {
         unsafe {
             StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>::decrement_strong_count(ptr as _);
         }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_f_64(value: f64) -> *mut f64 {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_u_8(value: u8) -> *mut u8 {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
@@ -897,9 +1375,21 @@ mod web {
             self.as_string().expect("non-UTF-8 string, or not a string")
         }
     }
+    impl CstDecode<f64> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> f64 {
+            self.unchecked_into_f64() as _
+        }
+    }
     impl CstDecode<i16> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> i16 {
+            self.unchecked_into_f64() as _
+        }
+    }
+    impl CstDecode<i32> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> i32 {
             self.unchecked_into_f64() as _
         }
     }
@@ -909,6 +1399,18 @@ mod web {
             self.unchecked_into::<flutter_rust_bridge::for_generated::js_sys::Uint8Array>()
                 .to_vec()
                 .into()
+        }
+    }
+    impl CstDecode<u16> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> u16 {
+            self.unchecked_into_f64() as _
+        }
+    }
+    impl CstDecode<u64> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> u64 {
+            ::std::convert::TryInto::<u64>::try_into(self).unwrap() as _
         }
     }
     impl CstDecode<u8> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
@@ -921,6 +1423,14 @@ mod web {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> usize {
             ::std::convert::TryInto::<u64>::try_into(self).unwrap() as _
+        }
+    }
+    impl CstDecode<crate::domain::heart_rate::Zone>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::domain::heart_rate::Zone {
+            (self.unchecked_into_f64() as i32).cst_decode()
         }
     }
 
@@ -951,6 +1461,55 @@ mod web {
         data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__emit_hr_data_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_battery_level(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__hr_battery_level_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_filtered_bpm(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__hr_filtered_bpm_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_raw_bpm(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__hr_raw_bpm_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_rmssd(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__hr_rmssd_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_timestamp(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__hr_timestamp_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__hr_zone(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        max_hr: u16,
+    ) {
+        wire__crate__api__hr_zone_impl(port_, data, max_hr)
     }
 
     #[wasm_bindgen]
