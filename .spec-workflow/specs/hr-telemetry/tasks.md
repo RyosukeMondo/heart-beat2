@@ -193,7 +193,7 @@
   - _Requirements: 3, 4_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer | Task: Create integration test using MockAdapter. Connect, receive 10 samples, verify parsing succeeds, verify filtering smooths values, verify output struct is complete | Restrictions: No real BLE, use mock only | Success: Test passes, demonstrates full pipeline works | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 8.2 Create state machine integration test
+- [x] 8.2 Create state machine integration test
   - File: `rust/tests/state_machine_integration.rs`
   - Test full connection lifecycle with mock
   - Test reconnection scenario
