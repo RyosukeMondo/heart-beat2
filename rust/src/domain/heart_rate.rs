@@ -11,7 +11,7 @@ use std::fmt;
 ///
 /// These zones are commonly used in exercise physiology to categorize
 /// training intensity levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Zone {
     /// Zone 1: 50-60% of max HR (very light, recovery)
     Zone1,
