@@ -1,0 +1,54 @@
+# Iteration 21
+# Started 2026-01-10T11:38:43.668490+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Excellent! I've successfully completed task 8.2 for the hr-telemetry spec. Here's what was accomplished:
+
+## Task 8.2: State Machine Integration Tests ✓
+
+Created comprehensive integration tests in `rust/tests/state_machine_integration.rs` that verify the connection state machine with realistic scenarios:
+
+### Test Coverage (6 tests, all passing):
+
+1. **test_full_connection_lifecycle** - Complete happy path:
+   - Scan → Discover devices → Connect → Stream HR data → Parse packets → Disconnect
+   - Verifies 5 packets are received and parsed correctly
+
+2. **test_reconnection_success** - Connection recovery:
+   - Establishes connection → Unexpected disconnect → Reconnection with 1s delay → Resume streaming
+   - Tests proper exponential backoff timing
+
+3. **test_reconnection_exhausted** - Multiple failures:
+   - Connection lost → 3 failed reconnection attempts with delays (1s, 2s, 4s) → Returns to Idle
+   - Verifies max retry limit enforcement
+
+4. **test_rapid_state_transitions** - Stress testing:
+   - 10 rapid scan start/stop cycles
+   - 5 rapid connect/disconnect cycles
+   - Ensures no race conditions or panics
+
+5. **test_user_cancellation_scenarios** - Cancellation from all states:
+   - Tests UserDisconnect from: Scanning, Connecting, DiscoveringServices, Connected, Reconnecting
+   - Verifies clean state transitions
+
+6. **test_connection_failure_during_service_discovery** - Edge case handling:
+   - Connection established → Fails during service discovery → Triggers reconnection → Success
+   - Tests recovery from intermediate failure states
+
+### Key Features:
+- Uses MockAdapter for realistic BLE simulation without hardware
+- Tests actual async workflows with tokio timers and channels
+- Verifies exponential backoff delays match specification
+- Parses real HR packets to ensure end-to-end correctness
+- All tests completed in 7.51s with 546 lines of test code
+
+The changes have been committed to git with a clear commit message.
+
+# Exit Code
+0

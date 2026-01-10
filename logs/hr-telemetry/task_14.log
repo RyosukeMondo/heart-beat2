@@ -1,0 +1,41 @@
+# Iteration 14
+# Started 2026-01-10T11:20:02.203995+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Excellent! Task 5.3 is now complete. Let me provide a summary of what was accomplished:
+
+## Task 5.3 Completed: State Machine Unit Tests
+
+I successfully added comprehensive unit tests for the BLE connection state machine using mockall as specified. Here's what was implemented:
+
+### What Was Done:
+1. **Added mockall mock for BleAdapter trait** - Created a `MockAdapter` using mockall's `mock!` macro to properly mock all async trait methods
+2. **11 new mockall-based tests** covering:
+   - Complete connection flow (Idle → Scanning → Connecting → DiscoveringServices → Connected)
+   - Connection recovery (Connected → Disconnected → Reconnecting → Connected)
+   - Reconnection exhaustion after 3 failures
+   - User cancellation during various states (Connecting, Reconnecting)
+   - Connection failures during service discovery
+   - Stop scan returning to idle
+   - Reconnection attempt counter incrementation
+   - Invalid events being ignored in certain states
+   - Disconnection during service discovery
+
+### Test Results:
+- **All 22 tests pass** (11 original + 11 new mockall-based)
+- Tests verify all state transitions match requirements.md R6
+- Edge cases covered including max retries, user cancellation, and invalid events
+
+### Files Modified:
+- `rust/src/state/connectivity.rs` - Added 258 lines of comprehensive test coverage
+
+The implementation has been committed and logged in the spec workflow system at rust/src/state/connectivity.rs:477-710.
+
+# Exit Code
+0

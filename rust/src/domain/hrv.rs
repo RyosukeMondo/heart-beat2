@@ -63,7 +63,7 @@ pub fn calculate_rmssd(rr_intervals: &[u16]) -> Option<f64> {
     const MAX_RR_MS: f64 = 2000.0;
 
     for &rr in &rr_ms {
-        if rr < MIN_RR_MS || rr > MAX_RR_MS {
+        if !(MIN_RR_MS..=MAX_RR_MS).contains(&rr) {
             return None;
         }
     }
@@ -117,7 +117,7 @@ pub fn calculate_sdnn(rr_intervals: &[u16]) -> Option<f64> {
     const MAX_RR_MS: f64 = 2000.0;
 
     for &rr in &rr_ms {
-        if rr < MIN_RR_MS || rr > MAX_RR_MS {
+        if !(MIN_RR_MS..=MAX_RR_MS).contains(&rr) {
             return None;
         }
     }
@@ -130,6 +130,7 @@ pub fn calculate_sdnn(rr_intervals: &[u16]) -> Option<f64> {
 }
 
 #[cfg(test)]
+#[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
 

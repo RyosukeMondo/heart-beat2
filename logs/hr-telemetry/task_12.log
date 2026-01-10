@@ -1,0 +1,55 @@
+# Iteration 12
+# Started 2026-01-10T11:11:21.833876+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Excellent! I've successfully completed task 5.1 for the hr-telemetry spec. Here's what was accomplished:
+
+## Summary
+
+I implemented a **hierarchical state machine** using the `statig` crate for managing the BLE connection lifecycle. The implementation includes:
+
+### Key Components
+
+1. **ConnectionState Enum** - Defines 6 states:
+   - `Idle`: Initial state, no activity
+   - `Scanning`: Actively scanning for BLE devices
+   - `Connecting`: Attempting to establish connection
+   - `DiscoveringServices`: Enumerating BLE services after connection
+   - `Connected`: Fully connected and ready to stream data
+   - `Reconnecting`: Attempting to re-establish lost connection (with attempt counter)
+
+2. **ConnectionEvent Enum** - Defines all events that trigger state transitions:
+   - StartScan, StopScan, DeviceSelected
+   - ConnectionSuccess, ConnectionFailed, ServicesDiscovered
+   - Disconnected, UserDisconnect
+   - ReconnectSuccess, ReconnectFailed
+
+3. **ConnectionStateMachine** - The main state machine wrapper with methods:
+   - `new()`: Creates machine with BLE adapter
+   - `handle()`: Processes events and triggers transitions
+   - `state()`: Returns current state
+   - `context()`: Provides access to BLE adapter
+
+### Features
+
+- **Formal state transitions** using statig's macro-based DSL
+- **Exponential backoff reconnection** logic (max 3 attempts)
+- **User-initiated disconnection** from any state returns to Idle
+- **Comprehensive unit tests** (10 tests) covering all transition paths
+- **Clean separation** between state logic and BLE adapter (via traits)
+
+### Files Created
+
+- `rust/src/state/connectivity.rs` (415 lines) - State machine implementation
+- `rust/src/state/mod.rs` (8 lines) - Module exports
+
+The implementation was committed with proper git messages and logged using the spec-workflow tools for future reference.
+
+# Exit Code
+0

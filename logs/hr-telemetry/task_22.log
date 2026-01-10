@@ -1,0 +1,33 @@
+# Iteration 22
+# Started 2026-01-10T11:41:15.905141+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Perfect! I've successfully completed task 8.3 for the hr-telemetry spec. Here's what was implemented:
+
+## Completed: Task 8.3 - Add Coverage Enforcement
+
+Created a comprehensive GitHub Actions CI workflow at `.github/workflows/ci.yml:1` that includes:
+
+### Quality Gates:
+1. **Format checking** - Ensures code follows Rust formatting standards with `cargo fmt --check`
+2. **Linting** - Runs `cargo clippy` with warnings treated as errors
+3. **Testing** - Executes all unit and integration tests
+4. **Coverage generation** - Uses `cargo-tarpaulin` to generate XML coverage reports
+5. **Coverage enforcement** - Fails the build if coverage drops below 80%
+6. **Codecov integration** - Uploads coverage reports for tracking over time
+
+### Optimizations:
+- Caches cargo registry, git index, and build artifacts for faster CI runs
+- Installs required system dependencies (libudev-dev, libdbus-1-dev) for BLE support
+- Runs on push to main and pull requests
+
+The workflow has been committed to the repository. All 22 tasks in the hr-telemetry spec are now complete!
+
+# Exit Code
+0

@@ -171,10 +171,7 @@ impl BleAdapter for BtleplugAdapter {
             };
 
             // Check if device advertises HR service
-            let has_hr_service = properties
-                .services
-                .iter()
-                .any(|uuid| *uuid == HR_SERVICE_UUID);
+            let has_hr_service = properties.services.contains(&HR_SERVICE_UUID);
 
             if has_hr_service {
                 devices.push(DiscoveredDevice {
@@ -259,11 +256,14 @@ impl BleAdapter for BtleplugAdapter {
             };
 
             while let Some(notification) = notification_stream.next().await {
-                if notification.uuid == HR_MEASUREMENT_UUID {
-                    if tx.send(notification.value).await.is_err() {
-                        tracing::debug!("HR notification receiver dropped");
-                        break;
-                    }
+                // Only forward HR measurement notifications
+                if notification.uuid != HR_MEASUREMENT_UUID {
+                    continue;
+                }
+
+                if tx.send(notification.value).await.is_err() {
+                    tracing::debug!("HR notification receiver dropped");
+                    break;
                 }
             }
         });

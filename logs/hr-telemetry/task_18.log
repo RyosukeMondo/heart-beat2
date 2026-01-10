@@ -1,0 +1,50 @@
+# Iteration 18
+# Started 2026-01-10T11:30:46.152211+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Perfect! Task 6.4 is now complete. Let me provide a summary of what was accomplished:
+
+## Task 6.4 Complete: Mock Command Implementation
+
+I've successfully implemented the mock command for the hr-telemetry CLI. Here's what was done:
+
+### Implementation Details
+
+**Added to `rust/src/bin/cli.rs`:**
+- Imported `MockAdapter` from the adapters module
+- Added `--duration` flag to the `Mock` subcommand for optional timed runs
+- Implemented `handle_mock()` function (lines 231-356) that:
+  - Creates a MockAdapter instance
+  - Connects to a simulated mock device
+  - Subscribes to heart rate notifications
+  - Processes data through the same pipeline as the real connect command (parse → filter → calculate HRV)
+  - Supports both Ctrl+C interruption and optional duration timeout
+  - Displays data in the same table format as the connect command
+
+### Key Features
+- **Same output format** as the connect command for consistency
+- **Optional `--duration` flag** for timed runs (e.g., `--duration 10` for 10 seconds)
+- **Graceful shutdown** on Ctrl+C
+- **Reuses existing pipeline**: parsing, Kalman filtering, and RMSSD calculation
+- **No hardware required**: enables development and testing without physical heart rate monitors
+
+### Testing
+The implementation was verified to work correctly:
+- With duration flag: runs for specified time and exits cleanly
+- Without duration flag: runs indefinitely until Ctrl+C
+- Displays realistic mock heart rate data with filtering and HRV metrics
+
+### Commits
+- `ed09c3c`: feat: implement mock command in CLI for simulated HR data
+- `10fbdb3`: chore: mark task 6.4 as completed in tasks.md
+
+The task has been marked as completed in tasks.md and the implementation has been logged using the spec-workflow tool.
+
+# Exit Code
+0

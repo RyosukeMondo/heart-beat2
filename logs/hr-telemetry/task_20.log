@@ -1,0 +1,47 @@
+# Iteration 20
+# Started 2026-01-10T11:35:34.631956+00:00
+# Spec hr-telemetry
+# Command
+claude -p 'Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec hr-telemetry. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Perfect! Task 8.1 has been successfully completed and committed. Here's what was accomplished:
+
+## Task 8.1 Complete: Integration Test for Full Pipeline ✓
+
+Created `rust/tests/pipeline_integration.rs` with comprehensive integration testing covering the complete heart rate processing pipeline.
+
+### Test Coverage (4 test scenarios, 348 lines):
+
+1. **test_full_pipeline_with_mock_adapter** - End-to-end pipeline verification:
+   - Connects to mock device
+   - Receives 10 HR samples
+   - Parses BLE packets into HeartRateMeasurement
+   - Filters BPM through Kalman filter
+   - Calculates RMSSD from RR-intervals
+   - Assembles FilteredHeartRate output
+   - Verifies filtering reduces variance (smoothing effect)
+
+2. **test_pipeline_handles_invalid_data** - Error handling:
+   - Rejects malformed/empty packets
+   - Filters out-of-range BPM values (< 30 or > 220)
+   - Preserves filter state when rejecting invalid data
+
+3. **test_pipeline_high_frequency_stream** - High throughput:
+   - Tests 5 Hz update rate (vs typical 1 Hz)
+   - Processes 20 samples at elevated heart rate (160 BPM)
+   - Handles noise and occasional spikes
+
+4. **test_basic_connection_flow** - Basic connectivity:
+   - Scan → Connect → Subscribe → Receive → Disconnect
+   - Verifies fundamental adapter operations
+
+All tests pass successfully, demonstrating the complete pipeline works correctly from mock BLE adapter through parsing, filtering, and HRV calculation to final output.
+
+**Changes committed:** e5284e89de950a729cd3a59e7005ea3a7fff105a
+
+# Exit Code
+0

@@ -125,6 +125,7 @@ impl ConnectionState {
 
     /// Connecting state - attempting to establish BLE connection
     #[state]
+    #[allow(clippy::ptr_arg)]
     fn connecting(device_id: &String, event: &ConnectionEvent) -> Response<State> {
         match event {
             ConnectionEvent::ConnectionSuccess => {
@@ -138,6 +139,7 @@ impl ConnectionState {
 
     /// Discovering services state - enumerating BLE services after connection
     #[state]
+    #[allow(clippy::ptr_arg)]
     fn discovering_services(device_id: &String, event: &ConnectionEvent) -> Response<State> {
         match event {
             ConnectionEvent::ServicesDiscovered => Transition(State::connected(device_id.clone())),
@@ -151,6 +153,7 @@ impl ConnectionState {
 
     /// Connected state - fully connected and ready to stream data
     #[state]
+    #[allow(clippy::ptr_arg)]
     fn connected(device_id: &String, event: &ConnectionEvent) -> Response<State> {
         match event {
             ConnectionEvent::Disconnected => Transition(State::reconnecting(device_id.clone(), 1)),
@@ -161,6 +164,7 @@ impl ConnectionState {
 
     /// Reconnecting state - attempting to re-establish lost connection
     #[state]
+    #[allow(clippy::ptr_arg)]
     fn reconnecting(
         device_id: &String,
         attempts: &u8,
@@ -248,6 +252,7 @@ impl ConnectionStateMachine {
 }
 
 #[cfg(test)]
+#[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
     use mockall::predicate::*;

@@ -11,7 +11,7 @@ use std::fmt;
 ///
 /// These zones are commonly used in exercise physiology to categorize
 /// training intensity levels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Zone {
     /// Zone 1: 50-60% of max HR (very light, recovery)
     Zone1,
@@ -235,6 +235,7 @@ pub fn parse_heart_rate(data: &[u8]) -> anyhow::Result<HeartRateMeasurement> {
 }
 
 #[cfg(test)]
+#[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
 

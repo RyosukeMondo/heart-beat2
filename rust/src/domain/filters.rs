@@ -40,7 +40,7 @@ const MAX_VALID_BPM: u16 = 220;
 /// assert!(!is_valid_bpm(20));  // Too low
 /// ```
 pub fn is_valid_bpm(bpm: u16) -> bool {
-    bpm >= MIN_VALID_BPM && bpm <= MAX_VALID_BPM
+    (MIN_VALID_BPM..=MAX_VALID_BPM).contains(&bpm)
 }
 
 /// A Kalman filter wrapper configured for heart rate tracking.
@@ -90,13 +90,6 @@ impl KalmanFilter {
         Self { kalman }
     }
 
-    /// Creates a new Kalman filter with default parameters optimized for heart rate tracking.
-    ///
-    /// Uses process_noise=0.1 and measurement_noise=2.0, which provide good noise reduction
-    /// while tracking step changes in heart rate (e.g., during exercise transitions).
-    pub fn default() -> Self {
-        Self::new(0.1, 2.0)
-    }
 
     /// Updates the filter with a new heart rate measurement and returns the filtered value.
     ///
@@ -175,7 +168,18 @@ impl KalmanFilter {
     }
 }
 
+impl Default for KalmanFilter {
+    /// Creates a new Kalman filter with default parameters optimized for heart rate tracking.
+    ///
+    /// Uses process_noise=0.1 and measurement_noise=2.0, which provide good noise reduction
+    /// while tracking step changes in heart rate (e.g., during exercise transitions).
+    fn default() -> Self {
+        Self::new(0.1, 2.0)
+    }
+}
+
 #[cfg(test)]
+#[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
 

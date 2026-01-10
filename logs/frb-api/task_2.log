@@ -1,0 +1,74 @@
+# Iteration 2
+# Started 2026-01-10T16:58:32.949224+00:00
+# Spec frb-api
+# Command
+claude -p 'Work on the single next task for spec frb-api. When you complete a logical unit of work, you MUST run '"'"'git add'"'"' followed by '"'"'git commit'"'"' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.' --model sonnet --dangerously-skip-permissions
+
+# Prompt
+Work on the single next task for spec frb-api. When you complete a logical unit of work, you MUST run 'git add' followed by 'git commit' with a clear message. DO NOT just stage files - you must actually commit them. DO NOT ask permission - just commit immediately when work is done. Make atomic commits for each semantic group of changes.
+
+# Output (stdout + stderr)
+Excellent! All tests pass. Let me provide a summary of what was completed:
+
+## Summary
+
+I've successfully completed **Task 1.4** from the frb-api spec - implementing the HR data streaming infrastructure. Here's what was delivered:
+
+### What Was Implemented
+
+**HR Data Streaming Infrastructure** (`rust/src/api.rs`):
+
+1. **`get_hr_stream_receiver()`** - Creates broadcast receivers for subscribing to real-time filtered heart rate data
+   - Supports multiple subscribers with fan-out streaming
+   - Thread-safe using `OnceLock` for global state management
+
+2. **`emit_hr_data()`** - Broadcasts HR data to all active stream subscribers
+   - Called by the filtering pipeline when new data is available
+   - Returns the number of receivers that got the data
+   - Handles the case when no receivers are subscribed
+
+3. **Global Broadcast Channel** - Thread-safe singleton using `OnceLock`
+   - 100-item buffer capacity
+   - Handles backpressure by allowing slow consumers to lag
+   - Prevents blocking on slow consumers
+
+### Tests Added
+
+Comprehensive test suite covering:
+- Multiple receiver creation
+- Emit and receive data flow
+- Fan-out to multiple subscribers (3 receivers)
+- Backpressure handling with buffer overflow
+
+All tests pass ✅
+
+### Integration Notes
+
+The implementation provides the Rust-side infrastructure for HR streaming. It's documented with the FRB v2 StreamSink integration pattern for when Flutter is added:
+
+```rust
+// Future Flutter integration:
+pub fn create_hr_stream(sink: StreamSink<FilteredHeartRate>) -> Result<()> {
+    let mut rx = get_hr_stream_receiver();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data);
+        }
+    });
+    Ok(())
+}
+```
+
+### Commits Made
+
+1. `dd5544e` - feat(api): implement HR data streaming infrastructure
+2. `2b649ae` - docs(frb-api): mark all tasks as completed
+
+All FRB API tasks (1.1 through 1.5) are now complete! The API layer is ready for integration with the filtering pipeline and future Flutter StreamSink setup.
+
+**Sources:**
+- [Stream / Iterator | flutter_rust_bridge](https://cjycode.com/flutter_rust_bridge/guides/types/translatable/stream)
+- [GitHub - fzyzcjy/flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge)
+
+# Exit Code
+0

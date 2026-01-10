@@ -264,6 +264,7 @@ impl BleAdapter for MockAdapter {
 }
 
 #[cfg(test)]
+#[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
 
