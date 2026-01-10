@@ -33,6 +33,12 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Android local properties (contains paths that vary by installation location)
+android/local.properties
+
+# Task execution logs
+logs/
+
 # Symbolication related
 app.*.symbols
 
