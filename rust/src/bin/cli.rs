@@ -6,8 +6,11 @@
 
 use clap::{Parser, Subcommand};
 use heart_beat::adapters::BtleplugAdapter;
+use heart_beat::domain::filters::KalmanFilter;
+use heart_beat::domain::heart_rate::parse_heart_rate;
+use heart_beat::domain::hrv::calculate_rmssd;
 use heart_beat::ports::ble_adapter::BleAdapter;
-use tracing::{info, Level};
+use tracing::{debug, error, info, warn, Level};
 use tracing_subscriber::FmtSubscriber;
 
 /// Heart Beat CLI - Heart rate monitoring and debugging tool
@@ -66,9 +69,7 @@ async fn main() -> anyhow::Result<()> {
             handle_scan().await?;
         }
         Commands::Connect { device_id } => {
-            info!("Connecting to device: {}", device_id);
-            // TODO: Implement connect command
-            println!("Connect command not yet implemented for device: {}", device_id);
+            handle_connect(&device_id).await?;
         }
         Commands::Mock => {
             info!("Starting mock data stream...");
@@ -123,6 +124,103 @@ async fn handle_scan() -> anyhow::Result<()> {
 
         println!("\nUse 'heart-beat-cli connect <device-id>' to connect to a device.");
     }
+
+    Ok(())
+}
+
+/// Handle the connect subcommand.
+async fn handle_connect(device_id: &str) -> anyhow::Result<()> {
+    use tokio::signal;
+
+    info!("Connecting to device: {}", device_id);
+    println!("Connecting to device: {}...\n", device_id);
+
+    // Create BLE adapter
+    let adapter = BtleplugAdapter::new().await?;
+
+    // Connect to the device
+    adapter.connect(device_id).await?;
+    println!("✓ Connected to device");
+
+    // Subscribe to heart rate notifications
+    let mut hr_receiver = adapter.subscribe_hr().await?;
+    println!("✓ Subscribed to heart rate notifications");
+
+    // Try to read battery level
+    match adapter.read_battery().await {
+        Ok(battery) => println!("✓ Battery level: {}%\n", battery),
+        Err(e) => {
+            warn!("Could not read battery level: {}", e);
+            println!("⚠ Battery level not available\n");
+        }
+    }
+
+    // Initialize Kalman filter
+    let mut filter = KalmanFilter::default();
+
+    // Print table header
+    println!("{:<20} {:>8} {:>12} {:>10}", "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)");
+    println!("{}", "-".repeat(56));
+
+    // Set up Ctrl+C handler
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    // Stream heart rate data
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl+C received, disconnecting...");
+            println!("\n\nDisconnecting...");
+        }
+        _ = async {
+            while let Some(data) = hr_receiver.recv().await {
+                debug!("Received {} bytes of HR data", data.len());
+
+                // Parse the heart rate measurement
+                match parse_heart_rate(&data) {
+                    Ok(measurement) => {
+                        // Filter the BPM value
+                        let raw_bpm = measurement.bpm as f64;
+                        let filtered_bpm = filter.filter_if_valid(raw_bpm);
+
+                        // Calculate RMSSD if RR-intervals are available
+                        let rmssd_str = if !measurement.rr_intervals.is_empty() {
+                            match calculate_rmssd(&measurement.rr_intervals) {
+                                Some(rmssd) => format!("{:10.2}", rmssd),
+                                None => "     -    ".to_string(),
+                            }
+                        } else {
+                            "     -    ".to_string()
+                        };
+
+                        // Get current timestamp
+                        let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+
+                        // Print the data
+                        println!(
+                            "{:<20} {:>8} {:>12.1} {}",
+                            timestamp,
+                            measurement.bpm,
+                            filtered_bpm,
+                            rmssd_str
+                        );
+                    }
+                    Err(e) => {
+                        error!("Failed to parse heart rate data: {}", e);
+                    }
+                }
+            }
+        } => {
+            warn!("Heart rate stream ended unexpectedly");
+        }
+    }
+
+    // Disconnect from the device
+    adapter.disconnect().await?;
+    println!("✓ Disconnected");
 
     Ok(())
 }
