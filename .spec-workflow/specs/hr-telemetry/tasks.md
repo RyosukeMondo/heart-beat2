@@ -70,7 +70,7 @@
   - _Requirements: 4_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with biomedical signal processing knowledge | Task: Implement calculate_rmssd(rr_intervals: &[u16]) -> Option<f64>. Convert 1/1024s units to ms. Use cardio-rs or implement RMSSD formula. Return None if < 2 intervals. Reject intervals outside 300-2000ms range | Restrictions: Pure function, no side effects | Success: Matches cardio-rs reference values for known inputs | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 3.3 Add anomaly detection
+- [x] 3.3 Add anomaly detection
   - File: `rust/src/domain/filters.rs` (extend)
   - Add is_valid_bpm function rejecting physiologically impossible values
   - Purpose: Reject sensor artifacts before filtering
