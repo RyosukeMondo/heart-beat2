@@ -158,7 +158,7 @@ pub struct FilteredHeartRate {
 /// # Examples
 ///
 /// ```
-/// use heart_beat2::domain::heart_rate::parse_heart_rate;
+/// use heart_beat::domain::heart_rate::parse_heart_rate;
 ///
 /// // Simple UINT8 format with sensor contact
 /// let data = &[0x06, 72]; // Flags=0x06 (sensor contact detected), BPM=72

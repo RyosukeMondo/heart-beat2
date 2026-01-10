@@ -52,7 +52,7 @@
 
 ## Phase 3: Signal Processing
 
-- [ ] 3.1 Implement Kalman filter wrapper
+- [x] 3.1 Implement Kalman filter wrapper
   - File: `rust/src/domain/filters.rs`
   - Create KalmanFilter struct wrapping kalman_filters crate
   - Configure for heart rate tracking (appropriate noise parameters)
@@ -61,7 +61,7 @@
   - _Requirements: 4_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with DSP knowledge | Task: Create KalmanFilter struct with new(process_noise, measurement_noise) and update(measurement) -> f64. Wrap kalman_filters::Kalman1D. Default parameters: process_noise=0.1, measurement_noise=2.0 for HR tracking | Restrictions: Stateful struct, not pure function. Document parameter choices | Success: Filter smooths noisy input, tracks step changes | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 3.2 Implement HRV calculator
+- [x] 3.2 Implement HRV calculator
   - File: `rust/src/domain/hrv.rs`
   - Implement RMSSD calculation from RR-intervals
   - Add validation for physiologically valid intervals
