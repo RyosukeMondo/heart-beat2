@@ -31,7 +31,7 @@
 
 ## Phase 2: BLE Packet Parsing
 
-- [-] 2.1 Implement HR packet parser
+- [x] 2.1 Implement HR packet parser
   - File: `rust/src/domain/heart_rate.rs` (extend)
   - Implement parse_heart_rate function per Bluetooth SIG spec
   - Handle both UINT8 and UINT16 BPM formats
