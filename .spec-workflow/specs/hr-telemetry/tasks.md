@@ -11,7 +11,7 @@
   - _Requirements: All_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer specializing in project setup | Task: Create Cargo.toml with all dependencies from tech.md including tokio, flutter_rust_bridge, btleplug, cardio-rs, kalman_filters, statig, tokio-cron-scheduler, tracing, anyhow, serde, uuid, and dev-dependencies mockall and proptest. Configure [[bin]] target for cli | Restrictions: Use exact versions from tech.md, do not add unnecessary dependencies | Success: cargo check passes, all dependencies resolve correctly | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 1.2 Create domain types in heart_rate.rs
+- [x] 1.2 Create domain types in heart_rate.rs
   - File: `rust/src/domain/heart_rate.rs`
   - Define HeartRateMeasurement struct and Zone enum
   - Implement Display traits for logging

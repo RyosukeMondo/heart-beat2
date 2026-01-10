@@ -5,6 +5,8 @@
 
 #![warn(missing_docs)]
 
+pub mod domain;
+
 /// Placeholder for library initialization
 pub fn init() {
     // Library initialization placeholder
