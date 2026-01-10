@@ -5,6 +5,8 @@
 //! data simulation.
 
 use clap::{Parser, Subcommand};
+use heart_beat::adapters::BtleplugAdapter;
+use heart_beat::ports::ble_adapter::BleAdapter;
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -36,7 +38,8 @@ enum Commands {
     Mock,
 }
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     // Initialize tracing subscriber based on verbosity level
@@ -60,9 +63,7 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Scan => {
-            info!("Scanning for devices...");
-            // TODO: Implement scan command
-            println!("Scan command not yet implemented");
+            handle_scan().await?;
         }
         Commands::Connect { device_id } => {
             info!("Connecting to device: {}", device_id);
@@ -74,6 +75,53 @@ fn main() -> anyhow::Result<()> {
             // TODO: Implement mock command
             println!("Mock command not yet implemented");
         }
+    }
+
+    Ok(())
+}
+
+/// Handle the scan subcommand.
+async fn handle_scan() -> anyhow::Result<()> {
+    use std::time::Duration;
+
+    info!("Scanning for heart rate monitors...");
+    println!("Scanning for heart rate monitors (5 seconds)...\n");
+
+    // Create BLE adapter
+    let adapter = BtleplugAdapter::new().await?;
+
+    // Start scanning
+    adapter.start_scan().await?;
+
+    // Wait for devices to be discovered
+    tokio::time::sleep(Duration::from_secs(5)).await;
+
+    // Stop scanning
+    adapter.stop_scan().await?;
+
+    // Get discovered devices
+    let devices = adapter.get_discovered_devices().await;
+
+    if devices.is_empty() {
+        println!("No devices found.");
+        println!("\nMake sure your heart rate monitor is:");
+        println!("  • Powered on");
+        println!("  • In pairing mode");
+        println!("  • Within range (< 10m)");
+    } else {
+        println!("Found {} device(s):\n", devices.len());
+
+        // Print table header
+        println!("{:<40} {:<30} {:>6}", "Device ID", "Name", "RSSI");
+        println!("{}", "-".repeat(80));
+
+        // Print each device
+        for device in devices {
+            let name = device.name.unwrap_or_else(|| "(Unknown)".to_string());
+            println!("{:<40} {:<30} {:>6} dBm", device.id, name, device.rssi);
+        }
+
+        println!("\nUse 'heart-beat-cli connect <device-id>' to connect to a device.");
     }
 
     Ok(())
