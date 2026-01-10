@@ -41,7 +41,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with BLE protocol expertise | Task: Implement parse_heart_rate(data: &[u8]) -> Result<HeartRateMeasurement>. Parse flags byte for format detection. Handle UINT8/UINT16 BPM. Extract sensor contact status. Parse RR-intervals (little-endian u16, 1/1024s resolution) when bit 4 set | Restrictions: Return Result not panic, validate array bounds, use anyhow for errors | Success: Parses valid packets correctly, returns Err for invalid data | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 2.2 Add proptest for parser robustness
+- [x] 2.2 Add proptest for parser robustness
   - File: `rust/src/domain/heart_rate.rs` (tests module)
   - Create property-based tests for parser
   - Ensure no panics on arbitrary input

@@ -451,4 +451,167 @@ mod tests {
         let data = &[0x06, 60];
         assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, true);
     }
+
+    // Property-based tests using proptest
+    mod proptests {
+        use super::*;
+        use proptest::prelude::*;
+
+        // Property 1: Parser should never panic on any arbitrary byte sequence
+        proptest! {
+            #[test]
+            fn parser_never_panics_on_arbitrary_input(data in prop::collection::vec(any::<u8>(), 0..100)) {
+                // The parser should either succeed or return an error, but never panic
+                let _ = parse_heart_rate(&data);
+            }
+        }
+
+        // Property 2: Valid UINT8 packets should always parse successfully
+        proptest! {
+            #[test]
+            fn valid_uint8_packets_parse_correctly(
+                bpm in 0u8..=255,
+                sensor_contact in 0u8..=3,
+            ) {
+                // Build a valid UINT8 packet with varying sensor contact bits
+                let flags = (sensor_contact << 1) & 0x06; // Bits 1-2 for sensor contact
+                let data = vec![flags, bpm];
+
+                let result = parse_heart_rate(&data);
+                prop_assert!(result.is_ok());
+
+                let measurement = result.unwrap();
+                prop_assert_eq!(measurement.bpm, bpm as u16);
+                prop_assert_eq!(measurement.sensor_contact, sensor_contact >= 2);
+                prop_assert_eq!(measurement.rr_intervals.len(), 0);
+            }
+        }
+
+        // Property 3: Valid UINT16 packets should always parse successfully
+        proptest! {
+            #[test]
+            fn valid_uint16_packets_parse_correctly(
+                bpm in 0u16..=65535,
+                sensor_contact in 0u8..=3,
+            ) {
+                // Build a valid UINT16 packet
+                let flags = 0x01 | ((sensor_contact << 1) & 0x06); // Bit 0 set for UINT16
+                let bpm_bytes = bpm.to_le_bytes();
+                let data = vec![flags, bpm_bytes[0], bpm_bytes[1]];
+
+                let result = parse_heart_rate(&data);
+                prop_assert!(result.is_ok());
+
+                let measurement = result.unwrap();
+                prop_assert_eq!(measurement.bpm, bpm);
+                prop_assert_eq!(measurement.sensor_contact, sensor_contact >= 2);
+                prop_assert_eq!(measurement.rr_intervals.len(), 0);
+            }
+        }
+
+        // Property 4: Valid packets with RR-intervals should parse correctly
+        proptest! {
+            #[test]
+            fn valid_packets_with_rr_intervals_parse_correctly(
+                bpm in 30u8..=220,
+                rr_intervals in prop::collection::vec(300u16..=2000, 1..=10),
+            ) {
+                // Build a valid UINT8 packet with RR-intervals
+                // Flags: 0x16 = sensor contact + RR-intervals present
+                let mut data = vec![0x16, bpm];
+
+                // Add RR-intervals in little-endian format
+                for rr in &rr_intervals {
+                    let rr_bytes = rr.to_le_bytes();
+                    data.push(rr_bytes[0]);
+                    data.push(rr_bytes[1]);
+                }
+
+                let result = parse_heart_rate(&data);
+                prop_assert!(result.is_ok());
+
+                let measurement = result.unwrap();
+                prop_assert_eq!(measurement.bpm, bpm as u16);
+                prop_assert_eq!(measurement.sensor_contact, true);
+                prop_assert_eq!(measurement.rr_intervals, rr_intervals);
+            }
+        }
+
+        // Property 5: Packets with energy expended should be handled correctly
+        proptest! {
+            #[test]
+            fn packets_with_energy_expended_handled_correctly(
+                bpm in 30u8..=220,
+                energy in 0u16..=65535,
+            ) {
+                // Build a valid UINT8 packet with energy expended
+                // Flags: 0x0E = sensor contact + energy expended
+                let energy_bytes = energy.to_le_bytes();
+                let data = vec![0x0E, bpm, energy_bytes[0], energy_bytes[1]];
+
+                let result = parse_heart_rate(&data);
+                prop_assert!(result.is_ok());
+
+                let measurement = result.unwrap();
+                prop_assert_eq!(measurement.bpm, bpm as u16);
+                prop_assert_eq!(measurement.sensor_contact, true);
+                // Energy expended should be skipped, not in output
+                prop_assert_eq!(measurement.rr_intervals.len(), 0);
+            }
+        }
+
+        // Property 6: Complex packets with all fields should parse correctly
+        proptest! {
+            #[test]
+            fn complex_packets_with_all_fields_parse_correctly(
+                bpm in 30u8..=220,
+                energy in 0u16..=65535,
+                rr_intervals in prop::collection::vec(300u16..=2000, 1..=5),
+            ) {
+                // Build a packet with UINT8 BPM, energy expended, and RR-intervals
+                // Flags: 0x1E = sensor contact + energy expended + RR-intervals
+                let mut data = vec![0x1E, bpm];
+
+                // Add energy expended
+                let energy_bytes = energy.to_le_bytes();
+                data.push(energy_bytes[0]);
+                data.push(energy_bytes[1]);
+
+                // Add RR-intervals
+                for rr in &rr_intervals {
+                    let rr_bytes = rr.to_le_bytes();
+                    data.push(rr_bytes[0]);
+                    data.push(rr_bytes[1]);
+                }
+
+                let result = parse_heart_rate(&data);
+                prop_assert!(result.is_ok());
+
+                let measurement = result.unwrap();
+                prop_assert_eq!(measurement.bpm, bpm as u16);
+                prop_assert_eq!(measurement.sensor_contact, true);
+                prop_assert_eq!(measurement.rr_intervals, rr_intervals);
+            }
+        }
+
+        // Property 7: Truncated packets should return errors, not panic
+        proptest! {
+            #[test]
+            fn truncated_packets_return_errors(
+                flags in any::<u8>(),
+                remaining_bytes in prop::collection::vec(any::<u8>(), 0..5),
+            ) {
+                let mut data = vec![flags];
+                data.extend_from_slice(&remaining_bytes);
+
+                // Parser should either succeed or return Err, never panic
+                let result = parse_heart_rate(&data);
+
+                // If it's a valid packet structure, it should parse
+                // If it's truncated or invalid, it should return Err
+                // We just verify it doesn't panic
+                let _ = result;
+            }
+        }
+    }
 }
