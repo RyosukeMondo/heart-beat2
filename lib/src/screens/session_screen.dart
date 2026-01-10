@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../widgets/hr_display.dart';
+import '../widgets/zone_indicator.dart';
+import '../widgets/battery_indicator.dart';
 
 /// Session screen for live HR monitoring during workouts
 class SessionScreen extends StatefulWidget {
@@ -183,56 +186,18 @@ class _SessionScreenState extends State<SessionScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // BPM Display
-              Text(
-                '$bpm',
-                style: const TextStyle(
-                  fontSize: 72,
-                  fontWeight: FontWeight.bold,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
-              const Text(
-                'BPM',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
+              HrDisplay(bpm: bpm),
 
               const SizedBox(height: 32),
 
               // Zone Indicator
-              _buildZoneIndicator(zone, colorScheme),
+              ZoneIndicator(zone: zone),
 
               const SizedBox(height: 32),
 
               // Battery Indicator
-              if (batteryLevel != null && batteryLevel < 20)
-                Card(
-                  color: colorScheme.errorContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.battery_alert,
-                          color: colorScheme.onErrorContainer,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Battery Low: $batteryLevel%',
-                          style: TextStyle(
-                            color: colorScheme.onErrorContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              if (batteryLevel != null)
+                BatteryIndicator(batteryLevel: batteryLevel),
             ],
           ),
         );
@@ -250,70 +215,5 @@ class _SessionScreenState extends State<SessionScreen> {
       'zone': zone,
       'battery': battery,
     };
-  }
-
-  Widget _buildZoneIndicator(Zone zone, ColorScheme colorScheme) {
-    final zoneColor = _getZoneColor(zone);
-    final zoneName = _getZoneName(zone);
-
-    return Container(
-      width: 300,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: zoneColor.withValues(alpha: 0.2),
-        border: Border.all(color: zoneColor, width: 2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: zoneColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            zoneName,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: zoneColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getZoneColor(Zone zone) {
-    switch (zone) {
-      case Zone.zone1:
-        return Colors.blue;
-      case Zone.zone2:
-        return Colors.green;
-      case Zone.zone3:
-        return Colors.yellow.shade700;
-      case Zone.zone4:
-        return Colors.orange;
-      case Zone.zone5:
-        return Colors.red;
-    }
-  }
-
-  String _getZoneName(Zone zone) {
-    switch (zone) {
-      case Zone.zone1:
-        return 'Zone 1 (Recovery)';
-      case Zone.zone2:
-        return 'Zone 2 (Fat Burning)';
-      case Zone.zone3:
-        return 'Zone 3 (Aerobic)';
-      case Zone.zone4:
-        return 'Zone 4 (Threshold)';
-      case Zone.zone5:
-        return 'Zone 5 (Maximum)';
-    }
   }
 }
