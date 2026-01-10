@@ -89,7 +89,7 @@
   - _Requirements: 1, 2, 3, 5_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Architect specializing in trait design | Task: Create BleAdapter trait with async_trait. Methods: start_scan, stop_scan, get_discovered_devices, connect(device_id), disconnect, subscribe_hr() -> Receiver<Vec<u8>>, read_battery() -> u8. All return Result<T> | Restrictions: Trait only, no implementation. Use tokio::sync::mpsc::Receiver | Success: Trait compiles, methods cover all BLE operations | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 4.2 Implement btleplug adapter
+- [x] 4.2 Implement btleplug adapter
   - File: `rust/src/adapters/btleplug_adapter.rs`
   - Implement BleAdapter trait using btleplug
   - Handle Linux BlueZ backend
@@ -98,7 +98,7 @@
   - _Requirements: 1, 2, 3, 5_
   - _Prompt: Implement the task for spec hr-telemetry, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust Developer with btleplug experience | Task: Create BtleplugAdapter implementing BleAdapter. Use btleplug::platform::Manager. Filter devices by HR Service UUID 0x180D. Subscribe to characteristic 0x2A37. Forward notifications via mpsc channel | Restrictions: Handle btleplug errors gracefully, convert to anyhow::Error | Success: Can scan and connect to real Coospo HW9 on Linux | After completing: Update tasks.md to mark [-] as in-progress before starting, use log-implementation tool to record what was created, then mark [x] when complete_
 
-- [ ] 4.3 Implement mock adapter
+- [x] 4.3 Implement mock adapter
   - File: `rust/src/adapters/mock_adapter.rs`
   - Implement BleAdapter with simulated data
   - Generate realistic HR patterns for testing
