@@ -18,7 +18,7 @@ class _SessionScreenState extends State<SessionScreen> {
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
-  int _maxHr = 180; // Default max HR, will be loaded from settings
+  final int _maxHr = 180; // Default max HR, will be loaded from settings
 
   @override
   void didChangeDependencies() {
