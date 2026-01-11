@@ -49,7 +49,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Developer experience engineer | Task: Create .pre-commit-config.yaml with hooks: trailing-whitespace, end-of-file-fixer, check-yaml, check-json, cargo-check, clippy, rustfmt. Add installation instructions to docs/development.md. Document how to run pre-commit run --all-files manually | Restrictions: Use official hook repos, keep fast | Success: pre-commit install works, hooks run automatically_
 
-- [ ] 4.1 Create release workflow
+- [x] 4.1 Create release workflow
   - File: `.github/workflows/release.yml`
   - Build CLI binaries for Linux, macOS, Windows
   - Purpose: Automated binary releases
