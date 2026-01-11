@@ -1,0 +1,25 @@
+{
+  "name": "Quick Test Session",
+  "phases": [
+    {
+      "name": "Warmup",
+      "target_zone": "Zone2",
+      "duration_secs": 10,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Work",
+      "target_zone": "Zone4",
+      "duration_secs": 15,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Cooldown",
+      "target_zone": "Zone1",
+      "duration_secs": 10,
+      "transition": "TimeElapsed"
+    }
+  ],
+  "created_at": "2024-01-11T00:00:00Z",
+  "max_hr": 180
+}

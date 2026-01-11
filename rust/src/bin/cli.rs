@@ -5,11 +5,14 @@
 //! data simulation.
 
 use clap::{Parser, Subcommand};
-use heart_beat::adapters::{BtleplugAdapter, MockAdapter};
+use heart_beat::adapters::{BtleplugAdapter, MockAdapter, MockNotificationAdapter};
 use heart_beat::domain::filters::KalmanFilter;
 use heart_beat::domain::heart_rate::parse_heart_rate;
 use heart_beat::domain::hrv::calculate_rmssd;
+use heart_beat::domain::training_plan::TrainingPlan;
 use heart_beat::ports::ble_adapter::BleAdapter;
+use heart_beat::scheduler::SessionExecutor;
+use std::sync::Arc;
 use tracing::{debug, error, info, warn, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -203,8 +206,7 @@ async fn main() -> anyhow::Result<()> {
         },
         Commands::Session { command } => match command {
             SessionCmd::Start { plan_path } => {
-                eprintln!("Session start not yet implemented: {}", plan_path);
-                std::process::exit(1);
+                handle_session_start(&plan_path).await?;
             }
             SessionCmd::Pause => {
                 eprintln!("Session pause not yet implemented");
@@ -571,6 +573,144 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
     // Disconnect from the device
     adapter.disconnect().await?;
     println!("✓ Disconnected");
+
+    Ok(())
+}
+
+/// Handle the session start subcommand.
+async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
+    use tokio::signal;
+    use crossterm::{
+        cursor, execute, terminal,
+        style::{Color, Print, ResetColor, SetForegroundColor},
+    };
+    use std::io::{stdout, Write};
+
+    info!("Starting training session from plan: {}", plan_path);
+
+    // Load the training plan from JSON file
+    let plan_data = std::fs::read_to_string(plan_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read plan file '{}': {}", plan_path, e))?;
+    let plan: TrainingPlan = serde_json::from_str(&plan_data)
+        .map_err(|e| anyhow::anyhow!("Failed to parse plan JSON: {}", e))?;
+
+    // Validate the plan
+    plan.validate()
+        .map_err(|e| anyhow::anyhow!("Invalid training plan: {}", e))?;
+
+    println!("Training Plan: {}", plan.name);
+    println!("Phases: {}", plan.phases.len());
+    println!("Max HR: {} BPM\n", plan.max_hr);
+
+    // Create notification adapter
+    let notifier = Arc::new(MockNotificationAdapter::new());
+
+    // Create session executor
+    let mut executor = SessionExecutor::new(notifier);
+
+    // Start the session
+    executor.start_session(plan.clone()).await?;
+    println!("✓ Session started\n");
+
+    // Set up terminal for real-time display
+    let mut stdout = stdout();
+    execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+    execute!(stdout, cursor::MoveTo(0, 0))?;
+
+    // Set up Ctrl+C handler
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    // Main display loop
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl+C received, stopping session...");
+        }
+        _ = async {
+            loop {
+                // Get current session state
+                let progress = executor.get_progress().await;
+
+                // Clear screen and reset cursor
+                execute!(stdout, cursor::MoveTo(0, 0)).unwrap();
+
+                // Display header
+                execute!(
+                    stdout,
+                    SetForegroundColor(Color::Cyan),
+                    Print(format!("═══ {} ═══\n", plan.name)),
+                    ResetColor
+                ).unwrap();
+
+                if let Some((phase_idx, elapsed_secs, _phase_duration)) = progress {
+                    if phase_idx < plan.phases.len() {
+                        let phase = &plan.phases[phase_idx];
+                        let remaining_secs = phase.duration_secs.saturating_sub(elapsed_secs);
+
+                        // Display current phase
+                        execute!(
+                            stdout,
+                            Print(format!("\nPhase {}/{}: {}\n", phase_idx + 1, plan.phases.len(), phase.name))
+                        ).unwrap();
+
+                        // Display target zone
+                        execute!(
+                            stdout,
+                            SetForegroundColor(Color::Yellow),
+                            Print(format!("Target Zone: {:?}\n", phase.target_zone)),
+                            ResetColor
+                        ).unwrap();
+
+                        // Display time remaining
+                        let mins = remaining_secs / 60;
+                        let secs = remaining_secs % 60;
+                        execute!(
+                            stdout,
+                            Print(format!("Time Remaining: {:02}:{:02}\n", mins, secs))
+                        ).unwrap();
+
+                        // Display elapsed time in phase
+                        let elapsed_mins = elapsed_secs / 60;
+                        let elapsed_sec = elapsed_secs % 60;
+                        execute!(
+                            stdout,
+                            Print(format!("Elapsed: {:02}:{:02}\n", elapsed_mins, elapsed_sec))
+                        ).unwrap();
+                    } else {
+                        // Session complete
+                        execute!(
+                            stdout,
+                            SetForegroundColor(Color::Green),
+                            Print("\n✓ Session Complete!\n"),
+                            ResetColor
+                        ).unwrap();
+                        break;
+                    }
+                } else {
+                    // No active session
+                    execute!(
+                        stdout,
+                        Print("\nSession ended.\n")
+                    ).unwrap();
+                    break;
+                }
+
+                stdout.flush().unwrap();
+
+                // Update every second
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            }
+        } => {
+            info!("Session display loop ended");
+        }
+    }
+
+    // Stop the session
+    executor.stop_session().await?;
+    println!("\n\n✓ Session stopped");
 
     Ok(())
 }

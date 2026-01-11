@@ -472,6 +472,23 @@ impl SessionExecutor {
         Ok(())
     }
 
+    /// Get the current session progress.
+    ///
+    /// Returns (phase_index, elapsed_secs, phase_duration) if a session is in progress,
+    /// None otherwise.
+    pub async fn get_progress(&self) -> Option<(usize, u32, u32)> {
+        let state = self.session_state.lock().await;
+        state.get_progress()
+    }
+
+    /// Get the training plan being executed.
+    ///
+    /// Returns a reference to the plan if a session is active, None otherwise.
+    pub async fn get_plan(&self) -> Option<TrainingPlan> {
+        let state = self.session_state.lock().await;
+        state.context().plan().cloned()
+    }
+
     /// Schedule a training session to start at a specific time using a cron expression.
     ///
     /// When the scheduled time arrives, a `WorkoutReady` notification is emitted.
