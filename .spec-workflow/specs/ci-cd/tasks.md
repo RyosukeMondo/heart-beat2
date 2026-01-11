@@ -33,7 +33,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Documentation maintainer | Task: Add Codecov badge to README.md: [![Coverage](https://codecov.io/gh/USER/REPO/branch/main/graph/badge.svg)](https://codecov.io/gh/USER/REPO). Place after CI badge. Update once Codecov is configured | Restrictions: Use correct repo URL placeholder | Success: Badge displays coverage percentage_
 
-- [ ] 3.1 Configure pre-commit hooks
+- [x] 3.1 Configure pre-commit hooks
   - File: `.git/hooks/pre-commit` (template), `scripts/install-hooks.sh`
   - Run clippy, fmt, and fast tests before commit
   - Purpose: Catch issues before pushing

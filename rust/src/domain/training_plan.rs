@@ -130,7 +130,7 @@ pub enum TransitionCondition {
 /// assert!(calculate_zone(120, 50).is_err());
 /// ```
 pub fn calculate_zone(bpm: u16, max_hr: u16) -> Result<Option<Zone>> {
-    if max_hr < 100 || max_hr > 220 {
+    if !(100..=220).contains(&max_hr) {
         return Err(anyhow!("Invalid max_hr: {} (must be 100-220)", max_hr));
     }
 
@@ -205,7 +205,7 @@ impl TrainingPlan {
 
             // Validate HeartRateReached targets
             if let TransitionCondition::HeartRateReached { target_bpm, .. } = phase.transition {
-                if target_bpm < 30 || target_bpm > 220 {
+                if !(30..=220).contains(&target_bpm) {
                     bail!(
                         "Phase {} '{}' has invalid target_bpm: {} (must be 30-220)",
                         idx,
@@ -368,7 +368,10 @@ mod tests {
 
         let result = plan.validate();
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("invalid target_bpm"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("invalid target_bpm"));
     }
 
     #[test]

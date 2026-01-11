@@ -14,7 +14,9 @@ use std::time::Duration;
 use tokio::sync::broadcast;
 
 // Re-export domain types for FRB code generation
-pub use crate::domain::heart_rate::{DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate, Zone};
+pub use crate::domain::heart_rate::{
+    DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate, Zone,
+};
 
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
@@ -79,11 +81,8 @@ pub async fn connect_device(device_id: String) -> Result<()> {
     })?;
 
     // Attempt to connect using the adapter
-    let connect_result = tokio::time::timeout(
-        Duration::from_secs(15),
-        adapter.connect(&device_id),
-    )
-    .await;
+    let connect_result =
+        tokio::time::timeout(Duration::from_secs(15), adapter.connect(&device_id)).await;
 
     match connect_result {
         Ok(Ok(())) => {
@@ -120,7 +119,9 @@ pub async fn disconnect() -> Result<()> {
     // Note: In a real implementation, we would need to maintain a global
     // connection state or pass the adapter/state machine as context.
     // For now, this is a placeholder that assumes the caller manages state.
-    Err(anyhow!("Disconnect not yet implemented - requires global state management"))
+    Err(anyhow!(
+        "Disconnect not yet implemented - requires global state management"
+    ))
 }
 
 /// Start mock mode for testing without hardware.
@@ -182,10 +183,12 @@ fn get_or_create_hr_broadcast_sender() -> broadcast::Sender<ApiFilteredHeartRate
     use std::sync::OnceLock;
     static HR_TX: OnceLock<broadcast::Sender<ApiFilteredHeartRate>> = OnceLock::new();
 
-    HR_TX.get_or_init(|| {
-        let (tx, _rx) = broadcast::channel(HR_CHANNEL_CAPACITY);
-        tx
-    }).clone()
+    HR_TX
+        .get_or_init(|| {
+            let (tx, _rx) = broadcast::channel(HR_CHANNEL_CAPACITY);
+            tx
+        })
+        .clone()
 }
 
 /// Emit filtered heart rate data to all stream subscribers.
@@ -211,10 +214,7 @@ fn get_or_create_hr_broadcast_sender() -> broadcast::Sender<ApiFilteredHeartRate
 /// ```
 pub fn emit_hr_data(data: ApiFilteredHeartRate) -> usize {
     let tx = get_or_create_hr_broadcast_sender();
-    match tx.send(data) {
-        Ok(receiver_count) => receiver_count,
-        Err(_) => 0, // No receivers
-    }
+    tx.send(data).unwrap_or_default()
 }
 
 // Accessor functions for ApiFilteredHeartRate (opaque type)
@@ -311,15 +311,20 @@ mod tests {
 
     #[tokio::test]
     async fn test_multiple_receivers_fan_out() {
-        // Emit data with unique BPM to identify this test's data
-        let data = create_test_hr_data(155, 154);
+        use tokio::time::{timeout, Duration};
 
-        // Create receivers AFTER emitting to avoid old buffered data
+        // Create receivers first
         let mut rx1 = get_hr_stream_receiver();
         let mut rx2 = get_hr_stream_receiver();
         let mut rx3 = get_hr_stream_receiver();
 
-        // Now emit the test data
+        // Drain any old data from previous tests with a short timeout
+        while timeout(Duration::from_millis(10), rx1.recv()).await.is_ok() {}
+        while timeout(Duration::from_millis(10), rx2.recv()).await.is_ok() {}
+        while timeout(Duration::from_millis(10), rx3.recv()).await.is_ok() {}
+
+        // Emit data with unique BPM to identify this test's data
+        let data = create_test_hr_data(155, 154);
         emit_hr_data(data);
 
         // All receivers should get the data

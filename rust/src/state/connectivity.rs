@@ -22,7 +22,7 @@ pub enum ConnectionEvent {
     /// User selects a device to connect to
     DeviceSelected {
         /// The ID of the device to connect to
-        device_id: String
+        device_id: String,
     },
     /// BLE connection established successfully
     ConnectionSuccess,
@@ -60,27 +60,26 @@ pub enum ConnectionState {
     /// Attempting to establish connection to a specific device
     Connecting {
         /// The ID of the device being connected to
-        device_id: String
+        device_id: String,
     },
     /// Connected, discovering services on the device
     DiscoveringServices {
         /// The ID of the connected device
-        device_id: String
+        device_id: String,
     },
     /// Successfully connected with services discovered
     Connected {
         /// The ID of the connected device
-        device_id: String
+        device_id: String,
     },
     /// Attempting to reconnect after unexpected disconnection
     Reconnecting {
         /// The ID of the device being reconnected to
         device_id: String,
         /// Number of reconnection attempts made
-        attempts: u8
+        attempts: u8,
     },
 }
-
 
 /// Shared context for the state machine
 pub struct ConnectionContext {
@@ -137,7 +136,9 @@ impl ConnectionState {
             ConnectionEvent::ConnectionSuccess => {
                 Transition(State::discovering_services(device_id.clone()))
             }
-            ConnectionEvent::ConnectionFailed => Transition(State::reconnecting(device_id.clone(), 1)),
+            ConnectionEvent::ConnectionFailed => {
+                Transition(State::reconnecting(device_id.clone(), 1))
+            }
             ConnectionEvent::UserDisconnect => Transition(State::idle()),
             _ => Super,
         }
@@ -171,11 +172,7 @@ impl ConnectionState {
     /// Reconnecting state - attempting to re-establish lost connection
     #[state]
     #[allow(clippy::ptr_arg)]
-    fn reconnecting(
-        device_id: &String,
-        attempts: &u8,
-        event: &ConnectionEvent,
-    ) -> Response<State> {
+    fn reconnecting(device_id: &String, attempts: &u8, event: &ConnectionEvent) -> Response<State> {
         match event {
             ConnectionEvent::ReconnectSuccess => Transition(State::connected(device_id.clone())),
             ConnectionEvent::ReconnectFailed => {
@@ -234,7 +231,9 @@ impl ConnectionStateMachine {
     /// Create a new state machine with the given BLE adapter
     pub fn new(adapter: Arc<dyn BleAdapter + Send + Sync>) -> Self {
         Self {
-            machine: ConnectionState::default().uninitialized_state_machine().init(),
+            machine: ConnectionState::default()
+                .uninitialized_state_machine()
+                .init(),
             context: ConnectionContext::new(adapter),
         }
     }
@@ -261,8 +260,8 @@ impl ConnectionStateMachine {
 #[allow(clippy::useless_vec)]
 mod tests {
     use super::*;
-    use mockall::predicate::*;
     use mockall::mock;
+    use mockall::predicate::*;
 
     // Mock the BleAdapter trait using mockall
     mock! {

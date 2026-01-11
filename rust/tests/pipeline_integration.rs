@@ -68,14 +68,10 @@ async fn test_full_pipeline_with_mock_adapter() {
 
         // Parse the packet
         let measurement = parse_heart_rate(&packet)
-            .expect(&format!("Sample {} should parse successfully", i));
+            .unwrap_or_else(|_| panic!("Sample {} should parse successfully", i));
 
         // Verify parsing succeeded and produced valid data
-        assert!(
-            measurement.bpm > 0,
-            "Sample {} should have non-zero BPM",
-            i
-        );
+        assert!(measurement.bpm > 0, "Sample {} should have non-zero BPM", i);
         assert!(
             measurement.bpm >= 30 && measurement.bpm <= 220,
             "Sample {} BPM should be in valid range",
@@ -141,7 +137,7 @@ async fn test_full_pipeline_with_mock_adapter() {
         // Check RMSSD if present (mock generates RR-intervals but they may be out of range)
         if let Some(rmssd_value) = result.rmssd {
             assert!(
-                rmssd_value >= 0.0 && rmssd_value < 500.0,
+                (0.0..500.0).contains(&rmssd_value),
                 "Sample {} RMSSD should be in reasonable range, got {}",
                 i,
                 rmssd_value
@@ -180,7 +176,10 @@ async fn test_full_pipeline_with_mock_adapter() {
     );
 
     // Step 8: Clean disconnect
-    adapter.disconnect().await.expect("Disconnect should succeed");
+    adapter
+        .disconnect()
+        .await
+        .expect("Disconnect should succeed");
 }
 
 /// Test pipeline behavior with invalid sensor data.
@@ -194,10 +193,7 @@ async fn test_pipeline_handles_invalid_data() {
     // Test 1: Parser should reject malformed packets
     let empty_packet: Vec<u8> = vec![];
     let parse_result = parse_heart_rate(&empty_packet);
-    assert!(
-        parse_result.is_err(),
-        "Parser should reject empty packet"
-    );
+    assert!(parse_result.is_err(), "Parser should reject empty packet");
 
     let too_short_packet = vec![0x06]; // Only flags, no BPM
     let parse_result = parse_heart_rate(&too_short_packet);

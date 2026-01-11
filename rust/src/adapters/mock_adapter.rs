@@ -327,7 +327,10 @@ mod tests {
         let adapter = MockAdapter::new();
 
         let result = adapter.disconnect().await;
-        assert!(result.is_err(), "Should fail to disconnect when not connected");
+        assert!(
+            result.is_err(),
+            "Should fail to disconnect when not connected"
+        );
     }
 
     #[tokio::test]
@@ -335,7 +338,10 @@ mod tests {
         let adapter = MockAdapter::new();
 
         let result = adapter.subscribe_hr().await;
-        assert!(result.is_err(), "Should fail to subscribe when not connected");
+        assert!(
+            result.is_err(),
+            "Should fail to subscribe when not connected"
+        );
     }
 
     #[tokio::test]
@@ -359,7 +365,11 @@ mod tests {
             .expect("Should receive valid packet");
 
         assert!(!packet1.is_empty(), "Packet should not be empty");
-        assert_eq!(packet1[0] & 0b10000, 0b10000, "RR-interval flag should be set");
+        assert_eq!(
+            packet1[0] & 0b10000,
+            0b10000,
+            "RR-interval flag should be set"
+        );
     }
 
     #[tokio::test]
@@ -397,7 +407,10 @@ mod tests {
         let config = MockConfig::default();
         let packet = MockAdapter::generate_hr_packet_static(&config);
 
-        assert!(packet.len() >= 2, "Packet should have at least flags and BPM");
+        assert!(
+            packet.len() >= 2,
+            "Packet should have at least flags and BPM"
+        );
 
         let flags = packet[0];
         let has_rr = (flags & 0b10000) != 0;

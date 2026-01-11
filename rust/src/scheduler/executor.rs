@@ -152,8 +152,8 @@ impl SessionExecutor {
         let checkpoint_data = tokio::fs::read(checkpoint_path)
             .await
             .context("Failed to read checkpoint file")?;
-        let checkpoint: SessionCheckpoint = serde_json::from_slice(&checkpoint_data)
-            .context("Failed to deserialize checkpoint")?;
+        let checkpoint: SessionCheckpoint =
+            serde_json::from_slice(&checkpoint_data).context("Failed to deserialize checkpoint")?;
 
         // Restore session state
         let mut state = self.session_state.lock().await;
@@ -180,7 +180,6 @@ impl SessionExecutor {
 
         Ok(())
     }
-
 
     /// Save current session state to checkpoint file.
     #[allow(dead_code)]
@@ -210,11 +209,7 @@ impl SessionExecutor {
                     is_paused: false,
                 }
             }
-            State::Paused {
-                phase,
-                elapsed,
-                ..
-            } => {
+            State::Paused { phase, elapsed, .. } => {
                 let plan = state.context().plan().cloned().ok_or_else(|| {
                     anyhow::anyhow!("Cannot checkpoint session without a training plan")
                 })?;
@@ -233,8 +228,8 @@ impl SessionExecutor {
         };
 
         // Serialize and write to disk
-        let checkpoint_data = serde_json::to_vec_pretty(&checkpoint)
-            .context("Failed to serialize checkpoint")?;
+        let checkpoint_data =
+            serde_json::to_vec_pretty(&checkpoint).context("Failed to serialize checkpoint")?;
 
         // Create parent directory if needed
         if let Some(parent) = checkpoint_path.parent() {
@@ -386,7 +381,7 @@ impl SessionExecutor {
 
                 // Increment tick count and save checkpoint every 10 ticks
                 tick_count += 1;
-                if tick_count % 10 == 0 {
+                if tick_count.is_multiple_of(10) {
                     if let Some(ref path) = checkpoint_path {
                         // Save checkpoint (ignoring errors to not disrupt session)
                         let state = state_clone.lock().await;
@@ -397,33 +392,19 @@ impl SessionExecutor {
                                 current_phase,
                                 elapsed_secs,
                                 ..
-                            } => {
-                                if let Some(plan) = state.context().plan() {
-                                    Some(SessionCheckpoint {
-                                        plan: plan.clone(),
-                                        current_phase: *current_phase,
-                                        elapsed_secs: *elapsed_secs,
-                                        is_paused: false,
-                                    })
-                                } else {
-                                    None
-                                }
-                            }
-                            State::Paused {
-                                phase,
-                                elapsed,
-                                ..
-                            } => {
-                                if let Some(plan) = state.context().plan() {
-                                    Some(SessionCheckpoint {
-                                        plan: plan.clone(),
-                                        current_phase: *phase,
-                                        elapsed_secs: *elapsed,
-                                        is_paused: true,
-                                    })
-                                } else {
-                                    None
-                                }
+                            } => state.context().plan().map(|plan| SessionCheckpoint {
+                                plan: plan.clone(),
+                                current_phase: *current_phase,
+                                elapsed_secs: *elapsed_secs,
+                                is_paused: false,
+                            }),
+                            State::Paused { phase, elapsed, .. } => {
+                                state.context().plan().map(|plan| SessionCheckpoint {
+                                    plan: plan.clone(),
+                                    current_phase: *phase,
+                                    elapsed_secs: *elapsed,
+                                    is_paused: true,
+                                })
                             }
                             _ => None,
                         };
@@ -646,7 +627,10 @@ mod tests {
         {
             let state = executor.session_state.lock().await;
             assert!(
-                matches!(state.state(), crate::state::session::State::Completed { .. }),
+                matches!(
+                    state.state(),
+                    crate::state::session::State::Completed { .. }
+                ),
                 "Session should be completed"
             );
         }
@@ -678,7 +662,10 @@ mod tests {
         {
             let state = executor.session_state.lock().await;
             assert!(
-                matches!(state.state(), crate::state::session::State::Completed { .. }),
+                matches!(
+                    state.state(),
+                    crate::state::session::State::Completed { .. }
+                ),
                 "Session should be completed after stop"
             );
         }
@@ -729,7 +716,10 @@ mod tests {
             let state = executor.session_state.lock().await;
             // Session should still be in progress, not crashed
             assert!(
-                matches!(state.state(), crate::state::session::State::InProgress { .. }),
+                matches!(
+                    state.state(),
+                    crate::state::session::State::InProgress { .. }
+                ),
                 "Session should still be running after HR data processing"
             );
         }
@@ -753,12 +743,10 @@ mod tests {
 
         // Create executor with persistence
         let notifier = Arc::new(MockNotificationAdapter::new());
-        let mut executor = SessionExecutor::with_persistence(
-            notifier.clone(),
-            checkpoint_path.clone(),
-        )
-        .await
-        .unwrap();
+        let mut executor =
+            SessionExecutor::with_persistence(notifier.clone(), checkpoint_path.clone())
+                .await
+                .unwrap();
 
         let plan = TrainingPlan {
             name: "Persistence Test".to_string(),
@@ -792,10 +780,9 @@ mod tests {
         assert!(checkpoint_path.exists(), "Checkpoint file should exist");
 
         // Create a new executor with the same checkpoint path
-        let new_executor =
-            SessionExecutor::with_persistence(notifier, checkpoint_path.clone())
-                .await
-                .unwrap();
+        let new_executor = SessionExecutor::with_persistence(notifier, checkpoint_path.clone())
+            .await
+            .unwrap();
 
         // Verify the session was restored
         {

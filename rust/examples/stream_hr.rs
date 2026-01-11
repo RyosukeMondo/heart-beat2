@@ -50,7 +50,10 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    println!("Found device: {}\n", devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()));
+    println!(
+        "Found device: {}\n",
+        devices[0].name.as_ref().unwrap_or(&"Unknown".to_string())
+    );
 
     // Step 2: Connect to the first device
     println!("Connecting to device...");

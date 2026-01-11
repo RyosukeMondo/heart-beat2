@@ -54,7 +54,10 @@ async fn main() -> anyhow::Result<()> {
     for (i, device) in devices.iter().enumerate() {
         println!("Device {}:", i + 1);
         println!("  ID:   {}", device.id);
-        println!("  Name: {}", device.name.as_ref().unwrap_or(&"Unknown".to_string()));
+        println!(
+            "  Name: {}",
+            device.name.as_ref().unwrap_or(&"Unknown".to_string())
+        );
         println!();
     }
 

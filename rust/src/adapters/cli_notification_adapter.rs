@@ -42,34 +42,32 @@ impl NotificationPort for CliNotificationAdapter {
                 deviation,
                 current_bpm,
                 target_zone,
-            } => {
-                match deviation {
-                    ZoneDeviation::TooLow => {
-                        println!(
-                            "{} BPM: {} (Target: {})",
-                            "⬇️  TOO LOW".blue().bold(),
-                            current_bpm,
-                            target_zone
-                        );
-                    }
-                    ZoneDeviation::TooHigh => {
-                        println!(
-                            "{} BPM: {} (Target: {})",
-                            "⬆️  TOO HIGH".red().bold(),
-                            current_bpm,
-                            target_zone
-                        );
-                    }
-                    ZoneDeviation::InZone => {
-                        println!(
-                            "{} BPM: {} (Target: {})",
-                            "✓ IN ZONE".green().bold(),
-                            current_bpm,
-                            target_zone
-                        );
-                    }
+            } => match deviation {
+                ZoneDeviation::TooLow => {
+                    println!(
+                        "{} BPM: {} (Target: {})",
+                        "⬇️  TOO LOW".blue().bold(),
+                        current_bpm,
+                        target_zone
+                    );
                 }
-            }
+                ZoneDeviation::TooHigh => {
+                    println!(
+                        "{} BPM: {} (Target: {})",
+                        "⬆️  TOO HIGH".red().bold(),
+                        current_bpm,
+                        target_zone
+                    );
+                }
+                ZoneDeviation::InZone => {
+                    println!(
+                        "{} BPM: {} (Target: {})",
+                        "✓ IN ZONE".green().bold(),
+                        current_bpm,
+                        target_zone
+                    );
+                }
+            },
             NotificationEvent::PhaseTransition {
                 from_phase,
                 to_phase,
@@ -84,21 +82,13 @@ impl NotificationPort for CliNotificationAdapter {
                 );
             }
             NotificationEvent::BatteryLow { percentage } => {
-                println!(
-                    "{} {}%",
-                    "🔋 LOW BATTERY".yellow().bold(),
-                    percentage
-                );
+                println!("{} {}%", "🔋 LOW BATTERY".yellow().bold(), percentage);
             }
             NotificationEvent::ConnectionLost => {
                 println!("{}", "❌ CONNECTION LOST".red().bold());
             }
             NotificationEvent::WorkoutReady { plan_name } => {
-                println!(
-                    "{} {}",
-                    "🏃 WORKOUT READY:".green().bold(),
-                    plan_name
-                );
+                println!("{} {}", "🏃 WORKOUT READY:".green().bold(), plan_name);
             }
         }
         Ok(())
@@ -178,9 +168,7 @@ mod tests {
     #[tokio::test]
     async fn test_connection_lost() {
         let adapter = CliNotificationAdapter::new();
-        let result = adapter
-            .notify(NotificationEvent::ConnectionLost)
-            .await;
+        let result = adapter.notify(NotificationEvent::ConnectionLost).await;
         assert!(result.is_ok());
     }
 

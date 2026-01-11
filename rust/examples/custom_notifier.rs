@@ -62,28 +62,41 @@ impl NotificationPort for FileAndConsoleNotifier {
     async fn notify(&self, event: NotificationEvent) -> anyhow::Result<()> {
         // Format message based on event type
         let message = match &event {
-            NotificationEvent::ZoneDeviation { deviation, current_bpm, target_zone } => {
-                match deviation {
-                    ZoneDeviation::TooLow => {
-                        format!("⬇️  TOO LOW: {} BPM (Target: Zone {:?})", current_bpm, target_zone)
-                    }
-                    ZoneDeviation::TooHigh => {
-                        format!("⬆️  TOO HIGH: {} BPM (Target: Zone {:?})", current_bpm, target_zone)
-                    }
-                    ZoneDeviation::InZone => {
-                        format!("✓ IN ZONE: {} BPM (Zone {:?})", current_bpm, target_zone)
-                    }
+            NotificationEvent::ZoneDeviation {
+                deviation,
+                current_bpm,
+                target_zone,
+            } => match deviation {
+                ZoneDeviation::TooLow => {
+                    format!(
+                        "⬇️  TOO LOW: {} BPM (Target: Zone {:?})",
+                        current_bpm, target_zone
+                    )
                 }
-            }
-            NotificationEvent::PhaseTransition { from_phase, to_phase, phase_name } => {
-                format!("🔄 Phase Change: {} → {} ({})", from_phase, to_phase, phase_name)
+                ZoneDeviation::TooHigh => {
+                    format!(
+                        "⬆️  TOO HIGH: {} BPM (Target: Zone {:?})",
+                        current_bpm, target_zone
+                    )
+                }
+                ZoneDeviation::InZone => {
+                    format!("✓ IN ZONE: {} BPM (Zone {:?})", current_bpm, target_zone)
+                }
+            },
+            NotificationEvent::PhaseTransition {
+                from_phase,
+                to_phase,
+                phase_name,
+            } => {
+                format!(
+                    "🔄 Phase Change: {} → {} ({})",
+                    from_phase, to_phase, phase_name
+                )
             }
             NotificationEvent::BatteryLow { percentage } => {
                 format!("🔋 Low Battery: {}%", percentage)
             }
-            NotificationEvent::ConnectionLost => {
-                "❌ Connection Lost!".to_string()
-            }
+            NotificationEvent::ConnectionLost => "❌ Connection Lost!".to_string(),
             NotificationEvent::WorkoutReady { plan_name } => {
                 format!("✅ Ready: {}", plan_name)
             }
@@ -104,6 +117,12 @@ impl NotificationPort for FileAndConsoleNotifier {
 /// This is useful for testing or collecting notifications for later analysis.
 pub struct NotificationCollector {
     notifications: std::sync::Arc<tokio::sync::Mutex<Vec<String>>>,
+}
+
+impl Default for NotificationCollector {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl NotificationCollector {
@@ -143,31 +162,39 @@ async fn main() -> anyhow::Result<()> {
     let notifier = FileAndConsoleNotifier::new(log_path.to_string());
 
     // Simulate various notifications
-    notifier.notify(NotificationEvent::WorkoutReady {
-        plan_name: "Interval Training".to_string(),
-    }).await?;
+    notifier
+        .notify(NotificationEvent::WorkoutReady {
+            plan_name: "Interval Training".to_string(),
+        })
+        .await?;
 
-    notifier.notify(NotificationEvent::PhaseTransition {
-        from_phase: 0,
-        to_phase: 1,
-        phase_name: "Warmup".to_string(),
-    }).await?;
+    notifier
+        .notify(NotificationEvent::PhaseTransition {
+            from_phase: 0,
+            to_phase: 1,
+            phase_name: "Warmup".to_string(),
+        })
+        .await?;
 
-    notifier.notify(NotificationEvent::ZoneDeviation {
-        deviation: ZoneDeviation::TooHigh,
-        current_bpm: 165,
-        target_zone: Zone::Zone2,
-    }).await?;
+    notifier
+        .notify(NotificationEvent::ZoneDeviation {
+            deviation: ZoneDeviation::TooHigh,
+            current_bpm: 165,
+            target_zone: Zone::Zone2,
+        })
+        .await?;
 
-    notifier.notify(NotificationEvent::ZoneDeviation {
-        deviation: ZoneDeviation::InZone,
-        current_bpm: 140,
-        target_zone: Zone::Zone2,
-    }).await?;
+    notifier
+        .notify(NotificationEvent::ZoneDeviation {
+            deviation: ZoneDeviation::InZone,
+            current_bpm: 140,
+            target_zone: Zone::Zone2,
+        })
+        .await?;
 
-    notifier.notify(NotificationEvent::BatteryLow {
-        percentage: 15,
-    }).await?;
+    notifier
+        .notify(NotificationEvent::BatteryLow { percentage: 15 })
+        .await?;
 
     println!("\nNotifications logged to: {}\n", log_path);
 
@@ -176,15 +203,19 @@ async fn main() -> anyhow::Result<()> {
 
     let collector = NotificationCollector::new();
 
-    collector.notify(NotificationEvent::WorkoutReady {
-        plan_name: "5K Training".to_string(),
-    }).await?;
+    collector
+        .notify(NotificationEvent::WorkoutReady {
+            plan_name: "5K Training".to_string(),
+        })
+        .await?;
 
-    collector.notify(NotificationEvent::ZoneDeviation {
-        deviation: ZoneDeviation::TooLow,
-        current_bpm: 110,
-        target_zone: Zone::Zone3,
-    }).await?;
+    collector
+        .notify(NotificationEvent::ZoneDeviation {
+            deviation: ZoneDeviation::TooLow,
+            current_bpm: 110,
+            target_zone: Zone::Zone3,
+        })
+        .await?;
 
     collector.notify(NotificationEvent::ConnectionLost).await?;
 
@@ -196,7 +227,10 @@ async fn main() -> anyhow::Result<()> {
 
     println!("\nClearing notifications...");
     collector.clear().await;
-    println!("Notifications remaining: {}", collector.get_notifications().await.len());
+    println!(
+        "Notifications remaining: {}",
+        collector.get_notifications().await.len()
+    );
 
     println!("\n✓ Examples complete!");
     println!("\nKey takeaways:");

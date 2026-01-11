@@ -99,7 +99,10 @@ mod tests {
     async fn test_records_single_event() {
         let adapter = MockNotificationAdapter::new();
 
-        adapter.notify(NotificationEvent::ConnectionLost).await.unwrap();
+        adapter
+            .notify(NotificationEvent::ConnectionLost)
+            .await
+            .unwrap();
 
         let events = adapter.get_events().await;
         assert_eq!(events.len(), 1);
@@ -110,15 +113,27 @@ mod tests {
     async fn test_records_multiple_events_in_order() {
         let adapter = MockNotificationAdapter::new();
 
-        adapter.notify(NotificationEvent::BatteryLow { percentage: 15 }).await.unwrap();
-        adapter.notify(NotificationEvent::ConnectionLost).await.unwrap();
-        adapter.notify(NotificationEvent::WorkoutReady {
-            plan_name: "Test Plan".to_string(),
-        }).await.unwrap();
+        adapter
+            .notify(NotificationEvent::BatteryLow { percentage: 15 })
+            .await
+            .unwrap();
+        adapter
+            .notify(NotificationEvent::ConnectionLost)
+            .await
+            .unwrap();
+        adapter
+            .notify(NotificationEvent::WorkoutReady {
+                plan_name: "Test Plan".to_string(),
+            })
+            .await
+            .unwrap();
 
         let events = adapter.get_events().await;
         assert_eq!(events.len(), 3);
-        assert!(matches!(events[0], NotificationEvent::BatteryLow { percentage: 15 }));
+        assert!(matches!(
+            events[0],
+            NotificationEvent::BatteryLow { percentage: 15 }
+        ));
         assert!(matches!(events[1], NotificationEvent::ConnectionLost));
         assert!(matches!(events[2], NotificationEvent::WorkoutReady { .. }));
     }
@@ -127,7 +142,10 @@ mod tests {
     async fn test_clear_events() {
         let adapter = MockNotificationAdapter::new();
 
-        adapter.notify(NotificationEvent::ConnectionLost).await.unwrap();
+        adapter
+            .notify(NotificationEvent::ConnectionLost)
+            .await
+            .unwrap();
         assert_eq!(adapter.event_count().await, 1);
 
         adapter.clear_events().await;
@@ -138,17 +156,24 @@ mod tests {
     async fn test_zone_deviation_event() {
         let adapter = MockNotificationAdapter::new();
 
-        adapter.notify(NotificationEvent::ZoneDeviation {
-            deviation: ZoneDeviation::TooHigh,
-            current_bpm: 180,
-            target_zone: Zone::Zone2,
-        }).await.unwrap();
+        adapter
+            .notify(NotificationEvent::ZoneDeviation {
+                deviation: ZoneDeviation::TooHigh,
+                current_bpm: 180,
+                target_zone: Zone::Zone2,
+            })
+            .await
+            .unwrap();
 
         let events = adapter.get_events().await;
         assert_eq!(events.len(), 1);
 
         match &events[0] {
-            NotificationEvent::ZoneDeviation { deviation, current_bpm, target_zone } => {
+            NotificationEvent::ZoneDeviation {
+                deviation,
+                current_bpm,
+                target_zone,
+            } => {
                 assert_eq!(*deviation, ZoneDeviation::TooHigh);
                 assert_eq!(*current_bpm, 180);
                 assert_eq!(*target_zone, Zone::Zone2);
@@ -161,15 +186,22 @@ mod tests {
     async fn test_phase_transition_event() {
         let adapter = MockNotificationAdapter::new();
 
-        adapter.notify(NotificationEvent::PhaseTransition {
-            from_phase: 0,
-            to_phase: 1,
-            phase_name: "Main Set".to_string(),
-        }).await.unwrap();
+        adapter
+            .notify(NotificationEvent::PhaseTransition {
+                from_phase: 0,
+                to_phase: 1,
+                phase_name: "Main Set".to_string(),
+            })
+            .await
+            .unwrap();
 
         let events = adapter.get_events().await;
         match &events[0] {
-            NotificationEvent::PhaseTransition { from_phase, to_phase, phase_name } => {
+            NotificationEvent::PhaseTransition {
+                from_phase,
+                to_phase,
+                phase_name,
+            } => {
                 assert_eq!(*from_phase, 0);
                 assert_eq!(*to_phase, 1);
                 assert_eq!(phase_name, "Main Set");

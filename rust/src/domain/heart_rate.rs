@@ -285,7 +285,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 72);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         assert_eq!(result.rr_intervals.len(), 0);
     }
 
@@ -297,7 +297,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 65);
-        assert_eq!(result.sensor_contact, false);
+        assert!(!result.sensor_contact);
         assert_eq!(result.rr_intervals.len(), 0);
     }
 
@@ -309,7 +309,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 150);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         assert_eq!(result.rr_intervals.len(), 0);
     }
 
@@ -326,7 +326,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 72);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         assert_eq!(result.rr_intervals, vec![820, 830, 815]);
     }
 
@@ -339,7 +339,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 75);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         assert_eq!(result.rr_intervals.len(), 0);
     }
 
@@ -353,7 +353,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 80);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         assert_eq!(result.rr_intervals, vec![750]);
     }
 
@@ -411,7 +411,7 @@ mod tests {
         let result = parse_heart_rate(data).unwrap();
 
         assert_eq!(result.bpm, 72);
-        assert_eq!(result.sensor_contact, true);
+        assert!(result.sensor_contact);
         // Incomplete RR-interval should be ignored
         assert_eq!(result.rr_intervals.len(), 0);
     }
@@ -438,19 +438,19 @@ mod tests {
         // Test all sensor contact bit patterns
         // Bits 1-2: 00 = not supported (value 0)
         let data = &[0x00, 60];
-        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, false);
+        assert!(!parse_heart_rate(data).unwrap().sensor_contact);
 
         // Bits 1-2: 01 = not detected (value 1)
         let data = &[0x02, 60];
-        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, false);
+        assert!(!parse_heart_rate(data).unwrap().sensor_contact);
 
         // Bits 1-2: 10 = detected (value 2)
         let data = &[0x04, 60];
-        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, true);
+        assert!(parse_heart_rate(data).unwrap().sensor_contact);
 
         // Bits 1-2: 11 = detected (value 3)
         let data = &[0x06, 60];
-        assert_eq!(parse_heart_rate(data).unwrap().sensor_contact, true);
+        assert!(parse_heart_rate(data).unwrap().sensor_contact);
     }
 
     // Property-based tests using proptest

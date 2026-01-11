@@ -90,7 +90,6 @@ impl KalmanFilter {
         Self { kalman }
     }
 
-
     /// Updates the filter with a new heart rate measurement and returns the filtered value.
     ///
     /// # Parameters
@@ -197,7 +196,10 @@ mod tests {
 
         // After a few measurements, the filtered value should converge toward the mean
         let last_filtered = filtered_values.last().unwrap();
-        assert!((last_filtered - 75.0).abs() < 2.0, "Filter should converge to ~75 BPM");
+        assert!(
+            (last_filtered - 75.0).abs() < 2.0,
+            "Filter should converge to ~75 BPM"
+        );
     }
 
     #[test]
@@ -217,7 +219,11 @@ mod tests {
 
         // Filter should eventually track to new level
         // After 20 measurements, should be close to 140
-        assert!(final_filtered > 120.0, "Filter should track step changes, got {}", final_filtered);
+        assert!(
+            final_filtered > 120.0,
+            "Filter should track step changes, got {}",
+            final_filtered
+        );
     }
 
     #[test]
@@ -243,8 +249,9 @@ mod tests {
         let filtered2 = filter.update(71.0);
 
         // Second update with same value should be closer to 71
-        assert!((filtered2 - 71.0).abs() < (filtered1 - 71.0).abs() ||
-                (filtered2 - 71.0).abs() < 1.0);
+        assert!(
+            (filtered2 - 71.0).abs() < (filtered1 - 71.0).abs() || (filtered2 - 71.0).abs() < 1.0
+        );
     }
 
     #[test]
@@ -276,7 +283,7 @@ mod tests {
     #[test]
     fn test_is_valid_bpm_boundary_values() {
         // Test boundary conditions
-        assert!(is_valid_bpm(30));  // Minimum valid
+        assert!(is_valid_bpm(30)); // Minimum valid
         assert!(is_valid_bpm(220)); // Maximum valid
         assert!(!is_valid_bpm(29)); // Just below minimum
         assert!(!is_valid_bpm(221)); // Just above maximum
@@ -368,9 +375,9 @@ mod tests {
         let mut filter = KalmanFilter::default();
 
         // Mix of valid and invalid measurements
-        let f1 = filter.filter_if_valid(70.0);  // Valid
+        let f1 = filter.filter_if_valid(70.0); // Valid
         let f2 = filter.filter_if_valid(250.0); // Invalid - should be rejected
-        let f3 = filter.filter_if_valid(72.0);  // Valid
+        let f3 = filter.filter_if_valid(72.0); // Valid
 
         // f2 should be approximately equal to f1 (state preserved)
         assert!((f2 - f1).abs() < 0.1);

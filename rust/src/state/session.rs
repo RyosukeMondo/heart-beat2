@@ -65,12 +65,7 @@ impl ZoneTracker {
     /// Check current heart rate against target zone and detect deviations.
     ///
     /// Returns Some(deviation) if a new deviation event should be emitted.
-    fn check(
-        &mut self,
-        current_bpm: u16,
-        target_zone: Zone,
-        max_hr: u16,
-    ) -> Option<ZoneDeviation> {
+    fn check(&mut self, current_bpm: u16, target_zone: Zone, max_hr: u16) -> Option<ZoneDeviation> {
         let current_zone = match calculate_zone(current_bpm, max_hr) {
             Ok(Some(zone)) => zone,
             _ => return None, // Invalid data, don't update state
@@ -81,8 +76,7 @@ impl ZoneTracker {
                 self.consecutive_low_secs += 1;
                 self.consecutive_high_secs = 0;
 
-                if self.consecutive_low_secs >= 5 && self.last_deviation != ZoneDeviation::TooLow
-                {
+                if self.consecutive_low_secs >= 5 && self.last_deviation != ZoneDeviation::TooLow {
                     self.last_deviation = ZoneDeviation::TooLow;
                     return Some(ZoneDeviation::TooLow);
                 }
@@ -91,8 +85,7 @@ impl ZoneTracker {
                 self.consecutive_high_secs += 1;
                 self.consecutive_low_secs = 0;
 
-                if self.consecutive_high_secs >= 5
-                    && self.last_deviation != ZoneDeviation::TooHigh
+                if self.consecutive_high_secs >= 5 && self.last_deviation != ZoneDeviation::TooHigh
                 {
                     self.last_deviation = ZoneDeviation::TooHigh;
                     return Some(ZoneDeviation::TooHigh);
@@ -116,9 +109,10 @@ impl ZoneTracker {
 }
 
 /// State machine states for training session management.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub enum SessionState {
     /// Initial state - no active session
+    #[default]
     Idle,
 
     /// Session is actively running
@@ -145,12 +139,6 @@ pub enum SessionState {
 
     /// Session completed
     Completed,
-}
-
-impl Default for SessionState {
-    fn default() -> Self {
-        Self::Idle
-    }
 }
 
 /// State machine implementation using statig
@@ -209,9 +197,11 @@ impl SessionState {
                 // So this is handled in wrapper
                 Super
             }
-            SessionEvent::Pause => {
-                Transition(State::paused(*current_phase, *elapsed_secs, zone_tracker.clone()))
-            }
+            SessionEvent::Pause => Transition(State::paused(
+                *current_phase,
+                *elapsed_secs,
+                zone_tracker.clone(),
+            )),
             SessionEvent::Stop => Transition(State::completed()),
             _ => Super,
         }
@@ -226,9 +216,12 @@ impl SessionState {
         event: &SessionEvent,
     ) -> Response<State> {
         match event {
-            SessionEvent::Resume => {
-                Transition(State::in_progress(*phase, *elapsed, 0, zone_tracker.clone()))
-            }
+            SessionEvent::Resume => Transition(State::in_progress(
+                *phase,
+                *elapsed,
+                0,
+                zone_tracker.clone(),
+            )),
             SessionEvent::Stop => Transition(State::completed()),
             _ => Super,
         }
@@ -325,8 +318,7 @@ impl SessionStateMachineWrapper {
                             if current_phase + 1 < plan.phases.len() {
                                 // Advance to next phase using NextPhase event
                                 let next_phase = current_phase + 1;
-                                self.machine
-                                    .handle(&SessionEvent::NextPhase(next_phase));
+                                self.machine.handle(&SessionEvent::NextPhase(next_phase));
                             } else {
                                 // No more phases - complete the session
                                 self.machine.handle(&SessionEvent::Stop);

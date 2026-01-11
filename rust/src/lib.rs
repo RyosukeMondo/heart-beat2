@@ -28,6 +28,7 @@
 //! ```
 
 #![warn(missing_docs)]
+#![allow(unexpected_cfgs)] // Allow flutter_rust_bridge frb_expand cfg
 
 mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
 
@@ -40,8 +41,7 @@ pub mod state;
 
 // Re-export commonly used types from each module
 pub use api::{
-    connect_device, create_hr_stream, disconnect, emit_hr_data, scan_devices,
-    start_mock_mode,
+    connect_device, create_hr_stream, disconnect, emit_hr_data, scan_devices, start_mock_mode,
 };
 pub use domain::{
     is_valid_bpm, parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement,

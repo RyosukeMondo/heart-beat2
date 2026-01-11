@@ -8,7 +8,7 @@
 use heart_beat::adapters::mock_adapter::{MockAdapter, MockConfig};
 use heart_beat::domain::heart_rate::parse_heart_rate;
 use heart_beat::ports::ble_adapter::BleAdapter;
-use heart_beat::state::connectivity::{ConnectionEvent, ConnectionStateMachine, reconnect_delay};
+use heart_beat::state::connectivity::{reconnect_delay, ConnectionEvent, ConnectionStateMachine};
 use std::sync::Arc;
 use tokio::time::{timeout, Duration};
 
@@ -124,7 +124,10 @@ async fn test_full_connection_lifecycle() {
         .handle(ConnectionEvent::UserDisconnect)
         .expect("UserDisconnect should succeed");
 
-    adapter.disconnect().await.expect("disconnect should succeed");
+    adapter
+        .disconnect()
+        .await
+        .expect("disconnect should succeed");
 
     tracing::info!("Full connection lifecycle test completed successfully");
 }
@@ -154,7 +157,10 @@ async fn test_reconnection_success() {
         .handle(ConnectionEvent::StartScan)
         .expect("StartScan should succeed");
 
-    adapter.start_scan().await.expect("start_scan should succeed");
+    adapter
+        .start_scan()
+        .await
+        .expect("start_scan should succeed");
     let devices = adapter.get_discovered_devices().await;
     let device_id = devices[0].id.clone();
 
@@ -178,7 +184,10 @@ async fn test_reconnection_success() {
         .expect("ServicesDiscovered should succeed");
 
     // Step 2: Start streaming
-    let mut hr_receiver = adapter.subscribe_hr().await.expect("subscribe should succeed");
+    let mut hr_receiver = adapter
+        .subscribe_hr()
+        .await
+        .expect("subscribe should succeed");
 
     // Verify initial data stream
     let packet = timeout(Duration::from_secs(1), hr_receiver.recv())
@@ -220,7 +229,10 @@ async fn test_reconnection_success() {
         .expect("ReconnectSuccess should succeed");
 
     // Step 6: Resume streaming
-    let mut hr_receiver = adapter.subscribe_hr().await.expect("subscribe should succeed");
+    let mut hr_receiver = adapter
+        .subscribe_hr()
+        .await
+        .expect("subscribe should succeed");
 
     // Verify data stream resumed
     let packet = timeout(Duration::from_secs(1), hr_receiver.recv())
@@ -252,7 +264,10 @@ async fn test_reconnection_exhausted() {
         .handle(ConnectionEvent::StartScan)
         .expect("StartScan should succeed");
 
-    adapter.start_scan().await.expect("start_scan should succeed");
+    adapter
+        .start_scan()
+        .await
+        .expect("start_scan should succeed");
     let devices = adapter.get_discovered_devices().await;
     let device_id = devices[0].id.clone();
 
@@ -346,7 +361,10 @@ async fn test_rapid_state_transitions() {
     }
 
     // Rapid connection attempts
-    adapter.start_scan().await.expect("start_scan should succeed");
+    adapter
+        .start_scan()
+        .await
+        .expect("start_scan should succeed");
     let devices = adapter.get_discovered_devices().await;
     let device_id = devices[0].id.clone();
 
@@ -398,7 +416,10 @@ async fn test_user_cancellation_scenarios() {
         let adapter = Arc::new(MockAdapter::new());
         let mut sm = ConnectionStateMachine::new(adapter.clone());
 
-        adapter.start_scan().await.expect("start_scan should succeed");
+        adapter
+            .start_scan()
+            .await
+            .expect("start_scan should succeed");
         let devices = adapter.get_discovered_devices().await;
         let device_id = devices[0].id.clone();
 
@@ -417,7 +438,10 @@ async fn test_user_cancellation_scenarios() {
         let adapter = Arc::new(MockAdapter::new());
         let mut sm = ConnectionStateMachine::new(adapter.clone());
 
-        adapter.start_scan().await.expect("start_scan should succeed");
+        adapter
+            .start_scan()
+            .await
+            .expect("start_scan should succeed");
         let devices = adapter.get_discovered_devices().await;
         let device_id = devices[0].id.clone();
 
@@ -442,7 +466,10 @@ async fn test_user_cancellation_scenarios() {
         let adapter = Arc::new(MockAdapter::new());
         let mut sm = ConnectionStateMachine::new(adapter.clone());
 
-        adapter.start_scan().await.expect("start_scan should succeed");
+        adapter
+            .start_scan()
+            .await
+            .expect("start_scan should succeed");
         let devices = adapter.get_discovered_devices().await;
         let device_id = devices[0].id.clone();
 
@@ -469,7 +496,10 @@ async fn test_user_cancellation_scenarios() {
         let adapter = Arc::new(MockAdapter::new());
         let mut sm = ConnectionStateMachine::new(adapter.clone());
 
-        adapter.start_scan().await.expect("start_scan should succeed");
+        adapter
+            .start_scan()
+            .await
+            .expect("start_scan should succeed");
         let devices = adapter.get_discovered_devices().await;
         let device_id = devices[0].id.clone();
 
@@ -508,7 +538,10 @@ async fn test_connection_failure_during_service_discovery() {
     let mut state_machine = ConnectionStateMachine::new(adapter.clone());
 
     // Establish connection
-    adapter.start_scan().await.expect("start_scan should succeed");
+    adapter
+        .start_scan()
+        .await
+        .expect("start_scan should succeed");
     let devices = adapter.get_discovered_devices().await;
     let device_id = devices[0].id.clone();
 

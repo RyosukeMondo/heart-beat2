@@ -177,6 +177,15 @@ heart-beat/
 
 ## Development
 
+### Setup
+
+**Install git hooks (recommended):**
+```bash
+./scripts/install-hooks.sh
+```
+
+This installs pre-commit hooks that automatically run formatting checks, clippy, and fast tests before each commit. To skip the hooks when needed, use `git commit --no-verify`.
+
 ### Testing
 
 ```bash

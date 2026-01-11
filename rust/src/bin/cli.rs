@@ -9,7 +9,7 @@ use heart_beat::adapters::{BtleplugAdapter, MockAdapter, MockNotificationAdapter
 use heart_beat::domain::filters::KalmanFilter;
 use heart_beat::domain::heart_rate::{parse_heart_rate, Zone};
 use heart_beat::domain::hrv::calculate_rmssd;
-use heart_beat::domain::training_plan::{TrainingPlan, TrainingPhase, TransitionCondition};
+use heart_beat::domain::training_plan::{TrainingPhase, TrainingPlan, TransitionCondition};
 use heart_beat::ports::ble_adapter::BleAdapter;
 use heart_beat::scheduler::SessionExecutor;
 use std::sync::Arc;
@@ -182,8 +182,7 @@ async fn main() -> anyhow::Result<()> {
         .with_file(false)
         .finish();
 
-    tracing::subscriber::set_global_default(subscriber)
-        .expect("Failed to set tracing subscriber");
+    tracing::subscriber::set_global_default(subscriber).expect("Failed to set tracing subscriber");
 
     info!("Heart Beat CLI starting");
 
@@ -225,10 +224,19 @@ async fn main() -> anyhow::Result<()> {
             MockCmd::Steady { bpm } => {
                 handle_mock_steady(bpm).await?;
             }
-            MockCmd::Ramp { start, end, duration } => {
+            MockCmd::Ramp {
+                start,
+                end,
+                duration,
+            } => {
                 handle_mock_ramp(start, end, duration).await?;
             }
-            MockCmd::Interval { low, high, work_secs, rest_secs } => {
+            MockCmd::Interval {
+                low,
+                high,
+                work_secs,
+                rest_secs,
+            } => {
                 handle_mock_interval(low, high, work_secs, rest_secs).await?;
             }
             MockCmd::Dropout { probability } => {
@@ -256,9 +264,9 @@ async fn main() -> anyhow::Result<()> {
 
 /// Handle the devices scan subcommand.
 async fn handle_devices_scan() -> anyhow::Result<()> {
-    use std::time::Duration;
-    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
+    use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
     use indicatif::{ProgressBar, ProgressStyle};
+    use std::time::Duration;
 
     info!("Scanning for heart rate monitors...");
 
@@ -273,7 +281,7 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
     pb.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.green} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     pb.set_message("Scanning for heart rate monitors (5 seconds)...");
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -305,10 +313,18 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
 
         // Add header row
         table.set_header(vec![
-            Cell::new("Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
-            Cell::new("Device ID").add_attribute(Attribute::Bold).fg(Color::Cyan),
-            Cell::new("RSSI").add_attribute(Attribute::Bold).fg(Color::Cyan),
-            Cell::new("Services").add_attribute(Attribute::Bold).fg(Color::Cyan),
+            Cell::new("Name")
+                .add_attribute(Attribute::Bold)
+                .fg(Color::Cyan),
+            Cell::new("Device ID")
+                .add_attribute(Attribute::Bold)
+                .fg(Color::Cyan),
+            Cell::new("RSSI")
+                .add_attribute(Attribute::Bold)
+                .fg(Color::Cyan),
+            Cell::new("Services")
+                .add_attribute(Attribute::Bold)
+                .fg(Color::Cyan),
         ]);
 
         // Add device rows
@@ -329,7 +345,7 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
                 Cell::new(&name),
                 Cell::new(&device.id),
                 rssi_cell,
-                Cell::new("HR, Battery"),  // Simplified - actual service detection would need BLE scan
+                Cell::new("HR, Battery"), // Simplified - actual service detection would need BLE scan
             ]);
         }
 
@@ -342,9 +358,9 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
 
 /// Handle the devices connect subcommand.
 async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
-    use tokio::signal;
     use colored::Colorize;
     use indicatif::{ProgressBar, ProgressStyle};
+    use tokio::signal;
 
     info!("Connecting to device: {}", device_id);
 
@@ -353,7 +369,7 @@ async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     pb.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.green} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     pb.set_message(format!("Connecting to device: {}", device_id));
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -369,13 +385,20 @@ async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     // Subscribe to heart rate notifications
     adapter.subscribe_hr().await?;
     let mut hr_receiver = adapter.subscribe_hr().await?;
-    println!("{} Subscribed to heart rate notifications", "✓".green().bold());
+    println!(
+        "{} Subscribed to heart rate notifications",
+        "✓".green().bold()
+    );
 
     // Try to read battery level
     match adapter.read_battery().await {
         Ok(battery) => {
-            let battery_icon = if battery > 80 { "🔋" } else if battery > 20 { "🔋" } else { "🪫" };
-            println!("{} Battery level: {}%\n", battery_icon, battery.to_string().cyan().bold());
+            let battery_icon = if battery > 20 { "🔋" } else { "🪫" };
+            println!(
+                "{} Battery level: {}%\n",
+                battery_icon,
+                battery.to_string().cyan().bold()
+            );
         }
         Err(e) => {
             warn!("Could not read battery level: {}", e);
@@ -387,7 +410,8 @@ async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     let mut filter = KalmanFilter::default();
 
     // Print table header with colors
-    println!("{:<20} {:>8} {:>12} {:>10}",
+    println!(
+        "{:<20} {:>8} {:>12} {:>10}",
         "Timestamp".cyan().bold(),
         "Raw BPM".cyan().bold(),
         "Filtered BPM".cyan().bold(),
@@ -463,7 +487,10 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
     use tokio::signal;
 
     info!("Starting mock data stream with steady BPM: {}", bpm);
-    println!("Starting mock heart rate simulation (steady {}bpm)...\n", bpm);
+    println!(
+        "Starting mock heart rate simulation (steady {}bpm)...\n",
+        bpm
+    );
 
     // Create mock adapter
     let adapter = MockAdapter::new();
@@ -478,7 +505,8 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
     }
 
     let device_id = &devices[0].id;
-    println!("Using mock device: {} ({})",
+    println!(
+        "Using mock device: {} ({})",
         devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
         device_id
     );
@@ -504,7 +532,10 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
     let mut filter = KalmanFilter::default();
 
     // Print table header
-    println!("{:<20} {:>8} {:>12} {:>10}", "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)");
+    println!(
+        "{:<20} {:>8} {:>12} {:>10}",
+        "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)"
+    );
     println!("{}", "-".repeat(56));
 
     // Set up Ctrl+C handler
@@ -572,8 +603,8 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
 
 /// Handle the session start subcommand.
 async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
-    use tokio::signal;
     use session_display::SessionDisplay;
+    use tokio::signal;
 
     info!("Starting training session from plan: {}", plan_path);
 
@@ -666,22 +697,28 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
 
 /// Handle the mock ramp subcommand.
 async fn handle_mock_ramp(start: u16, end: u16, duration: u32) -> anyhow::Result<()> {
-    use tokio::signal;
     use rand::Rng;
+    use tokio::signal;
 
     // Validate inputs
-    if start < 30 || start > 220 {
+    if !(30..=220).contains(&start) {
         return Err(anyhow::anyhow!("Start BPM must be between 30-220"));
     }
-    if end < 30 || end > 220 {
+    if !(30..=220).contains(&end) {
         return Err(anyhow::anyhow!("End BPM must be between 30-220"));
     }
     if duration == 0 {
         return Err(anyhow::anyhow!("Duration must be greater than 0"));
     }
 
-    info!("Starting mock ramp: {} -> {} BPM over {} seconds", start, end, duration);
-    println!("Starting mock heart rate ramp ({}bpm -> {}bpm over {}s)...\n", start, end, duration);
+    info!(
+        "Starting mock ramp: {} -> {} BPM over {} seconds",
+        start, end, duration
+    );
+    println!(
+        "Starting mock heart rate ramp ({}bpm -> {}bpm over {}s)...\n",
+        start, end, duration
+    );
 
     // Create mock adapter
     let adapter = MockAdapter::new();
@@ -696,7 +733,8 @@ async fn handle_mock_ramp(start: u16, end: u16, duration: u32) -> anyhow::Result
     }
 
     let device_id = &devices[0].id;
-    println!("Using mock device: {} ({})",
+    println!(
+        "Using mock device: {} ({})",
         devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
         device_id
     );
@@ -709,7 +747,10 @@ async fn handle_mock_ramp(start: u16, end: u16, duration: u32) -> anyhow::Result
     let mut filter = KalmanFilter::default();
 
     // Print table header
-    println!("{:<20} {:>8} {:>12} {:>10}", "Timestamp", "Target BPM", "Simulated BPM", "Progress");
+    println!(
+        "{:<20} {:>8} {:>12} {:>10}",
+        "Timestamp", "Target BPM", "Simulated BPM", "Progress"
+    );
     println!("{}", "-".repeat(56));
 
     // Set up Ctrl+C handler
@@ -773,26 +814,39 @@ async fn handle_mock_ramp(start: u16, end: u16, duration: u32) -> anyhow::Result
 }
 
 /// Handle the mock interval subcommand.
-async fn handle_mock_interval(low: u16, high: u16, work_secs: u32, rest_secs: u32) -> anyhow::Result<()> {
-    use tokio::signal;
+async fn handle_mock_interval(
+    low: u16,
+    high: u16,
+    work_secs: u32,
+    rest_secs: u32,
+) -> anyhow::Result<()> {
     use rand::Rng;
+    use tokio::signal;
 
     // Validate inputs
-    if low < 30 || low > 220 {
+    if !(30..=220).contains(&low) {
         return Err(anyhow::anyhow!("Low BPM must be between 30-220"));
     }
-    if high < 30 || high > 220 {
+    if !(30..=220).contains(&high) {
         return Err(anyhow::anyhow!("High BPM must be between 30-220"));
     }
     if low >= high {
         return Err(anyhow::anyhow!("Low BPM must be less than high BPM"));
     }
     if work_secs == 0 || rest_secs == 0 {
-        return Err(anyhow::anyhow!("Work and rest periods must be greater than 0"));
+        return Err(anyhow::anyhow!(
+            "Work and rest periods must be greater than 0"
+        ));
     }
 
-    info!("Starting mock interval: {}bpm (rest) / {}bpm (work), {}s/{}s", low, high, work_secs, rest_secs);
-    println!("Starting mock interval training ({}bpm rest/{}bpm work, {}s/{}s)...\n", low, high, work_secs, rest_secs);
+    info!(
+        "Starting mock interval: {}bpm (rest) / {}bpm (work), {}s/{}s",
+        low, high, work_secs, rest_secs
+    );
+    println!(
+        "Starting mock interval training ({}bpm rest/{}bpm work, {}s/{}s)...\n",
+        low, high, work_secs, rest_secs
+    );
 
     // Create mock adapter
     let adapter = MockAdapter::new();
@@ -807,7 +861,8 @@ async fn handle_mock_interval(low: u16, high: u16, work_secs: u32, rest_secs: u3
     }
 
     let device_id = &devices[0].id;
-    println!("Using mock device: {} ({})",
+    println!(
+        "Using mock device: {} ({})",
         devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
         device_id
     );
@@ -820,7 +875,10 @@ async fn handle_mock_interval(low: u16, high: u16, work_secs: u32, rest_secs: u3
     let mut filter = KalmanFilter::default();
 
     // Print table header
-    println!("{:<20} {:>10} {:>8} {:>12} {:>10}", "Timestamp", "Phase", "Target", "Simulated", "Remaining");
+    println!(
+        "{:<20} {:>10} {:>8} {:>12} {:>10}",
+        "Timestamp", "Phase", "Target", "Simulated", "Remaining"
+    );
     println!("{}", "-".repeat(65));
 
     // Set up Ctrl+C handler
@@ -919,16 +977,22 @@ async fn handle_mock_interval(low: u16, high: u16, work_secs: u32, rest_secs: u3
 
 /// Handle the mock dropout subcommand.
 async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
-    use tokio::signal;
     use rand::Rng;
+    use tokio::signal;
 
     // Validate inputs
     if !(0.0..=1.0).contains(&probability) {
         return Err(anyhow::anyhow!("Probability must be between 0.0 and 1.0"));
     }
 
-    info!("Starting mock dropout simulation with probability: {}", probability);
-    println!("Starting mock heart rate with {}% packet dropout...\n", (probability * 100.0));
+    info!(
+        "Starting mock dropout simulation with probability: {}",
+        probability
+    );
+    println!(
+        "Starting mock heart rate with {}% packet dropout...\n",
+        (probability * 100.0)
+    );
 
     // Create mock adapter
     let adapter = MockAdapter::new();
@@ -943,7 +1007,8 @@ async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
     }
 
     let device_id = &devices[0].id;
-    println!("Using mock device: {} ({})",
+    println!(
+        "Using mock device: {} ({})",
         devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
         device_id
     );
@@ -960,7 +1025,10 @@ async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
     let mut filter = KalmanFilter::default();
 
     // Print table header
-    println!("{:<20} {:>8} {:>12} {:>10} {:>10}", "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)", "Status");
+    println!(
+        "{:<20} {:>8} {:>12} {:>10} {:>10}",
+        "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)", "Status"
+    );
     println!("{}", "-".repeat(70));
 
     // Set up Ctrl+C handler
@@ -1062,8 +1130,8 @@ async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
 
 /// Handle the plan list subcommand.
 fn handle_plan_list() -> anyhow::Result<()> {
+    use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
     use std::fs;
-    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
 
     info!("Listing training plans");
 
@@ -1089,20 +1157,19 @@ fn handle_plan_list() -> anyhow::Result<()> {
 
         if path.extension().and_then(|s| s.to_str()) == Some("json") {
             match fs::read_to_string(&path) {
-                Ok(content) => {
-                    match serde_json::from_str::<TrainingPlan>(&content) {
-                        Ok(plan) => {
-                            let filename = path.file_stem()
-                                .and_then(|s| s.to_str())
-                                .unwrap_or("unknown")
-                                .to_string();
-                            plans.push((filename, plan));
-                        }
-                        Err(e) => {
-                            warn!("Failed to parse plan {}: {}", path.display(), e);
-                        }
+                Ok(content) => match serde_json::from_str::<TrainingPlan>(&content) {
+                    Ok(plan) => {
+                        let filename = path
+                            .file_stem()
+                            .and_then(|s| s.to_str())
+                            .unwrap_or("unknown")
+                            .to_string();
+                        plans.push((filename, plan));
                     }
-                }
+                    Err(e) => {
+                        warn!("Failed to parse plan {}: {}", path.display(), e);
+                    }
+                },
                 Err(e) => {
                     warn!("Failed to read plan {}: {}", path.display(), e);
                 }
@@ -1127,11 +1194,21 @@ fn handle_plan_list() -> anyhow::Result<()> {
 
     // Add header row
     table.set_header(vec![
-        Cell::new("Plan Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("File").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Phases").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Duration").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Max HR").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Plan Name")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("File")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Phases")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Duration")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Max HR")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
     ]);
 
     // Add plan rows
@@ -1164,8 +1241,8 @@ fn handle_plan_list() -> anyhow::Result<()> {
 
 /// Handle the plan show subcommand.
 fn handle_plan_show(name: &str) -> anyhow::Result<()> {
+    use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
     use std::fs;
-    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
 
     info!("Showing training plan: {}", name);
 
@@ -1197,7 +1274,12 @@ fn handle_plan_show(name: &str) -> anyhow::Result<()> {
 
     let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
     let duration_mins = total_secs / 60;
-    println!("Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+    println!(
+        "Total Duration: {}m ({}h {}m)",
+        duration_mins,
+        duration_mins / 60,
+        duration_mins % 60
+    );
     println!();
 
     // Create phases table
@@ -1208,11 +1290,21 @@ fn handle_plan_show(name: &str) -> anyhow::Result<()> {
 
     // Add header row
     table.set_header(vec![
-        Cell::new("#").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Phase Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Target Zone").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Duration").add_attribute(Attribute::Bold).fg(Color::Cyan),
-        Cell::new("Transition").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("#")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Phase Name")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Target Zone")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Duration")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
+        Cell::new("Transition")
+            .add_attribute(Attribute::Bold)
+            .fg(Color::Cyan),
     ]);
 
     // Add phase rows
@@ -1237,7 +1329,10 @@ fn handle_plan_show(name: &str) -> anyhow::Result<()> {
 
         let transition_str = match &phase.transition {
             TransitionCondition::TimeElapsed => "Time".to_string(),
-            TransitionCondition::HeartRateReached { target_bpm, hold_secs } => {
+            TransitionCondition::HeartRateReached {
+                target_bpm,
+                hold_secs,
+            } => {
                 format!("HR {}bpm ({}s)", target_bpm, hold_secs)
             }
         };
@@ -1252,15 +1347,18 @@ fn handle_plan_show(name: &str) -> anyhow::Result<()> {
     }
 
     println!("{table}");
-    println!("\nUse 'cli session start {}' to run this plan.", plan_path.display());
+    println!(
+        "\nUse 'cli session start {}' to run this plan.",
+        plan_path.display()
+    );
 
     Ok(())
 }
 
 /// Handle the plan validate subcommand.
 fn handle_plan_validate(path: &str) -> anyhow::Result<()> {
-    use std::fs;
     use colored::Colorize;
+    use std::fs;
 
     info!("Validating training plan: {}", path);
 
@@ -1286,7 +1384,12 @@ fn handle_plan_validate(path: &str) -> anyhow::Result<()> {
 
             let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
             let duration_mins = total_secs / 60;
-            println!("  Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+            println!(
+                "  Total Duration: {}m ({}h {}m)",
+                duration_mins,
+                duration_mins / 60,
+                duration_mins % 60
+            );
 
             Ok(())
         }
@@ -1300,20 +1403,18 @@ fn handle_plan_validate(path: &str) -> anyhow::Result<()> {
 
 /// Handle the plan create subcommand.
 fn handle_plan_create() -> anyhow::Result<()> {
-    use std::fs;
-    use dialoguer::{Input, Select, Confirm};
     use colored::Colorize;
+    use dialoguer::{Confirm, Input, Select};
+    use std::fs;
 
     info!("Creating new training plan");
 
-    println!("{}",  "═".repeat(60));
+    println!("{}", "═".repeat(60));
     println!("Create New Training Plan");
     println!("{}\n", "═".repeat(60));
 
     // Get plan name
-    let plan_name: String = Input::new()
-        .with_prompt("Plan name")
-        .interact_text()?;
+    let plan_name: String = Input::new().with_prompt("Plan name").interact_text()?;
 
     // Get max HR
     let max_hr: u16 = Input::new()
@@ -1342,7 +1443,13 @@ fn handle_plan_create() -> anyhow::Result<()> {
             .interact_text()?;
 
         // Select target zone
-        let zones = vec!["Zone 1 (Recovery)", "Zone 2 (Endurance)", "Zone 3 (Tempo)", "Zone 4 (Threshold)", "Zone 5 (VO2 Max)"];
+        let zones = vec![
+            "Zone 1 (Recovery)",
+            "Zone 2 (Endurance)",
+            "Zone 3 (Tempo)",
+            "Zone 4 (Threshold)",
+            "Zone 5 (VO2 Max)",
+        ];
         let zone_idx = Select::new()
             .with_prompt("Target zone")
             .items(&zones)
@@ -1410,7 +1517,10 @@ fn handle_plan_create() -> anyhow::Result<()> {
                 })
                 .interact_text()?;
 
-            TransitionCondition::HeartRateReached { target_bpm, hold_secs }
+            TransitionCondition::HeartRateReached {
+                target_bpm,
+                hold_secs,
+            }
         };
 
         // Add phase
@@ -1454,7 +1564,12 @@ fn handle_plan_create() -> anyhow::Result<()> {
     println!("  Name: {}", plan.name);
     println!("  Max HR: {} BPM", plan.max_hr);
     println!("  Phases: {}", plan.phases.len());
-    println!("  Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+    println!(
+        "  Total Duration: {}m ({}h {}m)",
+        duration_mins,
+        duration_mins / 60,
+        duration_mins % 60
+    );
 
     // Save the plan
     let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
@@ -1475,8 +1590,15 @@ fn handle_plan_create() -> anyhow::Result<()> {
     let json = serde_json::to_string_pretty(&plan)?;
     fs::write(&plan_path, json)?;
 
-    println!("\n{} Plan saved to: {}", "✓".green().bold(), plan_path.display());
-    println!("\nRun 'cli session start {}' to start this plan.", plan_path.display());
+    println!(
+        "\n{} Plan saved to: {}",
+        "✓".green().bold(),
+        plan_path.display()
+    );
+    println!(
+        "\nRun 'cli session start {}' to start this plan.",
+        plan_path.display()
+    );
 
     Ok(())
 }
@@ -1484,12 +1606,13 @@ fn handle_plan_create() -> anyhow::Result<()> {
 /// Session display module for real-time terminal UI during training sessions.
 mod session_display {
     use crossterm::{
-        cursor, execute, terminal,
-        style::{Color, Print, ResetColor, SetForegroundColor, Attribute, SetAttribute},
+        cursor, execute,
+        style::{Attribute, Color, Print, ResetColor, SetAttribute, SetForegroundColor},
+        terminal,
     };
     use heart_beat::domain::heart_rate::Zone;
     use heart_beat::domain::training_plan::TrainingPlan;
-    use std::io::{stdout, Write, Result};
+    use std::io::{stdout, Result, Write};
 
     /// Session display state for rendering the training session UI.
     pub struct SessionDisplay {
@@ -1539,6 +1662,7 @@ mod session_display {
         }
 
         /// Update the current heart rate.
+        #[allow(dead_code)]
         pub fn update_bpm(&mut self, bpm: u16) {
             self.current_bpm = Some(bpm);
         }
@@ -1581,7 +1705,8 @@ mod session_display {
                 SetAttribute(Attribute::Bold),
                 Print(format!("╔{}╗\n", header_line)),
                 Print(format!("║{:^60}║\n", self.plan_name)),
-                Print(format!("║ Phase {}/{}: {:54} ║\n",
+                Print(format!(
+                    "║ Phase {}/{}: {:54} ║\n",
                     self.current_phase + 1,
                     self.total_phases,
                     self.phase_name
@@ -1598,7 +1723,10 @@ mod session_display {
         }
 
         fn render_bpm(&self, stdout: &mut std::io::Stdout) -> Result<()> {
-            execute!(stdout, Print("║                                                            ║\n"))?;
+            execute!(
+                stdout,
+                Print("║                                                            ║\n")
+            )?;
 
             if let Some(bpm) = self.current_bpm {
                 // Display large BPM
@@ -1622,7 +1750,10 @@ mod session_display {
                 )?;
             }
 
-            execute!(stdout, Print("║                                                            ║\n"))?;
+            execute!(
+                stdout,
+                Print("║                                                            ║\n")
+            )?;
             Ok(())
         }
 
@@ -1651,7 +1782,10 @@ mod session_display {
                 Print("  ║\n")
             )?;
 
-            execute!(stdout, Print("║                                                            ║\n"))?;
+            execute!(
+                stdout,
+                Print("║                                                            ║\n")
+            )?;
             Ok(())
         }
 
@@ -1669,7 +1803,10 @@ mod session_display {
                 ResetColor,
                 Print("  │  "),
                 SetAttribute(Attribute::Bold),
-                Print(format!("Remaining: {:02}:{:02}", remaining_mins, remaining_secs)),
+                Print(format!(
+                    "Remaining: {:02}:{:02}",
+                    remaining_mins, remaining_secs
+                )),
                 ResetColor,
                 Print("  │  "),
                 SetForegroundColor(self.get_zone_color()),
@@ -1679,7 +1816,10 @@ mod session_display {
                 Print("  ║\n")
             )?;
 
-            execute!(stdout, Print("║                                                            ║\n"))?;
+            execute!(
+                stdout,
+                Print("║                                                            ║\n")
+            )?;
             Ok(())
         }
 
