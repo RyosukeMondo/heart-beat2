@@ -45,7 +45,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Rust interactive CLI developer | Task: Implement PlanCmd enum with List, Show{name}, Validate{path}, Create. List reads ~/.heart-beat/plans/*.json. Show displays plan in comfy-table with phases. Validate checks TrainingPlan::validate(). Create uses dialoguer for interactive input (name, phases loop, zone selection, duration). Save to JSON | Restrictions: Create must validate all inputs, handle user cancellation | Success: Interactive wizard is intuitive, plans save correctly_
 
-- [ ] 5.1 Add real-time session display
+- [x] 5.1 Add real-time session display
   - File: `rust/src/bin/cli.rs` (helper module)
   - Create SessionDisplay struct for terminal UI
   - Use crossterm for cursor control and colors

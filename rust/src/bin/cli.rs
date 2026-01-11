@@ -573,11 +573,7 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
 /// Handle the session start subcommand.
 async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
     use tokio::signal;
-    use crossterm::{
-        cursor, execute, terminal,
-        style::{Color, Print, ResetColor, SetForegroundColor},
-    };
-    use std::io::{stdout, Write};
+    use session_display::SessionDisplay;
 
     info!("Starting training session from plan: {}", plan_path);
 
@@ -605,10 +601,11 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
     executor.start_session(plan.clone()).await?;
     println!("✓ Session started\n");
 
-    // Set up terminal for real-time display
-    let mut stdout = stdout();
-    execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
-    execute!(stdout, cursor::MoveTo(0, 0))?;
+    // Give user a moment to read the message before clearing screen
+    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+    // Initialize session display
+    let mut display = SessionDisplay::new(&plan);
 
     // Set up Ctrl+C handler
     let ctrl_c = async {
@@ -627,71 +624,27 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
                 // Get current session state
                 let progress = executor.get_progress().await;
 
-                // Clear screen and reset cursor
-                execute!(stdout, cursor::MoveTo(0, 0)).unwrap();
-
-                // Display header
-                execute!(
-                    stdout,
-                    SetForegroundColor(Color::Cyan),
-                    Print(format!("═══ {} ═══\n", plan.name)),
-                    ResetColor
-                ).unwrap();
-
-                if let Some((phase_idx, elapsed_secs, _phase_duration)) = progress {
+                if let Some((phase_idx, elapsed_secs, phase_duration)) = progress {
                     if phase_idx < plan.phases.len() {
-                        let phase = &plan.phases[phase_idx];
-                        let remaining_secs = phase.duration_secs.saturating_sub(elapsed_secs);
+                        // Update the display with current progress
+                        display.update(phase_idx, elapsed_secs, phase_duration, &plan);
 
-                        // Display current phase
-                        execute!(
-                            stdout,
-                            Print(format!("\nPhase {}/{}: {}\n", phase_idx + 1, plan.phases.len(), phase.name))
-                        ).unwrap();
-
-                        // Display target zone
-                        execute!(
-                            stdout,
-                            SetForegroundColor(Color::Yellow),
-                            Print(format!("Target Zone: {:?}\n", phase.target_zone)),
-                            ResetColor
-                        ).unwrap();
-
-                        // Display time remaining
-                        let mins = remaining_secs / 60;
-                        let secs = remaining_secs % 60;
-                        execute!(
-                            stdout,
-                            Print(format!("Time Remaining: {:02}:{:02}\n", mins, secs))
-                        ).unwrap();
-
-                        // Display elapsed time in phase
-                        let elapsed_mins = elapsed_secs / 60;
-                        let elapsed_sec = elapsed_secs % 60;
-                        execute!(
-                            stdout,
-                            Print(format!("Elapsed: {:02}:{:02}\n", elapsed_mins, elapsed_sec))
-                        ).unwrap();
+                        // Render the display
+                        if let Err(e) = display.render() {
+                            error!("Failed to render display: {}", e);
+                        }
                     } else {
                         // Session complete
-                        execute!(
-                            stdout,
-                            SetForegroundColor(Color::Green),
-                            Print("\n✓ Session Complete!\n"),
-                            ResetColor
-                        ).unwrap();
+                        SessionDisplay::clear().ok();
+                        println!("\n✓ Session Complete!\n");
                         break;
                     }
                 } else {
                     // No active session
-                    execute!(
-                        stdout,
-                        Print("\nSession ended.\n")
-                    ).unwrap();
+                    SessionDisplay::clear().ok();
+                    println!("\nSession ended.\n");
                     break;
                 }
-
-                stdout.flush().unwrap();
 
                 // Update every second
                 tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -701,9 +654,12 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
         }
     }
 
+    // Clean up display
+    SessionDisplay::clear().ok();
+
     // Stop the session
     executor.stop_session().await?;
-    println!("\n\n✓ Session stopped");
+    println!("\n✓ Session stopped");
 
     Ok(())
 }
@@ -1523,4 +1479,288 @@ fn handle_plan_create() -> anyhow::Result<()> {
     println!("\nRun 'cli session start {}' to start this plan.", plan_path.display());
 
     Ok(())
+}
+
+/// Session display module for real-time terminal UI during training sessions.
+mod session_display {
+    use crossterm::{
+        cursor, execute, terminal,
+        style::{Color, Print, ResetColor, SetForegroundColor, Attribute, SetAttribute},
+    };
+    use heart_beat::domain::heart_rate::Zone;
+    use heart_beat::domain::training_plan::TrainingPlan;
+    use std::io::{stdout, Write, Result};
+
+    /// Session display state for rendering the training session UI.
+    pub struct SessionDisplay {
+        plan_name: String,
+        current_phase: usize,
+        total_phases: usize,
+        phase_name: String,
+        current_bpm: Option<u16>,
+        target_zone: Zone,
+        elapsed_secs: u32,
+        remaining_secs: u32,
+        max_hr: u16,
+    }
+
+    impl SessionDisplay {
+        /// Create a new session display.
+        pub fn new(plan: &TrainingPlan) -> Self {
+            Self {
+                plan_name: plan.name.clone(),
+                current_phase: 0,
+                total_phases: plan.phases.len(),
+                phase_name: String::new(),
+                current_bpm: None,
+                target_zone: Zone::Zone2,
+                elapsed_secs: 0,
+                remaining_secs: 0,
+                max_hr: plan.max_hr,
+            }
+        }
+
+        /// Update the display with current session state.
+        pub fn update(
+            &mut self,
+            phase_idx: usize,
+            elapsed: u32,
+            phase_duration: u32,
+            plan: &TrainingPlan,
+        ) {
+            if phase_idx < plan.phases.len() {
+                let phase = &plan.phases[phase_idx];
+                self.current_phase = phase_idx;
+                self.phase_name = phase.name.clone();
+                self.target_zone = phase.target_zone;
+                self.elapsed_secs = elapsed;
+                self.remaining_secs = phase_duration.saturating_sub(elapsed);
+            }
+        }
+
+        /// Update the current heart rate.
+        pub fn update_bpm(&mut self, bpm: u16) {
+            self.current_bpm = Some(bpm);
+        }
+
+        /// Render the session display to the terminal.
+        pub fn render(&self) -> Result<()> {
+            let mut stdout = stdout();
+
+            // Clear screen and move to top
+            execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+            execute!(stdout, cursor::MoveTo(0, 0))?;
+
+            // Render header with plan name
+            self.render_header(&mut stdout)?;
+
+            // Render current phase info
+            self.render_phase_info(&mut stdout)?;
+
+            // Render large BPM display
+            self.render_bpm(&mut stdout)?;
+
+            // Render zone bar
+            self.render_zone_bar(&mut stdout)?;
+
+            // Render progress info
+            self.render_progress(&mut stdout)?;
+
+            // Render zone deviation status
+            self.render_zone_status(&mut stdout)?;
+
+            stdout.flush()?;
+            Ok(())
+        }
+
+        fn render_header(&self, stdout: &mut std::io::Stdout) -> Result<()> {
+            let header_line = "═".repeat(60);
+            execute!(
+                stdout,
+                SetForegroundColor(Color::Cyan),
+                SetAttribute(Attribute::Bold),
+                Print(format!("╔{}╗\n", header_line)),
+                Print(format!("║{:^60}║\n", self.plan_name)),
+                Print(format!("║ Phase {}/{}: {:54} ║\n",
+                    self.current_phase + 1,
+                    self.total_phases,
+                    self.phase_name
+                )),
+                Print(format!("╠{}╣\n", header_line)),
+                ResetColor
+            )?;
+            Ok(())
+        }
+
+        fn render_phase_info(&self, _stdout: &mut std::io::Stdout) -> Result<()> {
+            // Phase info is in the header
+            Ok(())
+        }
+
+        fn render_bpm(&self, stdout: &mut std::io::Stdout) -> Result<()> {
+            execute!(stdout, Print("║                                                            ║\n"))?;
+
+            if let Some(bpm) = self.current_bpm {
+                // Display large BPM
+                execute!(
+                    stdout,
+                    Print("║"),
+                    SetForegroundColor(self.get_bpm_color(bpm)),
+                    SetAttribute(Attribute::Bold),
+                    Print(format!("{:^60}", format!("{} BPM", bpm))),
+                    ResetColor,
+                    Print("║\n")
+                )?;
+            } else {
+                execute!(
+                    stdout,
+                    Print("║"),
+                    SetForegroundColor(Color::Grey),
+                    Print(format!("{:^60}", "--- BPM")),
+                    ResetColor,
+                    Print("║\n")
+                )?;
+            }
+
+            execute!(stdout, Print("║                                                            ║\n"))?;
+            Ok(())
+        }
+
+        fn render_zone_bar(&self, stdout: &mut std::io::Stdout) -> Result<()> {
+            let bar_width = 40;
+            let zone_color = self.get_zone_color();
+            let bar = "█".repeat(bar_width);
+
+            execute!(
+                stdout,
+                Print("║  "),
+                SetForegroundColor(zone_color),
+                SetAttribute(Attribute::Bold),
+                Print(&bar),
+                ResetColor,
+                Print("  ║\n")
+            )?;
+
+            // Show zone label
+            execute!(
+                stdout,
+                Print("║  "),
+                SetForegroundColor(zone_color),
+                Print(format!("{:^40}", format!("{:?}", self.target_zone))),
+                ResetColor,
+                Print("  ║\n")
+            )?;
+
+            execute!(stdout, Print("║                                                            ║\n"))?;
+            Ok(())
+        }
+
+        fn render_progress(&self, stdout: &mut std::io::Stdout) -> Result<()> {
+            let elapsed_mins = self.elapsed_secs / 60;
+            let elapsed_secs = self.elapsed_secs % 60;
+            let remaining_mins = self.remaining_secs / 60;
+            let remaining_secs = self.remaining_secs % 60;
+
+            execute!(
+                stdout,
+                Print("║  "),
+                SetAttribute(Attribute::Bold),
+                Print(format!("Elapsed: {:02}:{:02}", elapsed_mins, elapsed_secs)),
+                ResetColor,
+                Print("  │  "),
+                SetAttribute(Attribute::Bold),
+                Print(format!("Remaining: {:02}:{:02}", remaining_mins, remaining_secs)),
+                ResetColor,
+                Print("  │  "),
+                SetForegroundColor(self.get_zone_color()),
+                SetAttribute(Attribute::Bold),
+                Print(format!("Target: {:?}", self.target_zone)),
+                ResetColor,
+                Print("  ║\n")
+            )?;
+
+            execute!(stdout, Print("║                                                            ║\n"))?;
+            Ok(())
+        }
+
+        fn render_zone_status(&self, stdout: &mut std::io::Stdout) -> Result<()> {
+            if let Some(bpm) = self.current_bpm {
+                let zone = self.calculate_current_zone(bpm);
+                let status = if zone == self.target_zone {
+                    ("✓ IN ZONE", Color::Green)
+                } else if zone < self.target_zone {
+                    ("↓ BELOW TARGET ZONE", Color::Blue)
+                } else {
+                    ("↑ ABOVE TARGET ZONE", Color::Red)
+                };
+
+                execute!(
+                    stdout,
+                    Print("║  "),
+                    SetForegroundColor(status.1),
+                    SetAttribute(Attribute::Bold),
+                    Print(format!("{:^56}", status.0)),
+                    ResetColor,
+                    Print("  ║\n")
+                )?;
+            } else {
+                execute!(
+                    stdout,
+                    Print("║"),
+                    SetForegroundColor(Color::Grey),
+                    Print(format!("{:^60}", "Waiting for heart rate data...")),
+                    ResetColor,
+                    Print("║\n")
+                )?;
+            }
+
+            let footer_line = "═".repeat(60);
+            execute!(
+                stdout,
+                SetForegroundColor(Color::Cyan),
+                Print(format!("╚{}╝\n", footer_line)),
+                ResetColor
+            )?;
+
+            Ok(())
+        }
+
+        fn get_zone_color(&self) -> Color {
+            match self.target_zone {
+                Zone::Zone1 => Color::Blue,
+                Zone::Zone2 => Color::Green,
+                Zone::Zone3 => Color::Yellow,
+                Zone::Zone4 => Color::DarkYellow,
+                Zone::Zone5 => Color::Red,
+            }
+        }
+
+        fn get_bpm_color(&self, bpm: u16) -> Color {
+            let zone = self.calculate_current_zone(bpm);
+            if zone == self.target_zone {
+                Color::Green
+            } else if zone < self.target_zone {
+                Color::Blue
+            } else {
+                Color::Red
+            }
+        }
+
+        fn calculate_current_zone(&self, bpm: u16) -> Zone {
+            use heart_beat::domain::training_plan::calculate_zone;
+            match calculate_zone(bpm, self.max_hr) {
+                Ok(Some(zone)) => zone,
+                _ => Zone::Zone2, // Default fallback
+            }
+        }
+
+        /// Clear the terminal on exit.
+        pub fn clear() -> Result<()> {
+            let mut stdout = stdout();
+            execute!(stdout, terminal::Clear(terminal::ClearType::All))?;
+            execute!(stdout, cursor::MoveTo(0, 0))?;
+            stdout.flush()?;
+            Ok(())
+        }
+    }
 }
