@@ -27,7 +27,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Rust TUI developer | Task: Implement SessionCmd enum with Start{plan_path}, Pause, Resume, Stop. On start, load TrainingPlan from JSON, create SessionExecutor, display live updates: current phase, elapsed/remaining time, current BPM, target zone. Use crossterm to update in-place (no scrolling). Color zone indicator | Restrictions: Must handle Ctrl+C gracefully (save state), update at 1Hz minimum | Success: Session display updates smoothly, shows all metrics_
 
-- [ ] 3.1 Implement enhanced mock subcommand
+- [x] 3.1 Implement enhanced mock subcommand
   - File: `rust/src/bin/cli.rs`
   - Add mock scenarios: steady, ramp, interval, dropout
   - Generate realistic HR patterns with noise
