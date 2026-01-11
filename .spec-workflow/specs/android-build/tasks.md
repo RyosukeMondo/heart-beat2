@@ -40,7 +40,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Mobile build engineer | Task: Create build-rust-android.sh that: checks ANDROID_NDK_HOME is set, builds for aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android using cargo build --release --target, strips binaries with llvm-strip, copies to android/app/src/main/jniLibs/[arm64-v8a,armeabi-v7a,x86_64,x86]/libheart_beat.so. Add --debug flag for debug builds | Restrictions: Must handle errors, show progress | Success: Script builds all architectures, copies to correct locations_
 
-- [ ] 3.1 Update AndroidManifest.xml
+- [x] 3.1 Update AndroidManifest.xml
   - File: `android/app/src/main/AndroidManifest.xml`
   - Add BLE permissions and configure app
   - Purpose: Enable Bluetooth and permissions
