@@ -48,7 +48,7 @@ struct PendingSession {
 /// The executor manages the lifecycle of training sessions, coordinating between
 /// the session state machine, HR data stream, notifications, and persistence.
 pub struct SessionExecutor {
-    /// Session state machine wrapped in Arc<Mutex> for shared access
+    /// Session state machine wrapped in `Arc<Mutex>` for shared access
     session_state: Arc<Mutex<SessionStateMachineWrapper>>,
 
     /// Notification port for user alerts
