@@ -40,7 +40,11 @@ pub enum ConnectionEvent {
     ReconnectFailed,
 }
 
-/// Superstate representing any connected state (Connected or streaming)
+/// Superstate representing any connected state (Connected or streaming).
+///
+/// This is used by statig's hierarchical state machine to group Connected
+/// and other connection-active states under a common parent, enabling
+/// shared transition logic for all connected states.
 #[frb(opaque)]
 #[derive(Debug, Default)]
 pub struct ConnectedSuperstate;
