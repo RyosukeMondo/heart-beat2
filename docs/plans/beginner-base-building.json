@@ -1,0 +1,25 @@
+{
+  "name": "Beginner Base Building",
+  "max_hr": 180,
+  "created_at": "2024-01-10T12:00:00Z",
+  "phases": [
+    {
+      "name": "Warmup",
+      "target_zone": "Zone1",
+      "duration_secs": 600,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Easy Aerobic Build",
+      "target_zone": "Zone2",
+      "duration_secs": 1800,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Cooldown",
+      "target_zone": "Zone1",
+      "duration_secs": 300,
+      "transition": "TimeElapsed"
+    }
+  ]
+}
