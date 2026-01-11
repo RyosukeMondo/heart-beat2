@@ -18,7 +18,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Software architect and technical writer | Task: Create architecture.md with sections: Architecture Overview (hexagonal pattern), Module Breakdown (domain/ports/adapters/state/scheduler), Dependency Graph (Mermaid), Data Flow (BLE packet → FilteredHeartRate → UI), State Machines (connectivity, session diagrams), Key Design Decisions (why statig, why FRB v2). Add Mermaid diagrams showing module dependencies and data flow | Restrictions: Diagrams must be accurate, explain "why" not just "what" | Success: Developer understands where to add features_
 
-- [ ] 2.2 Create module-specific docs
+- [x] 2.2 Create module-specific docs
   - Files: `rust/src/domain/README.md`, `rust/src/state/README.md`, etc.
   - Document each major module's purpose and public API
   - Purpose: In-context documentation for module exploration
