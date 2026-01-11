@@ -510,8 +510,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_emit_and_receive_hr_data() {
+        use tokio::time::{timeout, Duration};
+
         // Create a receiver
         let mut rx = get_hr_stream_receiver();
+
+        // Drain any old data from previous tests with a short timeout
+        while timeout(Duration::from_millis(10), rx.recv()).await.is_ok() {}
 
         // Emit some data
         let data = create_test_hr_data(80, 79);
@@ -528,17 +533,20 @@ mod tests {
 
     #[tokio::test]
     async fn test_multiple_receivers_fan_out() {
-        use tokio::time::{timeout, Duration};
+        use tokio::time::{sleep, timeout, Duration};
 
         // Create receivers first
         let mut rx1 = get_hr_stream_receiver();
         let mut rx2 = get_hr_stream_receiver();
         let mut rx3 = get_hr_stream_receiver();
 
-        // Drain any old data from previous tests with a short timeout
-        while timeout(Duration::from_millis(10), rx1.recv()).await.is_ok() {}
-        while timeout(Duration::from_millis(10), rx2.recv()).await.is_ok() {}
-        while timeout(Duration::from_millis(10), rx3.recv()).await.is_ok() {}
+        // Drain any old data from previous tests with a longer timeout
+        while timeout(Duration::from_millis(50), rx1.recv()).await.is_ok() {}
+        while timeout(Duration::from_millis(50), rx2.recv()).await.is_ok() {}
+        while timeout(Duration::from_millis(50), rx3.recv()).await.is_ok() {}
+
+        // Small delay to ensure we don't race with other tests
+        sleep(Duration::from_millis(10)).await;
 
         // Emit data with unique BPM to identify this test's data
         let data = create_test_hr_data(155, 154);
