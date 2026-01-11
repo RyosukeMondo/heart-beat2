@@ -9,9 +9,11 @@ use crate::frb_generated::StreamSink;
 use crate::ports::BleAdapter;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
+use std::panic;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::broadcast;
+use tracing::error;
 
 // Re-export domain types for FRB code generation
 pub use crate::domain::heart_rate::{
@@ -20,6 +22,54 @@ pub use crate::domain::heart_rate::{
 
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
+
+/// Initialize the panic handler for FFI safety.
+///
+/// This function sets up a panic hook that catches Rust panics and logs them
+/// using the tracing framework instead of crashing the app. This is critical
+/// for Android/iOS where uncaught panics would terminate the entire application.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// before making any other FFI calls to Rust.
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   // Initialize Rust panic handler first
+///   await RustLib.init();
+///   initPanicHandler();
+///
+///   runApp(MyApp());
+/// }
+/// ```
+pub fn init_panic_handler() {
+    panic::set_hook(Box::new(|panic_info| {
+        let payload = panic_info.payload();
+
+        let msg = if let Some(s) = payload.downcast_ref::<&str>() {
+            s.to_string()
+        } else if let Some(s) = payload.downcast_ref::<String>() {
+            s.clone()
+        } else {
+            "Unknown panic payload".to_string()
+        };
+
+        let location = if let Some(loc) = panic_info.location() {
+            format!("{}:{}:{}", loc.file(), loc.line(), loc.column())
+        } else {
+            "Unknown location".to_string()
+        };
+
+        error!(
+            target: "panic",
+            panic_message = %msg,
+            location = %location,
+            "Rust panic occurred - this would have crashed the app"
+        );
+    }));
+}
 
 /// Scan for BLE heart rate devices.
 ///
