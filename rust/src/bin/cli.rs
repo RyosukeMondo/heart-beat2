@@ -28,21 +28,137 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    /// Manage BLE device connections
+    Devices {
+        #[command(subcommand)]
+        command: DevicesCmd,
+    },
+
+    /// Run training sessions
+    Session {
+        #[command(subcommand)]
+        command: SessionCmd,
+    },
+
+    /// Generate simulated HR data
+    Mock {
+        #[command(subcommand)]
+        command: MockCmd,
+    },
+
+    /// Manage training plans
+    Plan {
+        #[command(subcommand)]
+        command: PlanCmd,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum DevicesCmd {
     /// Scan for nearby heart rate monitor devices
     Scan,
 
-    /// Connect to a heart rate monitor and stream data
+    /// Connect to a device and stream data
     Connect {
         /// Device ID to connect to (from scan results)
         device_id: String,
     },
 
-    /// Stream mock heart rate data for testing
-    Mock {
-        /// Duration in seconds to run the mock stream (optional, runs indefinitely if not specified)
-        #[arg(short, long)]
-        duration: Option<u64>,
+    /// Show connected device information
+    Info,
+
+    /// Disconnect from the current device
+    Disconnect,
+}
+
+#[derive(Subcommand, Debug)]
+enum SessionCmd {
+    /// Start a training session with a plan
+    Start {
+        /// Path to training plan JSON file
+        plan_path: String,
     },
+
+    /// Pause the active session
+    Pause,
+
+    /// Resume a paused session
+    Resume,
+
+    /// Stop the session and show summary
+    Stop,
+}
+
+#[derive(Subcommand, Debug)]
+enum MockCmd {
+    /// Generate steady heart rate with noise
+    Steady {
+        /// Target BPM
+        #[arg(long)]
+        bpm: u16,
+    },
+
+    /// Generate ramping heart rate
+    Ramp {
+        /// Starting BPM
+        #[arg(long)]
+        start: u16,
+
+        /// Ending BPM
+        #[arg(long)]
+        end: u16,
+
+        /// Duration in seconds
+        #[arg(long)]
+        duration: u32,
+    },
+
+    /// Generate interval pattern
+    Interval {
+        /// Low BPM (rest)
+        #[arg(long)]
+        low: u16,
+
+        /// High BPM (work)
+        #[arg(long)]
+        high: u16,
+
+        /// Work period in seconds
+        #[arg(long)]
+        work_secs: u32,
+
+        /// Rest period in seconds
+        #[arg(long)]
+        rest_secs: u32,
+    },
+
+    /// Simulate packet dropout
+    Dropout {
+        /// Probability of packet loss (0.0-1.0)
+        #[arg(long)]
+        probability: f64,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum PlanCmd {
+    /// List all saved training plans
+    List,
+
+    /// Show plan details
+    Show {
+        /// Plan name
+        name: String,
+    },
+
+    /// Validate a plan file
+    Validate {
+        /// Path to plan file
+        path: String,
+    },
+
+    /// Create a new plan interactively
+    Create,
 }
 
 #[tokio::main]
@@ -69,22 +185,82 @@ async fn main() -> anyhow::Result<()> {
     info!("Heart Beat CLI starting");
 
     match cli.command {
-        Commands::Scan => {
-            handle_scan().await?;
-        }
-        Commands::Connect { device_id } => {
-            handle_connect(&device_id).await?;
-        }
-        Commands::Mock { duration } => {
-            handle_mock(duration).await?;
-        }
+        Commands::Devices { command } => match command {
+            DevicesCmd::Scan => {
+                handle_devices_scan().await?;
+            }
+            DevicesCmd::Connect { device_id } => {
+                handle_devices_connect(&device_id).await?;
+            }
+            DevicesCmd::Info => {
+                eprintln!("Info command not yet implemented");
+                std::process::exit(1);
+            }
+            DevicesCmd::Disconnect => {
+                eprintln!("Disconnect command not yet implemented");
+                std::process::exit(1);
+            }
+        },
+        Commands::Session { command } => match command {
+            SessionCmd::Start { plan_path } => {
+                eprintln!("Session start not yet implemented: {}", plan_path);
+                std::process::exit(1);
+            }
+            SessionCmd::Pause => {
+                eprintln!("Session pause not yet implemented");
+                std::process::exit(1);
+            }
+            SessionCmd::Resume => {
+                eprintln!("Session resume not yet implemented");
+                std::process::exit(1);
+            }
+            SessionCmd::Stop => {
+                eprintln!("Session stop not yet implemented");
+                std::process::exit(1);
+            }
+        },
+        Commands::Mock { command } => match command {
+            MockCmd::Steady { bpm } => {
+                handle_mock_steady(bpm).await?;
+            }
+            MockCmd::Ramp { start, end, duration } => {
+                eprintln!("Mock ramp not yet implemented: {} -> {} over {}s", start, end, duration);
+                std::process::exit(1);
+            }
+            MockCmd::Interval { low, high, work_secs, rest_secs } => {
+                eprintln!("Mock interval not yet implemented: {}bpm/{}bpm, {}s/{}s", low, high, work_secs, rest_secs);
+                std::process::exit(1);
+            }
+            MockCmd::Dropout { probability } => {
+                eprintln!("Mock dropout not yet implemented: {}", probability);
+                std::process::exit(1);
+            }
+        },
+        Commands::Plan { command } => match command {
+            PlanCmd::List => {
+                eprintln!("Plan list not yet implemented");
+                std::process::exit(1);
+            }
+            PlanCmd::Show { name } => {
+                eprintln!("Plan show not yet implemented: {}", name);
+                std::process::exit(1);
+            }
+            PlanCmd::Validate { path } => {
+                eprintln!("Plan validate not yet implemented: {}", path);
+                std::process::exit(1);
+            }
+            PlanCmd::Create => {
+                eprintln!("Plan create not yet implemented");
+                std::process::exit(1);
+            }
+        },
     }
 
     Ok(())
 }
 
-/// Handle the scan subcommand.
-async fn handle_scan() -> anyhow::Result<()> {
+/// Handle the devices scan subcommand.
+async fn handle_devices_scan() -> anyhow::Result<()> {
     use std::time::Duration;
 
     info!("Scanning for heart rate monitors...");
@@ -130,8 +306,8 @@ async fn handle_scan() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Handle the connect subcommand.
-async fn handle_connect(device_id: &str) -> anyhow::Result<()> {
+/// Handle the devices connect subcommand.
+async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     use tokio::signal;
 
     info!("Connecting to device: {}", device_id);
@@ -227,13 +403,12 @@ async fn handle_connect(device_id: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Handle the mock subcommand.
-async fn handle_mock(duration: Option<u64>) -> anyhow::Result<()> {
+/// Handle the mock steady subcommand.
+async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
     use tokio::signal;
-    use tokio::time::Duration;
 
-    info!("Starting mock data stream...");
-    println!("Starting mock heart rate simulation...\n");
+    info!("Starting mock data stream with steady BPM: {}", bpm);
+    println!("Starting mock heart rate simulation (steady {}bpm)...\n", bpm);
 
     // Create mock adapter
     let adapter = MockAdapter::new();
@@ -284,26 +459,11 @@ async fn handle_mock(duration: Option<u64>) -> anyhow::Result<()> {
             .expect("Failed to install Ctrl+C handler");
     };
 
-    // Create duration timeout if specified
-    let duration_future = async {
-        if let Some(secs) = duration {
-            tokio::time::sleep(Duration::from_secs(secs)).await;
-            true
-        } else {
-            // Never complete if no duration specified
-            std::future::pending::<bool>().await
-        }
-    };
-
     // Stream heart rate data
     tokio::select! {
         _ = ctrl_c => {
             info!("Ctrl+C received, disconnecting...");
             println!("\n\nDisconnecting...");
-        }
-        _ = duration_future => {
-            info!("Duration completed, disconnecting...");
-            println!("\n\nDuration completed, disconnecting...");
         }
         _ = async {
             while let Some(data) = hr_receiver.recv().await {
