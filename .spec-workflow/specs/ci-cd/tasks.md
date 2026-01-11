@@ -16,7 +16,7 @@
   - _Requirements: 1_
   - _Prompt: Role: CI/CD specialist | Task: Add integration-tests job to ci.yml running cargo test --test '*'. Run after unit tests pass (needs: [test-rust]). Use --no-fail-fast to see all failures. Set timeout-minutes: 10. Upload test logs as artifacts if failure | Restrictions: Must isolate from unit tests, handle timeouts | Success: Integration tests run separately, logs available on failure_
 
-- [ ] 2.1 Add coverage workflow
+- [x] 2.1 Add coverage workflow
   - File: `.github/workflows/coverage.yml`
   - Use cargo-llvm-cov to measure coverage
   - Upload to Codecov
