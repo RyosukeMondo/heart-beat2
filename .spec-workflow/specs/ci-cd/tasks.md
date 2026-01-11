@@ -73,7 +73,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Performance engineer | Task: Create latency_bench.rs using criterion. Benchmark: parse_heart_rate (packet parsing), kalman_filter.update (filtering), full_pipeline (packet → filtered). Use realistic BLE packets. Set baseline for comparison. Add criterion to dev-dependencies. Create bench job in CI | Restrictions: Benchmarks must be deterministic, run on same hardware | Success: cargo bench runs, tracks performance trends_
 
-- [ ] 5.2 Add benchmark comparison workflow
+- [x] 5.2 Add benchmark comparison workflow
   - File: `.github/workflows/benchmark.yml`
   - Compare PR benchmarks against main
   - Purpose: Catch performance regressions

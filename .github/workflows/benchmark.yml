@@ -1,0 +1,207 @@
+name: Benchmark
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Performance Regression Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history to access main branch
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-git-
+
+    - name: Cache cargo build
+      uses: actions/cache@v4
+      with:
+        path: rust/target
+        key: ${{ runner.os }}-bench-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bench-cargo-build-
+
+    # Cache criterion baseline between runs for better comparison accuracy
+    - name: Cache criterion baseline
+      uses: actions/cache@v4
+      with:
+        path: rust/target/criterion
+        key: ${{ runner.os }}-criterion-baseline-${{ github.base_ref }}
+        restore-keys: |
+          ${{ runner.os }}-criterion-baseline-
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libudev-dev libdbus-1-dev
+
+    # Run benchmarks on main branch to establish baseline
+    - name: Run benchmarks on main branch
+      run: |
+        git checkout main
+        cargo bench --manifest-path rust/Cargo.toml --bench latency_bench -- --save-baseline main
+        git checkout -
+
+    # Run benchmarks on PR branch and compare
+    - name: Run benchmarks on PR branch
+      run: |
+        cargo bench --manifest-path rust/Cargo.toml --bench latency_bench -- --baseline main --save-baseline pr > benchmark-output.txt 2>&1
+        cat benchmark-output.txt
+
+    # Parse benchmark results and check for regressions
+    - name: Check for performance regressions
+      id: check_regression
+      run: |
+        # Extract the full_pipeline benchmark results
+        # Criterion outputs lines like: "full_pipeline      time:   [123.45 ns 125.67 ns 127.89 ns]"
+        # We look for "change:" lines which show percentage differences
+
+        if grep -q "Performance has regressed" benchmark-output.txt; then
+          echo "regression_detected=true" >> $GITHUB_OUTPUT
+          echo "::warning::Performance regression detected in benchmarks"
+        else
+          echo "regression_detected=false" >> $GITHUB_OUTPUT
+        fi
+
+        # Check specifically for full_pipeline regression > 10%
+        # Criterion marks regressions with "Performance has regressed" or "change: [+X.XX%]"
+        if grep "full_pipeline" benchmark-output.txt | grep -E "change:.*\+[0-9]+\.[0-9]+%" > /dev/null; then
+          FULL_PIPELINE_CHANGE=$(grep "full_pipeline" benchmark-output.txt | grep -oE "\+[0-9]+\.[0-9]+%" | head -1 | tr -d '+%')
+          echo "full_pipeline_change=$FULL_PIPELINE_CHANGE" >> $GITHUB_OUTPUT
+
+          # Check if regression > 10%
+          if (( $(echo "$FULL_PIPELINE_CHANGE > 10" | bc -l) )); then
+            echo "critical_regression=true" >> $GITHUB_OUTPUT
+            echo "::error::Critical regression detected: full_pipeline is ${FULL_PIPELINE_CHANGE}% slower"
+          else
+            echo "critical_regression=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "critical_regression=false" >> $GITHUB_OUTPUT
+        fi
+
+    # Generate benchmark comparison report
+    - name: Generate benchmark report
+      id: report
+      run: |
+        # Create a markdown table from the benchmark results
+        cat > benchmark-report.md << 'EOF'
+        ## Benchmark Results
+
+        Performance comparison between `main` and this PR:
+
+        EOF
+
+        # Extract benchmark names and changes from criterion output
+        # This is a simplified parser - criterion's actual output format is complex
+        grep -E "(time:|change:)" benchmark-output.txt | sed 's/^/    /' >> benchmark-report.md || echo "No benchmark changes detected" >> benchmark-report.md
+
+        echo "" >> benchmark-report.md
+
+        if [ "${{ steps.check_regression.outputs.critical_regression }}" = "true" ]; then
+          cat >> benchmark-report.md << 'EOF'
+
+        ⚠️ **CRITICAL REGRESSION DETECTED**
+
+        The `full_pipeline` benchmark has regressed by more than 10%, which exceeds the acceptable threshold.
+        This is the critical path for the <100ms P95 latency requirement.
+
+        Please investigate and optimize before merging.
+        EOF
+        elif [ "${{ steps.check_regression.outputs.regression_detected }}" = "true" ]; then
+          cat >> benchmark-report.md << 'EOF'
+
+        ⚠️ **Performance Regression Detected**
+
+        Some benchmarks show performance regressions. While not critical, please review the changes.
+        EOF
+        else
+          cat >> benchmark-report.md << 'EOF'
+
+        ✅ **No Performance Regressions Detected**
+
+        All benchmarks are within acceptable performance variance or show improvements.
+        EOF
+        fi
+
+        cat benchmark-report.md
+
+    # Comment on PR with benchmark results
+    - name: Comment PR with benchmark results
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('benchmark-report.md', 'utf8');
+
+          // Find existing benchmark comment
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+
+          const benchmarkComment = comments.find(comment =>
+            comment.user.type === 'Bot' && comment.body.includes('Benchmark Results')
+          );
+
+          // Update existing comment or create new one
+          if (benchmarkComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: benchmarkComment.id,
+              body: report
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: report
+            });
+          }
+
+    # Fail the job if critical regression detected
+    - name: Fail on critical regression
+      if: steps.check_regression.outputs.critical_regression == 'true'
+      run: |
+        echo "::error::Critical performance regression detected in full_pipeline benchmark (>10%)"
+        echo "This exceeds the acceptable threshold for the critical path."
+        echo "The P95 latency requirement of <100ms may be at risk."
+        exit 1
+
+    # Upload full benchmark output as artifact for detailed analysis
+    - name: Upload benchmark output
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: |
+          benchmark-output.txt
+          benchmark-report.md
+          rust/target/criterion/
+        retention-days: 30
