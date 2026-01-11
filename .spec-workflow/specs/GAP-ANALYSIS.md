@@ -1,6 +1,7 @@
 # Gap Analysis: Steering Documents vs Codebase
 
 Generated: 2026-01-11
+Updated: 2026-01-11 (Phase 2 specs added)
 
 ## Overview
 
@@ -171,3 +172,98 @@ All specs are ready for immediate implementation following the tasks-template fo
 6. Deliver **flutter-app** (final UI)
 
 Each spec is self-contained and can be implemented autonomously following the task lists.
+
+---
+
+## Phase 2 Specs (Added 2026-01-11)
+
+### 7. CLI Enhancement (HIGH PRIORITY)
+**Status:** ✅ Spec created
+**Directory:** `.spec-workflow/specs/cli-enhancement/`
+**Reason:** Transform basic CLI into professional development tool
+**Impact:** HIGH - Dramatically improves developer experience
+
+**Features:**
+- Subcommand structure (devices, session, mock, plan)
+- Rich terminal UI with colors, tables, progress bars
+- Real-time session monitoring TUI
+- Enhanced mock scenarios (steady, ramp, interval, dropout)
+- Interactive training plan creator
+
+**Tasks:** 6 tasks
+
+---
+
+### 8. Documentation (HIGH PRIORITY)
+**Status:** ✅ Spec created
+**Directory:** `.spec-workflow/specs/documentation/`
+**Reason:** Essential for onboarding, contribution, and user adoption
+**Impact:** HIGH - Enables collaboration and user adoption
+
+**Deliverables:**
+- Comprehensive README.md
+- Architecture documentation with Mermaid diagrams
+- API documentation (cargo doc)
+- User manual with training zone explanations
+- Development and contribution guides
+- Runnable code examples
+
+**Tasks:** 9 tasks
+
+---
+
+### 9. CI/CD Pipeline (CRITICAL)
+**Status:** ✅ Spec created
+**Directory:** `.spec-workflow/specs/ci-cd/`
+**Reason:** Automated testing, quality gates, and release automation
+**Impact:** CRITICAL - Ensures quality and streamlines releases
+
+**Features:**
+- GitHub Actions workflows (CI, coverage, release, benchmark)
+- cargo-llvm-cov with 80% threshold
+- Pre-commit hooks (fmt, clippy, tests)
+- Automated releases with multi-platform binaries
+- Performance regression detection with criterion
+
+**Tasks:** 11 tasks
+
+---
+
+### 10. Android Build Integration (CRITICAL)
+**Status:** ✅ Spec created
+**Directory:** `.spec-workflow/specs/android-build/`
+**Reason:** Complete production Android app build
+**Impact:** CRITICAL - Final deliverable
+
+**Features:**
+- FRB codegen configuration
+- Rust cross-compilation for 4 Android architectures
+- Android manifest and Gradle configuration
+- One-command build script
+- Development workflow and debugging guides
+
+**Tasks:** 12 tasks
+
+---
+
+## Updated Summary
+
+**Phase 1 (Core Implementation):** 6 specs, 36 tasks ✅ ALL COMPLETED
+**Phase 2 (Productization):** 4 specs, 38 tasks ⏳ READY TO IMPLEMENT
+
+**Total:** 10 specs, 74 tasks
+
+**Implementation Status:**
+- Core Rust modules: ✅ Complete (146 tests passing)
+- Flutter app structure: ✅ Complete
+- CLI enhancement: 📋 Spec ready
+- Documentation: 📋 Spec ready
+- CI/CD: 📋 Spec ready
+- Android build: 📋 Spec ready
+
+**Next Priority:**
+1. Android Build (spec 10) - Get working APK
+2. CLI Enhancement (spec 7) - Improve developer UX
+3. CI/CD (spec 9) - Quality automation
+4. Documentation (spec 8) - User/contributor enablement
+
