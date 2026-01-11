@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Configure FRB codegen
+- [x] 1.1 Configure FRB codegen
   - File: `flutter_rust_bridge.yaml`
   - Configure input (api.rs) and output (api_generated.dart)
   - Purpose: Enable Dart binding generation
@@ -8,7 +8,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Flutter FFI integration specialist | Task: Create flutter_rust_bridge.yaml with rust_input: ["rust/src/api.rs"], dart_output: ["lib/src/bridge/api_generated.dart"], llvm_path pointing to system LLVM. Configure for FRB v2. Add build dependencies to pubspec.yaml: flutter_rust_bridge: ^2.0.0, ffigen: ^9.0.0 | Restrictions: Must match FRB 2.x config format | Success: flutter_rust_bridge_codegen runs without errors_
 
-- [ ] 1.2 Run FRB codegen
+- [x] 1.2 Run FRB codegen
   - Command: `flutter_rust_bridge_codegen`
   - Generate Dart bindings from api.rs
   - Purpose: Create Flutter ↔ Rust bridge

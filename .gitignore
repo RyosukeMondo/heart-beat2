@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Flutter Rust Bridge generated files
+*.frb.dart
+
 # Android local properties (contains paths that vary by installation location)
 android/local.properties
 
