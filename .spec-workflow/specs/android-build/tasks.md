@@ -72,7 +72,7 @@
   - _Requirements: 4_
   - _Prompt: Role: DevOps automation engineer | Task: Create build-android.sh that: runs flutter_rust_bridge_codegen, calls scripts/build-rust-android.sh (release or debug based on flag), runs flutter build apk --release (or --debug). Add --clean flag to run flutter clean first. Add --architectures flag to build specific ABIs. Show build time and APK size. Add usage help | Restrictions: Must handle errors gracefully, provide progress feedback | Success: ./build-android.sh produces working APK_
 
-- [ ] 4.2 Add development helper scripts
+- [x] 4.2 Add development helper scripts
   - Files: `scripts/dev-setup.sh`, `scripts/check-deps.sh`
   - Automate development environment setup
   - Purpose: Streamline onboarding
