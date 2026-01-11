@@ -9,7 +9,7 @@
   - _Requirements: All_
   - _Prompt: Role: Rust CLI architect | Task: Restructure cli.rs using clap v4 derive API. Create enum Commands { Devices(DevicesCmd), Session(SessionCmd), Mock(MockCmd), Plan(PlanCmd) }. Each subcommand is its own enum with #[command(subcommand)]. Add help text and examples | Restrictions: Must maintain backward compatibility for basic scan/connect | Success: cli --help shows all subcommands with descriptions_
 
-- [ ] 1.2 Implement devices subcommand
+- [x] 1.2 Implement devices subcommand
   - File: `rust/src/bin/cli.rs`
   - Add devices scan, connect, info, disconnect commands
   - Use comfy-table for formatted output
@@ -17,7 +17,6 @@
   - _Leverage: api::scan_devices, api::connect_device_
   - _Requirements: 1_
   - _Prompt: Role: Rust CLI developer | Task: Implement DevicesCmd enum with Scan, Connect{id}, Info, Disconnect variants. Scan uses comfy-table to display devices with columns: Name, ID, RSSI, Services. Connect shows progress with spinners. Info displays battery and signal strength. Add colored output | Restrictions: Must handle errors gracefully, show user-friendly messages | Success: Table output is readable, progress indicators work_
-  - _Status: Scan and Connect are implemented. Info and Disconnect still need implementation._
 
 - [ ] 2.1 Implement session subcommand
   - File: `rust/src/bin/cli.rs`
