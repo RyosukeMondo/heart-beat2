@@ -262,21 +262,33 @@ async fn main() -> anyhow::Result<()> {
 /// Handle the devices scan subcommand.
 async fn handle_devices_scan() -> anyhow::Result<()> {
     use std::time::Duration;
+    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
+    use indicatif::{ProgressBar, ProgressStyle};
 
     info!("Scanning for heart rate monitors...");
-    println!("Scanning for heart rate monitors (5 seconds)...\n");
 
     // Create BLE adapter
     let adapter = BtleplugAdapter::new().await?;
 
-    // Start scanning
+    // Start scanning with progress indicator
     adapter.start_scan().await?;
+
+    // Show scanning progress
+    let pb = ProgressBar::new_spinner();
+    pb.set_style(
+        ProgressStyle::default_spinner()
+            .template("{spinner:.green} {msg}")
+            .unwrap()
+    );
+    pb.set_message("Scanning for heart rate monitors (5 seconds)...");
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
     // Wait for devices to be discovered
     tokio::time::sleep(Duration::from_secs(5)).await;
 
     // Stop scanning
     adapter.stop_scan().await?;
+    pb.finish_and_clear();
 
     // Get discovered devices
     let devices = adapter.get_discovered_devices().await;
@@ -290,17 +302,44 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
     } else {
         println!("Found {} device(s):\n", devices.len());
 
-        // Print table header
-        println!("{:<40} {:<30} {:>6}", "Device ID", "Name", "RSSI");
-        println!("{}", "-".repeat(80));
+        // Create table with comfy-table
+        let mut table = Table::new();
+        table
+            .load_preset(UTF8_FULL)
+            .set_content_arrangement(ContentArrangement::Dynamic);
 
-        // Print each device
+        // Add header row
+        table.set_header(vec![
+            Cell::new("Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
+            Cell::new("Device ID").add_attribute(Attribute::Bold).fg(Color::Cyan),
+            Cell::new("RSSI").add_attribute(Attribute::Bold).fg(Color::Cyan),
+            Cell::new("Services").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        ]);
+
+        // Add device rows
         for device in devices {
             let name = device.name.unwrap_or_else(|| "(Unknown)".to_string());
-            println!("{:<40} {:<30} {:>6} dBm", device.id, name, device.rssi);
+            let rssi_str = format!("{} dBm", device.rssi);
+
+            // Color code RSSI (green for strong, yellow for medium, red for weak)
+            let rssi_cell = if device.rssi > -60 {
+                Cell::new(&rssi_str).fg(Color::Green)
+            } else if device.rssi > -75 {
+                Cell::new(&rssi_str).fg(Color::Yellow)
+            } else {
+                Cell::new(&rssi_str).fg(Color::Red)
+            };
+
+            table.add_row(vec![
+                Cell::new(&name),
+                Cell::new(&device.id),
+                rssi_cell,
+                Cell::new("HR, Battery"),  // Simplified - actual service detection would need BLE scan
+            ]);
         }
 
-        println!("\nUse 'heart-beat-cli connect <device-id>' to connect to a device.");
+        println!("{table}");
+        println!("\nUse 'cli devices connect <device-id>' to connect to a device.");
     }
 
     Ok(())
@@ -309,36 +348,57 @@ async fn handle_devices_scan() -> anyhow::Result<()> {
 /// Handle the devices connect subcommand.
 async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     use tokio::signal;
+    use colored::Colorize;
+    use indicatif::{ProgressBar, ProgressStyle};
 
     info!("Connecting to device: {}", device_id);
-    println!("Connecting to device: {}...\n", device_id);
+
+    // Show connection progress
+    let pb = ProgressBar::new_spinner();
+    pb.set_style(
+        ProgressStyle::default_spinner()
+            .template("{spinner:.green} {msg}")
+            .unwrap()
+    );
+    pb.set_message(format!("Connecting to device: {}", device_id));
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
     // Create BLE adapter
     let adapter = BtleplugAdapter::new().await?;
 
     // Connect to the device
     adapter.connect(device_id).await?;
-    println!("✓ Connected to device");
+    pb.finish_and_clear();
+    println!("{} Connected to device", "✓".green().bold());
 
     // Subscribe to heart rate notifications
+    adapter.subscribe_hr().await?;
     let mut hr_receiver = adapter.subscribe_hr().await?;
-    println!("✓ Subscribed to heart rate notifications");
+    println!("{} Subscribed to heart rate notifications", "✓".green().bold());
 
     // Try to read battery level
     match adapter.read_battery().await {
-        Ok(battery) => println!("✓ Battery level: {}%\n", battery),
+        Ok(battery) => {
+            let battery_icon = if battery > 80 { "🔋" } else if battery > 20 { "🔋" } else { "🪫" };
+            println!("{} Battery level: {}%\n", battery_icon, battery.to_string().cyan().bold());
+        }
         Err(e) => {
             warn!("Could not read battery level: {}", e);
-            println!("⚠ Battery level not available\n");
+            println!("{} Battery level not available\n", "⚠".yellow());
         }
     }
 
     // Initialize Kalman filter
     let mut filter = KalmanFilter::default();
 
-    // Print table header
-    println!("{:<20} {:>8} {:>12} {:>10}", "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)");
-    println!("{}", "-".repeat(56));
+    // Print table header with colors
+    println!("{:<20} {:>8} {:>12} {:>10}",
+        "Timestamp".cyan().bold(),
+        "Raw BPM".cyan().bold(),
+        "Filtered BPM".cyan().bold(),
+        "RMSSD (ms)".cyan().bold()
+    );
+    println!("{}", "─".repeat(56).cyan());
 
     // Set up Ctrl+C handler
     let ctrl_c = async {
