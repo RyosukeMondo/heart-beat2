@@ -61,6 +61,34 @@ sdkmanager --list | grep -E "ndk|platform"
 
 ## Initial Setup
 
+### Quick Setup (Automated)
+
+For a streamlined setup experience, use the automated development setup script:
+
+```bash
+./scripts/dev-setup.sh
+```
+
+This script will:
+- ✓ Check if Rust is installed (and install it if missing)
+- ✓ Verify Flutter installation (with instructions if missing)
+- ✓ Check Android SDK/NDK configuration
+- ✓ Install Android cross-compilation targets
+- ✓ Run `flutter pub get` to install dependencies
+- ✓ Provide helpful feedback and next steps
+
+After running the setup script, verify everything is configured correctly:
+
+```bash
+./scripts/check-deps.sh
+```
+
+This checks all dependencies and their versions, ensuring your environment is ready for development.
+
+### Manual Setup (Alternative)
+
+If you prefer to set up manually or the automated script encounters issues:
+
 ### 1. Clone the Repository
 
 ```bash
@@ -744,6 +772,34 @@ cat lib/src/bridge_generated.dart
 
 ## Troubleshooting
 
+### Development Environment Issues
+
+If you encounter setup or dependency issues, try these tools:
+
+**Check all dependencies and versions:**
+
+```bash
+./scripts/check-deps.sh
+```
+
+This will verify:
+- Rust and cargo versions
+- Flutter and Dart versions
+- Android SDK and NDK configuration
+- Required Rust Android targets
+- Project-specific dependencies
+
+**Re-run automated setup:**
+
+```bash
+./scripts/dev-setup.sh
+```
+
+This script is idempotent (safe to run multiple times) and will:
+- Install missing dependencies
+- Add missing Android targets
+- Provide specific instructions for manual fixes
+
 ### Common Issues
 
 #### 1. Bluetooth Permissions (Linux)
@@ -962,6 +1018,15 @@ jarsigner -verify -verbose -certs heart-beat-v1.0.0.apk
 **Common commands:**
 
 ```bash
+# Setup and dependency checking
+./scripts/dev-setup.sh        # Automated development environment setup
+./scripts/check-deps.sh        # Verify all dependencies and versions
+
+# Build scripts
+./build-android.sh             # Build Android APK (release)
+./build-android.sh --debug     # Build Android APK (debug)
+./scripts/build-rust-android.sh # Build only Rust libraries for Android
+
 # Build and test Rust
 cargo build
 cargo test
