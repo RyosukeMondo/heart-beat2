@@ -32,7 +32,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Rust cross-compilation expert | Task: Create rust/.cargo/config.toml with [target.aarch64-linux-android], [target.armv7-linux-androideabi], [target.x86_64-linux-android] sections. Set linker to NDK clang: linker = "path/to/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang". Configure ar for each target. Add ANDROID_NDK_HOME env var check | Restrictions: NDK path must be configurable, support NDK r25c+ | Success: Cross-compilation works for all targets_
 
-- [ ] 2.3 Create build script for Rust libraries
+- [x] 2.3 Create build script for Rust libraries
   - File: `scripts/build-rust-android.sh`
   - Compile Rust for all Android architectures
   - Purpose: Build native libraries for APK
