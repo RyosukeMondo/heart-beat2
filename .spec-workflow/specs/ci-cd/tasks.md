@@ -25,7 +25,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Code quality engineer | Task: Create coverage.yml triggered on push to main and PRs. Install cargo-llvm-cov, run cargo llvm-cov --all-features --lcov --output-path lcov.info. Upload to Codecov. Add coverage threshold check: fail if <80%. Generate HTML report as artifact. Add PR comment with coverage diff | Restrictions: Must install llvm-tools-preview, handle Codecov token | Success: Coverage tracked, PRs show diff, <80% fails_
 
-- [ ] 2.2 Add coverage badge to README
+- [x] 2.2 Add coverage badge to README
   - File: `README.md`
   - Add Codecov badge after CI badge
   - Purpose: Display coverage prominently
