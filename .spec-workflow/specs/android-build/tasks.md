@@ -16,7 +16,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Build automation engineer | Task: Run flutter_rust_bridge_codegen to generate bindings. Verify lib/src/bridge/api_generated.dart is created with functions: scanDevices, connectDevice, disconnect, startMockMode, getHrStreamReceiver. Check that DiscoveredDevice and FilteredHeartRate classes are generated. Add .frb.dart files to .gitignore | Restrictions: Must regenerate when api.rs changes | Success: Generated Dart code compiles, types match Rust_
 
-- [ ] 2.1 Install Android NDK and targets
+- [x] 2.1 Install Android NDK and targets
   - Setup: Android NDK r25c, Rust targets
   - Install aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android
   - Purpose: Enable cross-compilation for Android
@@ -24,7 +24,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Android native development specialist | Task: Document installation: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android. Install Android NDK r25c via Android Studio SDK Manager. Set ANDROID_NDK_HOME env var. Create rust/.cargo/config.toml with linker configuration for each target | Restrictions: Must use NDK r25c or later, configure linkers correctly | Success: cargo build --target aarch64-linux-android succeeds_
 
-- [ ] 2.2 Create Cargo config for Android
+- [x] 2.2 Create Cargo config for Android
   - File: `rust/.cargo/config.toml`
   - Configure linkers for each Android target
   - Purpose: Enable cross-compilation

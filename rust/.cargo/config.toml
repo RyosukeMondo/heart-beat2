@@ -1,0 +1,29 @@
+# Cargo configuration for Android cross-compilation
+#
+# This file configures linkers and archiver tools for cross-compiling
+# Rust code to Android targets. It uses the Android NDK toolchain.
+#
+# Prerequisites:
+# 1. ANDROID_NDK_HOME must be set to your NDK installation path
+# 2. Install Rust Android targets:
+#    rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
+# ARM64 (most modern Android devices)
+[target.aarch64-linux-android]
+ar = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang"
+
+# ARMv7 (older Android devices, 32-bit)
+[target.armv7-linux-androideabi]
+ar = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi30-clang"
+
+# x86_64 (Android emulators and some tablets)
+[target.x86_64-linux-android]
+ar = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android30-clang"
+
+# x86 (older Android emulators, 32-bit)
+[target.i686-linux-android]
+ar = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android30-clang"
