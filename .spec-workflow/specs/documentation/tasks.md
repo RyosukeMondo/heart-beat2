@@ -9,7 +9,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Technical writer with software background | Task: Create README.md with sections: Overview (what/why), Features (bullet list from product.md), Tech Stack (Rust/Flutter/FRB), Prerequisites (Rust 1.75+, Flutter 3.16+, Android SDK), Quick Start (CLI and Flutter), Project Structure (tree), Development (link to docs/development.md), License. Add CI badge placeholder. Use clear, friendly language | Restrictions: Keep under 300 lines, use tables for clarity | Success: New developer can build and run project following README only_
 
-- [ ] 2.1 Create architecture documentation
+- [x] 2.1 Create architecture documentation
   - File: `docs/architecture.md`
   - Document hexagonal architecture, module boundaries, data flow
   - Include Mermaid diagrams for visualization
