@@ -50,7 +50,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Fitness technology writer | Task: Create user-guide.md with sections: Understanding Heart Rate Zones (5 zones explained), Calculating Max HR (formulas), Creating Training Plans (JSON format with examples), CLI Guide (all commands with examples), Mobile App Guide (screenshots with descriptions). Use friendly, non-technical language. Add glossary | Restrictions: Assume user has basic fitness knowledge, avoid jargon | Success: Non-developer user can create and run training plans_
 
-- [ ] 4.2 Create training plan templates
+- [x] 4.2 Create training plan templates
   - Files: `docs/plans/` with example JSON files
   - Provide ready-to-use training plans for common goals
   - Purpose: Quick start for users
