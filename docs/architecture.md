@@ -29,56 +29,77 @@ Heart Beat uses **hexagonal architecture** (ports and adapters pattern) to achie
 
 ## Hexagonal Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         Adapters                            │
-│  (External World - Infrastructure Implementations)          │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  BtleplugAdapter    MockAdapter    CliNotificationAdapter   │
-│  (Real BLE)         (Testing)      (Terminal output)        │
-│                                                              │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                  Implements
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                          Ports                              │
-│          (Trait Interfaces - Contracts)                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  BleAdapter trait     NotificationPort trait                │
-│                                                              │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                   Used by
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         Domain                              │
-│       (Business Logic - Core Application)                   │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  HeartRate    TrainingPlan    KalmanFilter    HRV           │
-│                                                              │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-               Orchestrated by
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   State & Scheduler                         │
-│              (Orchestration Layer)                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ConnectionStateMachine    SessionStateMachine              │
-│  SessionExecutor                                            │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph "External World"
+        UI[Flutter UI<br/>Mobile Interface]
+        BLE[BLE Hardware<br/>Coospo HW9]
+        CLI[CLI Tool<br/>Terminal]
+    end
+
+    subgraph "Adapters Layer - Infrastructure"
+        FRB[FRB API Bridge<br/>api.rs]
+        BtlePlug[BtleplugAdapter<br/>Real BLE Comms]
+        MockBLE[MockAdapter<br/>Test Double]
+        CLINotif[CliNotificationAdapter<br/>Terminal Output]
+        MockNotif[MockNotificationAdapter<br/>Silent Test]
+    end
+
+    subgraph "Ports Layer - Contracts"
+        BlePort[BleAdapter Trait<br/>scan, connect, stream]
+        NotifPort[NotificationPort Trait<br/>zone alerts, feedback]
+    end
+
+    subgraph "Core Domain - Business Logic"
+        Domain[domain/<br/>Pure Functions]
+        HR[HeartRateMeasurement<br/>FilteredHeartRate]
+        Filter[KalmanFilter<br/>Noise Reduction]
+        HRV[HRV Analysis<br/>RMSSD, SDNN]
+        Plan[TrainingPlan<br/>Phases, Zones]
+    end
+
+    subgraph "Orchestration Layer"
+        State[State Machines<br/>statig FSM]
+        ConnSM[Connection SM<br/>BLE Lifecycle]
+        SessSM[Session SM<br/>Training Execution]
+        Sched[SessionExecutor<br/>Plan Runner]
+    end
+
+    UI --> FRB
+    CLI --> CLINotif
+    CLI --> MockBLE
+    BLE --> BtlePlug
+
+    FRB --> BlePort
+    FRB --> NotifPort
+    BtlePlug -.implements.-> BlePort
+    MockBLE -.implements.-> BlePort
+    CLINotif -.implements.-> NotifPort
+    MockNotif -.implements.-> NotifPort
+
+    BlePort --> ConnSM
+    NotifPort --> SessSM
+
+    ConnSM --> State
+    SessSM --> State
+    State --> Sched
+
+    Sched --> Domain
+    Domain --> HR
+    Domain --> Filter
+    Domain --> HRV
+    Domain --> Plan
+
+    style Domain fill:#e1f5dd
+    style BlePort fill:#fff4e6
+    style NotifPort fill:#fff4e6
+    style BtlePlug fill:#e3f2fd
+    style MockBLE fill:#e3f2fd
 ```
 
 **Flow:** External events → Adapters → Ports → Domain → State/Scheduler → Ports → Adapters → External actions
+
+**Why Hexagonal?** The core domain (green) has **zero dependencies** on infrastructure. All external dependencies are injected via ports (traits), allowing the same domain logic to run on CLI, Android, iOS, or in tests without modification.
 
 ## Module Breakdown
 
@@ -168,26 +189,61 @@ let adapter = MockAdapter::new();
 - `session.rs` - Training session execution state machine
 
 **Connection States:**
-```
-Idle → Scanning → Connecting → Connected → Streaming
-  ↑        ↓          ↓           ↓           ↓
-  └────────┴──────────┴───────────┴───────────┘
-              Disconnected/Error
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Scanning: StartScan
+    Scanning --> Connecting: DeviceFound
+    Scanning --> Idle: Timeout/Cancel
+    Connecting --> Connected: GattReady
+    Connecting --> Disconnected: Error
+    Connected --> Streaming: StartStream
+    Streaming --> Disconnected: Disconnect/Error
+    Disconnected --> Idle: Reset
+    Disconnected --> Scanning: Retry
+
+    note right of Disconnected
+        Auto-reconnect logic:
+        3 attempts with
+        exponential backoff
+    end note
 ```
 
 **Session States:**
-```
-Ready → Running → Paused → Completed
-  ↑       ↓         ↓
-  └───────┴─────────┘
-      Stopped
+
+```mermaid
+stateDiagram-v2
+    [*] --> Ready
+    Ready --> Running: Start
+    Running --> Paused: Pause
+    Running --> Completed: AllPhasesComplete
+    Paused --> Running: Resume
+    Paused --> Completed: Stop
+    Completed --> [*]
+
+    state Running {
+        [*] --> WarmUp
+        WarmUp --> Work: IntervalComplete
+        Work --> Recovery: IntervalComplete
+        Recovery --> Work: MoreIntervals
+        Recovery --> CoolDown: LastInterval
+        CoolDown --> [*]
+    }
+
+    note right of Running
+        Hierarchical states:
+        WarmUp→Work→Recovery
+        cycles, then CoolDown
+    end note
 ```
 
 **Why state machines?**
-- Explicit, compile-checked state transitions
+- Explicit, compile-checked state transitions prevent bugs
 - Prevents invalid states (e.g., streaming while disconnected)
 - Clear error handling and recovery paths
 - Type-safe event handling with `statig`
+- Hierarchical states (Running has substates) reduce complexity
 
 ### `scheduler/` - Orchestration
 
@@ -378,6 +434,42 @@ sequenceDiagram
 
 ### Connection State Machine
 
+**Implementation:** `rust/src/state/connectivity.rs`
+
+**Purpose:** Manage BLE device lifecycle with automatic reconnection and error recovery.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+
+    Idle --> Scanning: StartScan
+    note right of Scanning: Discovery phase<br/>filtering for HR<br/>service UUID
+
+    Scanning --> Connecting: DeviceFound(id)
+    Scanning --> Idle: Timeout(30s)
+
+    Connecting --> Connected: GattReady
+    Connecting --> Disconnected: ConnectError
+    note right of Connecting: GATT handshake<br/>service discovery
+
+    Connected --> Streaming: StartStream
+    note right of Streaming: Subscribed to<br/>HR characteristic<br/>0x180D
+
+    Streaming --> Disconnected: Disconnect
+    Streaming --> Disconnected: ConnectionLost
+
+    Disconnected --> Scanning: AutoRetry
+    Disconnected --> Idle: MaxRetriesReached
+
+    note left of Disconnected
+        Retry Logic:
+        - Attempt 1: 5s delay
+        - Attempt 2: 10s delay
+        - Attempt 3: 20s delay
+        - Then: User action required
+    end note
+```
+
 **States:**
 ```rust
 pub enum ConnectionState {
@@ -386,7 +478,7 @@ pub enum ConnectionState {
     Connecting { device_id: String },
     Connected { device_id: String },
     Streaming { device_id: String },
-    Disconnected,
+    Disconnected { retry_count: u8 },
 }
 ```
 
@@ -399,34 +491,72 @@ pub enum ConnectionEvent {
     Connected,
     StartStream,
     Disconnect,
+    ConnectionLost,
     Error(String),
 }
 ```
 
-**Transition Rules:**
-- `Idle + StartScan → Scanning`
-- `Scanning + Connect(id) → Connecting`
-- `Connecting + Connected → Connected`
-- `Connected + StartStream → Streaming`
-- `Any + Disconnect → Disconnected`
-- `Any + Error → Disconnected`
+**Key Design Points:**
+- **Auto-reconnect:** On `ConnectionLost`, automatically retry up to 3 times with exponential backoff
+- **Graceful degradation:** After max retries, transition to `Idle` requiring user intervention
+- **Resource cleanup:** Each state transition properly cleans up BLE resources (unsubscribe, close)
 
 ### Session State Machine
 
-**States:**
+**Implementation:** `rust/src/state/session.rs`
+
+**Purpose:** Control training session execution with pause/resume and phase progression.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Ready
+
+    Ready --> Running: Start(plan)
+    note right of Ready: Plan loaded<br/>awaiting start
+
+    Running --> Paused: Pause
+    Paused --> Running: Resume
+    Paused --> Completed: Stop
+
+    Running --> Completed: AllPhasesComplete
+
+    Completed --> [*]
+    note right of Completed: Summary saved<br/>resources released
+
+    state Running {
+        [*] --> WarmUp
+
+        WarmUp --> Work: IntervalComplete(10min)
+        note right of WarmUp: Target: Zone 2<br/>Gradual HR increase
+
+        Work --> Recovery: IntervalComplete
+        note right of Work: Target: Plan zone<br/>Z3-Z5 intensity
+
+        Recovery --> Work: MoreIntervals
+        Recovery --> CoolDown: LastInterval
+        note right of Recovery: Target: Zone 1-2<br/>Active recovery
+
+        CoolDown --> [*]: IntervalComplete(10min)
+        note right of CoolDown: Target: Zone 1<br/>Gradual HR decrease
+    }
+```
+
+**Context Data:**
 ```rust
-pub enum SessionState {
-    Ready { plan: TrainingPlan },
-    Running { plan: TrainingPlan, current_phase: usize, elapsed: Duration },
-    Paused { plan: TrainingPlan, current_phase: usize, elapsed: Duration },
-    Completed { summary: SessionSummary },
+pub struct SessionContext {
+    plan: TrainingPlan,
+    current_phase: usize,
+    phase_start: Instant,
+    total_elapsed: Duration,
+    paused_at: Option<Instant>,
+    hr_history: Vec<FilteredHeartRate>,
 }
 ```
 
 **Events:**
 ```rust
 pub enum SessionEvent {
-    Start,
+    Start(TrainingPlan),
     Pause,
     Resume,
     Stop,
@@ -435,12 +565,29 @@ pub enum SessionEvent {
 }
 ```
 
-**Transition Rules:**
-- `Ready + Start → Running(phase 0)`
-- `Running + Pause → Paused`
-- `Paused + Resume → Running`
-- `Running + PhaseComplete → Running(next phase)` or `Completed`
-- `Any + Stop → Ready`
+**Phase Progression Logic:**
+```rust
+impl SessionStateMachine {
+    fn on_phase_complete(&mut self) -> SessionState {
+        self.context.current_phase += 1;
+
+        if self.context.current_phase >= self.context.plan.phases.len() {
+            // All phases done
+            SessionState::Completed
+        } else {
+            // Move to next phase
+            self.context.phase_start = Instant::now();
+            SessionState::Running
+        }
+    }
+}
+```
+
+**Key Design Points:**
+- **Hierarchical states:** `Running` contains sub-states (WarmUp/Work/Recovery/CoolDown) managed by statig
+- **Pause preservation:** Pausing saves `Instant`, resuming adjusts timers to exclude pause duration
+- **Zone compliance:** Each sub-state has target zone; `HeartRateUpdate` events trigger zone deviation checks
+- **History tracking:** `hr_history` enables post-session HRV analysis and zone time-in-range statistics
 
 ## Key Design Decisions
 
