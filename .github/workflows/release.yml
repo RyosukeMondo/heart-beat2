@@ -168,9 +168,114 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  android-release:
+    name: Build Android APK
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,x86_64-linux-android
+
+      - name: Install Android NDK
+        run: |
+          sdkmanager --install "ndk;26.1.10909125"
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Build Rust library for Android targets
+        run: |
+          cd rust
+          # Build for arm64-v8a (most common architecture)
+          cargo ndk -t arm64-v8a -o ../android/app/src/main/jniLibs build --release
+          # Build for x86_64 (emulators)
+          cargo ndk -t x86_64 -o ../android/app/src/main/jniLibs build --release
+
+      - name: Setup keystore from secrets
+        run: |
+          # Decode base64 keystore and save to file
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+          echo "KEYSTORE_FILE=${{ github.workspace }}/keystore.jks" >> $GITHUB_ENV
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: |
+          flutter build apk --release \
+            --build-name=${{ needs.create-release.outputs.version }} \
+            --build-number=${{ github.run_number }}
+
+      - name: Rename APK with version
+        run: |
+          VERSION=${{ needs.create-release.outputs.version }}
+          mv build/app/outputs/flutter-apk/app-release.apk \
+             heart-beat-${VERSION}.apk
+
+      - name: Generate APK checksum
+        run: |
+          VERSION=${{ needs.create-release.outputs.version }}
+          sha256sum heart-beat-${VERSION}.apk > heart-beat-${VERSION}.apk.sha256
+
+      - name: Upload APK to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            heart-beat-*.apk
+            heart-beat-*.apk.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: heart-beat-*.apk
+          retention-days: 30
+
   create-checksums:
     name: Create Combined Checksums
-    needs: [create-release, build-cli]
+    needs: [create-release, build-cli, android-release]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts

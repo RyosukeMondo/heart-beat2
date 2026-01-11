@@ -872,6 +872,82 @@ cargo tarpaulin --out Xml --output-dir ../coverage
 
 ---
 
+## Android Release Signing
+
+### Local Development
+
+For local development, the app uses debug signing by default. No setup is required.
+
+### CI/CD Release Signing
+
+To enable automated APK signing in GitHub Actions releases, you need to configure signing secrets.
+
+#### 1. Generate a Release Keystore
+
+If you don't have a keystore, generate one:
+
+```bash
+keytool -genkey -v -keystore release.keystore \
+  -alias heart-beat-key \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -storepass YourStorePassword \
+  -keypass YourKeyPassword
+```
+
+**IMPORTANT:** Store the keystore file and passwords securely. If you lose them, you cannot update your app on Google Play Store.
+
+#### 2. Configure GitHub Secrets
+
+Add these secrets to your GitHub repository (Settings → Secrets and variables → Actions):
+
+| Secret Name | Description | Example Value |
+|------------|-------------|---------------|
+| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file | `MIIJKQIBAzCCCO8GCSqGSIb3DQE...` |
+| `KEYSTORE_PASSWORD` | Keystore password | `YourStorePassword` |
+| `KEY_ALIAS` | Key alias | `heart-beat-key` |
+| `KEY_PASSWORD` | Key password | `YourKeyPassword` |
+
+To encode your keystore to base64:
+
+```bash
+base64 -w 0 release.keystore > keystore.base64.txt
+```
+
+Copy the contents of `keystore.base64.txt` into the `ANDROID_KEYSTORE_BASE64` secret.
+
+#### 3. Local Release Builds (Optional)
+
+For local release builds with signing, create `android/keystore.properties`:
+
+```properties
+storeFile=/path/to/your/release.keystore
+storePassword=YourStorePassword
+keyAlias=heart-beat-key
+keyPassword=YourKeyPassword
+```
+
+**IMPORTANT:** Never commit `keystore.properties` or the keystore file to version control. They are already in `.gitignore`.
+
+Then build a signed APK locally:
+
+```bash
+flutter build apk --release
+```
+
+#### 4. Verify Signing
+
+After a release is created via GitHub Actions, verify the APK is signed:
+
+```bash
+# Download the APK from the GitHub release
+# Check signature
+jarsigner -verify -verbose -certs heart-beat-v1.0.0.apk
+
+# Should output: "jar verified."
+```
+
+---
+
 ## Additional Resources
 
 - **Architecture Guide:** `docs/architecture.md` - Understand the hexagonal design

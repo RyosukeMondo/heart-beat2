@@ -57,7 +57,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Release engineering specialist | Task: Create release.yml triggered on push tags v*. Use matrix for targets: x86_64-linux, x86_64-macos, x86_64-windows. Cross-compile with cargo build --release --target. Strip binaries, create tar.gz/zip. Upload to GitHub release with gh release create. Add checksums file. Auto-generate changelog from commits | Restrictions: Must sign binaries, verify builds work | Success: Pushing v1.0.0 tag creates release with binaries_
 
-- [ ] 4.2 Add Flutter APK build
+- [x] 4.2 Add Flutter APK build
   - File: `.github/workflows/release.yml` (extend)
   - Build and sign Android APK
   - Purpose: Release mobile app
