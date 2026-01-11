@@ -8,7 +8,7 @@
   - _Requirements: 1_
   - _Prompt: Role: DevOps engineer with GitHub Actions expertise | Task: Create ci.yml with workflow triggered on push and pull_request. Jobs: test-rust (cargo test --all), test-flutter (flutter test), lint-rust (cargo clippy, cargo fmt --check), lint-flutter (flutter analyze, dart format --check). Use matrix for multiple Rust versions (stable, beta). Cache cargo and Flutter dependencies. Fail fast enabled | Restrictions: Must complete in <5min, use latest actions versions | Success: Workflow runs on every commit, blocks PR if fails_
 
-- [ ] 1.2 Add integration test job
+- [x] 1.2 Add integration test job
   - File: `.github/workflows/ci.yml` (extend)
   - Add integration-tests job running tests/
   - Purpose: Validate end-to-end flows
