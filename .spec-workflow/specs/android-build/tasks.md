@@ -48,7 +48,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Android platform developer | Task: Update AndroidManifest.xml: add <uses-permission> for BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_SCAN, BLUETOOTH_CONNECT, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION. Add <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>. Set minSdkVersion 26, targetSdkVersion 34. Add <application android:usesCleartextTraffic="false"> | Restrictions: Follow Android 12+ permission model | Success: Permissions requested correctly on all Android versions_
 
-- [ ] 3.2 Configure Gradle for native libraries
+- [x] 3.2 Configure Gradle for native libraries
   - File: `android/app/build.gradle`
   - Configure NDK, ABI filters, and Rust integration
   - Purpose: Link native libraries
