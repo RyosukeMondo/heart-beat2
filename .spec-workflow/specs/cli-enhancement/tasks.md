@@ -36,7 +36,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Rust simulation developer | Task: Implement MockCmd enum with Steady{bpm}, Ramp{start, end, duration}, Interval{low, high, work_secs, rest_secs}, Dropout{probability}. Generate FilteredHeartRate with noise using rand::thread_rng().gen_range(). Emit via api::emit_hr_data(). Add timestamp and natural variability | Restrictions: BPM must stay in 30-220 range, noise realistic (±5 BPM max) | Success: Mock patterns are realistic, interval timing accurate_
 
-- [ ] 4.1 Implement plan subcommand
+- [x] 4.1 Implement plan subcommand
   - File: `rust/src/bin/cli.rs`
   - Add plan list, show, validate, create commands
   - Interactive plan creation with dialoguer crate
