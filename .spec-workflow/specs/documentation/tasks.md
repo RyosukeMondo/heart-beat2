@@ -66,7 +66,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Open source maintainer | Task: Create development.md with sections: Setup (Rust/Flutter install, clone, build), Development Workflow (edit → test → commit), Testing (cargo test, coverage), Code Standards (clippy, fmt, line limits from CLAUDE.md), PR Process (branch, commit, tests, review), Debugging (CLI first, logs, common issues). Add troubleshooting section | Restrictions: Instructions must work on Linux, be step-by-step | Success: Contributor can set up and submit PR following guide_
 
-- [ ] 5.2 Create CONTRIBUTING.md
+- [x] 5.2 Create CONTRIBUTING.md
   - File: `CONTRIBUTING.md` (root)
   - Link to development.md, explain code of conduct and license
   - Purpose: Standard GitHub contribution guide
