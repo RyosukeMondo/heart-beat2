@@ -435,6 +435,26 @@ impl SessionExecutor {
         Ok(())
     }
 
+    /// Pause the current session.
+    ///
+    /// Sends a Pause event to the state machine, which stops the timer
+    /// but preserves the session state for resumption.
+    pub async fn pause_session(&mut self) -> Result<()> {
+        let mut state = self.session_state.lock().await;
+        state.handle(SessionEvent::Pause);
+        Ok(())
+    }
+
+    /// Resume a paused session.
+    ///
+    /// Sends a Resume event to the state machine, which continues the
+    /// session from where it was paused.
+    pub async fn resume_session(&mut self) -> Result<()> {
+        let mut state = self.session_state.lock().await;
+        state.handle(SessionEvent::Resume);
+        Ok(())
+    }
+
     /// Stop the current session.
     ///
     /// Sends a Stop event to the state machine and cancels the tick loop task.

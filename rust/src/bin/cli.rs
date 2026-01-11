@@ -206,16 +206,13 @@ async fn main() -> anyhow::Result<()> {
                 handle_session_start(&plan_path).await?;
             }
             SessionCmd::Pause => {
-                eprintln!("Session pause not yet implemented");
-                std::process::exit(1);
+                handle_session_pause().await?;
             }
             SessionCmd::Resume => {
-                eprintln!("Session resume not yet implemented");
-                std::process::exit(1);
+                handle_session_resume().await?;
             }
             SessionCmd::Stop => {
-                eprintln!("Session stop not yet implemented");
-                std::process::exit(1);
+                handle_session_stop().await?;
             }
         },
         Commands::Mock { command } => match command {
@@ -818,6 +815,306 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
     // Stop the session
     executor.stop_session().await?;
     println!("\n✓ Session stopped");
+
+    Ok(())
+}
+
+/// Handle the session pause subcommand.
+async fn handle_session_pause() -> anyhow::Result<()> {
+    use colored::Colorize;
+
+    info!("Pausing session");
+
+    println!("\n{} Session Pause", "ℹ".cyan().bold());
+    println!("{}", "─".repeat(60));
+    println!(
+        "\n{}",
+        "Note: Session pause/resume works within an active 'session start' command.".yellow()
+    );
+    println!(
+        "{}",
+        "Currently, pause is handled by pressing Ctrl+C during a session.\n".yellow()
+    );
+
+    println!("To manage running sessions:");
+    println!("  • Press Ctrl+C during 'session start' - Pauses and saves session state");
+    println!("  • Use 'session resume' - Resumes from saved state");
+    println!("  • Use 'session stop' - Ends session and shows summary");
+
+    println!("\n{}", "Future Enhancement:".cyan().bold());
+    println!("  A session daemon will enable pause/resume/stop from separate terminal windows.");
+
+    Ok(())
+}
+
+/// Handle the session resume subcommand.
+async fn handle_session_resume() -> anyhow::Result<()> {
+    use colored::Colorize;
+
+    info!("Resuming session");
+
+    println!("\n{} Session Resume", "ℹ".cyan().bold());
+    println!("{}", "─".repeat(60));
+
+    // Check for saved session state
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let checkpoint_path = home.join(".heart-beat").join("session_checkpoint.json");
+
+    if checkpoint_path.exists() {
+        println!(
+            "\n{} Found saved session checkpoint at:",
+            "✓".green().bold()
+        );
+        println!("  {}", checkpoint_path.display());
+        println!(
+            "\n{}",
+            "Currently, sessions are resumed by starting a new session with the same plan."
+                .yellow()
+        );
+        println!(
+            "{}",
+            "The SessionExecutor will automatically restore progress from the checkpoint.\n"
+                .yellow()
+        );
+
+        // Try to read the checkpoint to show info
+        match std::fs::read_to_string(&checkpoint_path) {
+            Ok(content) => {
+                if let Ok(checkpoint) = serde_json::from_str::<serde_json::Value>(&content) {
+                    println!("{}", "Checkpoint Details:".cyan().bold());
+                    if let Some(plan_name) = checkpoint
+                        .get("plan")
+                        .and_then(|p| p.get("name"))
+                        .and_then(|n| n.as_str())
+                    {
+                        println!("  Plan: {}", plan_name);
+                    }
+                    if let Some(phase) = checkpoint.get("current_phase").and_then(|p| p.as_u64()) {
+                        println!("  Current Phase: {}", phase + 1);
+                    }
+                    if let Some(elapsed) = checkpoint.get("elapsed_secs").and_then(|e| e.as_u64()) {
+                        println!("  Elapsed Time: {}m {}s", elapsed / 60, elapsed % 60);
+                    }
+                    if let Some(is_paused) = checkpoint.get("is_paused").and_then(|p| p.as_bool()) {
+                        println!("  Status: {}", if is_paused { "Paused" } else { "Running" });
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Failed to read checkpoint: {}", e);
+            }
+        }
+
+        println!("\n{}", "To resume this session:".cyan().bold());
+        println!("  Run 'cli session start <plan-file>' with the same plan.");
+        println!("  The session will automatically resume from where it left off.");
+    } else {
+        println!("\n{} No saved session checkpoint found.", "ⓘ".cyan());
+        println!("\nTo start a new session:");
+        println!("  Run 'cli session start <plan-file>'");
+    }
+
+    println!("\n{}", "Future Enhancement:".cyan().bold());
+    println!("  A session daemon will enable direct resume without re-specifying the plan.");
+
+    Ok(())
+}
+
+/// Handle the session stop subcommand.
+async fn handle_session_stop() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
+
+    info!("Stopping session");
+
+    println!("\n{} Session Stop", "ℹ".cyan().bold());
+    println!("{}", "─".repeat(60));
+
+    // Check for saved session state
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let checkpoint_path = home.join(".heart-beat").join("session_checkpoint.json");
+
+    if checkpoint_path.exists() {
+        println!(
+            "\n{}",
+            "Found an active or paused session. Stopping and showing summary...".yellow()
+        );
+
+        // Read the checkpoint to show summary
+        match std::fs::read_to_string(&checkpoint_path) {
+            Ok(content) => {
+                if let Ok(checkpoint) = serde_json::from_str::<serde_json::Value>(&content) {
+                    println!("\n{}", "Session Summary".cyan().bold());
+                    println!("{}", "═".repeat(60));
+
+                    // Extract session details
+                    let plan_name = checkpoint
+                        .get("plan")
+                        .and_then(|p| p.get("name"))
+                        .and_then(|n| n.as_str())
+                        .unwrap_or("Unknown Plan");
+                    let current_phase = checkpoint
+                        .get("current_phase")
+                        .and_then(|p| p.as_u64())
+                        .unwrap_or(0);
+                    let elapsed_secs = checkpoint
+                        .get("elapsed_secs")
+                        .and_then(|e| e.as_u64())
+                        .unwrap_or(0) as u32;
+                    let is_paused = checkpoint
+                        .get("is_paused")
+                        .and_then(|p| p.as_bool())
+                        .unwrap_or(false);
+
+                    // Get total phases from plan
+                    let total_phases = checkpoint
+                        .get("plan")
+                        .and_then(|p| p.get("phases"))
+                        .and_then(|phases| phases.as_array())
+                        .map(|arr| arr.len())
+                        .unwrap_or(0);
+
+                    println!("\nPlan: {}", plan_name.green().bold());
+                    println!(
+                        "Status: {}",
+                        if is_paused {
+                            "Paused".yellow()
+                        } else {
+                            "Running".green()
+                        }
+                    );
+                    println!("Progress: Phase {}/{}", current_phase + 1, total_phases);
+                    println!(
+                        "Time in Current Phase: {}m {}s",
+                        elapsed_secs / 60,
+                        elapsed_secs % 60
+                    );
+
+                    // Calculate total time across all phases
+                    if let Some(phases) = checkpoint
+                        .get("plan")
+                        .and_then(|p| p.get("phases"))
+                        .and_then(|p| p.as_array())
+                    {
+                        let mut total_duration = 0u32;
+                        let mut completed_duration = 0u32;
+
+                        for (idx, phase) in phases.iter().enumerate() {
+                            if let Some(duration) =
+                                phase.get("duration_secs").and_then(|d| d.as_u64())
+                            {
+                                total_duration += duration as u32;
+                                if idx < current_phase as usize {
+                                    completed_duration += duration as u32;
+                                } else if idx == current_phase as usize {
+                                    completed_duration += elapsed_secs;
+                                }
+                            }
+                        }
+
+                        let completion_pct = if total_duration > 0 {
+                            (completed_duration as f64 / total_duration as f64) * 100.0
+                        } else {
+                            0.0
+                        };
+
+                        println!("\n{}", "Overall Progress:".cyan().bold());
+                        println!(
+                            "  Completed: {}m {}s / {}m {}s ({:.1}%)",
+                            completed_duration / 60,
+                            completed_duration % 60,
+                            total_duration / 60,
+                            total_duration % 60,
+                            completion_pct
+                        );
+
+                        // Show phases table
+                        println!("\n{}", "Phases:".cyan().bold());
+                        let mut table = Table::new();
+                        table
+                            .load_preset(UTF8_FULL)
+                            .set_content_arrangement(ContentArrangement::Dynamic);
+
+                        table.set_header(vec![
+                            Cell::new("#")
+                                .add_attribute(Attribute::Bold)
+                                .fg(Color::Cyan),
+                            Cell::new("Phase Name")
+                                .add_attribute(Attribute::Bold)
+                                .fg(Color::Cyan),
+                            Cell::new("Target Zone")
+                                .add_attribute(Attribute::Bold)
+                                .fg(Color::Cyan),
+                            Cell::new("Status")
+                                .add_attribute(Attribute::Bold)
+                                .fg(Color::Cyan),
+                        ]);
+
+                        for (idx, phase) in phases.iter().enumerate() {
+                            let name = phase
+                                .get("name")
+                                .and_then(|n| n.as_str())
+                                .unwrap_or("Unknown");
+                            let zone = phase
+                                .get("target_zone")
+                                .and_then(|z| z.as_str())
+                                .unwrap_or("Unknown");
+
+                            let status = if idx < current_phase as usize {
+                                Cell::new("✓ Completed").fg(Color::Green)
+                            } else if idx == current_phase as usize {
+                                if is_paused {
+                                    Cell::new("⏸ Paused").fg(Color::Yellow)
+                                } else {
+                                    Cell::new("▶ Active").fg(Color::Cyan)
+                                }
+                            } else {
+                                Cell::new("○ Pending").fg(Color::Grey)
+                            };
+
+                            table.add_row(vec![
+                                Cell::new(idx + 1),
+                                Cell::new(name),
+                                Cell::new(zone),
+                                status,
+                            ]);
+                        }
+
+                        println!("{table}");
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Failed to read checkpoint: {}", e);
+                println!("{} Failed to read session checkpoint: {}", "⚠".yellow(), e);
+            }
+        }
+
+        // Remove the checkpoint file
+        match std::fs::remove_file(&checkpoint_path) {
+            Ok(_) => {
+                println!(
+                    "\n{} Session stopped and checkpoint cleared.",
+                    "✓".green().bold()
+                );
+            }
+            Err(e) => {
+                warn!("Failed to remove checkpoint: {}", e);
+                println!(
+                    "\n{} Session stopped but failed to clear checkpoint: {}",
+                    "⚠".yellow(),
+                    e
+                );
+            }
+        }
+    } else {
+        println!("\n{} No active session found.", "ⓘ".cyan());
+        println!("\nCurrently, sessions run within the 'session start' command.");
+        println!("To stop a running session, press Ctrl+C in the terminal running the session.");
+    }
+
+    println!("\n{}", "Future Enhancement:".cyan().bold());
+    println!("  Session metrics tracking (avg HR, time in zones) will be added to the summary.");
 
     Ok(())
 }
