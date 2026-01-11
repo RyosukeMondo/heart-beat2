@@ -34,7 +34,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Rust documentation specialist | Task: Add doc comments (///) to all public functions, structs, enums in domain/, ports/, adapters/, state/, scheduler/, api.rs. Include: brief description, arguments explanation, return value, example usage, errors/panics if applicable. Use rustdoc code blocks with ```rust | Restrictions: Examples must compile, keep examples simple | Success: cargo doc generates complete documentation_
 
-- [ ] 3.2 Create API usage examples
+- [x] 3.2 Create API usage examples
   - File: `docs/api-examples.md`
   - Show common usage patterns with code examples
   - Purpose: Quick reference for library users
