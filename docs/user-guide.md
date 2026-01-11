@@ -1,6 +1,6 @@
 # Heart Beat User Guide
 
-Welcome to Heart Beat - your intelligent training companion for heart rate zone-based workouts!
+Welcome to Heart Beat - your intelligent training companion for heart rate zone-based workouts using the Coospo HW9 heart rate monitor!
 
 ## Table of Contents
 
@@ -9,7 +9,8 @@ Welcome to Heart Beat - your intelligent training companion for heart rate zone-
 3. [Creating Training Plans](#creating-training-plans)
 4. [CLI Guide](#cli-guide)
 5. [Mobile App Guide](#mobile-app-guide)
-6. [Glossary](#glossary)
+6. [Training Tips](#training-tips)
+7. [Glossary](#glossary)
 
 ---
 
@@ -203,153 +204,125 @@ You can copy and modify these templates for your own training.
 
 The command-line interface provides full control over Heart Beat for testing and development.
 
-### Installation
+### Prerequisites
+
+- Rust 1.75 or later installed
+- Coospo HW9 heart rate monitor
+- Linux system with Bluetooth support
+
+### Building the CLI
 
 ```bash
 # Build the CLI
-cd rust
 cargo build --release
 
-# The binary is at: target/release/heart-beat-cli
+# The binary is at: target/release/cli
 ```
 
 ### Available Commands
 
-#### 1. Scan for Devices
+All commands support verbose logging with the `-v` or `--verbose` flag.
 
-Find available heart rate monitors:
+#### Device Management (`devices` command)
+
+**Scan for nearby devices:**
+```bash
+cargo run --bin cli -- devices scan
+```
+
+**Connect to a device:**
+```bash
+cargo run --bin cli -- devices connect <MAC_ADDRESS>
+```
+
+**Show connected device info:**
+```bash
+cargo run --bin cli -- devices info
+```
+
+**Disconnect from current device:**
+```bash
+cargo run --bin cli -- devices disconnect
+```
+
+#### Training Sessions (`session` command)
+
+**Start a training session:**
+```bash
+cargo run --bin cli -- session start --plan path/to/plan.json --device <MAC_ADDRESS>
+```
+
+The session display shows:
+- Current phase name and target zone
+- Real-time heart rate and zone status
+- Phase timer (elapsed/remaining)
+- Audio/visual alerts when out of zone
+
+**Pause the active session:**
+```bash
+cargo run --bin cli -- session pause
+```
+
+**Resume a paused session:**
+```bash
+cargo run --bin cli -- session resume
+```
+
+**Stop session and show summary:**
+```bash
+cargo run --bin cli -- session stop
+```
+
+Session summary includes:
+- Total duration and phases completed
+- Average heart rate per phase
+- Time spent in each zone
+- Overall zone accuracy percentage
+
+#### Mock Data Testing (`mock` command)
+
+Generate simulated heart rate data for testing without hardware:
 
 ```bash
-heart-beat-cli devices scan
+cargo run --bin cli -- mock --plan path/to/plan.json
 ```
 
-**Output:**
-```
-Scanning for heart rate monitors...
-Found 2 device(s):
-  - Polar H10 12345678 (12:34:56:78:9A:BC)
-    Signal strength: -65 dBm
-  - Wahoo TICKR FIT (98:76:54:32:10:AB)
-    Signal strength: -72 dBm
-```
+This simulates realistic heart rate transitions based on your training plan's target zones.
 
-#### 2. Connect to Device
+#### Training Plan Management (`plan` command)
 
-Connect to a specific device:
-
+**List all saved plans:**
 ```bash
-heart-beat-cli devices connect "12:34:56:78:9A:BC"
+cargo run --bin cli -- plan list
 ```
 
-#### 3. Stream Heart Rate
-
-Stream real-time heart rate data:
-
+**Show plan details:**
 ```bash
-heart-beat-cli session stream --device "12:34:56:78:9A:BC"
+cargo run --bin cli -- plan show path/to/plan.json
 ```
 
-**Output:**
-```
-Connected to Polar H10
-Streaming heart rate data (Ctrl+C to stop):
-
-15:30:45 │ 142 BPM │ Zone 3 │ Quality: 95%
-15:30:46 │ 143 BPM │ Zone 3 │ Quality: 97%
-15:30:47 │ 144 BPM │ Zone 4 │ Quality: 96%
-```
-
-#### 4. Run Training Session
-
-Execute a training plan:
-
+**Validate a plan file:**
 ```bash
-heart-beat-cli session run \
-  --plan docs/plans/5k-training.json \
-  --device "12:34:56:78:9A:BC"
+cargo run --bin cli -- plan validate path/to/plan.json
 ```
 
-**Interactive Display:**
-```
-╔══════════════════════════════════════════════════════════╗
-║  5K Training Session                    Session: Running ║
-╠══════════════════════════════════════════════════════════╣
-║  Phase: Work Interval (2/4)                              ║
-║  Target: Zone 4 (144-162 BPM)                            ║
-║  Progress: [████████░░░░] 08:32 / 10:00                  ║
-╠══════════════════════════════════════════════════════════╣
-║  Current HR: 156 BPM                                     ║
-║  Status: ✓ In Zone                                       ║
-║  Quality: ████████████████ 98%                           ║
-╚══════════════════════════════════════════════════════════╝
-```
+Checks for:
+- Valid JSON format
+- Required fields present
+- Duration > 0 for all phases
+- Total duration < 4 hours
+- Valid zone names and heart rate targets
 
-#### 5. Mock Testing
-
-Test without physical hardware:
-
+**Create a new plan interactively:**
 ```bash
-# Simulate steady heart rate
-heart-beat-cli mock steady --bpm 140
-
-# Simulate ramping pattern
-heart-beat-cli mock ramp --start 100 --end 160 --duration 600
-
-# Simulate interval workout
-heart-beat-cli mock interval --low 120 --high 160 --work 300 --rest 120
-
-# Simulate connection dropouts
-heart-beat-cli mock dropout --interval 60
+cargo run --bin cli -- plan create
 ```
 
-#### 6. Training Plan Management
-
-List available plans:
-```bash
-heart-beat-cli plan list
-```
-
-Show plan details:
-```bash
-heart-beat-cli plan show docs/plans/5k-training.json
-```
-
-Validate plan format:
-```bash
-heart-beat-cli plan validate my-workout.json
-```
-
-Create new plan interactively:
-```bash
-heart-beat-cli plan create
-```
-
-**Interactive Creator:**
-```
-Training Plan Creator
-─────────────────────
-
-Plan name: My Custom Workout
-Your max HR: 185
-How many phases? 3
-
-Phase 1
-  Name: Warmup
-  Target zone (1-5): 2
-  Duration (minutes): 10
-
-Phase 2
-  Name: Work
-  Target zone (1-5): 4
-  Duration (minutes): 20
-
-Phase 3
-  Name: Cooldown
-  Target zone (1-5): 1
-  Duration (minutes): 5
-
-✓ Plan created: my-custom-workout.json
-```
+The interactive creator guides you through:
+1. Plan name and max HR
+2. Adding phases (name, zone, duration)
+3. Choosing transition conditions
+4. Saving to a JSON file
 
 ---
 
