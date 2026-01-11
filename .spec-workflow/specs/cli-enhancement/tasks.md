@@ -18,7 +18,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust CLI developer | Task: Implement DevicesCmd enum with Scan, Connect{id}, Info, Disconnect variants. Scan uses comfy-table to display devices with columns: Name, ID, RSSI, Services. Connect shows progress with spinners. Info displays battery and signal strength. Add colored output | Restrictions: Must handle errors gracefully, show user-friendly messages | Success: Table output is readable, progress indicators work_
 
-- [ ] 2.1 Implement session subcommand
+- [x] 2.1 Implement session subcommand
   - File: `rust/src/bin/cli.rs`
   - Add session start, pause, resume, stop commands
   - Real-time display with crossterm for terminal manipulation
