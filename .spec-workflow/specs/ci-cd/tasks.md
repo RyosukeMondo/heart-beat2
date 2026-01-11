@@ -41,7 +41,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Developer tooling specialist | Task: Create scripts/install-hooks.sh that copies pre-commit hook to .git/hooks/. Hook runs: cargo fmt --check (fail if needed), cargo clippy -- -D warnings (fail on warnings), cargo test --lib (unit tests only, skip slow integration). Print elapsed time. Allow skip with --no-verify. Add install step to README | Restrictions: Must be fast (<30s), provide clear error messages | Success: Hooks install easily, catch common issues_
 
-- [ ] 3.2 Add pre-commit framework config
+- [x] 3.2 Add pre-commit framework config
   - File: `.pre-commit-config.yaml`
   - Use pre-commit framework for better hook management
   - Purpose: Standardized hook configuration
