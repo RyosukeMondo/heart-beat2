@@ -226,16 +226,13 @@ async fn main() -> anyhow::Result<()> {
                 handle_mock_steady(bpm).await?;
             }
             MockCmd::Ramp { start, end, duration } => {
-                eprintln!("Mock ramp not yet implemented: {} -> {} over {}s", start, end, duration);
-                std::process::exit(1);
+                handle_mock_ramp(start, end, duration).await?;
             }
             MockCmd::Interval { low, high, work_secs, rest_secs } => {
-                eprintln!("Mock interval not yet implemented: {}bpm/{}bpm, {}s/{}s", low, high, work_secs, rest_secs);
-                std::process::exit(1);
+                handle_mock_interval(low, high, work_secs, rest_secs).await?;
             }
             MockCmd::Dropout { probability } => {
-                eprintln!("Mock dropout not yet implemented: {}", probability);
-                std::process::exit(1);
+                handle_mock_dropout(probability).await?;
             }
         },
         Commands::Plan { command } => match command {
@@ -711,6 +708,402 @@ async fn handle_session_start(plan_path: &str) -> anyhow::Result<()> {
     // Stop the session
     executor.stop_session().await?;
     println!("\n\n✓ Session stopped");
+
+    Ok(())
+}
+
+/// Handle the mock ramp subcommand.
+async fn handle_mock_ramp(start: u16, end: u16, duration: u32) -> anyhow::Result<()> {
+    use tokio::signal;
+    use rand::Rng;
+
+    // Validate inputs
+    if start < 30 || start > 220 {
+        return Err(anyhow::anyhow!("Start BPM must be between 30-220"));
+    }
+    if end < 30 || end > 220 {
+        return Err(anyhow::anyhow!("End BPM must be between 30-220"));
+    }
+    if duration == 0 {
+        return Err(anyhow::anyhow!("Duration must be greater than 0"));
+    }
+
+    info!("Starting mock ramp: {} -> {} BPM over {} seconds", start, end, duration);
+    println!("Starting mock heart rate ramp ({}bpm -> {}bpm over {}s)...\n", start, end, duration);
+
+    // Create mock adapter
+    let adapter = MockAdapter::new();
+
+    // Start scan to populate devices
+    adapter.start_scan().await?;
+
+    // Get the first mock device
+    let devices = adapter.get_discovered_devices().await;
+    if devices.is_empty() {
+        return Err(anyhow::anyhow!("No mock devices available"));
+    }
+
+    let device_id = &devices[0].id;
+    println!("Using mock device: {} ({})",
+        devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
+        device_id
+    );
+
+    // Connect to the mock device
+    adapter.connect(device_id).await?;
+    println!("✓ Connected to mock device\n");
+
+    // Initialize Kalman filter
+    let mut filter = KalmanFilter::default();
+
+    // Print table header
+    println!("{:<20} {:>8} {:>12} {:>10}", "Timestamp", "Target BPM", "Simulated BPM", "Progress");
+    println!("{}", "-".repeat(56));
+
+    // Set up Ctrl+C handler
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    // Calculate delta per second
+    let delta = (end as f64 - start as f64) / duration as f64;
+    let mut rng = rand::thread_rng();
+
+    // Stream ramping heart rate data
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl+C received, disconnecting...");
+            println!("\n\nDisconnecting...");
+        }
+        _ = async {
+            for i in 0..duration {
+                let target_bpm = start as f64 + (delta * i as f64);
+
+                // Add realistic noise (±3 BPM)
+                let noise = rng.gen_range(-3.0..=3.0);
+                let simulated_bpm = (target_bpm + noise).clamp(30.0, 220.0);
+
+                // Filter the BPM value
+                let filtered_bpm = filter.filter_if_valid(simulated_bpm);
+
+                // Calculate progress
+                let progress_pct = ((i + 1) as f64 / duration as f64) * 100.0;
+
+                // Get current timestamp
+                let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+
+                // Print the data
+                println!(
+                    "{:<20} {:>8.1} {:>12.1} {:>9.1}%",
+                    timestamp,
+                    target_bpm,
+                    filtered_bpm,
+                    progress_pct
+                );
+
+                // Wait 1 second
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            }
+
+            println!("\n✓ Ramp complete");
+        } => {
+            info!("Ramp completed");
+        }
+    }
+
+    // Disconnect from the device
+    adapter.disconnect().await?;
+    println!("✓ Disconnected");
+
+    Ok(())
+}
+
+/// Handle the mock interval subcommand.
+async fn handle_mock_interval(low: u16, high: u16, work_secs: u32, rest_secs: u32) -> anyhow::Result<()> {
+    use tokio::signal;
+    use rand::Rng;
+
+    // Validate inputs
+    if low < 30 || low > 220 {
+        return Err(anyhow::anyhow!("Low BPM must be between 30-220"));
+    }
+    if high < 30 || high > 220 {
+        return Err(anyhow::anyhow!("High BPM must be between 30-220"));
+    }
+    if low >= high {
+        return Err(anyhow::anyhow!("Low BPM must be less than high BPM"));
+    }
+    if work_secs == 0 || rest_secs == 0 {
+        return Err(anyhow::anyhow!("Work and rest periods must be greater than 0"));
+    }
+
+    info!("Starting mock interval: {}bpm (rest) / {}bpm (work), {}s/{}s", low, high, work_secs, rest_secs);
+    println!("Starting mock interval training ({}bpm rest/{}bpm work, {}s/{}s)...\n", low, high, work_secs, rest_secs);
+
+    // Create mock adapter
+    let adapter = MockAdapter::new();
+
+    // Start scan to populate devices
+    adapter.start_scan().await?;
+
+    // Get the first mock device
+    let devices = adapter.get_discovered_devices().await;
+    if devices.is_empty() {
+        return Err(anyhow::anyhow!("No mock devices available"));
+    }
+
+    let device_id = &devices[0].id;
+    println!("Using mock device: {} ({})",
+        devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
+        device_id
+    );
+
+    // Connect to the mock device
+    adapter.connect(device_id).await?;
+    println!("✓ Connected to mock device\n");
+
+    // Initialize Kalman filter
+    let mut filter = KalmanFilter::default();
+
+    // Print table header
+    println!("{:<20} {:>10} {:>8} {:>12} {:>10}", "Timestamp", "Phase", "Target", "Simulated", "Remaining");
+    println!("{}", "-".repeat(65));
+
+    // Set up Ctrl+C handler
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    let mut rng = rand::thread_rng();
+    let mut interval_count = 0;
+
+    // Stream interval heart rate data
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl+C received, disconnecting...");
+            println!("\n\nDisconnecting...");
+        }
+        _ = async {
+            loop {
+                interval_count += 1;
+
+                // Work phase
+                println!("\n  --- Interval {} - WORK PHASE ---", interval_count);
+                for i in 0..work_secs {
+                    let target_bpm = high as f64;
+
+                    // Add realistic noise (±3 BPM)
+                    let noise = rng.gen_range(-3.0..=3.0);
+                    let simulated_bpm = (target_bpm + noise).clamp(30.0, 220.0);
+
+                    // Filter the BPM value
+                    let filtered_bpm = filter.filter_if_valid(simulated_bpm);
+
+                    let remaining = work_secs - i - 1;
+
+                    // Get current timestamp
+                    let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+
+                    // Print the data
+                    println!(
+                        "{:<20} {:>10} {:>8} {:>12.1} {:>9}s",
+                        timestamp,
+                        "WORK",
+                        format!("{}bpm", high),
+                        filtered_bpm,
+                        remaining
+                    );
+
+                    // Wait 1 second
+                    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                }
+
+                // Rest phase
+                println!("\n  --- Interval {} - REST PHASE ---", interval_count);
+                for i in 0..rest_secs {
+                    let target_bpm = low as f64;
+
+                    // Add realistic noise (±3 BPM)
+                    let noise = rng.gen_range(-3.0..=3.0);
+                    let simulated_bpm = (target_bpm + noise).clamp(30.0, 220.0);
+
+                    // Filter the BPM value
+                    let filtered_bpm = filter.filter_if_valid(simulated_bpm);
+
+                    let remaining = rest_secs - i - 1;
+
+                    // Get current timestamp
+                    let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+
+                    // Print the data
+                    println!(
+                        "{:<20} {:>10} {:>8} {:>12.1} {:>9}s",
+                        timestamp,
+                        "REST",
+                        format!("{}bpm", low),
+                        filtered_bpm,
+                        remaining
+                    );
+
+                    // Wait 1 second
+                    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                }
+            }
+        } => {
+            info!("Interval simulation ended");
+        }
+    }
+
+    // Disconnect from the device
+    adapter.disconnect().await?;
+    println!("\n✓ Disconnected");
+
+    Ok(())
+}
+
+/// Handle the mock dropout subcommand.
+async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
+    use tokio::signal;
+    use rand::Rng;
+
+    // Validate inputs
+    if !(0.0..=1.0).contains(&probability) {
+        return Err(anyhow::anyhow!("Probability must be between 0.0 and 1.0"));
+    }
+
+    info!("Starting mock dropout simulation with probability: {}", probability);
+    println!("Starting mock heart rate with {}% packet dropout...\n", (probability * 100.0));
+
+    // Create mock adapter
+    let adapter = MockAdapter::new();
+
+    // Start scan to populate devices
+    adapter.start_scan().await?;
+
+    // Get the first mock device
+    let devices = adapter.get_discovered_devices().await;
+    if devices.is_empty() {
+        return Err(anyhow::anyhow!("No mock devices available"));
+    }
+
+    let device_id = &devices[0].id;
+    println!("Using mock device: {} ({})",
+        devices[0].name.as_ref().unwrap_or(&"Unknown".to_string()),
+        device_id
+    );
+
+    // Connect to the mock device
+    adapter.connect(device_id).await?;
+    println!("✓ Connected to mock device");
+
+    // Subscribe to heart rate notifications
+    let mut hr_receiver = adapter.subscribe_hr().await?;
+    println!("✓ Subscribed to heart rate notifications\n");
+
+    // Initialize Kalman filter
+    let mut filter = KalmanFilter::default();
+
+    // Print table header
+    println!("{:<20} {:>8} {:>12} {:>10} {:>10}", "Timestamp", "Raw BPM", "Filtered BPM", "RMSSD (ms)", "Status");
+    println!("{}", "-".repeat(70));
+
+    // Set up Ctrl+C handler
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    let mut rng = rand::thread_rng();
+    let mut total_packets = 0;
+    let mut dropped_packets = 0;
+
+    // Stream heart rate data with dropouts
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl+C received, disconnecting...");
+            println!("\n\nDisconnecting...");
+        }
+        _ = async {
+            while let Some(data) = hr_receiver.recv().await {
+                total_packets += 1;
+
+                // Simulate packet dropout
+                let drop_packet = rng.gen::<f64>() < probability;
+
+                if drop_packet {
+                    dropped_packets += 1;
+                    let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+                    println!(
+                        "{:<20} {:>8} {:>12} {:>10} {:>10}",
+                        timestamp,
+                        "-",
+                        "-",
+                        "-",
+                        "DROPPED"
+                    );
+                    continue;
+                }
+
+                // Parse the heart rate measurement
+                match parse_heart_rate(&data) {
+                    Ok(measurement) => {
+                        // Filter the BPM value
+                        let raw_bpm = measurement.bpm as f64;
+                        let filtered_bpm = filter.filter_if_valid(raw_bpm);
+
+                        // Calculate RMSSD if RR-intervals are available
+                        let rmssd_str = if !measurement.rr_intervals.is_empty() {
+                            match calculate_rmssd(&measurement.rr_intervals) {
+                                Some(rmssd) => format!("{:10.2}", rmssd),
+                                None => "     -    ".to_string(),
+                            }
+                        } else {
+                            "     -    ".to_string()
+                        };
+
+                        // Get current timestamp
+                        let timestamp = chrono::Local::now().format("%H:%M:%S%.3f");
+
+                        // Print the data
+                        println!(
+                            "{:<20} {:>8} {:>12.1} {} {:>10}",
+                            timestamp,
+                            measurement.bpm,
+                            filtered_bpm,
+                            rmssd_str,
+                            "OK"
+                        );
+                    }
+                    Err(e) => {
+                        error!("Failed to parse heart rate data: {}", e);
+                    }
+                }
+            }
+        } => {
+            warn!("Heart rate stream ended unexpectedly");
+        }
+    }
+
+    // Disconnect from the device
+    adapter.disconnect().await?;
+
+    // Print statistics
+    let actual_dropout_rate = if total_packets > 0 {
+        (dropped_packets as f64 / total_packets as f64) * 100.0
+    } else {
+        0.0
+    };
+
+    println!("\n✓ Disconnected");
+    println!("\nDropout Statistics:");
+    println!("  Total packets: {}", total_packets);
+    println!("  Dropped packets: {}", dropped_packets);
+    println!("  Actual dropout rate: {:.1}%", actual_dropout_rate);
 
     Ok(())
 }
