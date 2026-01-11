@@ -96,7 +96,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Mobile debugging specialist | Task: Create debugging-android.md with: How to view logs (flutter logs, adb logcat), How to debug Rust (lldb, symbols), How to debug Dart (DevTools, breakpoints), Common issues (library not found, permission denied, panics), Performance profiling (Android Studio profiler). Add troubleshooting flowchart | Restrictions: Include concrete commands and screenshots | Success: Developer can debug most issues following guide_
 
-- [ ] 5.3 Add integration test for FRB
+- [x] 5.3 Add integration test for FRB
   - File: `integration_test/frb_test.dart`
   - Test Rust ↔ Flutter communication
   - Purpose: Validate FRB integration
