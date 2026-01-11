@@ -43,3 +43,8 @@ version = "1"
 mockall = "0.13"
 proptest = "1.5"
 tempfile = "3"
+criterion = "0.5"
+
+[[bench]]
+name = "latency_bench"
+harness = false

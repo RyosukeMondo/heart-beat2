@@ -65,7 +65,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Mobile release engineer | Task: Add android-release job to release.yml. Setup Java and Flutter, build Rust library for arm64-v8a and x86_64, run flutter build apk --release. Sign with GitHub secrets (KEYSTORE, KEY_PASSWORD). Upload APK as artifact and to GitHub release. Add version name from tag | Restrictions: Must handle secrets securely, verify APK is signed | Success: Release includes signed APK_
 
-- [ ] 5.1 Create benchmark suite
+- [x] 5.1 Create benchmark suite
   - File: `rust/benches/latency_bench.rs`
   - Benchmark BLE packet → FilteredHeartRate latency
   - Purpose: Track performance over time
