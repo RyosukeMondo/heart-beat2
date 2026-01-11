@@ -58,7 +58,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Running coach and developer | Task: Create docs/plans/ directory with JSON files: beginner-base-building.json (3x30min Z2), 5k-training.json (intervals + tempo), marathon-pace.json (long Z3 runs), recovery-run.json (easy Z1-Z2). Add docs/plans/README.md explaining each plan's purpose, target athlete, and how to use | Restrictions: Plans must be realistic and safe | Success: User can copy plan and start training immediately_
 
-- [ ] 5.1 Create development guide
+- [-] 5.1 Create development guide
   - File: `docs/development.md`
   - Document setup, workflow, testing, contribution process
   - Purpose: Onboard contributors
