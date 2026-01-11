@@ -80,7 +80,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Developer experience engineer | Task: Create dev-setup.sh that: checks for Rust (installs via rustup if missing), checks Flutter (shows install instructions), checks Android SDK/NDK (shows install instructions), installs Rust Android targets, runs flutter pub get. Create check-deps.sh that verifies all dependencies with versions. Add to docs/development.md | Restrictions: Must be idempotent, non-destructive | Success: New developer can run ./scripts/dev-setup.sh and start developing_
 
-- [ ] 5.1 Configure logging bridge
+- [x] 5.1 Configure logging bridge
   - File: `rust/src/api.rs`
   - Forward Rust tracing logs to Flutter
   - Purpose: Unified logging for debugging

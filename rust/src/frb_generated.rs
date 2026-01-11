@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1953380541;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1891926907;
 
 // Section: executor
 
@@ -374,6 +374,52 @@ fn wire__crate__api__hr_zone_impl(
         },
     )
 }
+fn wire__crate__api__init_logging_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sink: impl CstDecode<
+        StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "init_logging",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sink = sink.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::init_logging(api_sink)?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__init_panic_handler_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "init_panic_handler",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok({
+                        crate::api::init_panic_handler();
+                    })?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__scan_devices_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -508,6 +554,16 @@ impl SseDecode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_gen
     }
 }
 
+impl SseDecode
+    for StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <String>::sse_decode(deserializer);
+        return StreamSink::deserialize(inner);
+    }
+}
+
 impl SseDecode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -574,6 +630,22 @@ impl SseDecode for Vec<u8> {
             ans_.push(<u8>::sse_decode(deserializer));
         }
         return ans_;
+    }
+}
+
+impl SseDecode for crate::api::LogMessage {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_level = <String>::sse_decode(deserializer);
+        let mut var_target = <String>::sse_decode(deserializer);
+        let mut var_timestamp = <u64>::sse_decode(deserializer);
+        let mut var_message = <String>::sse_decode(deserializer);
+        return crate::api::LogMessage {
+            level: var_level,
+            target: var_target,
+            timestamp: var_timestamp,
+            message: var_message,
+        };
     }
 }
 
@@ -733,6 +805,24 @@ impl flutter_rust_bridge::IntoIntoDart<crate::domain::heart_rate::DiscoveredDevi
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::LogMessage {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.level.into_into_dart().into_dart(),
+            self.target.into_into_dart().into_dart(),
+            self.timestamp.into_into_dart().into_dart(),
+            self.message.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::LogMessage {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::LogMessage> for crate::api::LogMessage {
+    fn into_into_dart(self) -> crate::api::LogMessage {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::domain::heart_rate::Zone {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
@@ -794,6 +884,15 @@ impl SseEncode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_gen
     }
 }
 
+impl SseEncode
+    for StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        unimplemented!("")
+    }
+}
+
 impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -848,6 +947,16 @@ impl SseEncode for Vec<u8> {
         for item in self {
             <u8>::sse_encode(item, serializer);
         }
+    }
+}
+
+impl SseEncode for crate::api::LogMessage {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.level, serializer);
+        <String>::sse_encode(self.target, serializer);
+        <u64>::sse_encode(self.timestamp, serializer);
+        <String>::sse_encode(self.message, serializer);
     }
 }
 
@@ -1012,6 +1121,18 @@ mod io {
             StreamSink::deserialize(raw)
         }
     }
+    impl CstDecode<StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>>
+        for *mut wire_cst_list_prim_u_8_strict
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            let raw: String = self.cst_decode();
+            StreamSink::deserialize(raw)
+        }
+    }
     impl CstDecode<String> for *mut wire_cst_list_prim_u_8_strict {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> String {
@@ -1062,6 +1183,17 @@ mod io {
             }
         }
     }
+    impl CstDecode<crate::api::LogMessage> for wire_cst_log_message {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::LogMessage {
+            crate::api::LogMessage {
+                level: self.level.cst_decode(),
+                target: self.target.cst_decode(),
+                timestamp: self.timestamp.cst_decode(),
+                message: self.message.cst_decode(),
+            }
+        }
+    }
     impl NewWithNullPtr for wire_cst_discovered_device {
         fn new_with_null_ptr() -> Self {
             Self {
@@ -1072,6 +1204,21 @@ mod io {
         }
     }
     impl Default for wire_cst_discovered_device {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_log_message {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                level: core::ptr::null_mut(),
+                target: core::ptr::null_mut(),
+                timestamp: Default::default(),
+                message: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_log_message {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -1138,6 +1285,19 @@ mod io {
         max_hr: u16,
     ) {
         wire__crate__api__hr_zone_impl(port_, data, max_hr)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__init_logging(
+        port_: i64,
+        sink: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__init_logging_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__init_panic_handler(port_: i64) {
+        wire__crate__api__init_panic_handler_impl(port_)
     }
 
     #[unsafe(no_mangle)]
@@ -1222,6 +1382,14 @@ mod io {
         ptr: *mut u8,
         len: i32,
     }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_log_message {
+        level: *mut wire_cst_list_prim_u_8_strict,
+        target: *mut wire_cst_list_prim_u_8_strict,
+        timestamp: u64,
+        message: *mut wire_cst_list_prim_u_8_strict,
+    }
 }
 #[cfg(not(target_family = "wasm"))]
 pub use io::*;
@@ -1263,6 +1431,17 @@ mod web {
         fn cst_decode(
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            StreamSink::deserialize(self)
+        }
+    }
+    impl CstDecode<StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>>
+        for String
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>
         {
             StreamSink::deserialize(self)
         }
@@ -1310,6 +1489,28 @@ mod web {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<u8> {
             self.into_vec()
+        }
+    }
+    impl CstDecode<crate::api::LogMessage>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::LogMessage {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                4,
+                "Expected 4 elements, got {}",
+                self_.length()
+            );
+            crate::api::LogMessage {
+                level: self_.get(0).cst_decode(),
+                target: self_.get(1).cst_decode(),
+                timestamp: self_.get(2).cst_decode(),
+                message: self_.get(3).cst_decode(),
+            }
         }
     }
     impl CstDecode<Option<String>> for Option<String> {
@@ -1365,6 +1566,17 @@ mod web {
         fn cst_decode(
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            StreamSink::deserialize(self.as_string().expect("should be a string"))
+        }
+    }
+    impl CstDecode<StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::LogMessage, flutter_rust_bridge::for_generated::DcoCodec>
         {
             StreamSink::deserialize(self.as_string().expect("should be a string"))
         }
@@ -1510,6 +1722,21 @@ mod web {
         max_hr: u16,
     ) {
         wire__crate__api__hr_zone_impl(port_, data, max_hr)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__init_logging(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sink: String,
+    ) {
+        wire__crate__api__init_logging_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__init_panic_handler(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__init_panic_handler_impl(port_)
     }
 
     #[wasm_bindgen]

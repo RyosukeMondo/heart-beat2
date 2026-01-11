@@ -30,6 +30,13 @@ typedef struct wire_cst_list_discovered_device {
   int32_t len;
 } wire_cst_list_discovered_device;
 
+typedef struct wire_cst_log_message {
+  struct wire_cst_list_prim_u_8_strict *level;
+  struct wire_cst_list_prim_u_8_strict *target;
+  uint64_t timestamp;
+  struct wire_cst_list_prim_u_8_strict *message;
+} wire_cst_log_message;
+
 void frbgen_heart_beat_wire__crate__api__connect_device(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *device_id);
 
@@ -51,6 +58,11 @@ void frbgen_heart_beat_wire__crate__api__hr_rmssd(int64_t port_, uintptr_t data)
 void frbgen_heart_beat_wire__crate__api__hr_timestamp(int64_t port_, uintptr_t data);
 
 void frbgen_heart_beat_wire__crate__api__hr_zone(int64_t port_, uintptr_t data, uint16_t max_hr);
+
+void frbgen_heart_beat_wire__crate__api__init_logging(int64_t port_,
+                                                      struct wire_cst_list_prim_u_8_strict *sink);
+
+void frbgen_heart_beat_wire__crate__api__init_panic_handler(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__scan_devices(int64_t port_);
 
@@ -85,6 +97,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_rmssd);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_timestamp);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_zone);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_logging);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_panic_handler);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__scan_devices);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

@@ -53,6 +53,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<LogMessage> dco_decode_StreamSink_log_message_Dco(dynamic raw);
+
+  @protected
   String dco_decode_String(dynamic raw);
 
   @protected
@@ -78,6 +81,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  LogMessage dco_decode_log_message(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
@@ -134,6 +140,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<LogMessage> sse_decode_StreamSink_log_message_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
@@ -161,6 +172,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  LogMessage sse_decode_log_message(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
@@ -216,6 +230,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  String cst_encode_StreamSink_log_message_Dco(RustStreamSink<LogMessage> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_log_message,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
   String cst_encode_String(String raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw;
@@ -253,6 +280,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   JSAny cst_encode_list_prim_u_8_strict(Uint8List raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_log_message(LogMessage raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_String(raw.level),
+      cst_encode_String(raw.target),
+      cst_encode_u_64(raw.timestamp),
+      cst_encode_String(raw.message),
+    ].jsify()!;
   }
 
   @protected
@@ -359,6 +397,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_StreamSink_log_message_Dco(
+    RustStreamSink<LogMessage> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
@@ -393,6 +437,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_log_message(LogMessage self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
@@ -462,6 +509,12 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__hr_zone(NativePortType port_, int data, int max_hr) =>
       wasmModule.wire__crate__api__hr_zone(port_, data, max_hr);
 
+  void wire__crate__api__init_logging(NativePortType port_, String sink) =>
+      wasmModule.wire__crate__api__init_logging(port_, sink);
+
+  void wire__crate__api__init_panic_handler(NativePortType port_) =>
+      wasmModule.wire__crate__api__init_panic_handler(port_);
+
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
 
@@ -526,6 +579,13 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     int data,
     int max_hr,
   );
+
+  external void wire__crate__api__init_logging(
+    NativePortType port_,
+    String sink,
+  );
+
+  external void wire__crate__api__init_panic_handler(NativePortType port_);
 
   external void wire__crate__api__scan_devices(NativePortType port_);
 

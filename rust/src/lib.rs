@@ -41,8 +41,8 @@ pub mod state;
 
 // Re-export commonly used types from each module
 pub use api::{
-    connect_device, create_hr_stream, disconnect, emit_hr_data, init_panic_handler, scan_devices,
-    start_mock_mode,
+    connect_device, create_hr_stream, disconnect, emit_hr_data, init_logging, init_panic_handler,
+    scan_devices, start_mock_mode, LogMessage,
 };
 pub use domain::{
     is_valid_bpm, parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement,

@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -1953380541;
+  int get rustContentHash => 1891926907;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -98,6 +98,10 @@ abstract class RustLibApi extends BaseApi {
     required ApiFilteredHeartRate data,
     required int maxHr,
   });
+
+  Stream<LogMessage> crateApiInitLogging();
+
+  Future<void> crateApiInitPanicHandler();
 
   Future<List<DiscoveredDevice>> crateApiScanDevices();
 
@@ -373,6 +377,53 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "hr_zone", argNames: ["data", "maxHr"]);
 
   @override
+  Stream<LogMessage> crateApiInitLogging() {
+    final sink = RustStreamSink<LogMessage>();
+    unawaited(
+      handler.executeNormal(
+        NormalTask(
+          callFfi: (port_) {
+            var arg0 = cst_encode_StreamSink_log_message_Dco(sink);
+            return wire.wire__crate__api__init_logging(port_, arg0);
+          },
+          codec: DcoCodec(
+            decodeSuccessData: dco_decode_unit,
+            decodeErrorData: dco_decode_AnyhowException,
+          ),
+          constMeta: kCrateApiInitLoggingConstMeta,
+          argValues: [sink],
+          apiImpl: this,
+        ),
+      ),
+    );
+    return sink.stream;
+  }
+
+  TaskConstMeta get kCrateApiInitLoggingConstMeta =>
+      const TaskConstMeta(debugName: "init_logging", argNames: ["sink"]);
+
+  @override
+  Future<void> crateApiInitPanicHandler() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__init_panic_handler(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiInitPanicHandlerConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInitPanicHandlerConstMeta =>
+      const TaskConstMeta(debugName: "init_panic_handler", argNames: []);
+
+  @override
   Future<List<DiscoveredDevice>> crateApiScanDevices() {
     return handler.executeNormal(
       NormalTask(
@@ -465,6 +516,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  RustStreamSink<LogMessage> dco_decode_StreamSink_log_message_Dco(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
+  }
+
+  @protected
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
@@ -523,6 +582,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint8List;
+  }
+
+  @protected
+  LogMessage dco_decode_log_message(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return LogMessage(
+      level: dco_decode_String(arr[0]),
+      target: dco_decode_String(arr[1]),
+      timestamp: dco_decode_u_64(arr[2]),
+      message: dco_decode_String(arr[3]),
+    );
   }
 
   @protected
@@ -632,6 +705,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  RustStreamSink<LogMessage> sse_decode_StreamSink_log_message_Dco(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    throw UnimplementedError('Unreachable ()');
+  }
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_prim_u_8_strict(deserializer);
@@ -696,6 +777,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
+  }
+
+  @protected
+  LogMessage sse_decode_log_message(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_level = sse_decode_String(deserializer);
+    var var_target = sse_decode_String(deserializer);
+    var var_timestamp = sse_decode_u_64(deserializer);
+    var var_message = sse_decode_String(deserializer);
+    return LogMessage(
+      level: var_level,
+      target: var_target,
+      timestamp: var_timestamp,
+      message: var_message,
+    );
   }
 
   @protected
@@ -913,6 +1009,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_StreamSink_log_message_Dco(
+    RustStreamSink<LogMessage> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(
+      self.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_log_message,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+      serializer,
+    );
+  }
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
@@ -979,6 +1092,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
+  }
+
+  @protected
+  void sse_encode_log_message(LogMessage self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.level, serializer);
+    sse_encode_String(self.target, serializer);
+    sse_encode_u_64(self.timestamp, serializer);
+    sse_encode_String(self.message, serializer);
   }
 
   @protected

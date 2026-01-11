@@ -51,6 +51,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<LogMessage> dco_decode_StreamSink_log_message_Dco(dynamic raw);
+
+  @protected
   String dco_decode_String(dynamic raw);
 
   @protected
@@ -76,6 +79,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  LogMessage dco_decode_log_message(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
@@ -132,6 +138,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<LogMessage> sse_decode_StreamSink_log_message_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
@@ -159,6 +170,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  LogMessage sse_decode_log_message(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
@@ -209,6 +223,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
         codec: DcoCodec(
           decodeSuccessData:
               dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_8_strict>
+  cst_encode_StreamSink_log_message_Dco(RustStreamSink<LogMessage> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_log_message,
           decodeErrorData: dco_decode_AnyhowException,
         ),
       ),
@@ -297,6 +325,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_log_message(
+    LogMessage apiObj,
+    wire_cst_log_message wireObj,
+  ) {
+    wireObj.level = cst_encode_String(apiObj.level);
+    wireObj.target = cst_encode_String(apiObj.target);
+    wireObj.timestamp = cst_encode_u_64(apiObj.timestamp);
+    wireObj.message = cst_encode_String(apiObj.message);
+  }
+
+  @protected
   int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
@@ -370,6 +409,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_StreamSink_log_message_Dco(
+    RustStreamSink<LogMessage> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
@@ -404,6 +449,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_log_message(LogMessage self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
@@ -609,6 +657,39 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__hr_zone = _wire__crate__api__hr_zonePtr
       .asFunction<void Function(int, int, int)>();
 
+  void wire__crate__api__init_logging(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> sink,
+  ) {
+    return _wire__crate__api__init_logging(port_, sink);
+  }
+
+  late final _wire__crate__api__init_loggingPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__init_logging');
+  late final _wire__crate__api__init_logging =
+      _wire__crate__api__init_loggingPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__init_panic_handler(int port_) {
+    return _wire__crate__api__init_panic_handler(port_);
+  }
+
+  late final _wire__crate__api__init_panic_handlerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__init_panic_handler',
+      );
+  late final _wire__crate__api__init_panic_handler =
+      _wire__crate__api__init_panic_handlerPtr.asFunction<void Function(int)>();
+
   void wire__crate__api__scan_devices(int port_) {
     return _wire__crate__api__scan_devices(port_);
   }
@@ -762,4 +843,15 @@ final class wire_cst_list_discovered_device extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
+}
+
+final class wire_cst_log_message extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> level;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> target;
+
+  @ffi.Uint64()
+  external int timestamp;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> message;
 }

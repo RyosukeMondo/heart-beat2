@@ -8,6 +8,72 @@ import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `get_hr_stream_receiver`, `get_or_create_hr_broadcast_sender`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `flush`, `fmt`, `make_writer`, `write`
+
+/// Initialize the panic handler for FFI safety.
+///
+/// This function sets up a panic hook that catches Rust panics and logs them
+/// using the tracing framework instead of crashing the app. This is critical
+/// for Android/iOS where uncaught panics would terminate the entire application.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// before making any other FFI calls to Rust.
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   // Initialize Rust panic handler first
+///   await RustLib.init();
+///   initPanicHandler();
+///
+///   runApp(MyApp());
+/// }
+/// ```
+Future<void> initPanicHandler() =>
+    RustLib.instance.api.crateApiInitPanicHandler();
+
+/// Initialize logging and forward Rust tracing logs to Flutter.
+///
+/// This function sets up a tracing subscriber that captures all Rust log messages
+/// (at the level specified by the RUST_LOG environment variable) and forwards them
+/// to Flutter via a StreamSink. This enables unified logging for debugging where
+/// both Dart and Rust logs can be viewed together.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// after RustLib.init() but before making any other FFI calls that generate logs.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive log messages
+///
+/// # Environment Variables
+///
+/// * `RUST_LOG` - Controls the log level (TRACE, DEBUG, INFO, WARN, ERROR).
+///   Defaults to INFO if not set. Example: `RUST_LOG=debug` or `RUST_LOG=heart_beat=trace`
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   await RustLib.init();
+///
+///   // Create a stream to receive logs
+///   final logStream = StreamController<LogMessage>();
+///   initLogging(sink: logStream.sink);
+///
+///   // Listen to logs
+///   logStream.stream.listen((log) {
+///     debugPrint('[${log.level}] ${log.target}: ${log.message}');
+///   });
+///
+///   runApp(MyApp());
+/// }
+/// ```
+Stream<LogMessage> initLogging() => RustLib.instance.api.crateApiInitLogging();
 
 /// Scan for BLE heart rate devices.
 ///
@@ -140,3 +206,43 @@ Future<Zone> hrZone({required ApiFilteredHeartRate data, required int maxHr}) =>
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}
+
+/// Log message that can be sent to Flutter for debugging.
+///
+/// This struct represents a single log entry with level, target module,
+/// timestamp, and message content. It's designed to be sent across the FFI
+/// boundary to Flutter for display in the debug console.
+class LogMessage {
+  /// Log level (TRACE, DEBUG, INFO, WARN, ERROR)
+  final String level;
+
+  /// Module path where the log originated (e.g., "heart_beat::adapters")
+  final String target;
+
+  /// Timestamp in milliseconds since Unix epoch
+  final BigInt timestamp;
+
+  /// The actual log message
+  final String message;
+
+  const LogMessage({
+    required this.level,
+    required this.target,
+    required this.timestamp,
+    required this.message,
+  });
+
+  @override
+  int get hashCode =>
+      level.hashCode ^ target.hashCode ^ timestamp.hashCode ^ message.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LogMessage &&
+          runtimeType == other.runtimeType &&
+          level == other.level &&
+          target == other.target &&
+          timestamp == other.timestamp &&
+          message == other.message;
+}

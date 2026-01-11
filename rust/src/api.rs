@@ -9,11 +9,16 @@ use crate::frb_generated::StreamSink;
 use crate::ports::BleAdapter;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
+use std::io::Write;
 use std::panic;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::Duration;
 use tokio::sync::broadcast;
 use tracing::error;
+use tracing_subscriber::{
+    fmt::{format::FmtSpan, MakeWriter},
+    EnvFilter,
+};
 
 // Re-export domain types for FRB code generation
 pub use crate::domain::heart_rate::{
@@ -22,6 +27,98 @@ pub use crate::domain::heart_rate::{
 
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
+
+/// Log message that can be sent to Flutter for debugging.
+///
+/// This struct represents a single log entry with level, target module,
+/// timestamp, and message content. It's designed to be sent across the FFI
+/// boundary to Flutter for display in the debug console.
+#[derive(Clone, Debug)]
+pub struct LogMessage {
+    /// Log level (TRACE, DEBUG, INFO, WARN, ERROR)
+    pub level: String,
+    /// Module path where the log originated (e.g., "heart_beat::adapters")
+    pub target: String,
+    /// Timestamp in milliseconds since Unix epoch
+    pub timestamp: u64,
+    /// The actual log message
+    pub message: String,
+}
+
+// Global state for log streaming
+static LOG_SINK: OnceLock<Mutex<Option<StreamSink<LogMessage>>>> = OnceLock::new();
+
+/// Custom writer that forwards logs to Flutter via StreamSink.
+///
+/// This writer implements the std::io::Write trait and is used by tracing_subscriber
+/// to capture log output. Instead of writing to stdout/stderr, it parses the log
+/// messages and sends them to Flutter through the FRB StreamSink.
+struct FlutterLogWriter;
+
+impl Write for FlutterLogWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let log_str = String::from_utf8_lossy(buf);
+
+        // Parse the log message
+        // Format: "2024-01-11T12:34:56.789Z  INFO heart_beat::api: Message here"
+        if let Some(sink_mutex) = LOG_SINK.get() {
+            if let Ok(sink_opt) = sink_mutex.lock() {
+                if let Some(sink) = sink_opt.as_ref() {
+                    // Simple parsing - extract level and message
+                    let parts: Vec<&str> = log_str.splitn(2, ' ').collect();
+                    if parts.len() >= 2 {
+                        let level_and_rest = parts[1];
+                        let level_parts: Vec<&str> = level_and_rest.splitn(2, ' ').collect();
+
+                        if level_parts.len() >= 2 {
+                            let level = level_parts[0].trim().to_string();
+                            let rest = level_parts[1];
+
+                            let target_and_msg: Vec<&str> = rest.splitn(2, ':').collect();
+                            let (target, message) = if target_and_msg.len() >= 2 {
+                                (
+                                    target_and_msg[0].trim().to_string(),
+                                    target_and_msg[1].trim().to_string(),
+                                )
+                            } else {
+                                ("unknown".to_string(), rest.trim().to_string())
+                            };
+
+                            let timestamp = std::time::SystemTime::now()
+                                .duration_since(std::time::UNIX_EPOCH)
+                                .unwrap()
+                                .as_millis() as u64;
+
+                            let log_msg = LogMessage {
+                                level,
+                                target,
+                                timestamp,
+                                message,
+                            };
+
+                            // Send to Flutter (ignore errors if sink is closed)
+                            let _ = sink.add(log_msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+impl<'a> MakeWriter<'a> for FlutterLogWriter {
+    type Writer = FlutterLogWriter;
+
+    fn make_writer(&'a self) -> Self::Writer {
+        FlutterLogWriter
+    }
+}
 
 /// Initialize the panic handler for FFI safety.
 ///
@@ -69,6 +166,76 @@ pub fn init_panic_handler() {
             "Rust panic occurred - this would have crashed the app"
         );
     }));
+}
+
+/// Initialize logging and forward Rust tracing logs to Flutter.
+///
+/// This function sets up a tracing subscriber that captures all Rust log messages
+/// (at the level specified by the RUST_LOG environment variable) and forwards them
+/// to Flutter via a StreamSink. This enables unified logging for debugging where
+/// both Dart and Rust logs can be viewed together.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// after RustLib.init() but before making any other FFI calls that generate logs.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive log messages
+///
+/// # Environment Variables
+///
+/// * `RUST_LOG` - Controls the log level (TRACE, DEBUG, INFO, WARN, ERROR).
+///   Defaults to INFO if not set. Example: `RUST_LOG=debug` or `RUST_LOG=heart_beat=trace`
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   await RustLib.init();
+///
+///   // Create a stream to receive logs
+///   final logStream = StreamController<LogMessage>();
+///   initLogging(sink: logStream.sink);
+///
+///   // Listen to logs
+///   logStream.stream.listen((log) {
+///     debugPrint('[${log.level}] ${log.target}: ${log.message}');
+///   });
+///
+///   runApp(MyApp());
+/// }
+/// ```
+pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
+    // Store the sink globally
+    LOG_SINK
+        .get_or_init(|| Mutex::new(None))
+        .lock()
+        .map_err(|e| anyhow!("Failed to lock LOG_SINK: {}", e))?
+        .replace(sink);
+
+    // Get log level from RUST_LOG env var, default to INFO
+    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+
+    // Create a tracing subscriber that uses our custom writer
+    let subscriber = tracing_subscriber::fmt()
+        .with_writer(FlutterLogWriter)
+        .with_env_filter(env_filter)
+        .with_target(true)
+        .with_level(true)
+        .with_thread_ids(false)
+        .with_thread_names(false)
+        .with_file(false)
+        .with_line_number(false)
+        .with_span_events(FmtSpan::NONE)
+        .without_time() // We add timestamp in FlutterLogWriter
+        .finish();
+
+    // Set the global subscriber
+    tracing::subscriber::set_global_default(subscriber)
+        .map_err(|e| anyhow!("Failed to set global tracing subscriber: {}", e))?;
+
+    Ok(())
 }
 
 /// Scan for BLE heart rate devices.
