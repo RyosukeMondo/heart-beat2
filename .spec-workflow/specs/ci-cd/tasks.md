@@ -81,7 +81,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Performance testing specialist | Task: Create benchmark.yml triggered on PRs. Run benchmarks on main branch, checkout PR, run benchmarks, compare with criterion. Comment on PR with results table. Fail if >10% regression in critical path (full_pipeline). Cache criterion baseline between runs | Restrictions: Must handle baseline storage, account for CI variance | Success: PRs show performance impact, regressions blocked_
 
-- [ ] 5.3 Add latency acceptance test
+- [x] 5.3 Add latency acceptance test
   - File: `rust/tests/latency_test.rs`
   - Integration test verifying <100ms P95 latency
   - Purpose: Hard requirement validation
