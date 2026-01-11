@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          # Generate changelog
+          if [ -z "$PREV_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          # Write changelog to file
+          cat > changelog.md <<EOF
+          ## Changes
+
+          ${CHANGELOG}
+          EOF
+
+          cat changelog.md
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.get_version.outputs.version }}
+          body_path: changelog.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-cli:
+    name: Build CLI - ${{ matrix.target }}
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: heart-beat-cli-linux-x86_64
+            strip: strip
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            artifact_name: heart-beat-cli-linux-x86_64-musl
+            strip: strip
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: heart-beat-cli-macos-x86_64
+            strip: strip
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: heart-beat-cli-macos-arm64
+            strip: strip
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: heart-beat-cli-windows-x86_64
+            strip: ""
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install musl tools (Linux musl only)
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: rust/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-release-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-cargo-build-release-
+
+      - name: Build CLI binary
+        run: |
+          cd rust
+          cargo build --release --target ${{ matrix.target }} --bin cli
+
+      - name: Strip binary (Unix)
+        if: matrix.strip != ''
+        run: |
+          ${{ matrix.strip }} rust/target/${{ matrix.target }}/release/cli
+
+      - name: Create archive (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd rust/target/${{ matrix.target }}/release
+          tar czf ${{ matrix.artifact_name }}.tar.gz cli
+          mv ${{ matrix.artifact_name }}.tar.gz ${{ github.workspace }}/
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd rust/target/${{ matrix.target }}/release
+          7z a ${{ matrix.artifact_name }}.zip cli.exe
+          mv ${{ matrix.artifact_name }}.zip ${{ github.workspace }}/
+
+      - name: Generate checksum (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          sha256sum ${{ matrix.artifact_name }}.tar.gz > ${{ matrix.artifact_name }}.tar.gz.sha256
+
+      - name: Generate checksum (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          certutil -hashfile ${{ matrix.artifact_name }}.zip SHA256 > ${{ matrix.artifact_name }}.zip.sha256
+
+      - name: Upload archive to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ matrix.artifact_name }}.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-checksums:
+    name: Create Combined Checksums
+    needs: [create-release, build-cli]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create combined checksums file
+        run: |
+          # Collect all checksum files
+          find . -name "*.sha256" -exec cat {} \; > checksums.txt
+
+          echo "Combined checksums:"
+          cat checksums.txt
+
+      - name: Upload checksums to release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          files: checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
