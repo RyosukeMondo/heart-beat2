@@ -88,7 +88,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Logging infrastructure specialist | Task: Add init_logging() function in api.rs that sets up tracing subscriber forwarding to Flutter via FRB StreamSink. On Flutter side, receive logs and print with debugPrint. Use env var RUST_LOG for level control. Add timestamp and module path to log format | Restrictions: Must be async-safe, handle high log volume | Success: Rust logs appear in flutter logs output_
 
-- [ ] 5.2 Create debugging guide
+- [x] 5.2 Create debugging guide
   - File: `docs/debugging-android.md`
   - Document debugging workflow and common issues
   - Purpose: Help developers debug Android issues
