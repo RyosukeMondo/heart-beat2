@@ -26,7 +26,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Technical writer | Task: Create README.md in rust/src/domain/, rust/src/state/, rust/src/scheduler/, rust/src/adapters/. Each explains: module purpose, key types, main functions, usage examples, testing approach. Keep brief (50-100 lines each). Link to relevant files | Restrictions: Focus on public API, not implementation details | Success: Developer can understand module without reading all code_
 
-- [ ] 3.1 Add comprehensive doc comments
+- [x] 3.1 Add comprehensive doc comments
   - Files: All `rust/src/**/*.rs` public items
   - Add /// doc comments with examples to all public functions
   - Purpose: Generate quality cargo doc output
@@ -34,7 +34,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Rust documentation specialist | Task: Add doc comments (///) to all public functions, structs, enums in domain/, ports/, adapters/, state/, scheduler/, api.rs. Include: brief description, arguments explanation, return value, example usage, errors/panics if applicable. Use rustdoc code blocks with ```rust | Restrictions: Examples must compile, keep examples simple | Success: cargo doc generates complete documentation_
 
-- [ ] 3.2 Create API usage examples
+- [x] 3.2 Create API usage examples
   - File: `docs/api-examples.md`
   - Show common usage patterns with code examples
   - Purpose: Quick reference for library users
