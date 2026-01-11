@@ -7,9 +7,9 @@
 use clap::{Parser, Subcommand};
 use heart_beat::adapters::{BtleplugAdapter, MockAdapter, MockNotificationAdapter};
 use heart_beat::domain::filters::KalmanFilter;
-use heart_beat::domain::heart_rate::parse_heart_rate;
+use heart_beat::domain::heart_rate::{parse_heart_rate, Zone};
 use heart_beat::domain::hrv::calculate_rmssd;
-use heart_beat::domain::training_plan::TrainingPlan;
+use heart_beat::domain::training_plan::{TrainingPlan, TrainingPhase, TransitionCondition};
 use heart_beat::ports::ble_adapter::BleAdapter;
 use heart_beat::scheduler::SessionExecutor;
 use std::sync::Arc;
@@ -237,20 +237,16 @@ async fn main() -> anyhow::Result<()> {
         },
         Commands::Plan { command } => match command {
             PlanCmd::List => {
-                eprintln!("Plan list not yet implemented");
-                std::process::exit(1);
+                handle_plan_list()?;
             }
             PlanCmd::Show { name } => {
-                eprintln!("Plan show not yet implemented: {}", name);
-                std::process::exit(1);
+                handle_plan_show(&name)?;
             }
             PlanCmd::Validate { path } => {
-                eprintln!("Plan validate not yet implemented: {}", path);
-                std::process::exit(1);
+                handle_plan_validate(&path)?;
             }
             PlanCmd::Create => {
-                eprintln!("Plan create not yet implemented");
-                std::process::exit(1);
+                handle_plan_create()?;
             }
         },
     }
@@ -1104,6 +1100,427 @@ async fn handle_mock_dropout(probability: f64) -> anyhow::Result<()> {
     println!("  Total packets: {}", total_packets);
     println!("  Dropped packets: {}", dropped_packets);
     println!("  Actual dropout rate: {:.1}%", actual_dropout_rate);
+
+    Ok(())
+}
+
+/// Handle the plan list subcommand.
+fn handle_plan_list() -> anyhow::Result<()> {
+    use std::fs;
+    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
+
+    info!("Listing training plans");
+
+    // Get plans directory
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let plans_dir = home.join(".heart-beat").join("plans");
+
+    // Create directory if it doesn't exist
+    if !plans_dir.exists() {
+        fs::create_dir_all(&plans_dir)?;
+        println!("No training plans found.");
+        println!("\nPlans directory: {}", plans_dir.display());
+        println!("Use 'cli plan create' to create a new plan.");
+        return Ok(());
+    }
+
+    // Read all .json files from the plans directory
+    let mut plans: Vec<(String, TrainingPlan)> = Vec::new();
+
+    for entry in fs::read_dir(&plans_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.extension().and_then(|s| s.to_str()) == Some("json") {
+            match fs::read_to_string(&path) {
+                Ok(content) => {
+                    match serde_json::from_str::<TrainingPlan>(&content) {
+                        Ok(plan) => {
+                            let filename = path.file_stem()
+                                .and_then(|s| s.to_str())
+                                .unwrap_or("unknown")
+                                .to_string();
+                            plans.push((filename, plan));
+                        }
+                        Err(e) => {
+                            warn!("Failed to parse plan {}: {}", path.display(), e);
+                        }
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to read plan {}: {}", path.display(), e);
+                }
+            }
+        }
+    }
+
+    if plans.is_empty() {
+        println!("No training plans found.");
+        println!("\nPlans directory: {}", plans_dir.display());
+        println!("Use 'cli plan create' to create a new plan.");
+        return Ok(());
+    }
+
+    println!("Found {} training plan(s):\n", plans.len());
+
+    // Create table
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    // Add header row
+    table.set_header(vec![
+        Cell::new("Plan Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("File").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Phases").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Duration").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Max HR").add_attribute(Attribute::Bold).fg(Color::Cyan),
+    ]);
+
+    // Add plan rows
+    for (filename, plan) in plans {
+        let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
+        let duration_mins = total_secs / 60;
+        let duration_str = if duration_mins < 60 {
+            format!("{}m", duration_mins)
+        } else {
+            let hours = duration_mins / 60;
+            let mins = duration_mins % 60;
+            format!("{}h {}m", hours, mins)
+        };
+
+        table.add_row(vec![
+            Cell::new(&plan.name),
+            Cell::new(&filename),
+            Cell::new(plan.phases.len()),
+            Cell::new(&duration_str),
+            Cell::new(format!("{} BPM", plan.max_hr)),
+        ]);
+    }
+
+    println!("{table}");
+    println!("\nUse 'cli plan show <name>' to view plan details.");
+    println!("Plans directory: {}", plans_dir.display());
+
+    Ok(())
+}
+
+/// Handle the plan show subcommand.
+fn handle_plan_show(name: &str) -> anyhow::Result<()> {
+    use std::fs;
+    use comfy_table::{Table, Cell, Color, Attribute, ContentArrangement, presets::UTF8_FULL};
+
+    info!("Showing training plan: {}", name);
+
+    // Get plans directory
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let plans_dir = home.join(".heart-beat").join("plans");
+
+    // Build path to plan file
+    let plan_path = plans_dir.join(format!("{}.json", name));
+
+    if !plan_path.exists() {
+        return Err(anyhow::anyhow!(
+            "Plan '{}' not found. Run 'cli plan list' to see available plans.",
+            name
+        ));
+    }
+
+    // Load the plan
+    let content = fs::read_to_string(&plan_path)?;
+    let plan: TrainingPlan = serde_json::from_str(&content)?;
+
+    // Display plan header
+    println!("\n{}", "═".repeat(60));
+    println!("Plan: {}", plan.name);
+    println!("{}", "═".repeat(60));
+    println!("Max HR: {} BPM", plan.max_hr);
+    println!("Created: {}", plan.created_at.format("%Y-%m-%d %H:%M:%S"));
+    println!("Phases: {}", plan.phases.len());
+
+    let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
+    let duration_mins = total_secs / 60;
+    println!("Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+    println!();
+
+    // Create phases table
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    // Add header row
+    table.set_header(vec![
+        Cell::new("#").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Phase Name").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Target Zone").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Duration").add_attribute(Attribute::Bold).fg(Color::Cyan),
+        Cell::new("Transition").add_attribute(Attribute::Bold).fg(Color::Cyan),
+    ]);
+
+    // Add phase rows
+    for (idx, phase) in plan.phases.iter().enumerate() {
+        let duration_mins = phase.duration_secs / 60;
+        let duration_secs = phase.duration_secs % 60;
+        let duration_str = if duration_secs == 0 {
+            format!("{}m", duration_mins)
+        } else {
+            format!("{}m {}s", duration_mins, duration_secs)
+        };
+
+        // Color code the zone
+        let zone_str = format!("{:?}", phase.target_zone);
+        let zone_cell = match phase.target_zone {
+            Zone::Zone1 => Cell::new(&zone_str).fg(Color::Blue),
+            Zone::Zone2 => Cell::new(&zone_str).fg(Color::Green),
+            Zone::Zone3 => Cell::new(&zone_str).fg(Color::Yellow),
+            Zone::Zone4 => Cell::new(&zone_str).fg(Color::DarkYellow),
+            Zone::Zone5 => Cell::new(&zone_str).fg(Color::Red),
+        };
+
+        let transition_str = match &phase.transition {
+            TransitionCondition::TimeElapsed => "Time".to_string(),
+            TransitionCondition::HeartRateReached { target_bpm, hold_secs } => {
+                format!("HR {}bpm ({}s)", target_bpm, hold_secs)
+            }
+        };
+
+        table.add_row(vec![
+            Cell::new(idx + 1),
+            Cell::new(&phase.name),
+            zone_cell,
+            Cell::new(&duration_str),
+            Cell::new(&transition_str),
+        ]);
+    }
+
+    println!("{table}");
+    println!("\nUse 'cli session start {}' to run this plan.", plan_path.display());
+
+    Ok(())
+}
+
+/// Handle the plan validate subcommand.
+fn handle_plan_validate(path: &str) -> anyhow::Result<()> {
+    use std::fs;
+    use colored::Colorize;
+
+    info!("Validating training plan: {}", path);
+
+    // Read the plan file
+    let content = fs::read_to_string(path)
+        .map_err(|e| anyhow::anyhow!("Failed to read plan file '{}': {}", path, e))?;
+
+    // Parse the JSON
+    let plan: TrainingPlan = serde_json::from_str(&content)
+        .map_err(|e| anyhow::anyhow!("Failed to parse plan JSON: {}", e))?;
+
+    println!("Validating plan: {}", plan.name);
+    println!("File: {}\n", path);
+
+    // Validate the plan
+    match plan.validate() {
+        Ok(()) => {
+            println!("{} Plan is valid!", "✓".green().bold());
+            println!("\nPlan Summary:");
+            println!("  Name: {}", plan.name);
+            println!("  Max HR: {} BPM", plan.max_hr);
+            println!("  Phases: {}", plan.phases.len());
+
+            let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
+            let duration_mins = total_secs / 60;
+            println!("  Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+
+            Ok(())
+        }
+        Err(e) => {
+            println!("{} Plan validation failed!", "✗".red().bold());
+            println!("\n{} {}", "Error:".red().bold(), e);
+            Err(e)
+        }
+    }
+}
+
+/// Handle the plan create subcommand.
+fn handle_plan_create() -> anyhow::Result<()> {
+    use std::fs;
+    use dialoguer::{Input, Select, Confirm};
+    use colored::Colorize;
+
+    info!("Creating new training plan");
+
+    println!("{}",  "═".repeat(60));
+    println!("Create New Training Plan");
+    println!("{}\n", "═".repeat(60));
+
+    // Get plan name
+    let plan_name: String = Input::new()
+        .with_prompt("Plan name")
+        .interact_text()?;
+
+    // Get max HR
+    let max_hr: u16 = Input::new()
+        .with_prompt("Maximum heart rate (BPM)")
+        .default(180)
+        .validate_with(|input: &u16| -> Result<(), &str> {
+            if *input < 100 || *input > 220 {
+                Err("Max HR must be between 100-220 BPM")
+            } else {
+                Ok(())
+            }
+        })
+        .interact_text()?;
+
+    // Build phases
+    let mut phases = Vec::new();
+    let mut phase_num = 1;
+
+    loop {
+        println!("\n{} Phase {}", "─".repeat(20), phase_num);
+
+        // Get phase name
+        let phase_name: String = Input::new()
+            .with_prompt("Phase name")
+            .default(format!("Phase {}", phase_num))
+            .interact_text()?;
+
+        // Select target zone
+        let zones = vec!["Zone 1 (Recovery)", "Zone 2 (Endurance)", "Zone 3 (Tempo)", "Zone 4 (Threshold)", "Zone 5 (VO2 Max)"];
+        let zone_idx = Select::new()
+            .with_prompt("Target zone")
+            .items(&zones)
+            .default(1)
+            .interact()?;
+
+        let target_zone = match zone_idx {
+            0 => Zone::Zone1,
+            1 => Zone::Zone2,
+            2 => Zone::Zone3,
+            3 => Zone::Zone4,
+            4 => Zone::Zone5,
+            _ => Zone::Zone2,
+        };
+
+        // Get duration
+        let duration_mins: u32 = Input::new()
+            .with_prompt("Duration (minutes)")
+            .default(10)
+            .validate_with(|input: &u32| -> Result<(), &str> {
+                if *input == 0 {
+                    Err("Duration must be greater than 0")
+                } else if *input > 240 {
+                    Err("Duration must be less than 240 minutes")
+                } else {
+                    Ok(())
+                }
+            })
+            .interact_text()?;
+
+        let duration_secs = duration_mins * 60;
+
+        // Select transition condition
+        let transitions = vec!["Time Elapsed", "Heart Rate Reached"];
+        let transition_idx = Select::new()
+            .with_prompt("Transition type")
+            .items(&transitions)
+            .default(0)
+            .interact()?;
+
+        let transition = if transition_idx == 0 {
+            TransitionCondition::TimeElapsed
+        } else {
+            let target_bpm: u16 = Input::new()
+                .with_prompt("Target BPM")
+                .default(140)
+                .validate_with(|input: &u16| -> Result<(), &str> {
+                    if *input < 30 || *input > 220 {
+                        Err("Target BPM must be between 30-220")
+                    } else {
+                        Ok(())
+                    }
+                })
+                .interact_text()?;
+
+            let hold_secs: u32 = Input::new()
+                .with_prompt("Hold duration (seconds)")
+                .default(10)
+                .validate_with(|input: &u32| -> Result<(), &str> {
+                    if *input == 0 {
+                        Err("Hold duration must be greater than 0")
+                    } else {
+                        Ok(())
+                    }
+                })
+                .interact_text()?;
+
+            TransitionCondition::HeartRateReached { target_bpm, hold_secs }
+        };
+
+        // Add phase
+        phases.push(TrainingPhase {
+            name: phase_name,
+            target_zone,
+            duration_secs,
+            transition,
+        });
+
+        // Ask if user wants to add another phase
+        let add_another = Confirm::new()
+            .with_prompt("Add another phase?")
+            .default(false)
+            .interact()?;
+
+        if !add_another {
+            break;
+        }
+
+        phase_num += 1;
+    }
+
+    // Create the plan
+    let plan = TrainingPlan {
+        name: plan_name.clone(),
+        phases,
+        created_at: chrono::Utc::now(),
+        max_hr,
+    };
+
+    // Validate the plan
+    println!("\nValidating plan...");
+    plan.validate()?;
+    println!("{} Plan is valid!", "✓".green().bold());
+
+    // Calculate total duration
+    let total_secs: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
+    let duration_mins = total_secs / 60;
+    println!("\nPlan Summary:");
+    println!("  Name: {}", plan.name);
+    println!("  Max HR: {} BPM", plan.max_hr);
+    println!("  Phases: {}", plan.phases.len());
+    println!("  Total Duration: {}m ({}h {}m)", duration_mins, duration_mins / 60, duration_mins % 60);
+
+    // Save the plan
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let plans_dir = home.join(".heart-beat").join("plans");
+    fs::create_dir_all(&plans_dir)?;
+
+    // Create filename from plan name (sanitize)
+    let filename = plan_name
+        .to_lowercase()
+        .replace(' ', "-")
+        .chars()
+        .filter(|c| c.is_alphanumeric() || *c == '-')
+        .collect::<String>();
+
+    let plan_path = plans_dir.join(format!("{}.json", filename));
+
+    // Serialize to JSON
+    let json = serde_json::to_string_pretty(&plan)?;
+    fs::write(&plan_path, json)?;
+
+    println!("\n{} Plan saved to: {}", "✓".green().bold(), plan_path.display());
+    println!("\nRun 'cli session start {}' to start this plan.", plan_path.display());
 
     Ok(())
 }
