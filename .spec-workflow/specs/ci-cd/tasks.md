@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create main CI workflow
+- [x] 1.1 Create main CI workflow
   - File: `.github/workflows/ci.yml`
   - Add jobs: test-rust, test-flutter, lint-rust, lint-flutter
   - Purpose: Automated testing on every push

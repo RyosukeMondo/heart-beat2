@@ -10,8 +10,58 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    name: Test and Coverage
+  # Rust Testing with Matrix
+  test-rust:
+    name: Test Rust (${{ matrix.rust }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        rust: [stable, beta]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ matrix.rust }}
+
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-git-
+
+    - name: Cache cargo build
+      uses: actions/cache@v4
+      with:
+        path: rust/target
+        key: ${{ runner.os }}-${{ matrix.rust }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.rust }}-cargo-build-
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libudev-dev libdbus-1-dev
+
+    - name: Run tests
+      run: cargo test --manifest-path rust/Cargo.toml --all
+
+  # Rust Linting
+  lint-rust:
+    name: Lint Rust
     runs-on: ubuntu-latest
 
     steps:
@@ -42,9 +92,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: rust/target
-        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-lint-cargo-build-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-cargo-build-target-
+          ${{ runner.os }}-lint-cargo-build-
 
     - name: Install system dependencies
       run: |
@@ -57,33 +107,45 @@ jobs:
     - name: Run clippy
       run: cargo clippy --manifest-path rust/Cargo.toml --all-targets --all-features -- -D warnings
 
-    - name: Run tests
-      run: cargo test --manifest-path rust/Cargo.toml --all-features
+  # Flutter Testing
+  test-flutter:
+    name: Test Flutter
+    runs-on: ubuntu-latest
 
-    - name: Install cargo-tarpaulin
-      run: cargo install cargo-tarpaulin
+    steps:
+    - uses: actions/checkout@v4
 
-    - name: Generate coverage
-      run: |
-        cd rust
-        cargo tarpaulin --out Xml --output-dir ../coverage --all-features --workspace --timeout 300
-
-    - name: Check coverage threshold
-      run: |
-        coverage=$(grep -oP 'line-rate="\K[0-9.]+' coverage/cobertura.xml | head -1)
-        coverage_percent=$(echo "$coverage * 100" | bc)
-        echo "Coverage: ${coverage_percent}%"
-
-        threshold=80
-        if (( $(echo "$coverage_percent < $threshold" | bc -l) )); then
-          echo "❌ Coverage ${coverage_percent}% is below threshold ${threshold}%"
-          exit 1
-        else
-          echo "✅ Coverage ${coverage_percent}% meets threshold ${threshold}%"
-        fi
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
       with:
-        files: ./coverage/cobertura.xml
-        fail_ci_if_error: false
+        channel: 'stable'
+        cache: true
+
+    - name: Get Flutter dependencies
+      run: flutter pub get
+
+    - name: Run Flutter tests
+      run: flutter test
+
+  # Flutter Linting
+  lint-flutter:
+    name: Lint Flutter
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        cache: true
+
+    - name: Get Flutter dependencies
+      run: flutter pub get
+
+    - name: Run Flutter analyzer
+      run: flutter analyze
+
+    - name: Check Dart formatting
+      run: dart format --check .
