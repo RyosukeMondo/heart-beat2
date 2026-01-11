@@ -74,7 +74,7 @@
   - _Requirements: 5_
   - _Prompt: Role: Open source maintainer | Task: Create CONTRIBUTING.md with sections: Welcome, Code of Conduct (link to CODE_OF_CONDUCT.md), How to Contribute (bug reports, features, docs), Development Setup (link to docs/development.md), Pull Request Process (branch naming, commit messages, tests required, review process), Style Guide (link to CLAUDE.md). Keep concise | Restrictions: Friendly tone, encourage first-time contributors | Success: GitHub shows CONTRIBUTING.md on PR page_
 
-- [ ] 5.3 Add inline code examples
+- [x] 5.3 Add inline code examples
   - Files: `examples/` directory with runnable examples
   - Create standalone examples for common use cases
   - Purpose: Demonstrate library usage
