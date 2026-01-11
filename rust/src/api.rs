@@ -33,7 +33,7 @@ static HR_CHANNEL_CAPACITY: usize = 100;
 /// This struct represents a single log entry with level, target module,
 /// timestamp, and message content. It's designed to be sent across the FFI
 /// boundary to Flutter for display in the debug console.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct LogMessage {
     /// Log level (TRACE, DEBUG, INFO, WARN, ERROR)
     pub level: String,

@@ -195,12 +195,10 @@ async fn main() -> anyhow::Result<()> {
                 handle_devices_connect(&device_id).await?;
             }
             DevicesCmd::Info => {
-                eprintln!("Info command not yet implemented");
-                std::process::exit(1);
+                handle_devices_info().await?;
             }
             DevicesCmd::Disconnect => {
-                eprintln!("Disconnect command not yet implemented");
-                std::process::exit(1);
+                handle_devices_disconnect().await?;
             }
         },
         Commands::Session { command } => match command {
@@ -478,6 +476,135 @@ async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
     // Disconnect from the device
     adapter.disconnect().await?;
     println!("✓ Disconnected");
+
+    Ok(())
+}
+
+/// Handle the devices info subcommand.
+async fn handle_devices_info() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
+
+    info!("Displaying device information");
+
+    println!("\n{} Device Information", "ℹ".cyan().bold());
+    println!("{}", "─".repeat(60));
+    println!(
+        "\n{}",
+        "Note: This command shows information for an active device connection.".yellow()
+    );
+    println!(
+        "{}",
+        "Use 'cli devices connect <id>' to establish a connection and view live data.\n".yellow()
+    );
+
+    // Check for saved connection state (future enhancement)
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let state_file = home.join(".heart-beat").join("connection_state.json");
+
+    if state_file.exists() {
+        // Try to read connection state
+        match std::fs::read_to_string(&state_file) {
+            Ok(content) => {
+                if let Ok(state) = serde_json::from_str::<serde_json::Value>(&content) {
+                    let mut table = Table::new();
+                    table
+                        .load_preset(UTF8_FULL)
+                        .set_content_arrangement(ContentArrangement::Dynamic);
+
+                    table.set_header(vec![
+                        Cell::new("Property")
+                            .add_attribute(Attribute::Bold)
+                            .fg(Color::Cyan),
+                        Cell::new("Value")
+                            .add_attribute(Attribute::Bold)
+                            .fg(Color::Cyan),
+                    ]);
+
+                    if let Some(device_id) = state.get("device_id").and_then(|v| v.as_str()) {
+                        table.add_row(vec![
+                            Cell::new("Device ID"),
+                            Cell::new(device_id).fg(Color::Green),
+                        ]);
+                    }
+
+                    if let Some(device_name) = state.get("device_name").and_then(|v| v.as_str()) {
+                        table.add_row(vec![
+                            Cell::new("Device Name"),
+                            Cell::new(device_name).fg(Color::Green),
+                        ]);
+                    }
+
+                    if let Some(last_connected) =
+                        state.get("last_connected").and_then(|v| v.as_str())
+                    {
+                        table.add_row(vec![Cell::new("Last Connected"), Cell::new(last_connected)]);
+                    }
+
+                    println!("{table}\n");
+                    println!(
+                        "{} The device is not currently active. Use 'cli devices connect <id>' to reconnect.",
+                        "⚠".yellow()
+                    );
+                } else {
+                    println!("{} No active device connection found.", "ⓘ".cyan());
+                }
+            }
+            Err(_) => {
+                println!("{} No active device connection found.", "ⓘ".cyan());
+            }
+        }
+    } else {
+        println!("{} No active device connection found.", "ⓘ".cyan());
+        println!("\nTo connect to a device:");
+        println!("  1. Run 'cli devices scan' to find devices");
+        println!("  2. Run 'cli devices connect <device-id>' to connect and stream data");
+    }
+
+    Ok(())
+}
+
+/// Handle the devices disconnect subcommand.
+async fn handle_devices_disconnect() -> anyhow::Result<()> {
+    use colored::Colorize;
+
+    info!("Disconnecting from device");
+
+    println!("\n{} Device Disconnect", "ℹ".cyan().bold());
+    println!("{}", "─".repeat(60));
+    println!(
+        "\n{}",
+        "Note: Device connections are managed within the 'connect' command.".yellow()
+    );
+    println!(
+        "{}",
+        "To disconnect from an active connection, press Ctrl+C.\n".yellow()
+    );
+
+    // Check for saved connection state
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
+    let state_file = home.join(".heart-beat").join("connection_state.json");
+
+    if state_file.exists() {
+        // Remove the state file
+        match std::fs::remove_file(&state_file) {
+            Ok(_) => {
+                println!("{} Cleared saved connection state.", "✓".green().bold());
+            }
+            Err(e) => {
+                warn!("Failed to remove connection state file: {}", e);
+                println!("{} Failed to clear connection state: {}", "⚠".yellow(), e);
+            }
+        }
+    } else {
+        println!("{} No active device connection found.", "ⓘ".cyan());
+        println!("\nThere is no saved connection state to clear.");
+    }
+
+    println!("\nTo manage device connections:");
+    println!("  • 'cli devices scan' - Find nearby devices");
+    println!("  • 'cli devices connect <id>' - Connect and stream data");
+    println!("  • Press Ctrl+C during connection - Disconnect cleanly");
 
     Ok(())
 }
