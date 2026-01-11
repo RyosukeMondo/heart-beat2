@@ -42,7 +42,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Developer advocate | Task: Create api-examples.md with examples: Scanning for devices, Connecting and streaming HR, Running a training session, Using mock adapter for testing, Creating custom NotificationPort. Each example is complete, runnable code with explanations. Add "Common Patterns" section | Restrictions: All examples must compile and run | Success: Library user can copy-paste examples and run them_
 
-- [ ] 4.1 Create user manual
+- [x] 4.1 Create user manual
   - File: `docs/user-guide.md`
   - Explain training zones, plan creation, CLI usage, app usage
   - Purpose: End-user documentation
