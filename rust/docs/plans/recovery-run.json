@@ -1,0 +1,25 @@
+{
+  "name": "Easy Recovery Run",
+  "max_hr": 180,
+  "created_at": "2026-01-11T00:00:00Z",
+  "phases": [
+    {
+      "name": "Easy Start",
+      "target_zone": "Zone1",
+      "duration_secs": 600,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Light Aerobic",
+      "target_zone": "Zone2",
+      "duration_secs": 1200,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Easy Finish",
+      "target_zone": "Zone1",
+      "duration_secs": 600,
+      "transition": "TimeElapsed"
+    }
+  ]
+}

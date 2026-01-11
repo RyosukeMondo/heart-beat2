@@ -1,0 +1,61 @@
+{
+  "name": "5K Interval Training",
+  "max_hr": 185,
+  "created_at": "2026-01-11T00:00:00Z",
+  "phases": [
+    {
+      "name": "Warmup",
+      "target_zone": "Zone2",
+      "duration_secs": 600,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Interval 1 - Hard",
+      "target_zone": "Zone4",
+      "duration_secs": 180,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Recovery 1",
+      "target_zone": "Zone2",
+      "duration_secs": 120,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Interval 2 - Hard",
+      "target_zone": "Zone4",
+      "duration_secs": 180,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Recovery 2",
+      "target_zone": "Zone2",
+      "duration_secs": 120,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Interval 3 - Hard",
+      "target_zone": "Zone4",
+      "duration_secs": 180,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Recovery 3",
+      "target_zone": "Zone2",
+      "duration_secs": 120,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Tempo Run",
+      "target_zone": "Zone3",
+      "duration_secs": 600,
+      "transition": "TimeElapsed"
+    },
+    {
+      "name": "Cooldown",
+      "target_zone": "Zone1",
+      "duration_secs": 300,
+      "transition": "TimeElapsed"
+    }
+  ]
+}
