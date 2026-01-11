@@ -324,6 +324,121 @@ async fn test_scan_with_mock() {
 }
 ```
 
+## Pre-commit Hooks
+
+Heart Beat uses the [pre-commit framework](https://pre-commit.com) to automatically run code quality checks before each commit. This catches common issues early and ensures consistent code quality.
+
+### Installing Pre-commit
+
+**Install the pre-commit framework:**
+
+```bash
+# Using pip
+pip install pre-commit
+
+# Or using pipx (recommended)
+pipx install pre-commit
+
+# Or using Homebrew (macOS)
+brew install pre-commit
+```
+
+**Install the hooks in your repository:**
+
+```bash
+# From the project root
+pre-commit install
+```
+
+This will configure git to run the hooks automatically before each commit.
+
+### What Gets Checked
+
+The pre-commit hooks run the following checks:
+
+**General file checks:**
+- Trim trailing whitespace
+- Fix end of files
+- Validate YAML and JSON syntax
+- Check for large files (>500KB)
+- Check for merge conflicts
+- Normalize line endings
+
+**Rust checks:**
+- `cargo check --all-features` - Verify code compiles
+- `cargo clippy -- -D warnings` - Linting (no warnings allowed)
+- `cargo fmt --check` - Code formatting
+- `cargo test --lib` - Unit tests only (fast)
+
+**Flutter/Dart checks:**
+- `flutter format --check` - Code formatting
+- `flutter analyze` - Static analysis
+
+### Running Hooks Manually
+
+**Run all hooks on all files:**
+
+```bash
+pre-commit run --all-files
+```
+
+**Run specific hook:**
+
+```bash
+pre-commit run cargo-clippy --all-files
+pre-commit run flutter-format --all-files
+```
+
+**Update hooks to latest versions:**
+
+```bash
+pre-commit autoupdate
+```
+
+### Bypassing Hooks
+
+If you need to commit without running hooks (not recommended):
+
+```bash
+git commit --no-verify -m "message"
+```
+
+**Only use --no-verify when:**
+- Creating work-in-progress commits on a feature branch
+- Emergency hotfixes (but fix issues immediately after)
+- Committing known-broken code for collaboration (mark clearly in message)
+
+**Never bypass hooks for:**
+- Commits to main branch
+- Pull request final commits
+- Release commits
+
+### Troubleshooting
+
+**Hooks are slow:**
+
+The first run caches dependencies and may take longer. Subsequent runs are much faster.
+
+**Hook fails with "command not found":**
+
+Ensure Rust and Flutter are in your PATH:
+
+```bash
+# Check tools are available
+cargo --version
+flutter --version
+```
+
+**Want to use the old git hooks instead?**
+
+The manual git hooks from `scripts/install-hooks.sh` are still available:
+
+```bash
+./scripts/install-hooks.sh
+```
+
+However, the pre-commit framework is recommended for better management and consistency.
+
 ## Code Standards
 
 ### Rust Code Style

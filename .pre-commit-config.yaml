@@ -1,0 +1,73 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: mixed-line-ending
+        name: Check line endings
+
+  # Rust checks
+  - repo: local
+    hooks:
+      - id: cargo-check
+        name: Cargo check
+        entry: bash -c 'cd rust && cargo check --all-features'
+        language: system
+        pass_filenames: false
+        files: \.rs$
+
+      - id: cargo-clippy
+        name: Cargo clippy
+        entry: bash -c 'cd rust && cargo clippy --all-targets --all-features -- -D warnings'
+        language: system
+        pass_filenames: false
+        files: \.rs$
+
+      - id: cargo-fmt
+        name: Cargo format
+        entry: bash -c 'cd rust && cargo fmt --all -- --check'
+        language: system
+        pass_filenames: false
+        files: \.rs$
+
+      - id: cargo-test-lib
+        name: Cargo test (unit tests only)
+        entry: bash -c 'cd rust && cargo test --lib'
+        language: system
+        pass_filenames: false
+        files: \.rs$
+
+  # Flutter/Dart checks
+  - repo: local
+    hooks:
+      - id: flutter-format
+        name: Flutter format
+        entry: bash -c 'flutter format --set-exit-if-changed lib/'
+        language: system
+        pass_filenames: false
+        files: \.dart$
+
+      - id: flutter-analyze
+        name: Flutter analyze
+        entry: bash -c 'flutter analyze'
+        language: system
+        pass_filenames: false
+        files: \.dart$
