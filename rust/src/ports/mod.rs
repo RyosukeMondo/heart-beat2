@@ -6,6 +6,8 @@
 
 pub mod ble_adapter;
 pub mod notification;
+pub mod session_repository;
 
 pub use ble_adapter::BleAdapter;
 pub use notification::*;
+pub use session_repository::{SessionRepository, SessionSummaryPreview};

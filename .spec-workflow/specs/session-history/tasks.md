@@ -9,7 +9,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust domain developer | Task: Create rust/src/domain/session_history.rs with CompletedSession struct (id, plan_name, start_time, end_time, status, hr_samples, phases_completed, summary). Add SessionSummary (duration_secs, avg_hr, max_hr, min_hr, time_in_zone). Add HrSample (timestamp, bpm). Derive Serialize, Deserialize. | Restrictions: Pure domain, no I/O | Success: Types compile with serde derives_
 
-- [ ] 1.2 Add SessionRepository port trait
+- [x] 1.2 Add SessionRepository port trait
   - File: `rust/src/ports/session_repository.rs`
   - Define async trait with CRUD methods
   - Purpose: Abstract session storage interface
