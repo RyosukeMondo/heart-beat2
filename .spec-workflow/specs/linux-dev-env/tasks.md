@@ -27,7 +27,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec linux-dev-env, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/dev-watch.sh that uses cargo-watch to monitor Rust file changes and auto-rebuild. When rebuild completes, restart the Flutter app. Include instructions to install cargo-watch if not present. | Restrictions: Require cargo-watch, handle graceful restart | Success: Rust changes trigger auto-rebuild | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.4 Verify CLI works on Linux
+- [x] 1.4 Verify CLI works on Linux
   - File: N/A (testing)
   - Test `cargo run --bin cli -- devices scan`
   - Test `cargo run --bin cli -- session start --mock`
