@@ -98,6 +98,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "fl_chart",
+      "rootUri": "file:///home/rmondo/.pub-cache/hosted/pub.dev/fl_chart-0.69.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///home/rmondo/flutter/packages/flutter",
       "packageUri": "lib/",

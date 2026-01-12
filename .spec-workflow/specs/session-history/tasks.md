@@ -55,7 +55,7 @@
   - _Requirements: 2, 4_
   - _Prompt: Role: Flutter developer | Task: Create HistoryScreen StatefulWidget. Call listSessions() on init. Use ListView.builder with Card per session showing date, plan name, duration, avg HR. Add Dismissible for swipe-to-delete with confirmation AlertDialog. Navigate to SessionDetailScreen on tap. | Restrictions: Handle empty state, loading state | Success: Sessions list displays correctly_
 
-- [ ] 3.3 Create Flutter SessionDetailScreen
+- [x] 3.3 Create Flutter SessionDetailScreen
   - File: `lib/src/screens/session_detail_screen.dart`
   - Show full session details
   - Display HR chart using fl_chart

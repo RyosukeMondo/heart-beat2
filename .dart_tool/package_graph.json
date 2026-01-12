@@ -8,6 +8,7 @@
       "version": "1.0.0+1",
       "dependencies": [
         "device_info_plus",
+        "fl_chart",
         "flutter",
         "flutter_background_service",
         "flutter_rust_bridge",
@@ -775,6 +776,14 @@
       "dependencies": [
         "meta",
         "path"
+      ]
+    },
+    {
+      "name": "fl_chart",
+      "version": "0.69.2",
+      "dependencies": [
+        "equatable",
+        "flutter"
       ]
     }
   ],
