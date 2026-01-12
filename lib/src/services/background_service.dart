@@ -1,7 +1,9 @@
+import 'dart:ui';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
 /// Background service for maintaining HR streaming during workouts.
 /// Implements Android Foreground Service to keep app alive when screen locked.
+@pragma('vm:entry-point')
 class BackgroundService {
   static const String _channelId = 'heart_beat_channel';
   static const int _notificationId = 888;
@@ -31,7 +33,16 @@ class BackgroundService {
   /// Entry point for the background service.
   /// Handles service lifecycle and BPM updates.
   @pragma('vm:entry-point')
-  static void onStart(ServiceInstance service) async {
+  static Future<void> onStart(ServiceInstance service) async {
+    // Initialize Flutter plugins in background isolate
+    DartPluginRegistrant.ensureInitialized();
+
+    // CRITICAL: Must call setAsForegroundService immediately on Android
+    // to satisfy the foreground service timing requirement
+    if (service is AndroidServiceInstance) {
+      await service.setAsForegroundService();
+    }
+
     // Handle stop service event
     if (service is AndroidServiceInstance) {
       service.on('stopService').listen((event) {

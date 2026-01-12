@@ -4,7 +4,7 @@
 //! It orchestrates domain, state, and adapter components without containing business logic.
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
-use crate::domain::heart_rate::DiscoveredDevice;
+use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::frb_generated::StreamSink;
 use crate::ports::BleAdapter;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
@@ -19,6 +19,9 @@ use tracing_subscriber::{
     fmt::{format::FmtSpan, MakeWriter},
     EnvFilter,
 };
+
+#[cfg(target_os = "android")]
+use log::LevelFilter;
 
 // Re-export domain types for FRB code generation
 pub use crate::domain::heart_rate::{
@@ -47,6 +50,28 @@ pub struct LogMessage {
 
 // Global state for log streaming
 static LOG_SINK: OnceLock<Mutex<Option<StreamSink<LogMessage>>>> = OnceLock::new();
+
+// Global BLE adapter - shared between scan and connect operations
+// This is critical: we must use the same adapter instance that discovered the devices
+// to connect to them, otherwise btleplug won't find the peripheral.
+static BLE_ADAPTER: OnceLock<tokio::sync::Mutex<Option<Arc<BtleplugAdapter>>>> = OnceLock::new();
+
+/// Get or create the global BLE adapter instance.
+/// Returns the same adapter across all calls to ensure device discovery persists.
+async fn get_ble_adapter() -> Result<Arc<BtleplugAdapter>> {
+    let mutex = BLE_ADAPTER.get_or_init(|| tokio::sync::Mutex::new(None));
+    let mut guard = mutex.lock().await;
+
+    if let Some(ref adapter) = *guard {
+        return Ok(adapter.clone());
+    }
+
+    // Create new adapter and store it
+    tracing::info!("Creating new global BLE adapter");
+    let adapter = Arc::new(BtleplugAdapter::new().await?);
+    *guard = Some(adapter.clone());
+    Ok(adapter)
+}
 
 /// Custom writer that forwards logs to Flutter via StreamSink.
 ///
@@ -198,22 +223,9 @@ pub fn init_panic_handler() {
 /// }
 /// ```
 pub fn init_platform() -> Result<()> {
-    #[cfg(target_os = "android")]
-    {
-        // On Android, btleplug requires JNI initialization
-        // Get the JNI environment using ndk-context
-        let ctx = ndk_context::android_context();
-        let vm = unsafe { jni::JavaVM::from_raw(ctx.vm().cast()) }
-            .map_err(|e| anyhow!("Failed to get JavaVM: {}", e))?;
-        let env = vm
-            .get_env()
-            .map_err(|e| anyhow!("Failed to get JNI environment: {}", e))?;
-
-        btleplug::platform::init(&env)
-            .map_err(|e| anyhow!("Failed to initialize btleplug on Android: {}", e))?;
-    }
-
-    // No-op on other platforms (Linux, macOS, Windows, iOS)
+    // On Android, btleplug is initialized in JNI_OnLoad where the correct
+    // classloader is available. This function is now a no-op on Android.
+    // On other platforms (Linux, macOS, Windows, iOS), no initialization is needed.
     Ok(())
 }
 
@@ -273,8 +285,8 @@ pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
         // Default to Info if parsing fails
         let log_level = env_filter
             .to_string()
-            .parse::<log::LevelFilter>()
-            .unwrap_or(log::LevelFilter::Info);
+            .parse::<LevelFilter>()
+            .unwrap_or(LevelFilter::Info);
 
         android_logger::init_once(
             android_logger::Config::default()
@@ -320,18 +332,37 @@ pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
 /// - Scan operation fails
 /// - BLE is not available or permissions are missing
 pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
-    // Create btleplug adapter instance
-    let adapter = BtleplugAdapter::new().await?;
+    tracing::info!("scan_devices: Starting BLE scan");
+
+    // Get the shared global adapter (same instance used for connect)
+    tracing::debug!("scan_devices: Getting shared BLE adapter");
+    let adapter = match get_ble_adapter().await {
+        Ok(a) => {
+            tracing::info!("scan_devices: Got BLE adapter successfully");
+            a
+        }
+        Err(e) => {
+            tracing::error!("scan_devices: Failed to get adapter: {:?}", e);
+            return Err(e);
+        }
+    };
 
     // Start scanning
-    adapter.start_scan().await?;
+    tracing::debug!("scan_devices: Starting scan");
+    if let Err(e) = adapter.start_scan().await {
+        tracing::error!("scan_devices: Failed to start scan: {:?}", e);
+        return Err(e);
+    }
+    tracing::info!("scan_devices: Scan started, waiting 10 seconds");
 
     // Wait for scan to collect devices
     tokio::time::sleep(Duration::from_secs(10)).await;
 
     // Stop scanning and get results
+    tracing::debug!("scan_devices: Stopping scan");
     adapter.stop_scan().await?;
     let devices = adapter.get_discovered_devices().await;
+    tracing::info!("scan_devices: Found {} devices", devices.len());
 
     Ok(devices)
 }
@@ -352,8 +383,10 @@ pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
 /// - Connection fails
 /// - Connection timeout (15 seconds)
 pub async fn connect_device(device_id: String) -> Result<()> {
-    // Create BtleplugAdapter instance
-    let adapter = Arc::new(BtleplugAdapter::new().await?);
+    tracing::info!("connect_device: Connecting to device {}", device_id);
+
+    // Get the shared adapter (same instance that discovered the devices)
+    let adapter = get_ble_adapter().await?;
 
     // Create state machine with adapter
     let mut state_machine = ConnectionStateMachine::new(adapter.clone());
@@ -374,6 +407,67 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 
             // Discover services
             state_machine.handle(ConnectionEvent::ServicesDiscovered)?;
+
+            // Subscribe to HR notifications and start emitting data
+            let mut hr_receiver = adapter
+                .subscribe_hr()
+                .await
+                .map_err(|e| anyhow!("Failed to subscribe to HR: {}", e))?;
+
+            tracing::info!("Subscribed to HR notifications, starting data stream");
+
+            // Spawn background task to receive and emit HR data
+            tokio::spawn(async move {
+                while let Some(data) = hr_receiver.recv().await {
+                    tracing::debug!("Received {} bytes of HR data", data.len());
+
+                    match parse_heart_rate(&data) {
+                        Ok(measurement) => {
+                            // Simple filtering: use raw BPM for now
+                            // TODO: Implement proper Kalman filter
+                            let filtered_bpm = measurement.bpm;
+
+                            // Calculate RMSSD if RR-intervals are available
+                            let rmssd = if measurement.rr_intervals.len() >= 2 {
+                                let mut sum_squared_diff = 0.0;
+                                for i in 1..measurement.rr_intervals.len() {
+                                    let diff = measurement.rr_intervals[i] as f64
+                                        - measurement.rr_intervals[i - 1] as f64;
+                                    sum_squared_diff += diff * diff;
+                                }
+                                let rmssd_val = (sum_squared_diff
+                                    / (measurement.rr_intervals.len() - 1) as f64)
+                                    .sqrt();
+                                Some(rmssd_val)
+                            } else {
+                                None
+                            };
+
+                            // Get timestamp
+                            let timestamp = std::time::SystemTime::now()
+                                .duration_since(std::time::UNIX_EPOCH)
+                                .map(|d| d.as_millis() as u64)
+                                .unwrap_or(0);
+
+                            let filtered_data = FilteredHeartRate {
+                                raw_bpm: measurement.bpm,
+                                filtered_bpm,
+                                rmssd,
+                                battery_level: None, // TODO: Read battery periodically
+                                timestamp,
+                            };
+
+                            let receivers = emit_hr_data(filtered_data);
+                            tracing::debug!("Emitted HR data to {} receivers", receivers);
+                        }
+                        Err(e) => {
+                            tracing::error!("Failed to parse HR data: {}", e);
+                        }
+                    }
+                }
+
+                tracing::warn!("HR notification stream ended");
+            });
 
             Ok(())
         }
@@ -433,7 +527,7 @@ pub async fn start_mock_mode() -> Result<()> {
 /// # Returns
 ///
 /// Returns Ok(()) if the stream was successfully set up.
-pub fn create_hr_stream(sink: StreamSink<ApiFilteredHeartRate>) -> Result<()> {
+pub async fn create_hr_stream(sink: StreamSink<ApiFilteredHeartRate>) -> Result<()> {
     let mut rx = get_hr_stream_receiver();
     tokio::spawn(async move {
         while let Ok(data) = rx.recv().await {
@@ -549,18 +643,63 @@ pub fn hr_zone(data: &ApiFilteredHeartRate, max_hr: u16) -> Zone {
     }
 }
 
-/// JNI_OnLoad - Initialize Android context for JNI operations
+/// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
 ///
 /// This function is called by the Android runtime when the native library is loaded.
-/// It initializes the ndk-context which allows us to access JNI environment from Rust.
+/// It initializes the ndk-context and btleplug while we have access to the app's classloader.
 #[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "C" fn JNI_OnLoad(vm: jni::JavaVM, _res: *mut std::os::raw::c_void) -> jni::sys::jint {
     use std::ffi::c_void;
+
+    // Initialize android_logger FIRST so we can see all logs
+    android_logger::init_once(
+        android_logger::Config::default()
+            .with_max_level(LevelFilter::Debug)
+            .with_tag("heart_beat"),
+    );
+
+    log::info!("JNI_OnLoad: Starting initialization");
+
     let vm_ptr = vm.get_java_vm_pointer() as *mut c_void;
     unsafe {
         ndk_context::initialize_android_context(vm_ptr, _res);
     }
+    log::info!("JNI_OnLoad: NDK context initialized");
+
+    // Initialize btleplug and jni-utils while we have access to the main thread's classloader
+    // This must be done here, not later from Flutter, because the classloader
+    // context is only correct during JNI_OnLoad
+    match vm.get_env() {
+        Ok(mut env) => {
+            log::info!("JNI_OnLoad: Got JNI environment");
+
+            // Initialize jni-utils first (required by btleplug's async operations)
+            log::info!("JNI_OnLoad: Initializing jni-utils");
+            if let Err(e) = jni_utils::init(&mut env) {
+                log::error!("JNI_OnLoad: jni-utils init failed: {:?}", e);
+            } else {
+                log::info!("JNI_OnLoad: jni-utils initialized successfully");
+            }
+
+            // Then initialize btleplug
+            log::info!("JNI_OnLoad: Initializing btleplug");
+            match btleplug::platform::init(&mut env) {
+                Ok(()) => {
+                    log::info!("JNI_OnLoad: btleplug initialized successfully");
+                }
+                Err(e) => {
+                    // Log error but don't fail - btleplug may already be initialized
+                    log::error!("JNI_OnLoad: btleplug init failed: {}", e);
+                }
+            }
+        }
+        Err(e) => {
+            log::error!("JNI_OnLoad: Failed to get JNI environment: {:?}", e);
+        }
+    }
+
+    log::info!("JNI_OnLoad: Initialization complete");
     jni::JNIVersion::V6.into()
 }
 

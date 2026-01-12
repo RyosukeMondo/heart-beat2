@@ -17,6 +17,43 @@ use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
+/// Ensure the current thread is attached to the JVM (Android only).
+/// This is required for btleplug JNI calls to work from tokio worker threads.
+#[cfg(target_os = "android")]
+fn ensure_jvm_attached() -> Result<()> {
+    use jni::JavaVM;
+
+    // Get the JavaVM pointer from ndk_context
+    let vm_ptr = ndk_context::android_context().vm();
+    if vm_ptr.is_null() {
+        return Err(anyhow!("AndroidContext VM pointer is null"));
+    }
+
+    // Create a JavaVM instance from the pointer
+    let jvm = unsafe { JavaVM::from_raw(vm_ptr as *mut jni::sys::JavaVM) }
+        .map_err(|e| anyhow!("Failed to create JavaVM from pointer: {:?}", e))?;
+
+    // Attach the current thread permanently (it will auto-detach on thread exit)
+    match jvm.attach_current_thread_permanently() {
+        Ok(_env) => {
+            tracing::debug!("Thread attached to JVM successfully");
+            Ok(())
+        }
+        Err(jni::errors::Error::JniCall(jni::errors::JniError::ThreadDetached)) => {
+            // Already attached, this is fine
+            tracing::debug!("Thread was already attached to JVM");
+            Ok(())
+        }
+        Err(e) => Err(anyhow!("Failed to attach thread to JVM: {:?}", e)),
+    }
+}
+
+/// No-op on non-Android platforms.
+#[cfg(not(target_os = "android"))]
+fn ensure_jvm_attached() -> Result<()> {
+    Ok(())
+}
+
 /// Heart Rate Service UUID (0x180D)
 const HR_SERVICE_UUID: Uuid = Uuid::from_u128(0x0000180D_0000_1000_8000_00805F9B34FB);
 
@@ -51,6 +88,9 @@ impl BtleplugAdapter {
     ///
     /// Returns an error if no BLE adapter is available on the system.
     pub async fn new() -> Result<Self> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let manager = Manager::new()
             .await
             .context("Failed to create BLE manager")?;
@@ -70,6 +110,9 @@ impl BtleplugAdapter {
 
     /// Find a peripheral by its device ID.
     async fn find_peripheral(&self, device_id: &str) -> Result<Peripheral> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let peripherals = self.adapter.peripherals().await?;
 
         for peripheral in peripherals {
@@ -111,6 +154,11 @@ impl BtleplugAdapter {
 #[async_trait]
 impl BleAdapter for BtleplugAdapter {
     async fn start_scan(&self) -> Result<()> {
+        tracing::debug!("BtleplugAdapter::start_scan: Starting");
+
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         // Clear previous discoveries
         self.discovered_devices.lock().await.clear();
 
@@ -119,10 +167,16 @@ impl BleAdapter for BtleplugAdapter {
             services: vec![HR_SERVICE_UUID],
         };
 
-        self.adapter
-            .start_scan(filter)
-            .await
-            .context("Failed to start BLE scan")?;
+        tracing::debug!("BtleplugAdapter::start_scan: Calling adapter.start_scan");
+        match self.adapter.start_scan(filter).await {
+            Ok(()) => {
+                tracing::info!("BtleplugAdapter::start_scan: Scan started successfully");
+            }
+            Err(e) => {
+                tracing::error!("BtleplugAdapter::start_scan: btleplug error: {:?}", e);
+                return Err(anyhow!("Failed to start BLE scan: {}", e));
+            }
+        }
 
         // Set up event handling for discovered devices
         let mut events = self.adapter.events().await?;
@@ -140,6 +194,9 @@ impl BleAdapter for BtleplugAdapter {
     }
 
     async fn stop_scan(&self) -> Result<()> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         self.adapter
             .stop_scan()
             .await
@@ -148,6 +205,12 @@ impl BleAdapter for BtleplugAdapter {
     }
 
     async fn get_discovered_devices(&self) -> Vec<DiscoveredDevice> {
+        // Ensure thread is attached to JVM for Android
+        if let Err(e) = ensure_jvm_attached() {
+            tracing::error!("Failed to attach JVM: {}", e);
+            return Vec::new();
+        }
+
         // Get all peripherals and filter for HR service
         let peripherals = match self.adapter.peripherals().await {
             Ok(p) => p,
@@ -189,26 +252,56 @@ impl BleAdapter for BtleplugAdapter {
     }
 
     async fn connect(&self, device_id: &str) -> Result<()> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let peripheral = self.find_peripheral(device_id).await?;
 
-        peripheral
-            .connect()
-            .await
-            .context("Failed to connect to device")?;
+        // Retry connection up to 3 times (Android BLE can fail with GATT error 133)
+        let mut last_error = None;
+        for attempt in 1..=3 {
+            tracing::info!("Connection attempt {} for device {}", attempt, device_id);
 
-        // Discover services and characteristics
-        peripheral
-            .discover_services()
-            .await
-            .context("Failed to discover services")?;
+            match peripheral.connect().await {
+                Ok(()) => {
+                    tracing::info!("Connected successfully on attempt {}", attempt);
 
-        // Store the connected peripheral
-        *self.connected_peripheral.lock().await = Some(peripheral);
+                    // Discover services and characteristics
+                    peripheral
+                        .discover_services()
+                        .await
+                        .context("Failed to discover services")?;
 
-        Ok(())
+                    // Store the connected peripheral
+                    *self.connected_peripheral.lock().await = Some(peripheral);
+
+                    return Ok(());
+                }
+                Err(e) => {
+                    tracing::warn!("Connection attempt {} failed: {}", attempt, e);
+                    last_error = Some(e);
+
+                    // Wait before retry (increasing backoff)
+                    if attempt < 3 {
+                        tokio::time::sleep(tokio::time::Duration::from_millis(
+                            500 * attempt as u64,
+                        ))
+                        .await;
+                    }
+                }
+            }
+        }
+
+        Err(anyhow!(
+            "Failed to connect after 3 attempts: {}",
+            last_error.map(|e| e.to_string()).unwrap_or_default()
+        ))
     }
 
     async fn disconnect(&self) -> Result<()> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let mut guard = self.connected_peripheral.lock().await;
 
         if let Some(peripheral) = guard.take() {
@@ -224,6 +317,9 @@ impl BleAdapter for BtleplugAdapter {
     }
 
     async fn subscribe_hr(&self) -> Result<mpsc::Receiver<Vec<u8>>> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let guard = self.connected_peripheral.lock().await;
         let peripheral = guard
             .as_ref()

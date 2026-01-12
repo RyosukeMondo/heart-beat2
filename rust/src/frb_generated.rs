@@ -74,7 +74,7 @@ fn wire__crate__api__create_hr_stream_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     sink: impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "create_hr_stream",
             port: Some(port_),
@@ -82,12 +82,13 @@ fn wire__crate__api__create_hr_stream_impl(
         },
         move || {
             let api_sink = sink.cst_decode();
-            move |context| {
+            move |context| async move {
                 transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
-                    (move || {
-                        let output_ok = crate::api::create_hr_stream(api_sink)?;
+                    (move || async move {
+                        let output_ok = crate::api::create_hr_stream(api_sink).await?;
                         Ok(output_ok)
-                    })(),
+                    })()
+                    .await,
                 )
             }
         },
