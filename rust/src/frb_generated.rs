@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1095095358;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 697133896;
 
 // Section: executor
 
@@ -112,6 +112,31 @@ fn wire__crate__api__create_hr_stream_impl(
                 transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || async move {
                         let output_ok = crate::api::create_hr_stream(api_sink).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__create_session_progress_stream_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sink: impl CstDecode<StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_session_progress_stream",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sink = sink.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok =
+                            crate::api::create_session_progress_stream(api_sink).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -220,6 +245,28 @@ fn wire__crate__api__emit_hr_data_impl(
             move |context| {
                 transform_result_dco::<_, _, ()>((move || {
                     let output_ok = Result::<_, ()>::Ok(crate::api::emit_hr_data(api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__emit_session_progress_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<ApiSessionProgress>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "emit_session_progress",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::emit_session_progress(api_data))?;
                     Ok(output_ok)
                 })())
             }
@@ -611,6 +658,211 @@ fn wire__crate__api__pause_workout_impl(port_: flutter_rust_bridge::for_generate
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__phase_progress_elapsed_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "phase_progress_elapsed_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::phase_progress_elapsed_secs(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__phase_progress_phase_index_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "phase_progress_phase_index",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::phase_progress_phase_index(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__phase_progress_phase_name_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "phase_progress_phase_name",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::phase_progress_phase_name(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__phase_progress_remaining_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "phase_progress_remaining_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::phase_progress_remaining_secs(&*api_progress_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__phase_progress_target_zone_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "phase_progress_target_zone",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::phase_progress_target_zone(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -1158,6 +1410,293 @@ fn wire__crate__api__session_preview_status_impl(
         },
     )
 }
+fn wire__crate__api__session_progress_current_bpm_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_current_bpm",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_progress_current_bpm(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_current_phase_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_current_phase",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_progress_current_phase(&*api_progress_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_phase_progress_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_phase_progress",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_progress_phase_progress(&*api_progress_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_state_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_state",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_progress_state(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_total_elapsed_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_total_elapsed_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_progress_total_elapsed_secs(&*api_progress_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_total_remaining_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_total_remaining_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_progress_total_remaining_secs(&*api_progress_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_progress_zone_status_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    progress: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_progress_zone_status",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_progress = progress.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_progress_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_progress,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_progress_guard = Some(api_progress.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_progress_guard = api_progress_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_progress_zone_status(
+                        &*api_progress_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__session_start_time_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     session: impl CstDecode<
@@ -1192,6 +1731,201 @@ fn wire__crate__api__session_start_time_impl(
                     let api_session_guard = api_session_guard.unwrap();
                     let output_ok =
                         Result::<_, ()>::Ok(crate::api::session_start_time(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_state_is_completed_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    state: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_state_is_completed",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_state = state.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_state_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_state, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_state_guard = Some(api_state.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_state_guard = api_state_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_state_is_completed(
+                        &*api_state_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_state_is_paused_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    state: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_state_is_paused",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_state = state.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_state_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_state, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_state_guard = Some(api_state.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_state_guard = api_state_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_state_is_paused(
+                        &*api_state_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_state_is_running_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    state: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_state_is_running",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_state = state.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_state_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_state, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_state_guard = Some(api_state.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_state_guard = api_state_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_state_is_running(
+                        &*api_state_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_state_is_stopped_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    state: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_state_is_stopped",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_state = state.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_state_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_state, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_state_guard = Some(api_state.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_state_guard = api_state_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_state_is_stopped(
+                        &*api_state_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_state_to_string_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    state: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_state_to_string",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_state = state.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_state_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_state, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_state_guard = Some(api_state.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_state_guard = api_state_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_state_to_string(
+                        &*api_state_guard,
+                    ))?;
                     Ok(output_ok)
                 })())
             }
@@ -1507,6 +2241,169 @@ fn wire__crate__api__stop_workout_impl(port_: flutter_rust_bridge::for_generated
         },
     )
 }
+fn wire__crate__api__zone_status_is_in_zone_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "zone_status_is_in_zone",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::zone_status_is_in_zone(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__zone_status_is_too_high_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "zone_status_is_too_high",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::zone_status_is_too_high(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__zone_status_is_too_low_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "zone_status_is_too_low",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::zone_status_is_too_low(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__zone_status_to_string_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "zone_status_to_string",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::zone_status_to_string(&*api_status_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 
 // Section: dart2rust
 
@@ -1611,11 +2508,51 @@ impl SseDecode for ApiFilteredHeartRate {
     }
 }
 
+impl SseDecode for ApiPhaseProgress {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode for ApiSessionProgress {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode for ApiSessionState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
 impl SseDecode for ApiSessionSummaryPreview {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueNom<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode for ApiZoneStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
@@ -1642,6 +2579,36 @@ impl SseDecode
 }
 
 impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
+impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
+impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
+impl SseDecode
     for RustOpaqueNom<
         flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
     >
@@ -1653,7 +2620,25 @@ impl SseDecode
     }
 }
 
+impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
 impl SseDecode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <String>::sse_decode(deserializer);
+        return StreamSink::deserialize(inner);
+    }
+}
+
+impl SseDecode for StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <String>::sse_decode(deserializer);
@@ -2013,6 +2998,54 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiFilteredHeartRate>> for Api
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiPhaseProgress> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<ApiPhaseProgress> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiPhaseProgress>> for ApiPhaseProgress {
+    fn into_into_dart(self) -> FrbWrapper<ApiPhaseProgress> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiSessionProgress> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<ApiSessionProgress>
+{
+}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiSessionProgress>> for ApiSessionProgress {
+    fn into_into_dart(self) -> FrbWrapper<ApiSessionProgress> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiSessionState> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<ApiSessionState> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiSessionState>> for ApiSessionState {
+    fn into_into_dart(self) -> FrbWrapper<ApiSessionState> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiSessionSummaryPreview> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
@@ -2028,6 +3061,21 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiSessionSummaryPreview>>
     for ApiSessionSummaryPreview
 {
     fn into_into_dart(self) -> FrbWrapper<ApiSessionSummaryPreview> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiZoneStatus> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<ApiZoneStatus> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiZoneStatus>> for ApiZoneStatus {
+    fn into_into_dart(self) -> FrbWrapper<ApiZoneStatus> {
         self.into()
     }
 }
@@ -2142,6 +3190,27 @@ impl SseEncode for ApiFilteredHeartRate {
     }
 }
 
+impl SseEncode for ApiPhaseProgress {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
+    }
+}
+
+impl SseEncode for ApiSessionProgress {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
+    }
+}
+
+impl SseEncode for ApiSessionState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode for ApiSessionSummaryPreview {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2151,6 +3220,13 @@ impl SseEncode for ApiSessionSummaryPreview {
             flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self),
             serializer,
         );
+    }
+}
+
+impl SseEncode for ApiZoneStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
     }
 }
 
@@ -2177,6 +3253,39 @@ impl SseEncode
 }
 
 impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
     for RustOpaqueNom<
         flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
     >
@@ -2189,7 +3298,25 @@ impl SseEncode
     }
 }
 
+impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
 impl SseEncode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        unimplemented!("")
+    }
+}
+
+impl SseEncode for StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         unimplemented!("")
@@ -2507,6 +3634,42 @@ mod io {
             ))
         }
     }
+    impl CstDecode<ApiPhaseProgress> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiPhaseProgress {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiSessionProgress> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionProgress {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiSessionState> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionState {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
     impl CstDecode<ApiSessionSummaryPreview> for usize {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> ApiSessionSummaryPreview {
@@ -2515,6 +3678,18 @@ mod io {
                     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
                         ApiSessionSummaryPreview,
                     >,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiZoneStatus> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiZoneStatus {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>,
                 >,
             >::cst_decode(
                 self
@@ -2556,6 +3731,50 @@ mod io {
     impl
         CstDecode<
             RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>,
+            >,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
+        {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+            >,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+        > {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>
+        {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
                 flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
             >,
         > for usize
@@ -2569,6 +3788,19 @@ mod io {
             unsafe { decode_rust_opaque_nom(self as _) }
         }
     }
+    impl
+        CstDecode<
+            RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
+        {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
         for *mut wire_cst_list_prim_u_8_strict
     {
@@ -2577,6 +3809,17 @@ mod io {
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
         {
+            let raw: String = self.cst_decode();
+            StreamSink::deserialize(raw)
+        }
+    }
+    impl CstDecode<StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec>>
+        for *mut wire_cst_list_prim_u_8_strict
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec> {
             let raw: String = self.cst_decode();
             StreamSink::deserialize(raw)
         }
@@ -2816,6 +4059,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_session_progress_stream(
+        port_: i64,
+        sink: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__create_session_progress_stream_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__delete_session(
         port_: i64,
         id: *mut wire_cst_list_prim_u_8_strict,
@@ -2846,6 +4097,14 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_hr_data(port_: i64, data: usize) {
         wire__crate__api__emit_hr_data_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_session_progress(
+        port_: i64,
+        data: usize,
+    ) {
+        wire__crate__api__emit_session_progress_impl(port_, data)
     }
 
     #[unsafe(no_mangle)]
@@ -2924,6 +4183,46 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__pause_workout(port_: i64) {
         wire__crate__api__pause_workout_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__phase_progress_elapsed_secs(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__phase_progress_elapsed_secs_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__phase_progress_phase_index(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__phase_progress_phase_index_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__phase_progress_phase_name(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__phase_progress_phase_name_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__phase_progress_remaining_secs(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__phase_progress_remaining_secs_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__phase_progress_target_zone(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__phase_progress_target_zone_impl(port_, progress)
     }
 
     #[unsafe(no_mangle)]
@@ -3031,11 +4330,107 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_current_bpm(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_current_bpm_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_current_phase(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_current_phase_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_phase_progress(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_phase_progress_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_state(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_state_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_total_elapsed_secs(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_total_elapsed_secs_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_total_remaining_secs(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_total_remaining_secs_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_progress_zone_status(
+        port_: i64,
+        progress: usize,
+    ) {
+        wire__crate__api__session_progress_zone_status_impl(port_, progress)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_start_time(
         port_: i64,
         session: usize,
     ) {
         wire__crate__api__session_start_time_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_state_is_completed(
+        port_: i64,
+        state: usize,
+    ) {
+        wire__crate__api__session_state_is_completed_impl(port_, state)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_state_is_paused(
+        port_: i64,
+        state: usize,
+    ) {
+        wire__crate__api__session_state_is_paused_impl(port_, state)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_state_is_running(
+        port_: i64,
+        state: usize,
+    ) {
+        wire__crate__api__session_state_is_running_impl(port_, state)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_state_is_stopped(
+        port_: i64,
+        state: usize,
+    ) {
+        wire__crate__api__session_state_is_stopped_impl(port_, state)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_state_to_string(
+        port_: i64,
+        state: usize,
+    ) {
+        wire__crate__api__session_state_to_string_impl(port_, state)
     }
 
     #[unsafe(no_mangle)]
@@ -3105,6 +4500,38 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__zone_status_is_in_zone(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__zone_status_is_in_zone_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__zone_status_is_too_high(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__zone_status_is_too_high_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__zone_status_is_too_low(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__zone_status_is_too_low_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__zone_status_to_string(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__zone_status_to_string_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
         ptr: *const std::ffi::c_void,
     ) {
@@ -3141,6 +4568,60 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
         ptr: *const std::ffi::c_void,
     ) {
@@ -3159,6 +4640,24 @@ mod io {
             StdArc::<
                 flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
             >::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>::decrement_strong_count(ptr as _);
         }
     }
 
@@ -3350,6 +4849,16 @@ mod web {
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
         {
+            StreamSink::deserialize(self)
+        }
+    }
+    impl CstDecode<StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec>>
+        for String
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec> {
             StreamSink::deserialize(self)
         }
     }
@@ -3546,6 +5055,42 @@ mod web {
             ))
         }
     }
+    impl CstDecode<ApiPhaseProgress> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiPhaseProgress {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiSessionProgress> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionProgress {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiSessionState> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionState {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
     impl CstDecode<ApiSessionSummaryPreview>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
@@ -3556,6 +5101,18 @@ mod web {
                     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
                         ApiSessionSummaryPreview,
                     >,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl CstDecode<ApiZoneStatus> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiZoneStatus {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>,
                 >,
             >::cst_decode(
                 self
@@ -3605,6 +5162,62 @@ mod web {
     impl
         CstDecode<
             RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>,
+            >,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
+        {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+            >,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>,
+        > {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>
+        {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
                 flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
             >,
         > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
@@ -3622,6 +5235,23 @@ mod web {
             unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
         }
     }
+    impl
+        CstDecode<
+            RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
+        {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
@@ -3630,6 +5260,16 @@ mod web {
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
         {
+            StreamSink::deserialize(self.as_string().expect("should be a string"))
+        }
+    }
+    impl CstDecode<StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiSessionProgress, flutter_rust_bridge::for_generated::DcoCodec> {
             StreamSink::deserialize(self.as_string().expect("should be a string"))
         }
     }
@@ -3773,6 +5413,14 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__create_session_progress_stream(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sink: String,
+    ) {
+        wire__crate__api__create_session_progress_stream_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__delete_session(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         id: String,
@@ -3806,6 +5454,14 @@ mod web {
         data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__emit_hr_data_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__emit_session_progress(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__emit_session_progress_impl(port_, data)
     }
 
     #[wasm_bindgen]
@@ -3898,6 +5554,46 @@ mod web {
     #[wasm_bindgen]
     pub fn wire__crate__api__pause_workout(port_: flutter_rust_bridge::for_generated::MessagePort) {
         wire__crate__api__pause_workout_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__phase_progress_elapsed_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__phase_progress_elapsed_secs_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__phase_progress_phase_index(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__phase_progress_phase_index_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__phase_progress_phase_name(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__phase_progress_phase_name_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__phase_progress_remaining_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__phase_progress_remaining_secs_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__phase_progress_target_zone(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__phase_progress_target_zone_impl(port_, progress)
     }
 
     #[wasm_bindgen]
@@ -4010,11 +5706,107 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_current_bpm(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_current_bpm_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_current_phase(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_current_phase_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_phase_progress(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_phase_progress_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_state(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_state_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_total_elapsed_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_total_elapsed_secs_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_total_remaining_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_total_remaining_secs_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_progress_zone_status(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        progress: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_progress_zone_status_impl(port_, progress)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__session_start_time(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__session_start_time_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_state_is_completed(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        state: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_state_is_completed_impl(port_, state)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_state_is_paused(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        state: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_state_is_paused_impl(port_, state)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_state_is_running(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        state: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_state_is_running_impl(port_, state)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_state_is_stopped(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        state: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_state_is_stopped_impl(port_, state)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_state_to_string(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        state: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_state_to_string_impl(port_, state)
     }
 
     #[wasm_bindgen]
@@ -4086,6 +5878,38 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__zone_status_is_in_zone(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__zone_status_is_in_zone_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__zone_status_is_too_high(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__zone_status_is_too_high_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__zone_status_is_too_low(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__zone_status_is_too_low_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__zone_status_to_string(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__zone_status_to_string_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
     pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
         ptr: *const std::ffi::c_void,
     ) {
@@ -4122,6 +5946,60 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
     pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
         ptr: *const std::ffi::c_void,
     ) {
@@ -4140,6 +6018,24 @@ mod web {
             StdArc::<
                 flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
             >::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>::decrement_strong_count(ptr as _);
         }
     }
 }

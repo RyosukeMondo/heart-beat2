@@ -34,11 +34,11 @@ pub use crate::domain::heart_rate::{
 pub use crate::domain::session_history::CompletedSession as ApiCompletedSession;
 pub use crate::ports::session_repository::SessionSummaryPreview as ApiSessionSummaryPreview;
 
-// TODO: Re-export SessionProgress types after adding FRB support
-// pub use crate::domain::session_progress::{
-//     PhaseProgress as ApiPhaseProgress, SessionProgress as ApiSessionProgress,
-//     SessionState as ApiSessionState, ZoneStatus as ApiZoneStatus,
-// };
+// Re-export SessionProgress types for FRB code generation
+pub use crate::domain::session_progress::{
+    PhaseProgress as ApiPhaseProgress, SessionProgress as ApiSessionProgress,
+    SessionState as ApiSessionState, ZoneStatus as ApiZoneStatus,
+};
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///
@@ -59,6 +59,9 @@ static HR_CHANNEL_CAPACITY: usize = 100;
 
 // Global state for battery data streaming
 static BATTERY_CHANNEL_CAPACITY: usize = 10;
+
+// Global state for session progress streaming
+static SESSION_PROGRESS_CHANNEL_CAPACITY: usize = 100;
 
 /// Log message that can be sent to Flutter for debugging.
 ///
@@ -818,6 +821,109 @@ pub fn emit_battery_data(data: ApiBatteryLevel) -> usize {
     tx.send(data).unwrap_or_default()
 }
 
+/// Create a stream of session progress updates during workout execution.
+///
+/// This stream emits SessionProgress updates at regular intervals (typically 1Hz)
+/// while a workout is running, providing real-time feedback on phase progress,
+/// zone status, and elapsed/remaining time.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the session progress data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+///
+/// # Example
+///
+/// ```dart
+/// // In Flutter:
+/// final stream = await api.createSessionProgressStream();
+/// stream.listen((progress) {
+///   print('Current phase: ${progress.phaseProgress.phaseName}');
+///   print('Zone status: ${progress.zoneStatus}');
+/// });
+/// ```
+pub async fn create_session_progress_stream(sink: StreamSink<ApiSessionProgress>) -> Result<()> {
+    let mut rx = get_session_progress_receiver();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data).ok();
+        }
+    });
+    Ok(())
+}
+
+/// Get a receiver for streaming session progress data (internal use).
+///
+/// Creates a broadcast receiver that can be used to subscribe to real-time
+/// session progress updates from the SessionExecutor.
+///
+/// # Returns
+///
+/// A tokio broadcast receiver that will receive SessionProgress updates.
+/// Multiple receivers can be created for fan-out streaming to multiple consumers.
+fn get_session_progress_receiver() -> broadcast::Receiver<ApiSessionProgress> {
+    let tx = get_or_create_session_progress_broadcast_sender();
+    tx.subscribe()
+}
+
+/// Get or create the global session progress broadcast sender.
+///
+/// Returns the global broadcast sender for emitting session progress data to all
+/// stream subscribers. This is thread-safe and can be called from multiple locations.
+fn get_or_create_session_progress_broadcast_sender() -> broadcast::Sender<ApiSessionProgress> {
+    use std::sync::OnceLock;
+    static SESSION_PROGRESS_TX: OnceLock<broadcast::Sender<ApiSessionProgress>> = OnceLock::new();
+
+    SESSION_PROGRESS_TX
+        .get_or_init(|| {
+            let (tx, _rx) = broadcast::channel(SESSION_PROGRESS_CHANNEL_CAPACITY);
+            tx
+        })
+        .clone()
+}
+
+/// Emit session progress data to all stream subscribers.
+///
+/// This function is called by the SessionExecutor tick loop when progress updates
+/// are available. It broadcasts the data to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `data` - The session progress snapshot to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the data. Returns 0 if no receivers
+/// are currently subscribed.
+pub fn emit_session_progress(data: ApiSessionProgress) -> usize {
+    let tx = get_or_create_session_progress_broadcast_sender();
+    tx.send(data).unwrap_or_default()
+}
+
+/// Get a sender for session progress updates (internal use).
+///
+/// This creates an unbounded mpsc sender that can be used by the SessionExecutor
+/// to send progress updates. A background task forwards these to the broadcast channel.
+///
+/// # Returns
+///
+/// An unbounded sender for SessionProgress and a JoinHandle to the forwarding task.
+fn create_session_progress_forwarder() -> tokio::sync::mpsc::UnboundedSender<ApiSessionProgress> {
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<ApiSessionProgress>();
+
+    // Spawn a task to forward from mpsc to broadcast
+    tokio::spawn(async move {
+        while let Some(progress) = rx.recv().await {
+            emit_session_progress(progress);
+        }
+    });
+
+    tx
+}
+
 // Global session repository
 static SESSION_REPOSITORY: OnceLock<tokio::sync::Mutex<Option<Arc<FileSessionRepository>>>> =
     OnceLock::new();
@@ -1146,8 +1252,12 @@ pub async fn start_workout(plan_name: String) -> Result<()> {
         // Get session repository
         let session_repo = get_session_repository().await?;
 
-        // Create executor with HR stream and session repository
+        // Create progress forwarder
+        let progress_sender = create_session_progress_forwarder();
+
+        // Create executor with HR stream, progress sender, and session repository
         let executor = SessionExecutor::with_hr_stream(notification_port, hr_receiver)
+            .with_progress_sender(progress_sender)
             .with_session_repository(session_repo);
 
         *executor_guard = Some(executor);
@@ -1234,10 +1344,127 @@ pub async fn stop_workout() -> Result<()> {
     }
 }
 
-// TODO: Implement create_session_progress_stream
-// This requires adding SessionProgress types to FRB code generation.
-// For now, Flutter can poll the session state using get_workout_progress()
-// or we'll need to run flutter_rust_bridge codegen after adding the types.
+// SessionProgress accessor methods for opaque types
+
+/// Get the current session state from SessionProgress.
+pub fn session_progress_state(progress: &ApiSessionProgress) -> ApiSessionState {
+    progress.state
+}
+
+/// Get the current phase index from SessionProgress.
+pub fn session_progress_current_phase(progress: &ApiSessionProgress) -> u32 {
+    progress.current_phase
+}
+
+/// Get the total elapsed seconds from SessionProgress.
+pub fn session_progress_total_elapsed_secs(progress: &ApiSessionProgress) -> u32 {
+    progress.total_elapsed_secs
+}
+
+/// Get the total remaining seconds from SessionProgress.
+pub fn session_progress_total_remaining_secs(progress: &ApiSessionProgress) -> u32 {
+    progress.total_remaining_secs
+}
+
+/// Get the zone status from SessionProgress.
+pub fn session_progress_zone_status(progress: &ApiSessionProgress) -> ApiZoneStatus {
+    progress.zone_status
+}
+
+/// Get the current BPM from SessionProgress.
+pub fn session_progress_current_bpm(progress: &ApiSessionProgress) -> u16 {
+    progress.current_bpm
+}
+
+/// Get the phase progress from SessionProgress.
+pub fn session_progress_phase_progress(progress: &ApiSessionProgress) -> ApiPhaseProgress {
+    progress.phase_progress.clone()
+}
+
+// PhaseProgress accessor methods
+
+/// Get the phase index from PhaseProgress.
+pub fn phase_progress_phase_index(progress: &ApiPhaseProgress) -> u32 {
+    progress.phase_index
+}
+
+/// Get the phase name from PhaseProgress.
+pub fn phase_progress_phase_name(progress: &ApiPhaseProgress) -> String {
+    progress.phase_name.clone()
+}
+
+/// Get the target zone from PhaseProgress.
+pub fn phase_progress_target_zone(progress: &ApiPhaseProgress) -> Zone {
+    progress.target_zone
+}
+
+/// Get the elapsed seconds in the current phase from PhaseProgress.
+pub fn phase_progress_elapsed_secs(progress: &ApiPhaseProgress) -> u32 {
+    progress.elapsed_secs
+}
+
+/// Get the remaining seconds in the current phase from PhaseProgress.
+pub fn phase_progress_remaining_secs(progress: &ApiPhaseProgress) -> u32 {
+    progress.remaining_secs
+}
+
+// SessionState helper methods
+
+/// Check if the session state is Running.
+pub fn session_state_is_running(state: &ApiSessionState) -> bool {
+    matches!(state, ApiSessionState::Running)
+}
+
+/// Check if the session state is Paused.
+pub fn session_state_is_paused(state: &ApiSessionState) -> bool {
+    matches!(state, ApiSessionState::Paused)
+}
+
+/// Check if the session state is Completed.
+pub fn session_state_is_completed(state: &ApiSessionState) -> bool {
+    matches!(state, ApiSessionState::Completed)
+}
+
+/// Check if the session state is Stopped.
+pub fn session_state_is_stopped(state: &ApiSessionState) -> bool {
+    matches!(state, ApiSessionState::Stopped)
+}
+
+/// Convert SessionState to a string representation.
+pub fn session_state_to_string(state: &ApiSessionState) -> String {
+    match state {
+        ApiSessionState::Running => "Running".to_string(),
+        ApiSessionState::Paused => "Paused".to_string(),
+        ApiSessionState::Completed => "Completed".to_string(),
+        ApiSessionState::Stopped => "Stopped".to_string(),
+    }
+}
+
+// ZoneStatus helper methods
+
+/// Check if the zone status is InZone.
+pub fn zone_status_is_in_zone(status: &ApiZoneStatus) -> bool {
+    matches!(status, ApiZoneStatus::InZone)
+}
+
+/// Check if the zone status is TooLow.
+pub fn zone_status_is_too_low(status: &ApiZoneStatus) -> bool {
+    matches!(status, ApiZoneStatus::TooLow)
+}
+
+/// Check if the zone status is TooHigh.
+pub fn zone_status_is_too_high(status: &ApiZoneStatus) -> bool {
+    matches!(status, ApiZoneStatus::TooHigh)
+}
+
+/// Convert ZoneStatus to a string representation.
+pub fn zone_status_to_string(status: &ApiZoneStatus) -> String {
+    match status {
+        ApiZoneStatus::InZone => "InZone".to_string(),
+        ApiZoneStatus::TooLow => "TooLow".to_string(),
+        ApiZoneStatus::TooHigh => "TooHigh".to_string(),
+    }
+}
 
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
 ///

@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -1095095358;
+  int get rustContentHash => 697133896;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -82,6 +82,8 @@ abstract class RustLibApi extends BaseApi {
 
   Stream<ApiFilteredHeartRate> crateApiCreateHrStream();
 
+  Stream<ApiSessionProgress> crateApiCreateSessionProgressStream();
+
   Future<void> crateApiDeleteSession({required String id});
 
   Future<void> crateApiDisconnect();
@@ -91,6 +93,10 @@ abstract class RustLibApi extends BaseApi {
   Future<BigInt> crateApiEmitBatteryData({required ApiBatteryLevel data});
 
   Future<BigInt> crateApiEmitHrData({required ApiFilteredHeartRate data});
+
+  Future<BigInt> crateApiEmitSessionProgress({
+    required ApiSessionProgress data,
+  });
 
   Future<ApiCompletedSession?> crateApiGetSession({required String id});
 
@@ -120,6 +126,26 @@ abstract class RustLibApi extends BaseApi {
   Future<List<ApiSessionSummaryPreview>> crateApiListSessions();
 
   Future<void> crateApiPauseWorkout();
+
+  Future<int> crateApiPhaseProgressElapsedSecs({
+    required ApiPhaseProgress progress,
+  });
+
+  Future<int> crateApiPhaseProgressPhaseIndex({
+    required ApiPhaseProgress progress,
+  });
+
+  Future<String> crateApiPhaseProgressPhaseName({
+    required ApiPhaseProgress progress,
+  });
+
+  Future<int> crateApiPhaseProgressRemainingSecs({
+    required ApiPhaseProgress progress,
+  });
+
+  Future<Zone> crateApiPhaseProgressTargetZone({
+    required ApiPhaseProgress progress,
+  });
 
   Future<void> crateApiResumeWorkout();
 
@@ -172,9 +198,49 @@ abstract class RustLibApi extends BaseApi {
     required ApiSessionSummaryPreview preview,
   });
 
+  Future<int> crateApiSessionProgressCurrentBpm({
+    required ApiSessionProgress progress,
+  });
+
+  Future<int> crateApiSessionProgressCurrentPhase({
+    required ApiSessionProgress progress,
+  });
+
+  Future<ApiPhaseProgress> crateApiSessionProgressPhaseProgress({
+    required ApiSessionProgress progress,
+  });
+
+  Future<ApiSessionState> crateApiSessionProgressState({
+    required ApiSessionProgress progress,
+  });
+
+  Future<int> crateApiSessionProgressTotalElapsedSecs({
+    required ApiSessionProgress progress,
+  });
+
+  Future<int> crateApiSessionProgressTotalRemainingSecs({
+    required ApiSessionProgress progress,
+  });
+
+  Future<ApiZoneStatus> crateApiSessionProgressZoneStatus({
+    required ApiSessionProgress progress,
+  });
+
   Future<PlatformInt64> crateApiSessionStartTime({
     required ApiCompletedSession session,
   });
+
+  Future<bool> crateApiSessionStateIsCompleted({
+    required ApiSessionState state,
+  });
+
+  Future<bool> crateApiSessionStateIsPaused({required ApiSessionState state});
+
+  Future<bool> crateApiSessionStateIsRunning({required ApiSessionState state});
+
+  Future<bool> crateApiSessionStateIsStopped({required ApiSessionState state});
+
+  Future<String> crateApiSessionStateToString({required ApiSessionState state});
 
   Future<String> crateApiSessionStatus({required ApiCompletedSession session});
 
@@ -204,6 +270,14 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiStopWorkout();
 
+  Future<bool> crateApiZoneStatusIsInZone({required ApiZoneStatus status});
+
+  Future<bool> crateApiZoneStatusIsTooHigh({required ApiZoneStatus status});
+
+  Future<bool> crateApiZoneStatusIsTooLow({required ApiZoneStatus status});
+
+  Future<String> crateApiZoneStatusToString({required ApiZoneStatus status});
+
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiCompletedSession;
 
@@ -223,6 +297,33 @@ abstract class RustLibApi extends BaseApi {
   get rust_arc_decrement_strong_count_ApiFilteredHeartRatePtr;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiPhaseProgress;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiPhaseProgress;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiPhaseProgressPtr;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiSessionProgress;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiSessionProgress;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionProgressPtr;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiSessionState;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiSessionState;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionStatePtr;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiSessionSummaryPreview;
 
   RustArcDecrementStrongCountFnType
@@ -230,6 +331,15 @@ abstract class RustLibApi extends BaseApi {
 
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiZoneStatus;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiZoneStatus;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiZoneStatusPtr;
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -319,6 +429,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiCreateHrStreamConstMeta =>
       const TaskConstMeta(debugName: "create_hr_stream", argNames: ["sink"]);
+
+  @override
+  Stream<ApiSessionProgress> crateApiCreateSessionProgressStream() {
+    final sink = RustStreamSink<ApiSessionProgress>();
+    unawaited(
+      handler.executeNormal(
+        NormalTask(
+          callFfi: (port_) {
+            var arg0 =
+                cst_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+                  sink,
+                );
+            return wire.wire__crate__api__create_session_progress_stream(
+              port_,
+              arg0,
+            );
+          },
+          codec: DcoCodec(
+            decodeSuccessData: dco_decode_unit,
+            decodeErrorData: dco_decode_AnyhowException,
+          ),
+          constMeta: kCrateApiCreateSessionProgressStreamConstMeta,
+          argValues: [sink],
+          apiImpl: this,
+        ),
+      ),
+    );
+    return sink.stream;
+  }
+
+  TaskConstMeta get kCrateApiCreateSessionProgressStreamConstMeta =>
+      const TaskConstMeta(
+        debugName: "create_session_progress_stream",
+        argNames: ["sink"],
+      );
 
   @override
   Future<void> crateApiDeleteSession({required String id}) {
@@ -433,6 +578,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiEmitHrDataConstMeta =>
       const TaskConstMeta(debugName: "emit_hr_data", argNames: ["data"]);
+
+  @override
+  Future<BigInt> crateApiEmitSessionProgress({
+    required ApiSessionProgress data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                data,
+              );
+          return wire.wire__crate__api__emit_session_progress(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_usize,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmitSessionProgressConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmitSessionProgressConstMeta =>
+      const TaskConstMeta(
+        debugName: "emit_session_progress",
+        argNames: ["data"],
+      );
 
   @override
   Future<ApiCompletedSession?> crateApiGetSession({required String id}) {
@@ -742,6 +917,162 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiPauseWorkoutConstMeta =>
       const TaskConstMeta(debugName: "pause_workout", argNames: []);
+
+  @override
+  Future<int> crateApiPhaseProgressElapsedSecs({
+    required ApiPhaseProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+                progress,
+              );
+          return wire.wire__crate__api__phase_progress_elapsed_secs(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPhaseProgressElapsedSecsConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPhaseProgressElapsedSecsConstMeta =>
+      const TaskConstMeta(
+        debugName: "phase_progress_elapsed_secs",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<int> crateApiPhaseProgressPhaseIndex({
+    required ApiPhaseProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+                progress,
+              );
+          return wire.wire__crate__api__phase_progress_phase_index(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPhaseProgressPhaseIndexConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPhaseProgressPhaseIndexConstMeta =>
+      const TaskConstMeta(
+        debugName: "phase_progress_phase_index",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<String> crateApiPhaseProgressPhaseName({
+    required ApiPhaseProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+                progress,
+              );
+          return wire.wire__crate__api__phase_progress_phase_name(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPhaseProgressPhaseNameConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPhaseProgressPhaseNameConstMeta =>
+      const TaskConstMeta(
+        debugName: "phase_progress_phase_name",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<int> crateApiPhaseProgressRemainingSecs({
+    required ApiPhaseProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+                progress,
+              );
+          return wire.wire__crate__api__phase_progress_remaining_secs(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPhaseProgressRemainingSecsConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPhaseProgressRemainingSecsConstMeta =>
+      const TaskConstMeta(
+        debugName: "phase_progress_remaining_secs",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<Zone> crateApiPhaseProgressTargetZone({
+    required ApiPhaseProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+                progress,
+              );
+          return wire.wire__crate__api__phase_progress_target_zone(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_zone,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPhaseProgressTargetZoneConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPhaseProgressTargetZoneConstMeta =>
+      const TaskConstMeta(
+        debugName: "phase_progress_target_zone",
+        argNames: ["progress"],
+      );
 
   @override
   Future<void> crateApiResumeWorkout() {
@@ -1140,6 +1471,237 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<int> crateApiSessionProgressCurrentBpm({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_current_bpm(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_16,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressCurrentBpmConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressCurrentBpmConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_current_bpm",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<int> crateApiSessionProgressCurrentPhase({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_current_phase(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressCurrentPhaseConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressCurrentPhaseConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_current_phase",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<ApiPhaseProgress> crateApiSessionProgressPhaseProgress({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_phase_progress(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressPhaseProgressConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressPhaseProgressConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_phase_progress",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<ApiSessionState> crateApiSessionProgressState({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_state(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressStateConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressStateConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_state",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<int> crateApiSessionProgressTotalElapsedSecs({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_total_elapsed_secs(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressTotalElapsedSecsConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressTotalElapsedSecsConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_total_elapsed_secs",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<int> crateApiSessionProgressTotalRemainingSecs({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_total_remaining_secs(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressTotalRemainingSecsConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressTotalRemainingSecsConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_total_remaining_secs",
+        argNames: ["progress"],
+      );
+
+  @override
+  Future<ApiZoneStatus> crateApiSessionProgressZoneStatus({
+    required ApiSessionProgress progress,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+                progress,
+              );
+          return wire.wire__crate__api__session_progress_zone_status(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionProgressZoneStatusConstMeta,
+        argValues: [progress],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionProgressZoneStatusConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_progress_zone_status",
+        argNames: ["progress"],
+      );
+
+  @override
   Future<PlatformInt64> crateApiSessionStartTime({
     required ApiCompletedSession session,
   }) {
@@ -1167,6 +1729,150 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     debugName: "session_start_time",
     argNames: ["session"],
   );
+
+  @override
+  Future<bool> crateApiSessionStateIsCompleted({
+    required ApiSessionState state,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+                state,
+              );
+          return wire.wire__crate__api__session_state_is_completed(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionStateIsCompletedConstMeta,
+        argValues: [state],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionStateIsCompletedConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_state_is_completed",
+        argNames: ["state"],
+      );
+
+  @override
+  Future<bool> crateApiSessionStateIsPaused({required ApiSessionState state}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+                state,
+              );
+          return wire.wire__crate__api__session_state_is_paused(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionStateIsPausedConstMeta,
+        argValues: [state],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionStateIsPausedConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_state_is_paused",
+        argNames: ["state"],
+      );
+
+  @override
+  Future<bool> crateApiSessionStateIsRunning({required ApiSessionState state}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+                state,
+              );
+          return wire.wire__crate__api__session_state_is_running(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionStateIsRunningConstMeta,
+        argValues: [state],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionStateIsRunningConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_state_is_running",
+        argNames: ["state"],
+      );
+
+  @override
+  Future<bool> crateApiSessionStateIsStopped({required ApiSessionState state}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+                state,
+              );
+          return wire.wire__crate__api__session_state_is_stopped(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionStateIsStoppedConstMeta,
+        argValues: [state],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionStateIsStoppedConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_state_is_stopped",
+        argNames: ["state"],
+      );
+
+  @override
+  Future<String> crateApiSessionStateToString({
+    required ApiSessionState state,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+                state,
+              );
+          return wire.wire__crate__api__session_state_to_string(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionStateToStringConstMeta,
+        argValues: [state],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionStateToStringConstMeta =>
+      const TaskConstMeta(
+        debugName: "session_state_to_string",
+        argNames: ["state"],
+      );
 
   @override
   Future<String> crateApiSessionStatus({required ApiCompletedSession session}) {
@@ -1413,6 +2119,115 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiStopWorkoutConstMeta =>
       const TaskConstMeta(debugName: "stop_workout", argNames: []);
 
+  @override
+  Future<bool> crateApiZoneStatusIsInZone({required ApiZoneStatus status}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+                status,
+              );
+          return wire.wire__crate__api__zone_status_is_in_zone(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiZoneStatusIsInZoneConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiZoneStatusIsInZoneConstMeta => const TaskConstMeta(
+    debugName: "zone_status_is_in_zone",
+    argNames: ["status"],
+  );
+
+  @override
+  Future<bool> crateApiZoneStatusIsTooHigh({required ApiZoneStatus status}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+                status,
+              );
+          return wire.wire__crate__api__zone_status_is_too_high(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiZoneStatusIsTooHighConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiZoneStatusIsTooHighConstMeta =>
+      const TaskConstMeta(
+        debugName: "zone_status_is_too_high",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiZoneStatusIsTooLow({required ApiZoneStatus status}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+                status,
+              );
+          return wire.wire__crate__api__zone_status_is_too_low(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiZoneStatusIsTooLowConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiZoneStatusIsTooLowConstMeta => const TaskConstMeta(
+    debugName: "zone_status_is_too_low",
+    argNames: ["status"],
+  );
+
+  @override
+  Future<String> crateApiZoneStatusToString({required ApiZoneStatus status}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+                status,
+              );
+          return wire.wire__crate__api__zone_status_to_string(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiZoneStatusToStringConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiZoneStatusToStringConstMeta => const TaskConstMeta(
+    debugName: "zone_status_to_string",
+    argNames: ["status"],
+  );
+
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiCompletedSession => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession;
@@ -1430,12 +2245,44 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiPhaseProgress => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiPhaseProgress => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiSessionProgress => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiSessionProgress => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiSessionState => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiSessionState => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiSessionSummaryPreview => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
 
   RustArcDecrementStrongCountFnType
   get rust_arc_decrement_strong_count_ApiSessionSummaryPreview => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiZoneStatus => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiZoneStatus => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw) {
@@ -1462,6 +2309,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -1470,6 +2344,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return ApiSessionSummaryPreviewImpl.frbInternalDcoDecode(
       raw as List<dynamic>,
     );
+  }
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1491,6 +2374,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -1499,6 +2409,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return ApiSessionSummaryPreviewImpl.frbInternalDcoDecode(
       raw as List<dynamic>,
     );
+  }
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1520,6 +2439,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiSessionState
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -1531,8 +2477,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiZoneStatus
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
+  }
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -1826,12 +2790,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ApiSessionSummaryPreviewImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1862,12 +2874,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ApiSessionSummaryPreviewImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1898,6 +2958,42 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiPhaseProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiPhaseProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSessionState
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSessionStateImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
@@ -1910,8 +3006,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiZoneStatus
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiZoneStatusImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    throw UnimplementedError('Unreachable ()');
+  }
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -2242,6 +3359,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiPhaseProgressImpl).frbInternalCstEncode(move: true);
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionProgressImpl).frbInternalCstEncode(move: true);
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionStateImpl).frbInternalCstEncode(move: true);
+  }
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
   ) {
@@ -2250,6 +3397,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return (raw as ApiSessionSummaryPreviewImpl).frbInternalCstEncode(
       move: true,
     );
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiZoneStatusImpl).frbInternalCstEncode(move: true);
   }
 
   @protected
@@ -2274,6 +3431,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiPhaseProgressImpl).frbInternalCstEncode(move: false);
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionProgressImpl).frbInternalCstEncode(move: false);
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionStateImpl).frbInternalCstEncode(move: false);
+  }
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
   ) {
@@ -2282,6 +3469,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return (raw as ApiSessionSummaryPreviewImpl).frbInternalCstEncode(
       move: false,
     );
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiZoneStatusImpl).frbInternalCstEncode(move: false);
   }
 
   @protected
@@ -2306,12 +3503,52 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiPhaseProgressImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionProgressImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSessionStateImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
   ) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     // ignore: invalid_use_of_internal_member
     return (raw as ApiSessionSummaryPreviewImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiZoneStatusImpl).frbInternalCstEncode();
   }
 
   @protected
@@ -2405,6 +3642,45 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiPhaseProgressImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionProgressImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionStateImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
     SseSerializer serializer,
@@ -2412,6 +3688,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiSessionSummaryPreviewImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiZoneStatusImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
@@ -2444,6 +3733,45 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiPhaseProgressImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionProgressImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionStateImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
     SseSerializer serializer,
@@ -2451,6 +3779,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiSessionSummaryPreviewImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiZoneStatusImpl).frbInternalSseEncode(move: false),
       serializer,
     );
   }
@@ -2483,6 +3824,45 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiPhaseProgressImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionProgressImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSessionStateImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
     SseSerializer serializer,
@@ -2490,6 +3870,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiSessionSummaryPreviewImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiZoneStatusImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
@@ -2506,6 +3899,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         codec: DcoCodec(
           decodeSuccessData:
               dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+    RustStreamSink<ApiSessionProgress> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(
+      self.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress,
           decodeErrorData: dco_decode_AnyhowException,
         ),
       ),
@@ -2885,6 +4297,74 @@ class ApiFilteredHeartRateImpl extends RustOpaque
 }
 
 @sealed
+class ApiPhaseProgressImpl extends RustOpaque implements ApiPhaseProgress {
+  // Not to be used by end users
+  ApiPhaseProgressImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ApiPhaseProgressImpl.frbInternalSseDecode(
+    BigInt ptr,
+    int externalSizeOnNative,
+  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ApiPhaseProgress,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiPhaseProgress,
+    rustArcDecrementStrongCountPtr: RustLib
+        .instance
+        .api
+        .rust_arc_decrement_strong_count_ApiPhaseProgressPtr,
+  );
+}
+
+@sealed
+class ApiSessionProgressImpl extends RustOpaque implements ApiSessionProgress {
+  // Not to be used by end users
+  ApiSessionProgressImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ApiSessionProgressImpl.frbInternalSseDecode(
+    BigInt ptr,
+    int externalSizeOnNative,
+  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ApiSessionProgress,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiSessionProgress,
+    rustArcDecrementStrongCountPtr: RustLib
+        .instance
+        .api
+        .rust_arc_decrement_strong_count_ApiSessionProgressPtr,
+  );
+}
+
+@sealed
+class ApiSessionStateImpl extends RustOpaque implements ApiSessionState {
+  // Not to be used by end users
+  ApiSessionStateImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ApiSessionStateImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ApiSessionState,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiSessionState,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiSessionStatePtr,
+  );
+}
+
+@sealed
 class ApiSessionSummaryPreviewImpl extends RustOpaque
     implements ApiSessionSummaryPreview {
   // Not to be used by end users
@@ -2910,5 +4390,25 @@ class ApiSessionSummaryPreviewImpl extends RustOpaque
         .instance
         .api
         .rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr,
+  );
+}
+
+@sealed
+class ApiZoneStatusImpl extends RustOpaque implements ApiZoneStatus {
+  // Not to be used by end users
+  ApiZoneStatusImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ApiZoneStatusImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ApiZoneStatus,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiZoneStatus,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ApiZoneStatusPtr,
   );
 }

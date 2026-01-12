@@ -28,8 +28,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRatePtr;
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiPhaseProgressPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionProgressPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionStatePtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionStatePtr;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiZoneStatusPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatusPtr;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
@@ -47,8 +63,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     dynamic raw,
   );
 
@@ -65,8 +105,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     dynamic raw,
   );
 
@@ -83,14 +147,44 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
   );
 
   @protected
+  ApiZoneStatus
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    dynamic raw,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    dynamic raw,
+  );
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     dynamic raw,
   );
 
@@ -225,8 +319,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     SseDeserializer deserializer,
   );
 
@@ -243,8 +361,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     SseDeserializer deserializer,
   );
 
@@ -261,14 +403,44 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   );
 
   @protected
+  ApiZoneStatus
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     SseDeserializer deserializer,
   );
 
@@ -416,6 +588,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
         codec: DcoCodec(
           decodeSuccessData:
               dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_8_strict>
+  cst_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+    RustStreamSink<ApiSessionProgress> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress,
           decodeErrorData: dco_decode_AnyhowException,
         ),
       ),
@@ -694,8 +883,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -712,8 +925,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -730,8 +967,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -783,8 +1044,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
     SseSerializer serializer,
   );
 
@@ -804,8 +1093,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
     SseSerializer serializer,
   );
 
@@ -825,6 +1142,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
     SseSerializer serializer,
@@ -832,8 +1170,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
     RustStreamSink<ApiFilteredHeartRate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+    RustStreamSink<ApiSessionProgress> self,
     SseSerializer serializer,
   );
 
@@ -1088,6 +1440,28 @@ class RustLibWire implements BaseWire {
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
 
+  void wire__crate__api__create_session_progress_stream(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> sink,
+  ) {
+    return _wire__crate__api__create_session_progress_stream(port_, sink);
+  }
+
+  late final _wire__crate__api__create_session_progress_streamPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__create_session_progress_stream');
+  late final _wire__crate__api__create_session_progress_stream =
+      _wire__crate__api__create_session_progress_streamPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
   void wire__crate__api__delete_session(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> id,
@@ -1162,6 +1536,18 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__emit_hr_data =
       _wire__crate__api__emit_hr_dataPtr.asFunction<void Function(int, int)>();
+
+  void wire__crate__api__emit_session_progress(int port_, int data) {
+    return _wire__crate__api__emit_session_progress(port_, data);
+  }
+
+  late final _wire__crate__api__emit_session_progressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__emit_session_progress',
+      );
+  late final _wire__crate__api__emit_session_progress =
+      _wire__crate__api__emit_session_progressPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__get_session(
     int port_,
@@ -1330,6 +1716,69 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__pause_workout =
       _wire__crate__api__pause_workoutPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__phase_progress_elapsed_secs(int port_, int progress) {
+    return _wire__crate__api__phase_progress_elapsed_secs(port_, progress);
+  }
+
+  late final _wire__crate__api__phase_progress_elapsed_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__phase_progress_elapsed_secs',
+      );
+  late final _wire__crate__api__phase_progress_elapsed_secs =
+      _wire__crate__api__phase_progress_elapsed_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__phase_progress_phase_index(int port_, int progress) {
+    return _wire__crate__api__phase_progress_phase_index(port_, progress);
+  }
+
+  late final _wire__crate__api__phase_progress_phase_indexPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__phase_progress_phase_index',
+      );
+  late final _wire__crate__api__phase_progress_phase_index =
+      _wire__crate__api__phase_progress_phase_indexPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__phase_progress_phase_name(int port_, int progress) {
+    return _wire__crate__api__phase_progress_phase_name(port_, progress);
+  }
+
+  late final _wire__crate__api__phase_progress_phase_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__phase_progress_phase_name',
+      );
+  late final _wire__crate__api__phase_progress_phase_name =
+      _wire__crate__api__phase_progress_phase_namePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__phase_progress_remaining_secs(
+    int port_,
+    int progress,
+  ) {
+    return _wire__crate__api__phase_progress_remaining_secs(port_, progress);
+  }
+
+  late final _wire__crate__api__phase_progress_remaining_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__phase_progress_remaining_secs',
+      );
+  late final _wire__crate__api__phase_progress_remaining_secs =
+      _wire__crate__api__phase_progress_remaining_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__phase_progress_target_zone(int port_, int progress) {
+    return _wire__crate__api__phase_progress_target_zone(port_, progress);
+  }
+
+  late final _wire__crate__api__phase_progress_target_zonePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__phase_progress_target_zone',
+      );
+  late final _wire__crate__api__phase_progress_target_zone =
+      _wire__crate__api__phase_progress_target_zonePtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__resume_workout(int port_) {
     return _wire__crate__api__resume_workout(port_);
@@ -1502,6 +1951,108 @@ class RustLibWire implements BaseWire {
       _wire__crate__api__session_preview_statusPtr
           .asFunction<void Function(int, int)>();
 
+  void wire__crate__api__session_progress_current_bpm(int port_, int progress) {
+    return _wire__crate__api__session_progress_current_bpm(port_, progress);
+  }
+
+  late final _wire__crate__api__session_progress_current_bpmPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_current_bpm',
+      );
+  late final _wire__crate__api__session_progress_current_bpm =
+      _wire__crate__api__session_progress_current_bpmPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_current_phase(
+    int port_,
+    int progress,
+  ) {
+    return _wire__crate__api__session_progress_current_phase(port_, progress);
+  }
+
+  late final _wire__crate__api__session_progress_current_phasePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_current_phase',
+      );
+  late final _wire__crate__api__session_progress_current_phase =
+      _wire__crate__api__session_progress_current_phasePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_phase_progress(
+    int port_,
+    int progress,
+  ) {
+    return _wire__crate__api__session_progress_phase_progress(port_, progress);
+  }
+
+  late final _wire__crate__api__session_progress_phase_progressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_phase_progress',
+      );
+  late final _wire__crate__api__session_progress_phase_progress =
+      _wire__crate__api__session_progress_phase_progressPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_state(int port_, int progress) {
+    return _wire__crate__api__session_progress_state(port_, progress);
+  }
+
+  late final _wire__crate__api__session_progress_statePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_state',
+      );
+  late final _wire__crate__api__session_progress_state =
+      _wire__crate__api__session_progress_statePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_total_elapsed_secs(
+    int port_,
+    int progress,
+  ) {
+    return _wire__crate__api__session_progress_total_elapsed_secs(
+      port_,
+      progress,
+    );
+  }
+
+  late final _wire__crate__api__session_progress_total_elapsed_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_total_elapsed_secs',
+      );
+  late final _wire__crate__api__session_progress_total_elapsed_secs =
+      _wire__crate__api__session_progress_total_elapsed_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_total_remaining_secs(
+    int port_,
+    int progress,
+  ) {
+    return _wire__crate__api__session_progress_total_remaining_secs(
+      port_,
+      progress,
+    );
+  }
+
+  late final _wire__crate__api__session_progress_total_remaining_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_total_remaining_secs',
+      );
+  late final _wire__crate__api__session_progress_total_remaining_secs =
+      _wire__crate__api__session_progress_total_remaining_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_progress_zone_status(int port_, int progress) {
+    return _wire__crate__api__session_progress_zone_status(port_, progress);
+  }
+
+  late final _wire__crate__api__session_progress_zone_statusPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_progress_zone_status',
+      );
+  late final _wire__crate__api__session_progress_zone_status =
+      _wire__crate__api__session_progress_zone_statusPtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__session_start_time(int port_, int session) {
     return _wire__crate__api__session_start_time(port_, session);
   }
@@ -1512,6 +2063,66 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__session_start_time =
       _wire__crate__api__session_start_timePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_state_is_completed(int port_, int state) {
+    return _wire__crate__api__session_state_is_completed(port_, state);
+  }
+
+  late final _wire__crate__api__session_state_is_completedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_state_is_completed',
+      );
+  late final _wire__crate__api__session_state_is_completed =
+      _wire__crate__api__session_state_is_completedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_state_is_paused(int port_, int state) {
+    return _wire__crate__api__session_state_is_paused(port_, state);
+  }
+
+  late final _wire__crate__api__session_state_is_pausedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_state_is_paused',
+      );
+  late final _wire__crate__api__session_state_is_paused =
+      _wire__crate__api__session_state_is_pausedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_state_is_running(int port_, int state) {
+    return _wire__crate__api__session_state_is_running(port_, state);
+  }
+
+  late final _wire__crate__api__session_state_is_runningPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_state_is_running',
+      );
+  late final _wire__crate__api__session_state_is_running =
+      _wire__crate__api__session_state_is_runningPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_state_is_stopped(int port_, int state) {
+    return _wire__crate__api__session_state_is_stopped(port_, state);
+  }
+
+  late final _wire__crate__api__session_state_is_stoppedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_state_is_stopped',
+      );
+  late final _wire__crate__api__session_state_is_stopped =
+      _wire__crate__api__session_state_is_stoppedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_state_to_string(int port_, int state) {
+    return _wire__crate__api__session_state_to_string(port_, state);
+  }
+
+  late final _wire__crate__api__session_state_to_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_state_to_string',
+      );
+  late final _wire__crate__api__session_state_to_string =
+      _wire__crate__api__session_state_to_stringPtr
           .asFunction<void Function(int, int)>();
 
   void wire__crate__api__session_status(int port_, int session) {
@@ -1630,6 +2241,54 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__stop_workout =
       _wire__crate__api__stop_workoutPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__zone_status_is_in_zone(int port_, int status) {
+    return _wire__crate__api__zone_status_is_in_zone(port_, status);
+  }
+
+  late final _wire__crate__api__zone_status_is_in_zonePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__zone_status_is_in_zone',
+      );
+  late final _wire__crate__api__zone_status_is_in_zone =
+      _wire__crate__api__zone_status_is_in_zonePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__zone_status_is_too_high(int port_, int status) {
+    return _wire__crate__api__zone_status_is_too_high(port_, status);
+  }
+
+  late final _wire__crate__api__zone_status_is_too_highPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__zone_status_is_too_high',
+      );
+  late final _wire__crate__api__zone_status_is_too_high =
+      _wire__crate__api__zone_status_is_too_highPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__zone_status_is_too_low(int port_, int status) {
+    return _wire__crate__api__zone_status_is_too_low(port_, status);
+  }
+
+  late final _wire__crate__api__zone_status_is_too_lowPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__zone_status_is_too_low',
+      );
+  late final _wire__crate__api__zone_status_is_too_low =
+      _wire__crate__api__zone_status_is_too_lowPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__zone_status_to_string(int port_, int status) {
+    return _wire__crate__api__zone_status_to_string(port_, status);
+  }
+
+  late final _wire__crate__api__zone_status_to_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__zone_status_to_string',
+      );
+  late final _wire__crate__api__zone_status_to_string =
+      _wire__crate__api__zone_status_to_stringPtr
+          .asFunction<void Function(int, int)>();
+
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     ffi.Pointer<ffi.Void> ptr,
@@ -1699,6 +2358,108 @@ class RustLibWire implements BaseWire {
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionStatePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionStatePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionStatePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionStatePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ffi.Pointer<ffi.Void> ptr,
   ) {
@@ -1730,6 +2491,40 @@ class RustLibWire implements BaseWire {
       );
   late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview =
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatusPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatusPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatusPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatusPtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   ffi.Pointer<ffi.UintPtr>

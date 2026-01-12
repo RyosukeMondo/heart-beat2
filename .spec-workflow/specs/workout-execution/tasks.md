@@ -36,7 +36,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Flutter developer | Task: Create PlanSelector widget as ModalBottomSheet. Call listPlans() API to get available plans. Display as ListView with plan name and duration. On tap, call onSelect callback with plan name. Add "No plans found" empty state. | Restrictions: Match Material 3 styling | Success: User can select plans_
 
-- [ ] 3.1 Create WorkoutScreen
+- [-] 3.1 Create WorkoutScreen
   - File: `lib/src/screens/workout_screen.dart`
   - Display active workout with phase progress
   - Subscribe to SessionProgress stream

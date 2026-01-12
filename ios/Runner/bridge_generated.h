@@ -72,6 +72,9 @@ void frbgen_heart_beat_wire__crate__api__create_battery_stream(int64_t port_,
 void frbgen_heart_beat_wire__crate__api__create_hr_stream(int64_t port_,
                                                           struct wire_cst_list_prim_u_8_strict *sink);
 
+void frbgen_heart_beat_wire__crate__api__create_session_progress_stream(int64_t port_,
+                                                                        struct wire_cst_list_prim_u_8_strict *sink);
+
 void frbgen_heart_beat_wire__crate__api__delete_session(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *id);
 
@@ -83,6 +86,8 @@ void frbgen_heart_beat_wire__crate__api__emit_battery_data(int64_t port_,
                                                            struct wire_cst_api_battery_level *data);
 
 void frbgen_heart_beat_wire__crate__api__emit_hr_data(int64_t port_, uintptr_t data);
+
+void frbgen_heart_beat_wire__crate__api__emit_session_progress(int64_t port_, uintptr_t data);
 
 void frbgen_heart_beat_wire__crate__api__get_session(int64_t port_,
                                                      struct wire_cst_list_prim_u_8_strict *id);
@@ -111,6 +116,21 @@ void frbgen_heart_beat_wire__crate__api__list_plans(int64_t port_);
 void frbgen_heart_beat_wire__crate__api__list_sessions(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__pause_workout(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__phase_progress_elapsed_secs(int64_t port_,
+                                                                     uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__phase_progress_phase_index(int64_t port_,
+                                                                    uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__phase_progress_phase_name(int64_t port_,
+                                                                   uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__phase_progress_remaining_secs(int64_t port_,
+                                                                       uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__phase_progress_target_zone(int64_t port_,
+                                                                    uintptr_t progress);
 
 void frbgen_heart_beat_wire__crate__api__resume_workout(int64_t port_);
 
@@ -145,7 +165,37 @@ void frbgen_heart_beat_wire__crate__api__session_preview_start_time(int64_t port
 
 void frbgen_heart_beat_wire__crate__api__session_preview_status(int64_t port_, uintptr_t preview);
 
+void frbgen_heart_beat_wire__crate__api__session_progress_current_bpm(int64_t port_,
+                                                                      uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_current_phase(int64_t port_,
+                                                                        uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_phase_progress(int64_t port_,
+                                                                         uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_state(int64_t port_, uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_total_elapsed_secs(int64_t port_,
+                                                                             uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_total_remaining_secs(int64_t port_,
+                                                                               uintptr_t progress);
+
+void frbgen_heart_beat_wire__crate__api__session_progress_zone_status(int64_t port_,
+                                                                      uintptr_t progress);
+
 void frbgen_heart_beat_wire__crate__api__session_start_time(int64_t port_, uintptr_t session);
+
+void frbgen_heart_beat_wire__crate__api__session_state_is_completed(int64_t port_, uintptr_t state);
+
+void frbgen_heart_beat_wire__crate__api__session_state_is_paused(int64_t port_, uintptr_t state);
+
+void frbgen_heart_beat_wire__crate__api__session_state_is_running(int64_t port_, uintptr_t state);
+
+void frbgen_heart_beat_wire__crate__api__session_state_is_stopped(int64_t port_, uintptr_t state);
+
+void frbgen_heart_beat_wire__crate__api__session_state_to_string(int64_t port_, uintptr_t state);
 
 void frbgen_heart_beat_wire__crate__api__session_status(int64_t port_, uintptr_t session);
 
@@ -168,6 +218,14 @@ void frbgen_heart_beat_wire__crate__api__start_workout(int64_t port_,
 
 void frbgen_heart_beat_wire__crate__api__stop_workout(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__zone_status_is_in_zone(int64_t port_, uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__zone_status_is_too_high(int64_t port_, uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__zone_status_is_too_low(int64_t port_, uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__zone_status_to_string(int64_t port_, uintptr_t status);
+
 void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(const void *ptr);
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(const void *ptr);
@@ -176,9 +234,25 @@ void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_b
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(const void *ptr);
 
+void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(const void *ptr);
+
 void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(const void *ptr);
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(const void *ptr);
 
 uintptr_t *frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(uintptr_t value);
 
@@ -221,18 +295,28 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_8_strict);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connect_device);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_battery_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_hr_stream);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_session_progress_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__delete_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__disconnect);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_battery_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_hr_data);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_session_progress);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_battery_level);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filtered_bpm);
@@ -246,6 +330,11 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__list_plans);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__list_sessions);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__pause_workout);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_elapsed_secs);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_phase_index);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_phase_name);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_remaining_secs);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_target_zone);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__resume_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__scan_devices);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_end_time);
@@ -260,7 +349,19 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_preview_plan_name);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_preview_start_time);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_preview_status);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_current_bpm);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_current_phase);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_phase_progress);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_state);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_total_elapsed_secs);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_total_remaining_secs);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_progress_zone_status);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_start_time);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_state_is_completed);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_state_is_paused);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_state_is_running);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_state_is_stopped);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_state_to_string);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_status);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_avg_hr);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_duration_secs);
@@ -270,6 +371,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__stop_workout);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__zone_status_is_in_zone);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__zone_status_is_too_high);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__zone_status_is_too_low);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__zone_status_to_string);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     return dummy_var;
 }

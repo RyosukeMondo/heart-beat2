@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_session_executor`, `get_session_repository`, `load_plan`
+// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `flush`, `fmt`, `fmt`, `make_writer`, `write`
@@ -283,6 +283,49 @@ Stream<ApiBatteryLevel> createBatteryStream() =>
 Future<BigInt> emitBatteryData({required ApiBatteryLevel data}) =>
     RustLib.instance.api.crateApiEmitBatteryData(data: data);
 
+/// Create a stream of session progress updates during workout execution.
+///
+/// This stream emits SessionProgress updates at regular intervals (typically 1Hz)
+/// while a workout is running, providing real-time feedback on phase progress,
+/// zone status, and elapsed/remaining time.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the session progress data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+///
+/// # Example
+///
+/// ```dart
+/// // In Flutter:
+/// final stream = await api.createSessionProgressStream();
+/// stream.listen((progress) {
+///   print('Current phase: ${progress.phaseProgress.phaseName}');
+///   print('Zone status: ${progress.zoneStatus}');
+/// });
+/// ```
+Stream<ApiSessionProgress> createSessionProgressStream() =>
+    RustLib.instance.api.crateApiCreateSessionProgressStream();
+
+/// Emit session progress data to all stream subscribers.
+///
+/// This function is called by the SessionExecutor tick loop when progress updates
+/// are available. It broadcasts the data to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `data` - The session progress snapshot to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the data. Returns 0 if no receivers
+/// are currently subscribed.
+Future<BigInt> emitSessionProgress({required ApiSessionProgress data}) =>
+    RustLib.instance.api.crateApiEmitSessionProgress(data: data);
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).
@@ -495,14 +538,125 @@ Future<void> resumeWorkout() => RustLib.instance.api.crateApiResumeWorkout();
 /// Returns an error if no workout is running or if the executor is not initialized.
 Future<void> stopWorkout() => RustLib.instance.api.crateApiStopWorkout();
 
+/// Get the current session state from SessionProgress.
+Future<ApiSessionState> sessionProgressState({
+  required ApiSessionProgress progress,
+}) => RustLib.instance.api.crateApiSessionProgressState(progress: progress);
+
+/// Get the current phase index from SessionProgress.
+Future<int> sessionProgressCurrentPhase({
+  required ApiSessionProgress progress,
+}) => RustLib.instance.api.crateApiSessionProgressCurrentPhase(
+  progress: progress,
+);
+
+/// Get the total elapsed seconds from SessionProgress.
+Future<int> sessionProgressTotalElapsedSecs({
+  required ApiSessionProgress progress,
+}) => RustLib.instance.api.crateApiSessionProgressTotalElapsedSecs(
+  progress: progress,
+);
+
+/// Get the total remaining seconds from SessionProgress.
+Future<int> sessionProgressTotalRemainingSecs({
+  required ApiSessionProgress progress,
+}) => RustLib.instance.api.crateApiSessionProgressTotalRemainingSecs(
+  progress: progress,
+);
+
+/// Get the zone status from SessionProgress.
+Future<ApiZoneStatus> sessionProgressZoneStatus({
+  required ApiSessionProgress progress,
+}) =>
+    RustLib.instance.api.crateApiSessionProgressZoneStatus(progress: progress);
+
+/// Get the current BPM from SessionProgress.
+Future<int> sessionProgressCurrentBpm({required ApiSessionProgress progress}) =>
+    RustLib.instance.api.crateApiSessionProgressCurrentBpm(progress: progress);
+
+/// Get the phase progress from SessionProgress.
+Future<ApiPhaseProgress> sessionProgressPhaseProgress({
+  required ApiSessionProgress progress,
+}) => RustLib.instance.api.crateApiSessionProgressPhaseProgress(
+  progress: progress,
+);
+
+/// Get the phase index from PhaseProgress.
+Future<int> phaseProgressPhaseIndex({required ApiPhaseProgress progress}) =>
+    RustLib.instance.api.crateApiPhaseProgressPhaseIndex(progress: progress);
+
+/// Get the phase name from PhaseProgress.
+Future<String> phaseProgressPhaseName({required ApiPhaseProgress progress}) =>
+    RustLib.instance.api.crateApiPhaseProgressPhaseName(progress: progress);
+
+/// Get the target zone from PhaseProgress.
+Future<Zone> phaseProgressTargetZone({required ApiPhaseProgress progress}) =>
+    RustLib.instance.api.crateApiPhaseProgressTargetZone(progress: progress);
+
+/// Get the elapsed seconds in the current phase from PhaseProgress.
+Future<int> phaseProgressElapsedSecs({required ApiPhaseProgress progress}) =>
+    RustLib.instance.api.crateApiPhaseProgressElapsedSecs(progress: progress);
+
+/// Get the remaining seconds in the current phase from PhaseProgress.
+Future<int> phaseProgressRemainingSecs({required ApiPhaseProgress progress}) =>
+    RustLib.instance.api.crateApiPhaseProgressRemainingSecs(progress: progress);
+
+/// Check if the session state is Running.
+Future<bool> sessionStateIsRunning({required ApiSessionState state}) =>
+    RustLib.instance.api.crateApiSessionStateIsRunning(state: state);
+
+/// Check if the session state is Paused.
+Future<bool> sessionStateIsPaused({required ApiSessionState state}) =>
+    RustLib.instance.api.crateApiSessionStateIsPaused(state: state);
+
+/// Check if the session state is Completed.
+Future<bool> sessionStateIsCompleted({required ApiSessionState state}) =>
+    RustLib.instance.api.crateApiSessionStateIsCompleted(state: state);
+
+/// Check if the session state is Stopped.
+Future<bool> sessionStateIsStopped({required ApiSessionState state}) =>
+    RustLib.instance.api.crateApiSessionStateIsStopped(state: state);
+
+/// Convert SessionState to a string representation.
+Future<String> sessionStateToString({required ApiSessionState state}) =>
+    RustLib.instance.api.crateApiSessionStateToString(state: state);
+
+/// Check if the zone status is InZone.
+Future<bool> zoneStatusIsInZone({required ApiZoneStatus status}) =>
+    RustLib.instance.api.crateApiZoneStatusIsInZone(status: status);
+
+/// Check if the zone status is TooLow.
+Future<bool> zoneStatusIsTooLow({required ApiZoneStatus status}) =>
+    RustLib.instance.api.crateApiZoneStatusIsTooLow(status: status);
+
+/// Check if the zone status is TooHigh.
+Future<bool> zoneStatusIsTooHigh({required ApiZoneStatus status}) =>
+    RustLib.instance.api.crateApiZoneStatusIsTooHigh(status: status);
+
+/// Convert ZoneStatus to a string representation.
+Future<String> zoneStatusToString({required ApiZoneStatus status}) =>
+    RustLib.instance.api.crateApiZoneStatusToString(status: status);
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
 abstract class ApiCompletedSession implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
+abstract class ApiPhaseProgress implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>
+abstract class ApiSessionProgress implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionState>>
+abstract class ApiSessionState implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>>
 abstract class ApiSessionSummaryPreview implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
+abstract class ApiZoneStatus implements RustOpaqueInterface {}
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///

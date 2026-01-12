@@ -30,8 +30,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate;
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiPhaseProgressPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionProgressPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionStatePtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiZoneStatusPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
@@ -49,8 +65,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     dynamic raw,
   );
 
@@ -67,8 +107,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiZoneStatus
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     dynamic raw,
   );
 
@@ -85,14 +149,44 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionProgress
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionState
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
   );
 
   @protected
+  ApiZoneStatus
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    dynamic raw,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    dynamic raw,
+  );
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     dynamic raw,
   );
 
@@ -227,8 +321,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     SseDeserializer deserializer,
   );
 
@@ -245,8 +363,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiZoneStatus
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     SseDeserializer deserializer,
   );
 
@@ -263,14 +405,44 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiPhaseProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionProgress
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionState
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiSessionSummaryPreview
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   );
 
   @protected
+  ApiZoneStatus
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RustStreamSink<ApiSessionProgress>
+  sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
     SseDeserializer deserializer,
   );
 
@@ -416,6 +588,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
         codec: DcoCodec(
           decodeSuccessData:
               dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
+  String
+  cst_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+    RustStreamSink<ApiSessionProgress> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress,
           decodeErrorData: dco_decode_AnyhowException,
         ),
       ),
@@ -637,8 +826,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -655,8 +868,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -673,8 +910,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus raw,
   );
 
   @protected
@@ -726,8 +987,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
     SseSerializer serializer,
   );
 
@@ -747,8 +1036,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
     SseSerializer serializer,
   );
 
@@ -768,6 +1085,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    ApiSessionProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    ApiSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     ApiSessionSummaryPreview self,
     SseSerializer serializer,
@@ -775,8 +1113,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    ApiZoneStatus self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
     RustStreamSink<ApiFilteredHeartRate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress_Dco(
+    RustStreamSink<ApiSessionProgress> self,
     SseSerializer serializer,
   );
 
@@ -946,6 +1298,11 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__create_hr_stream(NativePortType port_, String sink) =>
       wasmModule.wire__crate__api__create_hr_stream(port_, sink);
 
+  void wire__crate__api__create_session_progress_stream(
+    NativePortType port_,
+    String sink,
+  ) => wasmModule.wire__crate__api__create_session_progress_stream(port_, sink);
+
   void wire__crate__api__delete_session(NativePortType port_, String id) =>
       wasmModule.wire__crate__api__delete_session(port_, id);
 
@@ -961,6 +1318,11 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__emit_hr_data(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__emit_hr_data(port_, data);
+
+  void wire__crate__api__emit_session_progress(
+    NativePortType port_,
+    int data,
+  ) => wasmModule.wire__crate__api__emit_session_progress(port_, data);
 
   void wire__crate__api__get_session(NativePortType port_, String id) =>
       wasmModule.wire__crate__api__get_session(port_, id);
@@ -1000,6 +1362,35 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__pause_workout(NativePortType port_) =>
       wasmModule.wire__crate__api__pause_workout(port_);
+
+  void wire__crate__api__phase_progress_elapsed_secs(
+    NativePortType port_,
+    int progress,
+  ) =>
+      wasmModule.wire__crate__api__phase_progress_elapsed_secs(port_, progress);
+
+  void wire__crate__api__phase_progress_phase_index(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__phase_progress_phase_index(port_, progress);
+
+  void wire__crate__api__phase_progress_phase_name(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__phase_progress_phase_name(port_, progress);
+
+  void wire__crate__api__phase_progress_remaining_secs(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__phase_progress_remaining_secs(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__phase_progress_target_zone(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__phase_progress_target_zone(port_, progress);
 
   void wire__crate__api__resume_workout(NativePortType port_) =>
       wasmModule.wire__crate__api__resume_workout(port_);
@@ -1065,10 +1456,88 @@ class RustLibWire implements BaseWire {
     int preview,
   ) => wasmModule.wire__crate__api__session_preview_status(port_, preview);
 
+  void wire__crate__api__session_progress_current_bpm(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_current_bpm(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__session_progress_current_phase(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_current_phase(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__session_progress_phase_progress(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_phase_progress(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__session_progress_state(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_state(port_, progress);
+
+  void wire__crate__api__session_progress_total_elapsed_secs(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_total_elapsed_secs(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__session_progress_total_remaining_secs(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_total_remaining_secs(
+    port_,
+    progress,
+  );
+
+  void wire__crate__api__session_progress_zone_status(
+    NativePortType port_,
+    int progress,
+  ) => wasmModule.wire__crate__api__session_progress_zone_status(
+    port_,
+    progress,
+  );
+
   void wire__crate__api__session_start_time(
     NativePortType port_,
     int session,
   ) => wasmModule.wire__crate__api__session_start_time(port_, session);
+
+  void wire__crate__api__session_state_is_completed(
+    NativePortType port_,
+    int state,
+  ) => wasmModule.wire__crate__api__session_state_is_completed(port_, state);
+
+  void wire__crate__api__session_state_is_paused(
+    NativePortType port_,
+    int state,
+  ) => wasmModule.wire__crate__api__session_state_is_paused(port_, state);
+
+  void wire__crate__api__session_state_is_running(
+    NativePortType port_,
+    int state,
+  ) => wasmModule.wire__crate__api__session_state_is_running(port_, state);
+
+  void wire__crate__api__session_state_is_stopped(
+    NativePortType port_,
+    int state,
+  ) => wasmModule.wire__crate__api__session_state_is_stopped(port_, state);
+
+  void wire__crate__api__session_state_to_string(
+    NativePortType port_,
+    int state,
+  ) => wasmModule.wire__crate__api__session_state_to_string(port_, state);
 
   void wire__crate__api__session_status(NativePortType port_, int session) =>
       wasmModule.wire__crate__api__session_status(port_, session);
@@ -1113,6 +1582,26 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__stop_workout(NativePortType port_) =>
       wasmModule.wire__crate__api__stop_workout(port_);
 
+  void wire__crate__api__zone_status_is_in_zone(
+    NativePortType port_,
+    int status,
+  ) => wasmModule.wire__crate__api__zone_status_is_in_zone(port_, status);
+
+  void wire__crate__api__zone_status_is_too_high(
+    NativePortType port_,
+    int status,
+  ) => wasmModule.wire__crate__api__zone_status_is_too_high(port_, status);
+
+  void wire__crate__api__zone_status_is_too_low(
+    NativePortType port_,
+    int status,
+  ) => wasmModule.wire__crate__api__zone_status_is_too_low(port_, status);
+
+  void wire__crate__api__zone_status_to_string(
+    NativePortType port_,
+    int status,
+  ) => wasmModule.wire__crate__api__zone_status_to_string(port_, status);
+
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     int ptr,
@@ -1146,6 +1635,54 @@ class RustLibWire implements BaseWire {
       );
 
   void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+        ptr,
+      );
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+        ptr,
+      );
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+        ptr,
+      );
+
+  void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     int ptr,
   ) => wasmModule
@@ -1158,6 +1695,22 @@ class RustLibWire implements BaseWire {
     int ptr,
   ) => wasmModule
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr,
+      );
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
         ptr,
       );
 }
@@ -1183,6 +1736,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     String sink,
   );
 
+  external void wire__crate__api__create_session_progress_stream(
+    NativePortType port_,
+    String sink,
+  );
+
   external void wire__crate__api__delete_session(
     NativePortType port_,
     String id,
@@ -1200,6 +1758,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__emit_hr_data(NativePortType port_, int data);
+
+  external void wire__crate__api__emit_session_progress(
+    NativePortType port_,
+    int data,
+  );
 
   external void wire__crate__api__get_session(NativePortType port_, String id);
 
@@ -1239,6 +1802,31 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__list_sessions(NativePortType port_);
 
   external void wire__crate__api__pause_workout(NativePortType port_);
+
+  external void wire__crate__api__phase_progress_elapsed_secs(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__phase_progress_phase_index(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__phase_progress_phase_name(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__phase_progress_remaining_secs(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__phase_progress_target_zone(
+    NativePortType port_,
+    int progress,
+  );
 
   external void wire__crate__api__resume_workout(NativePortType port_);
 
@@ -1302,9 +1890,69 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     int preview,
   );
 
+  external void wire__crate__api__session_progress_current_bpm(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_current_phase(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_phase_progress(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_state(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_total_elapsed_secs(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_total_remaining_secs(
+    NativePortType port_,
+    int progress,
+  );
+
+  external void wire__crate__api__session_progress_zone_status(
+    NativePortType port_,
+    int progress,
+  );
+
   external void wire__crate__api__session_start_time(
     NativePortType port_,
     int session,
+  );
+
+  external void wire__crate__api__session_state_is_completed(
+    NativePortType port_,
+    int state,
+  );
+
+  external void wire__crate__api__session_state_is_paused(
+    NativePortType port_,
+    int state,
+  );
+
+  external void wire__crate__api__session_state_is_running(
+    NativePortType port_,
+    int state,
+  );
+
+  external void wire__crate__api__session_state_is_stopped(
+    NativePortType port_,
+    int state,
+  );
+
+  external void wire__crate__api__session_state_to_string(
+    NativePortType port_,
+    int state,
   );
 
   external void wire__crate__api__session_status(
@@ -1346,6 +1994,26 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void wire__crate__api__stop_workout(NativePortType port_);
 
+  external void wire__crate__api__zone_status_is_in_zone(
+    NativePortType port_,
+    int status,
+  );
+
+  external void wire__crate__api__zone_status_is_too_high(
+    NativePortType port_,
+    int status,
+  );
+
+  external void wire__crate__api__zone_status_is_too_low(
+    NativePortType port_,
+    int status,
+  );
+
+  external void wire__crate__api__zone_status_to_string(
+    NativePortType port_,
+    int status,
+  );
+
   external void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     int ptr,
@@ -1367,12 +2035,52 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    int ptr,
+  );
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
+    int ptr,
+  );
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState(
+    int ptr,
+  );
+
+  external void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     int ptr,
   );
 
   external void
   rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    int ptr,
+  );
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus(
     int ptr,
   );
 }
