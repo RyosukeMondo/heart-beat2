@@ -28,7 +28,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec debug-console, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter developer | Task: Update app.dart to wrap the MaterialApp.router with DebugConsoleOverlay widget. Ensure the overlay covers all routes and screens. | Restrictions: Minimal changes to existing structure | Success: Triple-tap works on any screen | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.4 Test debug console functionality
+- [x] 1.4 Test debug console functionality
   - File: N/A (manual testing)
   - Test on Linux desktop and Android
   - Verify filtering and auto-scroll

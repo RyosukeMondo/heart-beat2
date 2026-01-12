@@ -31,7 +31,12 @@ Future<void> main() async {
   }
 
   // Initialize background service configuration
-  await BackgroundService.initializeService();
+  try {
+    await BackgroundService.initializeService();
+  } catch (e) {
+    debugPrint('Failed to initialize background service: $e');
+    // Continue anyway - background service only needed for Android/iOS
+  }
 
   // Run the app
   runApp(const MyApp());
