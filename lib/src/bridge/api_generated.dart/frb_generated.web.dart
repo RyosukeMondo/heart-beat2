@@ -515,6 +515,9 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__init_panic_handler(NativePortType port_) =>
       wasmModule.wire__crate__api__init_panic_handler(port_);
 
+  void wire__crate__api__init_platform(NativePortType port_) =>
+      wasmModule.wire__crate__api__init_platform(port_);
+
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
 
@@ -586,6 +589,8 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__init_panic_handler(NativePortType port_);
+
+  external void wire__crate__api__init_platform(NativePortType port_);
 
   external void wire__crate__api__scan_devices(NativePortType port_);
 

@@ -35,6 +35,37 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 Future<void> initPanicHandler() =>
     RustLib.instance.api.crateApiInitPanicHandler();
 
+/// Initialize platform-specific BLE requirements.
+///
+/// This function performs platform-specific initialization required for BLE operations.
+/// On Android, btleplug requires JNI environment initialization before any BLE operations
+/// can be performed. On other platforms (Linux, macOS, Windows, iOS), this is a no-op.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// after RustLib.init() but before making any BLE API calls (scan_devices, connect_device, etc.).
+///
+/// # Returns
+///
+/// Returns Ok(()) if initialization succeeds, or an error if platform-specific setup fails.
+///
+/// # Errors
+///
+/// On Android: Returns an error if btleplug platform initialization fails (e.g., missing
+/// Bluetooth permissions, BLE hardware unavailable).
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   await RustLib.init();
+///   await initPlatform(); // Initialize BLE platform
+///
+///   runApp(MyApp());
+/// }
+/// ```
+Future<void> initPlatform() => RustLib.instance.api.crateApiInitPlatform();
+
 /// Initialize logging and forward Rust tracing logs to Flutter.
 ///
 /// This function sets up a tracing subscriber that captures all Rust log messages

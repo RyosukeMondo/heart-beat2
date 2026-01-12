@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1891926907;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1049298710;
 
 // Section: executor
 
@@ -416,6 +416,25 @@ fn wire__crate__api__init_panic_handler_impl(
                     })?;
                     Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__init_platform_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "init_platform",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::init_platform()?;
+                        Ok(output_ok)
+                    })(),
+                )
             }
         },
     )
@@ -1301,6 +1320,11 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__init_platform(port_: i64) {
+        wire__crate__api__init_platform_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__scan_devices(port_: i64) {
         wire__crate__api__scan_devices_impl(port_)
     }
@@ -1737,6 +1761,11 @@ mod web {
         port_: flutter_rust_bridge::for_generated::MessagePort,
     ) {
         wire__crate__api__init_panic_handler_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__init_platform(port_: flutter_rust_bridge::for_generated::MessagePort) {
+        wire__crate__api__init_platform_impl(port_)
     }
 
     #[wasm_bindgen]

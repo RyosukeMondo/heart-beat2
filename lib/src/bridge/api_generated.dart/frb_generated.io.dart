@@ -690,6 +690,17 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__init_panic_handler =
       _wire__crate__api__init_panic_handlerPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__init_platform(int port_) {
+    return _wire__crate__api__init_platform(port_);
+  }
+
+  late final _wire__crate__api__init_platformPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__init_platform',
+      );
+  late final _wire__crate__api__init_platform =
+      _wire__crate__api__init_platformPtr.asFunction<void Function(int)>();
+
   void wire__crate__api__scan_devices(int port_) {
     return _wire__crate__api__scan_devices(port_);
   }

@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 1891926907;
+  int get rustContentHash => 1049298710;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -102,6 +102,8 @@ abstract class RustLibApi extends BaseApi {
   Stream<LogMessage> crateApiInitLogging();
 
   Future<void> crateApiInitPanicHandler();
+
+  Future<void> crateApiInitPlatform();
 
   Future<List<DiscoveredDevice>> crateApiScanDevices();
 
@@ -422,6 +424,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiInitPanicHandlerConstMeta =>
       const TaskConstMeta(debugName: "init_panic_handler", argNames: []);
+
+  @override
+  Future<void> crateApiInitPlatform() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__init_platform(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiInitPlatformConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInitPlatformConstMeta =>
+      const TaskConstMeta(debugName: "init_platform", argNames: []);
 
   @override
   Future<List<DiscoveredDevice>> crateApiScanDevices() {
