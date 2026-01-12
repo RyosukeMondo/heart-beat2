@@ -54,7 +54,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Create ZoneEditorScreen with 4 Sliders for zone boundaries (zone1Max through zone4Max). Show visual preview of zones as colored bars. Validate ascending order. Save button calls ProfileService.saveProfile(). Access from SettingsScreen. | Restrictions: Clear visual feedback | Success: Custom zones configurable_
 
-- [ ] 4.1 Integrate profile with zone displays
+- [x] 4.1 Integrate profile with zone displays
   - File: `lib/src/widgets/zone_indicator.dart`
   - Use ProfileService for zone calculation
   - Purpose: Profile-aware zone display
