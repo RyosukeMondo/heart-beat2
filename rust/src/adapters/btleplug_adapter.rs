@@ -172,6 +172,7 @@ impl BtleplugAdapter {
     ///
     /// ```no_run
     /// # use heart_beat::adapters::btleplug_adapter::BtleplugAdapter;
+    /// # use heart_beat::adapters::MockNotificationAdapter;
     /// # use tokio::sync::mpsc;
     /// # use std::sync::Arc;
     /// # async fn example() -> anyhow::Result<()> {
