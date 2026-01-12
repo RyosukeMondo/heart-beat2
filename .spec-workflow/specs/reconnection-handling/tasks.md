@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Add ReconnectionPolicy configuration
+- [x] 1.1 Add ReconnectionPolicy configuration
   - File: `rust/src/domain/reconnection.rs`
   - Define ReconnectionPolicy struct with max_attempts, delays
   - Add calculate_delay(attempt) method
@@ -9,7 +9,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust domain developer | Task: Create rust/src/domain/reconnection.rs with ReconnectionPolicy struct. Fields: max_attempts (u8, default 5), initial_delay (Duration, default 1s), backoff_multiplier (f32, default 2.0), max_delay (Duration, default 16s). Add calculate_delay(attempt: u8) -> Duration using exponential backoff capped at max_delay. | Restrictions: Pure domain, no async | Success: Backoff calculation correct_
 
-- [ ] 1.2 Add ConnectionStatus enum
+- [x] 1.2 Add ConnectionStatus enum
   - File: `rust/src/domain/reconnection.rs`
   - Define ConnectionStatus enum with all states
   - Derive Serialize for FRB

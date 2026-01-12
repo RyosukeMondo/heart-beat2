@@ -8,6 +8,7 @@ pub mod export;
 pub mod filters;
 pub mod heart_rate;
 pub mod hrv;
+pub mod reconnection;
 pub mod session_history;
 pub mod session_progress;
 pub mod training_plan;
@@ -20,6 +21,7 @@ pub use heart_rate::{
     parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement, Zone,
 };
 pub use hrv::{calculate_rmssd, calculate_sdnn};
+pub use reconnection::{ConnectionStatus, ReconnectionPolicy};
 pub use session_history::{CompletedSession, HrSample, PhaseResult, SessionStatus, SessionSummary};
 pub use session_progress::{PhaseProgress, SessionProgress, SessionState, ZoneStatus};
 pub use training_plan::{calculate_zone, TrainingPhase, TrainingPlan, TransitionCondition};
