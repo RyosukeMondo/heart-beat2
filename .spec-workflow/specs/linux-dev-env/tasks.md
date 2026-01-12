@@ -9,7 +9,7 @@
   - _Requirements: 1_
   - _Prompt: Implement the task for spec linux-dev-env, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter developer with desktop experience | Task: Add Linux desktop support by running `flutter create --platforms=linux .` in project root. Then update linux/CMakeLists.txt to link the Rust library (libheart_beat.so from rust/target/release/). Verify flutter run -d linux works. | Restrictions: Use standard Flutter Linux setup, minimal custom CMake | Success: flutter run -d linux launches the app | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.2 Create dev-linux.sh script
+- [x] 1.2 Create dev-linux.sh script
   - File: `scripts/dev-linux.sh`
   - Build Rust library and launch Flutter Linux
   - Add --release flag option
