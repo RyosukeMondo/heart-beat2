@@ -20,7 +20,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec android-debug-scripts, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/adb-install.sh that: 1) checks for connected device, 2) sets ANDROID_NDK_HOME and calls ./build-android.sh --debug, 3) runs adb install -r on the APK, 4) launches app with adb shell am start. Add --release flag option. Show progress with colors. | Restrictions: Reuse build-android.sh, don't duplicate build logic | Success: Script builds, installs, and launches app | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.3 Create adb-permissions.sh script
+- [x] 1.3 Create adb-permissions.sh script
   - File: `scripts/adb-permissions.sh`
   - Show app permissions via dumpsys
   - Highlight Bluetooth-related permissions
