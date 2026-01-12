@@ -40,6 +40,19 @@ pub use crate::domain::session_progress::{
     SessionState as ApiSessionState, ZoneStatus as ApiZoneStatus,
 };
 
+/// Format for exporting session data.
+///
+/// Specifies the output format when exporting a completed training session.
+#[derive(Clone, Copy, Debug, serde::Serialize, serde::Deserialize)]
+pub enum ExportFormat {
+    /// Export as comma-separated values (CSV) with timestamp, bpm, and zone columns
+    Csv,
+    /// Export as pretty-printed JSON containing the full session structure
+    Json,
+    /// Export as human-readable text summary with statistics
+    Summary,
+}
+
 /// Battery level data for FFI boundary (FRB-compatible).
 ///
 /// This is a simplified version of domain::BatteryLevel that uses u64 timestamps
@@ -1020,6 +1033,62 @@ pub async fn delete_session(id: String) -> Result<()> {
     repo.delete(&id).await?;
     tracing::info!("delete_session: Successfully deleted session {}", id);
     Ok(())
+}
+
+/// Export a session to a specified format.
+///
+/// Loads a completed session and exports it in the requested format (CSV, JSON, or text summary).
+/// The returned string can be saved to a file or shared directly.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to export
+/// * `format` - The desired export format (Csv, Json, or Summary)
+///
+/// # Returns
+///
+/// A string containing the exported session data in the requested format.
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - The session cannot be found
+/// - The session repository cannot be initialized
+/// - The session data cannot be formatted (should not normally occur)
+///
+/// # Examples
+///
+/// ```no_run
+/// # use heart_beat::api::{export_session, ExportFormat};
+/// # tokio_test::block_on(async {
+/// let csv_data = export_session("session-123".to_string(), ExportFormat::Csv).await?;
+/// let json_data = export_session("session-123".to_string(), ExportFormat::Json).await?;
+/// let summary = export_session("session-123".to_string(), ExportFormat::Summary).await?;
+/// # Ok::<(), anyhow::Error>(())
+/// # });
+/// ```
+pub async fn export_session(id: String, format: ExportFormat) -> Result<String> {
+    tracing::info!("export_session: Exporting session {} as {:?}", id, format);
+
+    let repo = get_session_repository().await?;
+    let session = repo
+        .get(&id)
+        .await?
+        .ok_or_else(|| anyhow!("Session not found: {}", id))?;
+
+    let content = match format {
+        ExportFormat::Csv => crate::domain::export_to_csv(&session),
+        ExportFormat::Json => crate::domain::export_to_json(&session),
+        ExportFormat::Summary => crate::domain::export_to_summary(&session),
+    };
+
+    tracing::info!(
+        "export_session: Successfully exported session {} ({} bytes)",
+        id,
+        content.len()
+    );
+
+    Ok(content)
 }
 
 // Accessor functions for SessionSummaryPreview (opaque type)

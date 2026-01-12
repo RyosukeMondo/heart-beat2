@@ -8,7 +8,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Rust developer | Task: Create rust/src/domain/export.rs with export_to_csv(session: &CompletedSession) -> String generating CSV with timestamp,bpm,zone,phase columns. Add export_to_json() using serde_json::to_string_pretty(). Add export_to_summary() generating human-readable text summary. | Restrictions: Pure functions, no I/O | Success: All three formats generate correctly_
 
-- [ ] 1.2 Add export API functions
+- [x] 1.2 Add export API functions
   - File: `rust/src/api.rs`
   - Add export_session(id, format) returning content string
   - Add ExportFormat enum
