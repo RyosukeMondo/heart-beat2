@@ -10,7 +10,7 @@
   - _Requirements: 1, 2_
   - _Prompt: Implement the task for spec debug-console, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter UI developer | Task: Create DebugConsole widget that displays logs from LogService.stream. Include: level filter dropdown (debug/info/warn/error), search TextField, ListView.builder for logs with colored level badges, auto-scroll to bottom on new logs. Limit to 200 displayed logs. | Restrictions: Use Material 3 components, no external packages | Success: Widget displays logs with working filters | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.2 Create DebugConsoleOverlay wrapper
+- [x] 1.2 Create DebugConsoleOverlay wrapper
   - File: `lib/src/widgets/debug_console_overlay.dart`
   - Implement triple-tap gesture detection
   - Manage Overlay for floating console
