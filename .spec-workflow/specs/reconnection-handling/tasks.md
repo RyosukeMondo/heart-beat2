@@ -81,7 +81,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust test developer | Task: Add tests module to reconnection.rs. Test calculate_delay: attempt 1 = 1s, attempt 2 = 2s, attempt 3 = 4s, capped at max_delay. Test ConnectionStatus serialization. | Restrictions: No async in unit tests | Success: Backoff tests pass_
 
-- [ ] 5.2 Test reconnection on device
+- [x] 5.2 Test reconnection on device
   - File: N/A (manual testing)
   - Test by moving device out of range
   - Verify reconnection attempts and UI feedback
