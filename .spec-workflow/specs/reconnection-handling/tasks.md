@@ -18,7 +18,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Rust developer | Task: Add ConnectionStatus enum to reconnection.rs. Variants: Disconnected, Connecting, Connected { device_id: String }, Reconnecting { attempt: u8, max_attempts: u8 }, ReconnectFailed { reason: String }. Derive Serialize. | Restrictions: FRB-compatible | Success: Enum compiles with serde_
 
-- [ ] 2.1 Extend ConnectivityStateMachine with reconnection tracking
+- [x] 2.1 Extend ConnectivityStateMachine with reconnection tracking
   - File: `rust/src/state/connectivity.rs`
   - Add attempt_count and last_device_id to Reconnecting state
   - Implement attempt tracking and max attempts check

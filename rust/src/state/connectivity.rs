@@ -6,6 +6,7 @@
 
 #![allow(missing_docs)] // statig macro generates code that triggers missing_docs warnings
 
+use crate::domain::reconnection::ReconnectionPolicy;
 use crate::ports::ble_adapter::BleAdapter;
 use anyhow::Result;
 use flutter_rust_bridge::frb;
@@ -78,6 +79,8 @@ pub enum ConnectionState {
         device_id: String,
         /// Number of reconnection attempts made
         attempts: u8,
+        /// Maximum number of attempts allowed
+        max_attempts: u8,
     },
 }
 
@@ -85,17 +88,35 @@ pub enum ConnectionState {
 pub struct ConnectionContext {
     /// The BLE adapter for hardware interactions
     adapter: Arc<dyn BleAdapter + Send + Sync>,
+    /// Reconnection policy configuration
+    policy: ReconnectionPolicy,
 }
 
 impl ConnectionContext {
     /// Create a new connection context with the given BLE adapter
     pub fn new(adapter: Arc<dyn BleAdapter + Send + Sync>) -> Self {
-        Self { adapter }
+        Self {
+            adapter,
+            policy: ReconnectionPolicy::default(),
+        }
+    }
+
+    /// Create a new connection context with a custom reconnection policy
+    pub fn with_policy(
+        adapter: Arc<dyn BleAdapter + Send + Sync>,
+        policy: ReconnectionPolicy,
+    ) -> Self {
+        Self { adapter, policy }
     }
 
     /// Get a reference to the BLE adapter
     pub fn adapter(&self) -> &dyn BleAdapter {
         self.adapter.as_ref()
+    }
+
+    /// Get a reference to the reconnection policy
+    pub fn policy(&self) -> &ReconnectionPolicy {
+        &self.policy
     }
 }
 
@@ -137,7 +158,8 @@ impl ConnectionState {
                 Transition(State::discovering_services(device_id.clone()))
             }
             ConnectionEvent::ConnectionFailed => {
-                Transition(State::reconnecting(device_id.clone(), 1))
+                let max_attempts = ReconnectionPolicy::default().max_attempts;
+                Transition(State::reconnecting(device_id.clone(), 1, max_attempts))
             }
             ConnectionEvent::UserDisconnect => Transition(State::idle()),
             _ => Super,
@@ -151,7 +173,8 @@ impl ConnectionState {
         match event {
             ConnectionEvent::ServicesDiscovered => Transition(State::connected(device_id.clone())),
             ConnectionEvent::ConnectionFailed | ConnectionEvent::Disconnected => {
-                Transition(State::reconnecting(device_id.clone(), 1))
+                let max_attempts = ReconnectionPolicy::default().max_attempts;
+                Transition(State::reconnecting(device_id.clone(), 1, max_attempts))
             }
             ConnectionEvent::UserDisconnect => Transition(State::idle()),
             _ => Super,
@@ -163,7 +186,10 @@ impl ConnectionState {
     #[allow(clippy::ptr_arg)]
     fn connected(device_id: &String, event: &ConnectionEvent) -> Response<State> {
         match event {
-            ConnectionEvent::Disconnected => Transition(State::reconnecting(device_id.clone(), 1)),
+            ConnectionEvent::Disconnected => {
+                let max_attempts = ReconnectionPolicy::default().max_attempts;
+                Transition(State::reconnecting(device_id.clone(), 1, max_attempts))
+            }
             ConnectionEvent::UserDisconnect => Transition(State::idle()),
             _ => Super,
         }
@@ -172,17 +198,30 @@ impl ConnectionState {
     /// Reconnecting state - attempting to re-establish lost connection
     #[state]
     #[allow(clippy::ptr_arg)]
-    fn reconnecting(device_id: &String, attempts: &u8, event: &ConnectionEvent) -> Response<State> {
+    fn reconnecting(
+        device_id: &String,
+        attempts: &u8,
+        max_attempts: &u8,
+        event: &ConnectionEvent,
+    ) -> Response<State> {
         match event {
             ConnectionEvent::ReconnectSuccess => Transition(State::connected(device_id.clone())),
             ConnectionEvent::ReconnectFailed => {
-                if *attempts >= 3 {
+                if *attempts >= *max_attempts {
                     // Max retries exceeded, give up
-                    tracing::warn!("Reconnection failed after {} attempts", attempts);
+                    tracing::warn!(
+                        "Reconnection failed after {} attempts (max: {})",
+                        attempts,
+                        max_attempts
+                    );
                     Transition(State::idle())
                 } else {
                     // Increment attempt counter and stay in reconnecting
-                    Transition(State::reconnecting(device_id.clone(), attempts + 1))
+                    Transition(State::reconnecting(
+                        device_id.clone(),
+                        attempts + 1,
+                        *max_attempts,
+                    ))
                 }
             }
             ConnectionEvent::UserDisconnect => Transition(State::idle()),
@@ -416,13 +455,15 @@ mod tests {
         machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
         machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
 
-        // Disconnect and fail reconnection 3 times
+        // Disconnect and fail reconnection 5 times (default max_attempts)
         machine.handle(ConnectionEvent::Disconnected).unwrap();
         machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
         machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
         machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
 
-        // After 3 attempts, transitions to Idle - test succeeds if no panic
+        // After 5 attempts, transitions to Idle - test succeeds if no panic
     }
 
     #[test]
@@ -538,7 +579,7 @@ mod tests {
 
     #[test]
     fn test_mock_reconnection_exhausted() {
-        // Test: Reconnecting with 3 failures -> transitions to Idle
+        // Test: Reconnecting with 5 failures -> transitions to Idle
         let mock = MockAdapter::new();
         let adapter = Arc::new(mock);
         let mut machine = ConnectionStateMachine::new(adapter);
@@ -556,15 +597,12 @@ mod tests {
         // Simulate disconnection
         machine.handle(ConnectionEvent::Disconnected).unwrap();
 
-        // First reconnection attempt fails (attempts = 1)
-        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
-
-        // Second reconnection attempt fails (attempts = 2)
-        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
-
-        // Third reconnection attempt fails (attempts = 3)
-        // This should transition to Idle as max retries reached
-        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
+        // Fail reconnection 5 times (default max_attempts)
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 1 -> 2
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 2 -> 3
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 3 -> 4
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 4 -> 5
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 5, max reached -> Idle
 
         // Machine should be back in Idle state after exhausting retries
     }
@@ -667,17 +705,44 @@ mod tests {
         machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
         machine.handle(ConnectionEvent::Disconnected).unwrap();
 
-        // First failure (attempts = 1 -> 2)
+        // Fail reconnection attempts until max_attempts reached (default = 5)
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 1 -> 2
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 2 -> 3
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 3 -> 4
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 4 -> 5
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempts = 5, max reached -> Idle
+
+        // After fifth failure, should be in Idle
+    }
+
+    #[test]
+    fn test_reconnection_uses_default_max_attempts() {
+        // Test: Verify that reconnection uses the default policy max_attempts (5)
+        let adapter = Arc::new(TestAdapter);
+        let mut machine = ConnectionStateMachine::new(adapter);
+
+        // Establish connection and disconnect
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine
+            .handle(ConnectionEvent::DeviceSelected {
+                device_id: "device-1".to_string(),
+            })
+            .unwrap();
+        machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
+        machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
+        machine.handle(ConnectionEvent::Disconnected).unwrap();
+
+        // Default policy has max_attempts = 5, so we should be able to fail 4 times
+        // and still be in Reconnecting state
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempt 1 -> 2
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempt 2 -> 3
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempt 3 -> 4
+        machine.handle(ConnectionEvent::ReconnectFailed).unwrap(); // attempt 4 -> 5
+
+        // Fifth failure should transition to Idle (attempts = 5, max = 5)
         machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
 
-        // Second failure (attempts = 2 -> 3)
-        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
-
-        // At this point, one more failure would exhaust retries
-        // Verify the machine is still in Reconnecting with attempts = 3
-        machine.handle(ConnectionEvent::ReconnectFailed).unwrap();
-
-        // After third failure, should be in Idle
+        // Machine should be in Idle state after exhausting 5 attempts
     }
 
     #[test]
