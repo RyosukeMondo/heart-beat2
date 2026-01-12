@@ -9,7 +9,7 @@
   - _Requirements: 2, 3_
   - _Prompt: Role: Rust domain developer | Task: Create rust/src/domain/session_progress.rs with SessionProgress struct (state, current_phase, total_elapsed_secs, total_remaining_secs, zone_status, current_bpm). Add PhaseProgress (phase_index, phase_name, target_zone, elapsed_secs, remaining_secs). Add ZoneStatus enum. Derive Serialize. | Restrictions: FRB-compatible types | Success: Types compile with serde_
 
-- [ ] 1.2 Add progress emission to SessionExecutor
+- [x] 1.2 Add progress emission to SessionExecutor
   - File: `rust/src/scheduler/executor.rs`
   - Add SessionProgress channel output
   - Emit progress on tick (1Hz)

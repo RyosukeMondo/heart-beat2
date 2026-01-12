@@ -243,12 +243,20 @@ impl SessionState {
 pub struct SessionContext {
     /// The training plan being executed
     pub plan: Option<TrainingPlan>,
+    /// Current heart rate in BPM (updated by HR stream)
+    pub current_bpm: u16,
+    /// Last zone deviation state
+    pub last_deviation: ZoneDeviation,
 }
 
 impl SessionContext {
     /// Create a new session context
     pub fn new() -> Self {
-        Self { plan: None }
+        Self {
+            plan: None,
+            current_bpm: 0,
+            last_deviation: ZoneDeviation::InZone,
+        }
     }
 
     /// Get a reference to the current training plan
@@ -329,6 +337,9 @@ impl SessionStateMachineWrapper {
                 None
             }
             SessionEvent::UpdateBpm(bpm) => {
+                // Store current BPM in context
+                self.context.current_bpm = *bpm;
+
                 // Check zone deviation
                 if let State::InProgress {
                     zone_tracker,
@@ -345,6 +356,11 @@ impl SessionStateMachineWrapper {
                         let phase = &plan.phases[*current_phase];
                         let mut tracker = zone_tracker.clone();
                         let deviation = tracker.check(*bpm, phase.target_zone, plan.max_hr);
+
+                        // Store deviation in context if it changed
+                        if let Some(dev) = deviation {
+                            self.context.last_deviation = dev;
+                        }
 
                         // If tracker changed, we need to update state
                         // Create a synthetic transition to update the tracker

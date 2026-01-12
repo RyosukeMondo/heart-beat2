@@ -6,17 +6,20 @@
 
 use crate::domain::heart_rate::FilteredHeartRate;
 use crate::domain::session_history::{CompletedSession, HrSample, SessionStatus, SessionSummary};
+use crate::domain::session_progress::{
+    PhaseProgress, SessionProgress, SessionState as ProgressState, ZoneStatus,
+};
 use crate::domain::training_plan::TrainingPlan;
 use crate::ports::notification::{NotificationEvent, NotificationPort};
 use crate::ports::session_repository::SessionRepository;
-use crate::state::session::{SessionEvent, SessionStateMachineWrapper, State};
+use crate::state::session::{SessionEvent, SessionStateMachineWrapper, State, ZoneDeviation};
 use anyhow::{Context, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::sync::{broadcast, Mutex};
+use tokio::sync::{broadcast, mpsc, Mutex};
 use tokio::task::JoinHandle;
 use tokio::time::{interval, Duration, Instant};
 use tokio_cron_scheduler::{Job, JobScheduler};
@@ -80,6 +83,9 @@ pub struct SessionExecutor {
 
     /// Start time of the current session
     session_start_time: Arc<Mutex<Option<chrono::DateTime<Utc>>>>,
+
+    /// Optional progress sender for streaming session state to the UI
+    progress_sender: Option<mpsc::UnboundedSender<SessionProgress>>,
 }
 
 impl SessionExecutor {
@@ -100,6 +106,7 @@ impl SessionExecutor {
             session_repository: None,
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
+            progress_sender: None,
         }
     }
 
@@ -124,6 +131,7 @@ impl SessionExecutor {
             session_repository: None,
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
+            progress_sender: None,
         };
 
         // Try to load existing checkpoint
@@ -153,6 +161,7 @@ impl SessionExecutor {
             session_repository: None,
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
+            progress_sender: None,
         }
     }
 
@@ -163,6 +172,16 @@ impl SessionExecutor {
     /// * `repository` - The session repository implementation
     pub fn with_session_repository(mut self, repository: Arc<dyn SessionRepository>) -> Self {
         self.session_repository = Some(repository);
+        self
+    }
+
+    /// Set the progress sender for streaming session updates to the UI.
+    ///
+    /// # Arguments
+    ///
+    /// * `sender` - Unbounded sender for SessionProgress updates
+    pub fn with_progress_sender(mut self, sender: mpsc::UnboundedSender<SessionProgress>) -> Self {
+        self.progress_sender = Some(sender);
         self
     }
 
@@ -348,6 +367,7 @@ impl SessionExecutor {
         let session_start_time_clone = Arc::clone(&self.session_start_time);
         let session_repository_clone = self.session_repository.clone();
         let plan_name = plan.name.clone();
+        let progress_tx = self.progress_sender.clone();
 
         let tick_task = tokio::spawn(async move {
             let mut ticker = interval(Duration::from_secs(1));
@@ -430,6 +450,14 @@ impl SessionExecutor {
                         crate::state::session::State::Completed { .. }
                     ) {
                         break;
+                    }
+                }
+
+                // Emit progress update if a sender is configured
+                if let Some(ref tx) = progress_tx {
+                    if let Some(progress) = build_session_progress(&state_clone).await {
+                        // Ignore send errors (receiver may have been dropped)
+                        let _ = tx.send(progress);
                     }
                 }
 
@@ -736,6 +764,80 @@ impl SessionExecutor {
 
         Ok(())
     }
+}
+
+/// Build a SessionProgress snapshot from the current session state.
+///
+/// Returns None if the session is not in a trackable state (Idle).
+async fn build_session_progress(
+    state: &Arc<Mutex<SessionStateMachineWrapper>>,
+) -> Option<SessionProgress> {
+    let state_lock = state.lock().await;
+
+    // Get the current state
+    let session_state = match state_lock.state() {
+        State::InProgress { .. } => ProgressState::Running,
+        State::Paused { .. } => ProgressState::Paused,
+        State::Completed { .. } => ProgressState::Completed,
+        State::Idle { .. } => return None, // No active session
+    };
+
+    // Get plan and progress information
+    let plan = state_lock.context().plan()?;
+    let (current_phase_idx, phase_elapsed, _phase_duration) = state_lock.get_progress()?;
+
+    // Ensure phase index is valid
+    if current_phase_idx >= plan.phases.len() {
+        return None;
+    }
+
+    let current_phase = &plan.phases[current_phase_idx];
+
+    // Calculate total elapsed and remaining time
+    let mut total_elapsed_secs = 0u32;
+    for (i, phase) in plan.phases.iter().enumerate() {
+        if i < current_phase_idx {
+            total_elapsed_secs += phase.duration_secs;
+        } else if i == current_phase_idx {
+            total_elapsed_secs += phase_elapsed;
+        }
+    }
+
+    let total_plan_duration: u32 = plan.phases.iter().map(|p| p.duration_secs).sum();
+    let total_remaining_secs = total_plan_duration.saturating_sub(total_elapsed_secs);
+
+    // Get current BPM and zone status from context
+    let current_bpm = state_lock.context().current_bpm;
+    let zone_deviation = state_lock.context().last_deviation;
+
+    // Convert ZoneDeviation to ZoneStatus
+    let zone_status = match zone_deviation {
+        ZoneDeviation::InZone => ZoneStatus::InZone,
+        ZoneDeviation::TooLow => ZoneStatus::TooLow,
+        ZoneDeviation::TooHigh => ZoneStatus::TooHigh,
+    };
+
+    // Calculate phase remaining time
+    let phase_remaining_secs = current_phase.duration_secs.saturating_sub(phase_elapsed);
+
+    // Build phase progress
+    let phase_progress = PhaseProgress {
+        phase_index: current_phase_idx as u32,
+        phase_name: current_phase.name.clone(),
+        target_zone: current_phase.target_zone,
+        elapsed_secs: phase_elapsed,
+        remaining_secs: phase_remaining_secs,
+    };
+
+    Some(SessionProgress {
+        state: session_state,
+        current_phase: current_phase_idx as u32,
+        total_elapsed_secs,
+        total_remaining_secs,
+        zone_status,
+        current_bpm,
+        phase_progress,
+    })
 }
 
 #[cfg(test)]
