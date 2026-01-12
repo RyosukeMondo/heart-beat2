@@ -22,15 +22,41 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   });
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiCompletedSessionPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiFilteredHeartRatePtr => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
+  ApiCompletedSession
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionSummaryPreview
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiCompletedSession
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     dynamic raw,
   );
 
@@ -41,14 +67,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSessionSummaryPreview
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiCompletedSession
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
   );
 
   @protected
+  ApiSessionSummaryPreview
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    dynamic raw,
+  );
+
+  @protected
+  RustStreamSink<ApiBatteryLevel> dco_decode_StreamSink_api_battery_level_Dco(
     dynamic raw,
   );
 
@@ -65,10 +114,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  ApiCompletedSession
+  dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
 
   @protected
   int dco_decode_box_autoadd_u_8(dynamic raw);
@@ -86,7 +144,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int dco_decode_i_32(dynamic raw);
 
   @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw);
+
+  @protected
+  List<ApiSessionSummaryPreview>
+  dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
+
+  @protected
+  Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -98,13 +168,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
+  ApiCompletedSession?
+  dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
+    dynamic raw,
+  );
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
 
   @protected
+  (PlatformInt64, int) dco_decode_record_i_64_u_16(dynamic raw);
+
+  @protected
   int dco_decode_u_16(dynamic raw);
+
+  @protected
+  int dco_decode_u_32(dynamic raw);
 
   @protected
   BigInt dco_decode_u_64(dynamic raw);
@@ -125,8 +212,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionSummaryPreview
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiCompletedSession
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     SseDeserializer deserializer,
   );
 
@@ -137,14 +242,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSessionSummaryPreview
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiCompletedSession
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     SseDeserializer deserializer,
   );
 
   @protected
+  ApiSessionSummaryPreview
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RustStreamSink<ApiBatteryLevel> sse_decode_StreamSink_api_battery_level_Dco(
     SseDeserializer deserializer,
   );
 
@@ -163,12 +291,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession
+  sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
     SseDeserializer deserializer,
   );
 
   @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  (PlatformInt64, int) sse_decode_box_autoadd_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
 
   @protected
   int sse_decode_box_autoadd_u_8(SseDeserializer deserializer);
@@ -186,9 +325,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
+
+  @protected
+  List<ApiSessionSummaryPreview>
+  sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
     SseDeserializer deserializer,
   );
+
+  @protected
+  Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -200,13 +351,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession?
+  sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
 
   @protected
+  (PlatformInt64, int) sse_decode_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   int sse_decode_u_16(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_u_32(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_u_64(SseDeserializer deserializer);
@@ -247,6 +417,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  String cst_encode_StreamSink_api_battery_level_Dco(
+    RustStreamSink<ApiBatteryLevel> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_battery_level,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
   String cst_encode_StreamSink_log_message_Dco(RustStreamSink<LogMessage> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_String(
@@ -276,6 +461,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  int
+  cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+      raw,
+    );
+  }
+
+  @protected
   JSAny cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_api_battery_level(raw);
@@ -285,6 +481,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   double cst_encode_box_autoadd_f_64(double raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_f_64(raw);
+  }
+
+  @protected
+  JSAny cst_encode_box_autoadd_record_i_64_u_16((PlatformInt64, int) raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_record_i_64_u_16(raw);
   }
 
   @protected
@@ -304,9 +506,35 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_i_64(PlatformInt64 raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return castNativeBigInt(raw);
+  }
+
+  @protected
+  JSAny
+  cst_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    List<ApiSessionSummaryPreview> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw
+        .map(
+          cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview,
+        )
+        .toList()
+        .jsify()!;
+  }
+
+  @protected
   JSAny cst_encode_list_discovered_device(List<DiscoveredDevice> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.map(cst_encode_discovered_device).toList().jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_prim_u_32_strict(Uint32List raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.jsify()!;
   }
 
   @protected
@@ -333,15 +561,42 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  int?
+  cst_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession? raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? null
+        : cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+            raw,
+          );
+  }
+
+  @protected
   double? cst_encode_opt_box_autoadd_f_64(double? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? null : cst_encode_box_autoadd_f_64(raw);
   }
 
   @protected
+  JSAny? cst_encode_opt_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int)? raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
   int? cst_encode_opt_box_autoadd_u_8(int? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? null : cst_encode_box_autoadd_u_8(raw);
+  }
+
+  @protected
+  JSAny cst_encode_record_i_64_u_16((PlatformInt64, int) raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [cst_encode_i_64(raw.$1), cst_encode_u_16(raw.$2)].jsify()!;
   }
 
   @protected
@@ -358,8 +613,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
   );
 
   @protected
@@ -370,8 +643,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
   );
 
   @protected
@@ -390,6 +681,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int cst_encode_u_16(int raw);
 
   @protected
+  int cst_encode_u_32(int raw);
+
+  @protected
   int cst_encode_u_8(int raw);
 
   @protected
@@ -406,8 +700,29 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
     SseSerializer serializer,
   );
 
@@ -420,6 +735,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
     SseSerializer serializer,
@@ -427,8 +756,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
     RustStreamSink<ApiFilteredHeartRate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_StreamSink_api_battery_level_Dco(
+    RustStreamSink<ApiBatteryLevel> self,
     SseSerializer serializer,
   );
 
@@ -451,6 +793,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void
+  sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_api_battery_level(
     ApiBatteryLevel self,
     SseSerializer serializer,
@@ -458,6 +807,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_u_8(int self, SseSerializer serializer);
@@ -478,8 +833,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
+
+  @protected
+  void
+  sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    List<ApiSessionSummaryPreview> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_prim_u_32_strict(
+    Uint32List self,
     SseSerializer serializer,
   );
 
@@ -496,13 +867,35 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
+  void
+  sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int)? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_record_i_64_u_16(
+    (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_u_16(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_32(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_64(BigInt self, SseSerializer serializer);
@@ -530,8 +923,16 @@ class RustLibWire implements BaseWire {
     String device_id,
   ) => wasmModule.wire__crate__api__connect_device(port_, device_id);
 
+  void wire__crate__api__create_battery_stream(
+    NativePortType port_,
+    String sink,
+  ) => wasmModule.wire__crate__api__create_battery_stream(port_, sink);
+
   void wire__crate__api__create_hr_stream(NativePortType port_, String sink) =>
       wasmModule.wire__crate__api__create_hr_stream(port_, sink);
+
+  void wire__crate__api__delete_session(NativePortType port_, String id) =>
+      wasmModule.wire__crate__api__delete_session(port_, id);
 
   void wire__crate__api__disconnect(NativePortType port_) =>
       wasmModule.wire__crate__api__disconnect(port_);
@@ -545,6 +946,9 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__emit_hr_data(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__emit_hr_data(port_, data);
+
+  void wire__crate__api__get_session(NativePortType port_, String id) =>
+      wasmModule.wire__crate__api__get_session(port_, id);
 
   void wire__crate__api__hr_battery_level(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_battery_level(port_, data);
@@ -573,11 +977,125 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__init_platform(NativePortType port_) =>
       wasmModule.wire__crate__api__init_platform(port_);
 
+  void wire__crate__api__list_sessions(NativePortType port_) =>
+      wasmModule.wire__crate__api__list_sessions(port_);
+
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
 
+  void wire__crate__api__session_end_time(NativePortType port_, int session) =>
+      wasmModule.wire__crate__api__session_end_time(port_, session);
+
+  void wire__crate__api__session_hr_sample_at(
+    NativePortType port_,
+    int session,
+    JSAny index,
+  ) => wasmModule.wire__crate__api__session_hr_sample_at(port_, session, index);
+
+  void wire__crate__api__session_hr_samples_count(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_hr_samples_count(port_, session);
+
+  void wire__crate__api__session_id(NativePortType port_, int session) =>
+      wasmModule.wire__crate__api__session_id(port_, session);
+
+  void wire__crate__api__session_phases_completed(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_phases_completed(port_, session);
+
+  void wire__crate__api__session_plan_name(NativePortType port_, int session) =>
+      wasmModule.wire__crate__api__session_plan_name(port_, session);
+
+  void wire__crate__api__session_preview_avg_hr(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_avg_hr(port_, preview);
+
+  void wire__crate__api__session_preview_duration_secs(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_duration_secs(
+    port_,
+    preview,
+  );
+
+  void wire__crate__api__session_preview_id(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_id(port_, preview);
+
+  void wire__crate__api__session_preview_plan_name(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_plan_name(port_, preview);
+
+  void wire__crate__api__session_preview_start_time(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_start_time(port_, preview);
+
+  void wire__crate__api__session_preview_status(
+    NativePortType port_,
+    int preview,
+  ) => wasmModule.wire__crate__api__session_preview_status(port_, preview);
+
+  void wire__crate__api__session_start_time(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_start_time(port_, session);
+
+  void wire__crate__api__session_status(NativePortType port_, int session) =>
+      wasmModule.wire__crate__api__session_status(port_, session);
+
+  void wire__crate__api__session_summary_avg_hr(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_summary_avg_hr(port_, session);
+
+  void wire__crate__api__session_summary_duration_secs(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_summary_duration_secs(
+    port_,
+    session,
+  );
+
+  void wire__crate__api__session_summary_max_hr(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_summary_max_hr(port_, session);
+
+  void wire__crate__api__session_summary_min_hr(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_summary_min_hr(port_, session);
+
+  void wire__crate__api__session_summary_time_in_zone(
+    NativePortType port_,
+    int session,
+  ) =>
+      wasmModule.wire__crate__api__session_summary_time_in_zone(port_, session);
+
   void wire__crate__api__start_mock_mode(NativePortType port_) =>
       wasmModule.wire__crate__api__start_mock_mode(port_);
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr,
+      );
 
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
@@ -594,6 +1112,22 @@ class RustLibWire implements BaseWire {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
         ptr,
       );
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr,
+      );
 }
 
 @JS('wasm_bindgen')
@@ -607,9 +1141,19 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     String device_id,
   );
 
+  external void wire__crate__api__create_battery_stream(
+    NativePortType port_,
+    String sink,
+  );
+
   external void wire__crate__api__create_hr_stream(
     NativePortType port_,
     String sink,
+  );
+
+  external void wire__crate__api__delete_session(
+    NativePortType port_,
+    String id,
   );
 
   external void wire__crate__api__disconnect(NativePortType port_);
@@ -624,6 +1168,8 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__emit_hr_data(NativePortType port_, int data);
+
+  external void wire__crate__api__get_session(NativePortType port_, String id);
 
   external void wire__crate__api__hr_battery_level(
     NativePortType port_,
@@ -656,9 +1202,114 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void wire__crate__api__init_platform(NativePortType port_);
 
+  external void wire__crate__api__list_sessions(NativePortType port_);
+
   external void wire__crate__api__scan_devices(NativePortType port_);
 
+  external void wire__crate__api__session_end_time(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_hr_sample_at(
+    NativePortType port_,
+    int session,
+    JSAny index,
+  );
+
+  external void wire__crate__api__session_hr_samples_count(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_id(NativePortType port_, int session);
+
+  external void wire__crate__api__session_phases_completed(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_plan_name(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_preview_avg_hr(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_preview_duration_secs(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_preview_id(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_preview_plan_name(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_preview_start_time(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_preview_status(
+    NativePortType port_,
+    int preview,
+  );
+
+  external void wire__crate__api__session_start_time(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_status(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_summary_avg_hr(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_summary_duration_secs(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_summary_max_hr(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_summary_min_hr(
+    NativePortType port_,
+    int session,
+  );
+
+  external void wire__crate__api__session_summary_time_in_zone(
+    NativePortType port_,
+    int session,
+  );
+
   external void wire__crate__api__start_mock_mode(NativePortType port_);
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    int ptr,
+  );
 
   external void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
@@ -667,6 +1318,16 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void
   rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    int ptr,
+  );
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     int ptr,
   );
 }

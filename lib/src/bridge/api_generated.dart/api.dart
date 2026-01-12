@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`
+// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_session_repository`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `flush`, `fmt`, `fmt`, `make_writer`, `write`
@@ -243,6 +243,22 @@ Future<Zone> hrZone({required ApiFilteredHeartRate data, required int maxHr}) =>
 Future<ApiBatteryLevel> dummyBatteryLevelForCodegen() =>
     RustLib.instance.api.crateApiDummyBatteryLevelForCodegen();
 
+/// Create a stream for receiving battery level data.
+///
+/// Sets up a stream that will receive real-time battery level measurements
+/// from the connected BLE device. This function is used by Flutter via FRB to
+/// create a reactive data stream.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the battery data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+Stream<ApiBatteryLevel> createBatteryStream() =>
+    RustLib.instance.api.crateApiCreateBatteryStream();
+
 /// Emit battery level data to all stream subscribers.
 ///
 /// This function should be called by the battery polling task when new battery
@@ -267,8 +283,156 @@ Future<ApiBatteryLevel> dummyBatteryLevelForCodegen() =>
 Future<BigInt> emitBatteryData({required ApiBatteryLevel data}) =>
     RustLib.instance.api.crateApiEmitBatteryData(data: data);
 
+/// List all completed training sessions.
+///
+/// Returns a list of session summaries sorted by start time (most recent first).
+/// This is optimized for displaying in a list view - full session data is not loaded.
+///
+/// # Returns
+///
+/// A vector of session summary previews containing ID, plan name, start time,
+/// duration, average heart rate, and status.
+///
+/// # Errors
+///
+/// Returns an error if the sessions directory cannot be read or if the repository
+/// cannot be initialized.
+Future<List<ApiSessionSummaryPreview>> listSessions() =>
+    RustLib.instance.api.crateApiListSessions();
+
+/// Get a complete session by its ID.
+///
+/// Loads the full session data including all heart rate samples and statistics.
+/// This is intended for displaying detailed session information.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to retrieve
+///
+/// # Returns
+///
+/// The complete session if found, or `None` if no session with the given ID exists.
+///
+/// # Errors
+///
+/// Returns an error if the session file cannot be read or parsed, or if the
+/// repository cannot be initialized.
+Future<ApiCompletedSession?> getSession({required String id}) =>
+    RustLib.instance.api.crateApiGetSession(id: id);
+
+/// Delete a session by its ID.
+///
+/// Permanently removes the session and all its data from storage.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to delete
+///
+/// # Errors
+///
+/// Returns an error if the session file cannot be deleted or if the repository
+/// cannot be initialized. Succeeds silently if the session doesn't exist.
+Future<void> deleteSession({required String id}) =>
+    RustLib.instance.api.crateApiDeleteSession(id: id);
+
+/// Get the session ID from a session summary preview
+Future<String> sessionPreviewId({required ApiSessionSummaryPreview preview}) =>
+    RustLib.instance.api.crateApiSessionPreviewId(preview: preview);
+
+/// Get the plan name from a session summary preview
+Future<String> sessionPreviewPlanName({
+  required ApiSessionSummaryPreview preview,
+}) => RustLib.instance.api.crateApiSessionPreviewPlanName(preview: preview);
+
+/// Get the start time as Unix timestamp in milliseconds from a session summary preview
+Future<PlatformInt64> sessionPreviewStartTime({
+  required ApiSessionSummaryPreview preview,
+}) => RustLib.instance.api.crateApiSessionPreviewStartTime(preview: preview);
+
+/// Get the duration in seconds from a session summary preview
+Future<int> sessionPreviewDurationSecs({
+  required ApiSessionSummaryPreview preview,
+}) => RustLib.instance.api.crateApiSessionPreviewDurationSecs(preview: preview);
+
+/// Get the average heart rate from a session summary preview
+Future<int> sessionPreviewAvgHr({required ApiSessionSummaryPreview preview}) =>
+    RustLib.instance.api.crateApiSessionPreviewAvgHr(preview: preview);
+
+/// Get the status string from a session summary preview
+Future<String> sessionPreviewStatus({
+  required ApiSessionSummaryPreview preview,
+}) => RustLib.instance.api.crateApiSessionPreviewStatus(preview: preview);
+
+/// Get the session ID from a completed session
+Future<String> sessionId({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionId(session: session);
+
+/// Get the plan name from a completed session
+Future<String> sessionPlanName({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionPlanName(session: session);
+
+/// Get the start time as Unix timestamp in milliseconds from a completed session
+Future<PlatformInt64> sessionStartTime({
+  required ApiCompletedSession session,
+}) => RustLib.instance.api.crateApiSessionStartTime(session: session);
+
+/// Get the end time as Unix timestamp in milliseconds from a completed session
+Future<PlatformInt64> sessionEndTime({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionEndTime(session: session);
+
+/// Get the status string from a completed session
+Future<String> sessionStatus({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionStatus(session: session);
+
+/// Get the number of phases completed from a completed session
+Future<int> sessionPhasesCompleted({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionPhasesCompleted(session: session);
+
+/// Get the duration in seconds from a completed session summary
+Future<int> sessionSummaryDurationSecs({
+  required ApiCompletedSession session,
+}) => RustLib.instance.api.crateApiSessionSummaryDurationSecs(session: session);
+
+/// Get the average heart rate from a completed session summary
+Future<int> sessionSummaryAvgHr({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionSummaryAvgHr(session: session);
+
+/// Get the maximum heart rate from a completed session summary
+Future<int> sessionSummaryMaxHr({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionSummaryMaxHr(session: session);
+
+/// Get the minimum heart rate from a completed session summary
+Future<int> sessionSummaryMinHr({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionSummaryMinHr(session: session);
+
+/// Get the time in zone array from a completed session summary
+/// Returns an array of 5 elements representing time spent in each zone (Zone1-Zone5) in seconds
+Future<Uint32List> sessionSummaryTimeInZone({
+  required ApiCompletedSession session,
+}) => RustLib.instance.api.crateApiSessionSummaryTimeInZone(session: session);
+
+/// Get the number of heart rate samples in a completed session
+Future<BigInt> sessionHrSamplesCount({required ApiCompletedSession session}) =>
+    RustLib.instance.api.crateApiSessionHrSamplesCount(session: session);
+
+/// Get a specific heart rate sample from a completed session
+/// Returns a tuple of (timestamp_millis, bpm)
+Future<(PlatformInt64, int)?> sessionHrSampleAt({
+  required ApiCompletedSession session,
+  required BigInt index,
+}) => RustLib.instance.api.crateApiSessionHrSampleAt(
+  session: session,
+  index: index,
+);
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
+abstract class ApiCompletedSession implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>>
+abstract class ApiSessionSummaryPreview implements RustOpaqueInterface {}
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///

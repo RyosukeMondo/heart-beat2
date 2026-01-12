@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1772927952;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1932076487;
 
 // Section: executor
 
@@ -70,6 +70,32 @@ fn wire__crate__api__connect_device_impl(
         },
     )
 }
+fn wire__crate__api__create_battery_stream_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sink: impl CstDecode<
+        StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_battery_stream",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sink = sink.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::create_battery_stream(api_sink).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__create_hr_stream_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     sink: impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>,
@@ -86,6 +112,30 @@ fn wire__crate__api__create_hr_stream_impl(
                 transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || async move {
                         let output_ok = crate::api::create_hr_stream(api_sink).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__delete_session_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    id: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "delete_session",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_id = id.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::delete_session(api_id).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -172,6 +222,30 @@ fn wire__crate__api__emit_hr_data_impl(
                     let output_ok = Result::<_, ()>::Ok(crate::api::emit_hr_data(api_data))?;
                     Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__get_session_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    id: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_session",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_id = id.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_session(api_id).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
             }
         },
     )
@@ -481,6 +555,26 @@ fn wire__crate__api__init_platform_impl(port_: flutter_rust_bridge::for_generate
         },
     )
 }
+fn wire__crate__api__list_sessions_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "list_sessions",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::list_sessions().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__scan_devices_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -497,6 +591,794 @@ fn wire__crate__api__scan_devices_impl(port_: flutter_rust_bridge::for_generated
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__session_end_time_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_end_time",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_end_time(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_hr_sample_at_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+    index: impl CstDecode<usize>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_hr_sample_at",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            let api_index = index.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_hr_sample_at(
+                        &*api_session_guard,
+                        api_index,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_hr_samples_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_hr_samples_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_hr_samples_count(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_id_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_id",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_id(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_phases_completed_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_phases_completed",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_phases_completed(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_plan_name_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_plan_name",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_plan_name(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_avg_hr_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_avg_hr",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_preview_avg_hr(
+                        &*api_preview_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_duration_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_duration_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_preview_duration_secs(&*api_preview_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_id_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_id",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_preview_id(&*api_preview_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_plan_name_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_plan_name",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_preview_plan_name(
+                        &*api_preview_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_start_time_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_start_time",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_preview_start_time(
+                        &*api_preview_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_preview_status_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    preview: impl CstDecode<
+        RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_preview_status",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_preview = preview.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_preview_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_preview,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_preview_guard = Some(api_preview.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_preview_guard = api_preview_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_preview_status(
+                        &*api_preview_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_start_time_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_start_time",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_start_time(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_status_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_status",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::session_status(&*api_session_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_summary_avg_hr_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_summary_avg_hr",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_summary_avg_hr(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_summary_duration_secs_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_summary_duration_secs",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::session_summary_duration_secs(&*api_session_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_summary_max_hr_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_summary_max_hr",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_summary_max_hr(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_summary_min_hr_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_summary_min_hr",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_summary_min_hr(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__session_summary_time_in_zone_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "session_summary_time_in_zone",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session = session.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_session_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_session,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_session_guard = Some(api_session.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_session_guard = api_session_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::session_summary_time_in_zone(
+                        &*api_session_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -548,9 +1430,21 @@ impl CstDecode<i32> for i32 {
         self
     }
 }
+impl CstDecode<i64> for i64 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> i64 {
+        self
+    }
+}
 impl CstDecode<u16> for u16 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> u16 {
+        self
+    }
+}
+impl CstDecode<u32> for u32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> u32 {
         self
     }
 }
@@ -593,6 +1487,16 @@ impl SseDecode for flutter_rust_bridge::for_generated::anyhow::Error {
     }
 }
 
+impl SseDecode for ApiCompletedSession {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
 impl SseDecode for ApiFilteredHeartRate {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -600,6 +1504,26 @@ impl SseDecode for ApiFilteredHeartRate {
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode for ApiSessionSummaryPreview {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
+impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
     }
 }
 
@@ -613,7 +1537,29 @@ impl SseDecode
     }
 }
 
+impl SseDecode
+    for RustOpaqueNom<
+        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+    >
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
 impl SseDecode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <String>::sse_decode(deserializer);
+        return StreamSink::deserialize(inner);
+    }
+}
+
+impl SseDecode
+    for StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <String>::sse_decode(deserializer);
@@ -695,6 +1641,25 @@ impl SseDecode for i32 {
     }
 }
 
+impl SseDecode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i64::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for Vec<ApiSessionSummaryPreview> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<ApiSessionSummaryPreview>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<crate::domain::heart_rate::DiscoveredDevice> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -704,6 +1669,18 @@ impl SseDecode for Vec<crate::domain::heart_rate::DiscoveredDevice> {
             ans_.push(<crate::domain::heart_rate::DiscoveredDevice>::sse_decode(
                 deserializer,
             ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<u32> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<u32>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -748,11 +1725,33 @@ impl SseDecode for Option<String> {
     }
 }
 
+impl SseDecode for Option<ApiCompletedSession> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<ApiCompletedSession>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<f64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<(i64, u16)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<(i64, u16)>::sse_decode(deserializer));
         } else {
             return None;
         }
@@ -770,10 +1769,26 @@ impl SseDecode for Option<u8> {
     }
 }
 
+impl SseDecode for (i64, u16) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <i64>::sse_decode(deserializer);
+        let mut var_field1 = <u16>::sse_decode(deserializer);
+        return (var_field0, var_field1);
+    }
+}
+
 impl SseDecode for u16 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         deserializer.cursor.read_u16::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for u32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u32::<NativeEndian>().unwrap()
     }
 }
 
@@ -846,6 +1861,24 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiCompletedSession> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<ApiCompletedSession>
+{
+}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiCompletedSession>> for ApiCompletedSession {
+    fn into_into_dart(self) -> FrbWrapper<ApiCompletedSession> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiFilteredHeartRate> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
@@ -859,6 +1892,26 @@ impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
 
 impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiFilteredHeartRate>> for ApiFilteredHeartRate {
     fn into_into_dart(self) -> FrbWrapper<ApiFilteredHeartRate> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiSessionSummaryPreview> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<ApiSessionSummaryPreview>
+{
+}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiSessionSummaryPreview>>
+    for ApiSessionSummaryPreview
+{
+    fn into_into_dart(self) -> FrbWrapper<ApiSessionSummaryPreview> {
         self.into()
     }
 }
@@ -954,6 +2007,13 @@ impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     }
 }
 
+impl SseEncode for ApiCompletedSession {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode for ApiFilteredHeartRate {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -963,6 +2023,29 @@ impl SseEncode for ApiFilteredHeartRate {
             flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self),
             serializer,
         );
+    }
+}
+
+impl SseEncode for ApiSessionSummaryPreview {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        >>::sse_encode(
+            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self),
+            serializer,
+        );
+    }
+}
+
+impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
     }
 }
 
@@ -977,7 +2060,29 @@ impl SseEncode
     }
 }
 
+impl SseEncode
+    for RustOpaqueNom<
+        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+    >
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
 impl SseEncode for StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        unimplemented!("")
+    }
+}
+
+impl SseEncode
+    for StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         unimplemented!("")
@@ -1046,12 +2151,39 @@ impl SseEncode for i32 {
     }
 }
 
+impl SseEncode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i64::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for Vec<ApiSessionSummaryPreview> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <ApiSessionSummaryPreview>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<crate::domain::heart_rate::DiscoveredDevice> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::domain::heart_rate::DiscoveredDevice>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<u32> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <u32>::sse_encode(item, serializer);
         }
     }
 }
@@ -1086,12 +2218,32 @@ impl SseEncode for Option<String> {
     }
 }
 
+impl SseEncode for Option<ApiCompletedSession> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <ApiCompletedSession>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <f64>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<(i64, u16)> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <(i64, u16)>::sse_encode(value, serializer);
         }
     }
 }
@@ -1106,10 +2258,25 @@ impl SseEncode for Option<u8> {
     }
 }
 
+impl SseEncode for (i64, u16) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.0, serializer);
+        <u16>::sse_encode(self.1, serializer);
+    }
+}
+
 impl SseEncode for u16 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_u16::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for u32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u32::<NativeEndian>(self).unwrap();
     }
 }
 
@@ -1190,6 +2357,18 @@ mod io {
             unimplemented!()
         }
     }
+    impl CstDecode<ApiCompletedSession> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiCompletedSession {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
     impl CstDecode<ApiFilteredHeartRate> for usize {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> ApiFilteredHeartRate {
@@ -1200,6 +2379,36 @@ mod io {
             >::cst_decode(
                 self
             ))
+        }
+    }
+    impl CstDecode<ApiSessionSummaryPreview> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionSummaryPreview {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
+                        ApiSessionSummaryPreview,
+                    >,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+            >,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+        > {
+            unsafe { decode_rust_opaque_nom(self as _) }
         }
     }
     impl
@@ -1218,6 +2427,22 @@ mod io {
             unsafe { decode_rust_opaque_nom(self as _) }
         }
     }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        > {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
         for *mut wire_cst_list_prim_u_8_strict
     {
@@ -1225,6 +2450,20 @@ mod io {
         fn cst_decode(
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            let raw: String = self.cst_decode();
+            StreamSink::deserialize(raw)
+        }
+    }
+    impl
+        CstDecode<
+            StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>,
+        > for *mut wire_cst_list_prim_u_8_strict
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>
         {
             let raw: String = self.cst_decode();
             StreamSink::deserialize(raw)
@@ -1259,6 +2498,13 @@ mod io {
             }
         }
     }
+    impl CstDecode<ApiCompletedSession> for *mut usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiCompletedSession {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<ApiCompletedSession>::cst_decode(*wrap).into()
+        }
+    }
     impl CstDecode<crate::api::ApiBatteryLevel> for *mut wire_cst_api_battery_level {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::ApiBatteryLevel {
@@ -1270,6 +2516,13 @@ mod io {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> f64 {
             unsafe { *flutter_rust_bridge::for_generated::box_from_leak_ptr(self) }
+        }
+    }
+    impl CstDecode<(i64, u16)> for *mut wire_cst_record_i_64_u_16 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> (i64, u16) {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<(i64, u16)>::cst_decode(*wrap).into()
         }
     }
     impl CstDecode<u8> for *mut u8 {
@@ -1288,6 +2541,16 @@ mod io {
             }
         }
     }
+    impl CstDecode<Vec<ApiSessionSummaryPreview>> for *mut wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview {
+            // Codec=Cst (C-struct based), see doc to use other codecs
+            fn cst_decode(self) -> Vec<ApiSessionSummaryPreview> {
+                let vec = unsafe {
+        let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+        flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+    };
+    vec.into_iter().map(CstDecode::cst_decode).collect()
+            }
+        }
     impl CstDecode<Vec<crate::domain::heart_rate::DiscoveredDevice>>
         for *mut wire_cst_list_discovered_device
     {
@@ -1298,6 +2561,15 @@ mod io {
                 flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
             };
             vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<u32>> for *mut wire_cst_list_prim_u_32_strict {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<u32> {
+            unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            }
         }
     }
     impl CstDecode<Vec<u8>> for *mut wire_cst_list_prim_u_8_strict {
@@ -1318,6 +2590,12 @@ mod io {
                 timestamp: self.timestamp.cst_decode(),
                 message: self.message.cst_decode(),
             }
+        }
+    }
+    impl CstDecode<(i64, u16)> for wire_cst_record_i_64_u_16 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> (i64, u16) {
+            (self.field0.cst_decode(), self.field1.cst_decode())
         }
     }
     impl NewWithNullPtr for wire_cst_api_battery_level {
@@ -1363,6 +2641,19 @@ mod io {
             Self::new_with_null_ptr()
         }
     }
+    impl NewWithNullPtr for wire_cst_record_i_64_u_16 {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                field0: Default::default(),
+                field1: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_record_i_64_u_16 {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
 
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__connect_device(
@@ -1373,11 +2664,27 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_battery_stream(
+        port_: i64,
+        sink: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__create_battery_stream_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_hr_stream(
         port_: i64,
         sink: *mut wire_cst_list_prim_u_8_strict,
     ) {
         wire__crate__api__create_hr_stream_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__delete_session(
+        port_: i64,
+        id: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__delete_session_impl(port_, id)
     }
 
     #[unsafe(no_mangle)]
@@ -1403,6 +2710,14 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_hr_data(port_: i64, data: usize) {
         wire__crate__api__emit_hr_data_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_session(
+        port_: i64,
+        id: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__get_session_impl(port_, id)
     }
 
     #[unsafe(no_mangle)]
@@ -1461,13 +2776,186 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__list_sessions(port_: i64) {
+        wire__crate__api__list_sessions_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__scan_devices(port_: i64) {
         wire__crate__api__scan_devices_impl(port_)
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_end_time(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_end_time_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_hr_sample_at(
+        port_: i64,
+        session: usize,
+        index: usize,
+    ) {
+        wire__crate__api__session_hr_sample_at_impl(port_, session, index)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_hr_samples_count(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_hr_samples_count_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_id(port_: i64, session: usize) {
+        wire__crate__api__session_id_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_phases_completed(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_phases_completed_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_plan_name(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_plan_name_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_avg_hr(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_avg_hr_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_duration_secs(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_duration_secs_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_id(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_id_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_plan_name(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_plan_name_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_start_time(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_start_time_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_preview_status(
+        port_: i64,
+        preview: usize,
+    ) {
+        wire__crate__api__session_preview_status_impl(port_, preview)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_start_time(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_start_time_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_status(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_status_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_summary_avg_hr(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_summary_avg_hr_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_summary_duration_secs(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_summary_duration_secs_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_summary_max_hr(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_summary_max_hr_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_summary_min_hr(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_summary_min_hr_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone(
+        port_: i64,
+        session: usize,
+    ) {
+        wire__crate__api__session_summary_time_in_zone_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__start_mock_mode(port_: i64) {
         wire__crate__api__start_mock_mode_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>::decrement_strong_count(ptr as _);
+        }
     }
 
     #[unsafe(no_mangle)]
@@ -1489,6 +2977,35 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        value: usize,
+    ) -> *mut usize {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_battery_level(
     ) -> *mut wire_cst_api_battery_level {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
@@ -1502,8 +3019,22 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16(
+    ) -> *mut wire_cst_record_i_64_u_16 {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_record_i_64_u_16::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_u_8(value: u8) -> *mut u8 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(len: i32) -> *mut wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview{
+        let wrap = wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview { ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len), len };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
     }
 
     #[unsafe(no_mangle)]
@@ -1518,6 +3049,17 @@ mod io {
             len,
         };
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_prim_u_32_strict(
+        len: i32,
+    ) -> *mut wire_cst_list_prim_u_32_strict {
+        let ans = wire_cst_list_prim_u_32_strict {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(ans)
     }
 
     #[unsafe(no_mangle)]
@@ -1547,8 +3089,21 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+    {
+        ptr: *mut usize,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_list_discovered_device {
         ptr: *mut wire_cst_discovered_device,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_prim_u_32_strict {
+        ptr: *mut u32,
         len: i32,
     }
     #[repr(C)]
@@ -1564,6 +3119,12 @@ mod io {
         target: *mut wire_cst_list_prim_u_8_strict,
         timestamp: u64,
         message: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_record_i_64_u_16 {
+        field0: i64,
+        field1: u16,
     }
 }
 #[cfg(not(target_family = "wasm"))]
@@ -1606,6 +3167,19 @@ mod web {
         fn cst_decode(
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            StreamSink::deserialize(self)
+        }
+    }
+    impl
+        CstDecode<
+            StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>,
+        > for String
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>
         {
             StreamSink::deserialize(self)
         }
@@ -1669,6 +3243,18 @@ mod web {
             }
         }
     }
+    impl CstDecode<Vec<ApiSessionSummaryPreview>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<ApiSessionSummaryPreview> {
+            self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap()
+                .iter()
+                .map(CstDecode::cst_decode)
+                .collect()
+        }
+    }
     impl CstDecode<Vec<crate::domain::heart_rate::DiscoveredDevice>>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
@@ -1679,6 +3265,12 @@ mod web {
                 .iter()
                 .map(CstDecode::cst_decode)
                 .collect()
+        }
+    }
+    impl CstDecode<Vec<u32>> for Box<[u32]> {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<u32> {
+            self.into_vec()
         }
     }
     impl CstDecode<Vec<u8>> for Box<[u8]> {
@@ -1715,12 +3307,39 @@ mod web {
             self.map(CstDecode::cst_decode)
         }
     }
+    impl CstDecode<(i64, u16)> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> (i64, u16) {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            (self_.get(0).cst_decode(), self_.get(1).cst_decode())
+        }
+    }
     impl CstDecode<flutter_rust_bridge::for_generated::anyhow::Error>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> flutter_rust_bridge::for_generated::anyhow::Error {
             unimplemented!()
+        }
+    }
+    impl CstDecode<ApiCompletedSession> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiCompletedSession {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+                >,
+            >::cst_decode(
+                self
+            ))
         }
     }
     impl CstDecode<ApiFilteredHeartRate> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
@@ -1733,6 +3352,42 @@ mod web {
             >::cst_decode(
                 self
             ))
+        }
+    }
+    impl CstDecode<ApiSessionSummaryPreview>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiSessionSummaryPreview {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
+                        ApiSessionSummaryPreview,
+                    >,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+            >,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+        > {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
         }
     }
     impl
@@ -1755,6 +3410,26 @@ mod web {
             unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
         }
     }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+        > {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
@@ -1762,6 +3437,19 @@ mod web {
         fn cst_decode(
             self,
         ) -> StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>
+        {
+            StreamSink::deserialize(self.as_string().expect("should be a string"))
+        }
+    }
+    impl
+        CstDecode<
+            StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<crate::api::ApiBatteryLevel, flutter_rust_bridge::for_generated::DcoCodec>
         {
             StreamSink::deserialize(self.as_string().expect("should be a string"))
         }
@@ -1807,6 +3495,20 @@ mod web {
             self.unchecked_into_f64() as _
         }
     }
+    impl CstDecode<i64> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> i64 {
+            ::std::convert::TryInto::<i64>::try_into(self).unwrap() as _
+        }
+    }
+    impl CstDecode<Vec<u32>> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<u32> {
+            self.unchecked_into::<flutter_rust_bridge::for_generated::js_sys::Uint32Array>()
+                .to_vec()
+                .into()
+        }
+    }
     impl CstDecode<Vec<u8>> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<u8> {
@@ -1818,6 +3520,12 @@ mod web {
     impl CstDecode<u16> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> u16 {
+            self.unchecked_into_f64() as _
+        }
+    }
+    impl CstDecode<u32> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> u32 {
             self.unchecked_into_f64() as _
         }
     }
@@ -1857,11 +3565,27 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__create_battery_stream(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sink: String,
+    ) {
+        wire__crate__api__create_battery_stream_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__create_hr_stream(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         sink: String,
     ) {
         wire__crate__api__create_hr_stream_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__delete_session(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        id: String,
+    ) {
+        wire__crate__api__delete_session_impl(port_, id)
     }
 
     #[wasm_bindgen]
@@ -1890,6 +3614,14 @@ mod web {
         data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__emit_hr_data_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_session(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        id: String,
+    ) {
+        wire__crate__api__get_session_impl(port_, id)
     }
 
     #[wasm_bindgen]
@@ -1962,8 +3694,166 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__list_sessions(port_: flutter_rust_bridge::for_generated::MessagePort) {
+        wire__crate__api__list_sessions_impl(port_)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__scan_devices(port_: flutter_rust_bridge::for_generated::MessagePort) {
         wire__crate__api__scan_devices_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_end_time(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_end_time_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_hr_sample_at(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        index: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_hr_sample_at_impl(port_, session, index)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_hr_samples_count(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_hr_samples_count_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_id(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_id_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_phases_completed(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_phases_completed_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_plan_name(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_plan_name_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_avg_hr(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_avg_hr_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_duration_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_duration_secs_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_id(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_id_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_plan_name(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_plan_name_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_start_time(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_start_time_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_preview_status(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        preview: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_preview_status_impl(port_, preview)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_start_time(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_start_time_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_status(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_status_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_summary_avg_hr(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_summary_avg_hr_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_summary_duration_secs(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_summary_duration_secs_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_summary_max_hr(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_summary_max_hr_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_summary_min_hr(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_summary_min_hr_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__session_summary_time_in_zone(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__session_summary_time_in_zone_impl(port_, session)
     }
 
     #[wasm_bindgen]
@@ -1971,6 +3861,24 @@ mod web {
         port_: flutter_rust_bridge::for_generated::MessagePort,
     ) {
         wire__crate__api__start_mock_mode_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>::decrement_strong_count(ptr as _);
+        }
     }
 
     #[wasm_bindgen]
@@ -1988,6 +3896,28 @@ mod web {
     ) {
         unsafe {
             StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionSummaryPreview>,
+            >::decrement_strong_count(ptr as _);
         }
     }
 }

@@ -903,6 +903,110 @@ pub async fn delete_session(id: String) -> Result<()> {
     Ok(())
 }
 
+// Accessor functions for SessionSummaryPreview (opaque type)
+
+/// Get the session ID from a session summary preview
+pub fn session_preview_id(preview: &ApiSessionSummaryPreview) -> String {
+    preview.id.clone()
+}
+
+/// Get the plan name from a session summary preview
+pub fn session_preview_plan_name(preview: &ApiSessionSummaryPreview) -> String {
+    preview.plan_name.clone()
+}
+
+/// Get the start time as Unix timestamp in milliseconds from a session summary preview
+pub fn session_preview_start_time(preview: &ApiSessionSummaryPreview) -> i64 {
+    preview.start_time.timestamp_millis()
+}
+
+/// Get the duration in seconds from a session summary preview
+pub fn session_preview_duration_secs(preview: &ApiSessionSummaryPreview) -> u32 {
+    preview.duration_secs
+}
+
+/// Get the average heart rate from a session summary preview
+pub fn session_preview_avg_hr(preview: &ApiSessionSummaryPreview) -> u16 {
+    preview.avg_hr
+}
+
+/// Get the status string from a session summary preview
+pub fn session_preview_status(preview: &ApiSessionSummaryPreview) -> String {
+    preview.status.clone()
+}
+
+// Accessor functions for CompletedSession (opaque type)
+
+/// Get the session ID from a completed session
+pub fn session_id(session: &ApiCompletedSession) -> String {
+    session.id.clone()
+}
+
+/// Get the plan name from a completed session
+pub fn session_plan_name(session: &ApiCompletedSession) -> String {
+    session.plan_name.clone()
+}
+
+/// Get the start time as Unix timestamp in milliseconds from a completed session
+pub fn session_start_time(session: &ApiCompletedSession) -> i64 {
+    session.start_time.timestamp_millis()
+}
+
+/// Get the end time as Unix timestamp in milliseconds from a completed session
+pub fn session_end_time(session: &ApiCompletedSession) -> i64 {
+    session.end_time.timestamp_millis()
+}
+
+/// Get the status string from a completed session
+pub fn session_status(session: &ApiCompletedSession) -> String {
+    format!("{:?}", session.status)
+}
+
+/// Get the number of phases completed from a completed session
+pub fn session_phases_completed(session: &ApiCompletedSession) -> u32 {
+    session.phases_completed
+}
+
+/// Get the duration in seconds from a completed session summary
+pub fn session_summary_duration_secs(session: &ApiCompletedSession) -> u32 {
+    session.summary.duration_secs
+}
+
+/// Get the average heart rate from a completed session summary
+pub fn session_summary_avg_hr(session: &ApiCompletedSession) -> u16 {
+    session.summary.avg_hr
+}
+
+/// Get the maximum heart rate from a completed session summary
+pub fn session_summary_max_hr(session: &ApiCompletedSession) -> u16 {
+    session.summary.max_hr
+}
+
+/// Get the minimum heart rate from a completed session summary
+pub fn session_summary_min_hr(session: &ApiCompletedSession) -> u16 {
+    session.summary.min_hr
+}
+
+/// Get the time in zone array from a completed session summary
+/// Returns an array of 5 elements representing time spent in each zone (Zone1-Zone5) in seconds
+pub fn session_summary_time_in_zone(session: &ApiCompletedSession) -> Vec<u32> {
+    session.summary.time_in_zone.to_vec()
+}
+
+/// Get the number of heart rate samples in a completed session
+pub fn session_hr_samples_count(session: &ApiCompletedSession) -> usize {
+    session.hr_samples.len()
+}
+
+/// Get a specific heart rate sample from a completed session
+/// Returns a tuple of (timestamp_millis, bpm)
+pub fn session_hr_sample_at(session: &ApiCompletedSession, index: usize) -> Option<(i64, u16)> {
+    session
+        .hr_samples
+        .get(index)
+        .map(|sample| (sample.timestamp.timestamp_millis(), sample.bpm))
+}
+
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
 ///
 /// This function is called by the Android runtime when the native library is loaded.

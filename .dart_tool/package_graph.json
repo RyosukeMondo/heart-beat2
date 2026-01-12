@@ -11,6 +11,7 @@
         "flutter",
         "flutter_background_service",
         "flutter_rust_bridge",
+        "intl",
         "permission_handler",
         "shared_preferences"
       ],
@@ -92,6 +93,15 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "intl",
+      "version": "0.19.0",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
       ]
     },
     {

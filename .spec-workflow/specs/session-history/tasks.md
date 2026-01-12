@@ -45,7 +45,7 @@
   - _Requirements: 2, 3, 4_
   - _Prompt: Role: Rust FFI developer | Task: Add pub async fn list_sessions() -> Vec<SessionSummaryPreview>, pub async fn get_session(id: String) -> Option<CompletedSession>, pub async fn delete_session(id: String) -> Result<()>. Create static FileSessionRepository instance. | Restrictions: FRB-compatible types | Success: Flutter can call session APIs_
 
-- [ ] 3.2 Create Flutter HistoryScreen
+- [x] 3.2 Create Flutter HistoryScreen
   - File: `lib/src/screens/history_screen.dart`
   - Display list of sessions with date, duration, avg HR
   - Tap to navigate to detail

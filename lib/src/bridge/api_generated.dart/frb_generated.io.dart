@@ -20,15 +20,41 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   });
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiCompletedSessionPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiFilteredHeartRatePtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRatePtr;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSessionSummaryPreviewPtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr;
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
+  ApiCompletedSession
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSessionSummaryPreview
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiCompletedSession
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     dynamic raw,
   );
 
@@ -39,14 +65,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSessionSummaryPreview
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
+  ApiCompletedSession
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
   );
 
   @protected
+  ApiSessionSummaryPreview
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    dynamic raw,
+  );
+
+  @protected
+  RustStreamSink<ApiBatteryLevel> dco_decode_StreamSink_api_battery_level_Dco(
     dynamic raw,
   );
 
@@ -63,10 +112,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  ApiCompletedSession
+  dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
 
   @protected
   int dco_decode_box_autoadd_u_8(dynamic raw);
@@ -84,7 +142,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int dco_decode_i_32(dynamic raw);
 
   @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw);
+
+  @protected
+  List<ApiSessionSummaryPreview>
+  dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    dynamic raw,
+  );
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
+
+  @protected
+  Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -96,13 +166,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
+  ApiCompletedSession?
+  dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    dynamic raw,
+  );
+
+  @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
+
+  @protected
+  (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
+    dynamic raw,
+  );
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
 
   @protected
+  (PlatformInt64, int) dco_decode_record_i_64_u_16(dynamic raw);
+
+  @protected
   int dco_decode_u_16(dynamic raw);
+
+  @protected
+  int dco_decode_u_32(dynamic raw);
 
   @protected
   BigInt dco_decode_u_64(dynamic raw);
@@ -123,8 +210,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSessionSummaryPreview
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiCompletedSession
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     SseDeserializer deserializer,
   );
 
@@ -135,14 +240,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSessionSummaryPreview
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiCompletedSession
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     SseDeserializer deserializer,
   );
 
   @protected
+  ApiSessionSummaryPreview
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   RustStreamSink<ApiFilteredHeartRate>
   sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RustStreamSink<ApiBatteryLevel> sse_decode_StreamSink_api_battery_level_Dco(
     SseDeserializer deserializer,
   );
 
@@ -161,12 +289,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession
+  sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
     SseDeserializer deserializer,
   );
 
   @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  (PlatformInt64, int) sse_decode_box_autoadd_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
 
   @protected
   int sse_decode_box_autoadd_u_8(SseDeserializer deserializer);
@@ -184,9 +323,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
+
+  @protected
+  List<ApiSessionSummaryPreview>
+  sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
     SseDeserializer deserializer,
   );
+
+  @protected
+  Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -198,13 +349,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
+  ApiCompletedSession?
+  sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
+
+  @protected
+  (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
 
   @protected
+  (PlatformInt64, int) sse_decode_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   int sse_decode_u_16(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_u_32(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_u_64(SseDeserializer deserializer);
@@ -248,6 +418,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ffi.Pointer<wire_cst_list_prim_u_8_strict>
+  cst_encode_StreamSink_api_battery_level_Dco(
+    RustStreamSink<ApiBatteryLevel> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_String(
+      raw.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_battery_level,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
+    );
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_8_strict>
   cst_encode_StreamSink_log_message_Dco(RustStreamSink<LogMessage> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_String(
@@ -267,6 +453,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.UintPtr>
+  cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire
+        .cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+          cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+            raw,
+          ),
+        );
+  }
+
+  @protected
   ffi.Pointer<wire_cst_api_battery_level>
   cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -282,9 +482,45 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_record_i_64_u_16>
+  cst_encode_box_autoadd_record_i_64_u_16((PlatformInt64, int) raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_record_i_64_u_16();
+    cst_api_fill_to_wire_record_i_64_u_16(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<ffi.Uint8> cst_encode_box_autoadd_u_8(int raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return wire.cst_new_box_autoadd_u_8(cst_encode_u_8(raw));
+  }
+
+  @protected
+  int cst_encode_i_64(PlatformInt64 raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.toInt();
+  }
+
+  @protected
+  ffi.Pointer<
+    wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+  >
+  cst_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    List<ApiSessionSummaryPreview> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire
+        .cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+          raw.length,
+        );
+    for (var i = 0; i < raw.length; ++i) {
+      ans.ref.ptr[i] =
+          cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+            raw[i],
+          );
+    }
+    return ans;
   }
 
   @protected
@@ -295,6 +531,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     for (var i = 0; i < raw.length; ++i) {
       cst_api_fill_to_wire_discovered_device(raw[i], ans.ref.ptr[i]);
     }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_32_strict> cst_encode_list_prim_u_32_strict(
+    Uint32List raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_prim_u_32_strict(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
 
@@ -317,9 +563,31 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.UintPtr>
+  cst_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession? raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+            raw,
+          );
+  }
+
+  @protected
   ffi.Pointer<ffi.Double> cst_encode_opt_box_autoadd_f_64(double? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? ffi.nullptr : cst_encode_box_autoadd_f_64(raw);
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_record_i_64_u_16>
+  cst_encode_opt_box_autoadd_record_i_64_u_16((PlatformInt64, int)? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_record_i_64_u_16(raw);
   }
 
   @protected
@@ -359,6 +627,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int) apiObj,
+    ffi.Pointer<wire_cst_record_i_64_u_16> wireObj,
+  ) {
+    cst_api_fill_to_wire_record_i_64_u_16(apiObj, wireObj.ref);
+  }
+
+  @protected
   void cst_api_fill_to_wire_discovered_device(
     DiscoveredDevice apiObj,
     wire_cst_discovered_device wireObj,
@@ -380,9 +656,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_record_i_64_u_16(
+    (PlatformInt64, int) apiObj,
+    wire_cst_record_i_64_u_16 wireObj,
+  ) {
+    wireObj.field0 = cst_encode_i_64(apiObj.$1);
+    wireObj.field1 = cst_encode_u_16(apiObj.$2);
+  }
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  );
+
+  @protected
   int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
   );
 
   @protected
@@ -393,8 +696,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
+  );
+
+  @protected
+  int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview raw,
   );
 
   @protected
@@ -413,6 +734,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int cst_encode_u_16(int raw);
 
   @protected
+  int cst_encode_u_32(int raw);
+
+  @protected
   int cst_encode_u_8(int raw);
 
   @protected
@@ -429,8 +753,29 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
     SseSerializer serializer,
   );
 
@@ -443,6 +788,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
     SseSerializer serializer,
@@ -450,8 +809,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ApiSessionSummaryPreview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate_Dco(
     RustStreamSink<ApiFilteredHeartRate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_StreamSink_api_battery_level_Dco(
+    RustStreamSink<ApiBatteryLevel> self,
     SseSerializer serializer,
   );
 
@@ -474,6 +846,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void
+  sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_api_battery_level(
     ApiBatteryLevel self,
     SseSerializer serializer,
@@ -481,6 +860,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_u_8(int self, SseSerializer serializer);
@@ -501,8 +886,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
+
+  @protected
+  void
+  sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    List<ApiSessionSummaryPreview> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_prim_u_32_strict(
+    Uint32List self,
     SseSerializer serializer,
   );
 
@@ -519,13 +920,35 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
+  void
+  sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ApiCompletedSession? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_record_i_64_u_16(
+    (PlatformInt64, int)? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_record_i_64_u_16(
+    (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_u_16(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_32(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_64(BigInt self, SseSerializer serializer);
@@ -602,6 +1025,28 @@ class RustLibWire implements BaseWire {
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
 
+  void wire__crate__api__create_battery_stream(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> sink,
+  ) {
+    return _wire__crate__api__create_battery_stream(port_, sink);
+  }
+
+  late final _wire__crate__api__create_battery_streamPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__create_battery_stream');
+  late final _wire__crate__api__create_battery_stream =
+      _wire__crate__api__create_battery_streamPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
   void wire__crate__api__create_hr_stream(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> sink,
@@ -620,6 +1065,28 @@ class RustLibWire implements BaseWire {
       >('frbgen_heart_beat_wire__crate__api__create_hr_stream');
   late final _wire__crate__api__create_hr_stream =
       _wire__crate__api__create_hr_streamPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__delete_session(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> id,
+  ) {
+    return _wire__crate__api__delete_session(port_, id);
+  }
+
+  late final _wire__crate__api__delete_sessionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__delete_session');
+  late final _wire__crate__api__delete_session =
+      _wire__crate__api__delete_sessionPtr
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
@@ -676,6 +1143,27 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__emit_hr_data =
       _wire__crate__api__emit_hr_dataPtr.asFunction<void Function(int, int)>();
+
+  void wire__crate__api__get_session(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> id,
+  ) {
+    return _wire__crate__api__get_session(port_, id);
+  }
+
+  late final _wire__crate__api__get_sessionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__get_session');
+  late final _wire__crate__api__get_session = _wire__crate__api__get_sessionPtr
+      .asFunction<
+        void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+      >();
 
   void wire__crate__api__hr_battery_level(int port_, int data) {
     return _wire__crate__api__hr_battery_level(port_, data);
@@ -791,6 +1279,17 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__init_platform =
       _wire__crate__api__init_platformPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__list_sessions(int port_) {
+    return _wire__crate__api__list_sessions(port_);
+  }
+
+  late final _wire__crate__api__list_sessionsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__list_sessions',
+      );
+  late final _wire__crate__api__list_sessions =
+      _wire__crate__api__list_sessionsPtr.asFunction<void Function(int)>();
+
   void wire__crate__api__scan_devices(int port_) {
     return _wire__crate__api__scan_devices(port_);
   }
@@ -802,6 +1301,239 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__scan_devices =
       _wire__crate__api__scan_devicesPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__session_end_time(int port_, int session) {
+    return _wire__crate__api__session_end_time(port_, session);
+  }
+
+  late final _wire__crate__api__session_end_timePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_end_time',
+      );
+  late final _wire__crate__api__session_end_time =
+      _wire__crate__api__session_end_timePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_hr_sample_at(
+    int port_,
+    int session,
+    int index,
+  ) {
+    return _wire__crate__api__session_hr_sample_at(port_, session, index);
+  }
+
+  late final _wire__crate__api__session_hr_sample_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.UintPtr, ffi.UintPtr)
+        >
+      >('frbgen_heart_beat_wire__crate__api__session_hr_sample_at');
+  late final _wire__crate__api__session_hr_sample_at =
+      _wire__crate__api__session_hr_sample_atPtr
+          .asFunction<void Function(int, int, int)>();
+
+  void wire__crate__api__session_hr_samples_count(int port_, int session) {
+    return _wire__crate__api__session_hr_samples_count(port_, session);
+  }
+
+  late final _wire__crate__api__session_hr_samples_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_hr_samples_count',
+      );
+  late final _wire__crate__api__session_hr_samples_count =
+      _wire__crate__api__session_hr_samples_countPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_id(int port_, int session) {
+    return _wire__crate__api__session_id(port_, session);
+  }
+
+  late final _wire__crate__api__session_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_id',
+      );
+  late final _wire__crate__api__session_id = _wire__crate__api__session_idPtr
+      .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_phases_completed(int port_, int session) {
+    return _wire__crate__api__session_phases_completed(port_, session);
+  }
+
+  late final _wire__crate__api__session_phases_completedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_phases_completed',
+      );
+  late final _wire__crate__api__session_phases_completed =
+      _wire__crate__api__session_phases_completedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_plan_name(int port_, int session) {
+    return _wire__crate__api__session_plan_name(port_, session);
+  }
+
+  late final _wire__crate__api__session_plan_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_plan_name',
+      );
+  late final _wire__crate__api__session_plan_name =
+      _wire__crate__api__session_plan_namePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_avg_hr(int port_, int preview) {
+    return _wire__crate__api__session_preview_avg_hr(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_avg_hrPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_avg_hr',
+      );
+  late final _wire__crate__api__session_preview_avg_hr =
+      _wire__crate__api__session_preview_avg_hrPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_duration_secs(int port_, int preview) {
+    return _wire__crate__api__session_preview_duration_secs(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_duration_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_duration_secs',
+      );
+  late final _wire__crate__api__session_preview_duration_secs =
+      _wire__crate__api__session_preview_duration_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_id(int port_, int preview) {
+    return _wire__crate__api__session_preview_id(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_id',
+      );
+  late final _wire__crate__api__session_preview_id =
+      _wire__crate__api__session_preview_idPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_plan_name(int port_, int preview) {
+    return _wire__crate__api__session_preview_plan_name(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_plan_namePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_plan_name',
+      );
+  late final _wire__crate__api__session_preview_plan_name =
+      _wire__crate__api__session_preview_plan_namePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_start_time(int port_, int preview) {
+    return _wire__crate__api__session_preview_start_time(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_start_timePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_start_time',
+      );
+  late final _wire__crate__api__session_preview_start_time =
+      _wire__crate__api__session_preview_start_timePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_preview_status(int port_, int preview) {
+    return _wire__crate__api__session_preview_status(port_, preview);
+  }
+
+  late final _wire__crate__api__session_preview_statusPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_preview_status',
+      );
+  late final _wire__crate__api__session_preview_status =
+      _wire__crate__api__session_preview_statusPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_start_time(int port_, int session) {
+    return _wire__crate__api__session_start_time(port_, session);
+  }
+
+  late final _wire__crate__api__session_start_timePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_start_time',
+      );
+  late final _wire__crate__api__session_start_time =
+      _wire__crate__api__session_start_timePtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_status(int port_, int session) {
+    return _wire__crate__api__session_status(port_, session);
+  }
+
+  late final _wire__crate__api__session_statusPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_status',
+      );
+  late final _wire__crate__api__session_status =
+      _wire__crate__api__session_statusPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_summary_avg_hr(int port_, int session) {
+    return _wire__crate__api__session_summary_avg_hr(port_, session);
+  }
+
+  late final _wire__crate__api__session_summary_avg_hrPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_summary_avg_hr',
+      );
+  late final _wire__crate__api__session_summary_avg_hr =
+      _wire__crate__api__session_summary_avg_hrPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_summary_duration_secs(int port_, int session) {
+    return _wire__crate__api__session_summary_duration_secs(port_, session);
+  }
+
+  late final _wire__crate__api__session_summary_duration_secsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_summary_duration_secs',
+      );
+  late final _wire__crate__api__session_summary_duration_secs =
+      _wire__crate__api__session_summary_duration_secsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_summary_max_hr(int port_, int session) {
+    return _wire__crate__api__session_summary_max_hr(port_, session);
+  }
+
+  late final _wire__crate__api__session_summary_max_hrPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_summary_max_hr',
+      );
+  late final _wire__crate__api__session_summary_max_hr =
+      _wire__crate__api__session_summary_max_hrPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_summary_min_hr(int port_, int session) {
+    return _wire__crate__api__session_summary_min_hr(port_, session);
+  }
+
+  late final _wire__crate__api__session_summary_min_hrPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_summary_min_hr',
+      );
+  late final _wire__crate__api__session_summary_min_hr =
+      _wire__crate__api__session_summary_min_hrPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__session_summary_time_in_zone(int port_, int session) {
+    return _wire__crate__api__session_summary_time_in_zone(port_, session);
+  }
+
+  late final _wire__crate__api__session_summary_time_in_zonePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone',
+      );
+  late final _wire__crate__api__session_summary_time_in_zone =
+      _wire__crate__api__session_summary_time_in_zonePtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__start_mock_mode(int port_) {
     return _wire__crate__api__start_mock_mode(port_);
   }
@@ -812,6 +1544,40 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__start_mock_mode =
       _wire__crate__api__start_mock_modePtr.asFunction<void Function(int)>();
+
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
@@ -847,6 +1613,59 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRatePtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
+  void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  ffi.Pointer<ffi.UintPtr>
+  cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    int value,
+  ) {
+    return _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+      value,
+    );
+  }
+
+  late final _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<ffi.UintPtr> Function(ffi.UintPtr)>
+      >(
+        'frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession',
+      );
+  late final _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession =
+      _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr
+          .asFunction<ffi.Pointer<ffi.UintPtr> Function(int)>();
+
   ffi.Pointer<wire_cst_api_battery_level>
   cst_new_box_autoadd_api_battery_level() {
     return _cst_new_box_autoadd_api_battery_level();
@@ -871,6 +1690,19 @@ class RustLibWire implements BaseWire {
   late final _cst_new_box_autoadd_f_64 = _cst_new_box_autoadd_f_64Ptr
       .asFunction<ffi.Pointer<ffi.Double> Function(double)>();
 
+  ffi.Pointer<wire_cst_record_i_64_u_16>
+  cst_new_box_autoadd_record_i_64_u_16() {
+    return _cst_new_box_autoadd_record_i_64_u_16();
+  }
+
+  late final _cst_new_box_autoadd_record_i_64_u_16Ptr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_record_i_64_u_16> Function()>
+      >('frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16');
+  late final _cst_new_box_autoadd_record_i_64_u_16 =
+      _cst_new_box_autoadd_record_i_64_u_16Ptr
+          .asFunction<ffi.Pointer<wire_cst_record_i_64_u_16> Function()>();
+
   ffi.Pointer<ffi.Uint8> cst_new_box_autoadd_u_8(int value) {
     return _cst_new_box_autoadd_u_8(value);
   }
@@ -881,6 +1713,37 @@ class RustLibWire implements BaseWire {
       );
   late final _cst_new_box_autoadd_u_8 = _cst_new_box_autoadd_u_8Ptr
       .asFunction<ffi.Pointer<ffi.Uint8> Function(int)>();
+
+  ffi.Pointer<
+    wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+  >
+  cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+    int len,
+  ) {
+    return _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
+      len,
+    );
+  }
+
+  late final _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<
+            wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+          >
+          Function(ffi.Int32)
+        >
+      >(
+        'frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview',
+      );
+  late final _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview =
+      _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreviewPtr
+          .asFunction<
+            ffi.Pointer<
+              wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+            >
+            Function(int)
+          >();
 
   ffi.Pointer<wire_cst_list_discovered_device> cst_new_list_discovered_device(
     int len,
@@ -899,6 +1762,21 @@ class RustLibWire implements BaseWire {
           .asFunction<
             ffi.Pointer<wire_cst_list_discovered_device> Function(int)
           >();
+
+  ffi.Pointer<wire_cst_list_prim_u_32_strict> cst_new_list_prim_u_32_strict(
+    int len,
+  ) {
+    return _cst_new_list_prim_u_32_strict(len);
+  }
+
+  late final _cst_new_list_prim_u_32_strictPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_prim_u_32_strict> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_prim_u_32_strict');
+  late final _cst_new_list_prim_u_32_strict = _cst_new_list_prim_u_32_strictPtr
+      .asFunction<ffi.Pointer<wire_cst_list_prim_u_32_strict> Function(int)>();
 
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_new_list_prim_u_8_strict(
     int len,
@@ -964,6 +1842,22 @@ final class wire_cst_api_battery_level extends ffi.Struct {
   external int timestamp;
 }
 
+final class wire_cst_record_i_64_u_16 extends ffi.Struct {
+  @ffi.Int64()
+  external int field0;
+
+  @ffi.Uint16()
+  external int field1;
+}
+
+final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
+    extends ffi.Struct {
+  external ffi.Pointer<ffi.UintPtr> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
 final class wire_cst_discovered_device extends ffi.Struct {
   external ffi.Pointer<wire_cst_list_prim_u_8_strict> id;
 
@@ -975,6 +1869,13 @@ final class wire_cst_discovered_device extends ffi.Struct {
 
 final class wire_cst_list_discovered_device extends ffi.Struct {
   external ffi.Pointer<wire_cst_discovered_device> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_prim_u_32_strict extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint32> ptr;
 
   @ffi.Int32()
   external int len;
