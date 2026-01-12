@@ -12,6 +12,7 @@ path = "src/bin/cli.rs"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
+tokio-util = "0.7"
 flutter_rust_bridge = "=2.11.1"
 btleplug = "0.11"
 kalman_filters = "1.0"

@@ -27,7 +27,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust state machine developer | Task: Modify Reconnecting state in connectivity.rs to include attempt_count: u8 and last_device_id: String. On entry to Reconnecting, set attempt_count = 1. On Reconnect event, increment attempt_count. If > max_attempts, transition to Disconnected. | Restrictions: Use statig patterns | Success: Attempts tracked correctly_
 
-- [ ] 2.2 Add reconnection loop to BtleplugAdapter
+- [x] 2.2 Add reconnection loop to BtleplugAdapter
   - File: `rust/src/adapters/btleplug_adapter.rs`
   - Implement reconnect() method with exponential backoff
   - Emit ConnectionStatus updates

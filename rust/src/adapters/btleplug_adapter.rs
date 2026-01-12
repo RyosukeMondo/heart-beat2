@@ -6,6 +6,7 @@
 
 use crate::domain::battery::BatteryLevel;
 use crate::domain::heart_rate::DiscoveredDevice;
+use crate::domain::reconnection::{ConnectionStatus, ReconnectionPolicy};
 use crate::ports::ble_adapter::BleAdapter;
 use crate::ports::notification::{NotificationEvent, NotificationPort};
 use anyhow::{anyhow, Context, Result};
@@ -18,6 +19,7 @@ use futures::StreamExt;
 use std::sync::Arc;
 use std::time::SystemTime;
 use tokio::sync::{mpsc, Mutex};
+use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
 /// Ensure the current thread is attached to the JVM (Android only).
@@ -290,6 +292,147 @@ impl BtleplugAdapter {
         });
 
         Ok(handle)
+    }
+
+    /// Attempt to reconnect to a device with exponential backoff.
+    ///
+    /// This method tries to reconnect to a previously connected device, using the
+    /// provided reconnection policy to control retry attempts and delays. It emits
+    /// `ConnectionStatus` updates throughout the reconnection process and can be
+    /// cancelled using the provided `CancellationToken`.
+    ///
+    /// # Arguments
+    ///
+    /// * `device_id` - The ID of the device to reconnect to
+    /// * `policy` - The reconnection policy defining max attempts and backoff strategy
+    /// * `status_tx` - Channel sender for emitting connection status updates
+    /// * `cancel_token` - Token for cancelling the reconnection process
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(())` if reconnection succeeds
+    /// * `Err(...)` if reconnection fails after all attempts or is cancelled
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use heart_beat::adapters::btleplug_adapter::BtleplugAdapter;
+    /// # use heart_beat::domain::reconnection::{ReconnectionPolicy, ConnectionStatus};
+    /// # use tokio::sync::mpsc;
+    /// # use tokio_util::sync::CancellationToken;
+    /// # async fn example() -> anyhow::Result<()> {
+    /// let adapter = BtleplugAdapter::new().await?;
+    /// let policy = ReconnectionPolicy::default();
+    /// let (status_tx, mut status_rx) = mpsc::channel(32);
+    /// let cancel_token = CancellationToken::new();
+    ///
+    /// adapter.reconnect("AA:BB:CC:DD:EE:FF", &policy, status_tx, cancel_token).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn reconnect(
+        &self,
+        device_id: &str,
+        policy: &ReconnectionPolicy,
+        status_tx: mpsc::Sender<ConnectionStatus>,
+        cancel_token: CancellationToken,
+    ) -> Result<()> {
+        tracing::info!(
+            "Starting reconnection to device {} with policy: max_attempts={}",
+            device_id,
+            policy.max_attempts
+        );
+
+        for attempt in 1..=policy.max_attempts {
+            // Check if cancellation was requested
+            if cancel_token.is_cancelled() {
+                tracing::info!("Reconnection cancelled");
+                return Err(anyhow!("Reconnection cancelled"));
+            }
+
+            // Emit reconnecting status
+            let status = ConnectionStatus::Reconnecting {
+                attempt,
+                max_attempts: policy.max_attempts,
+            };
+
+            if let Err(e) = status_tx.send(status).await {
+                tracing::warn!("Failed to send reconnecting status: {}", e);
+            }
+
+            tracing::info!(
+                "Reconnection attempt {}/{} for device {}",
+                attempt,
+                policy.max_attempts,
+                device_id
+            );
+
+            // Calculate and apply delay before attempting connection
+            let delay = policy.calculate_delay(attempt);
+            tracing::debug!("Waiting {:?} before reconnection attempt", delay);
+
+            // Use tokio::select to make the sleep cancellable
+            tokio::select! {
+                _ = tokio::time::sleep(delay) => {}
+                _ = cancel_token.cancelled() => {
+                    tracing::info!("Reconnection cancelled during delay");
+                    return Err(anyhow!("Reconnection cancelled"));
+                }
+            }
+
+            // Attempt to connect
+            match self.connect(device_id).await {
+                Ok(()) => {
+                    tracing::info!(
+                        "Reconnection successful on attempt {}/{}",
+                        attempt,
+                        policy.max_attempts
+                    );
+
+                    // Emit connected status
+                    let status = ConnectionStatus::Connected {
+                        device_id: device_id.to_string(),
+                    };
+
+                    if let Err(e) = status_tx.send(status).await {
+                        tracing::warn!("Failed to send connected status: {}", e);
+                    }
+
+                    return Ok(());
+                }
+                Err(e) => {
+                    tracing::warn!(
+                        "Reconnection attempt {}/{} failed: {}",
+                        attempt,
+                        policy.max_attempts,
+                        e
+                    );
+
+                    // If this was the last attempt, emit failure status
+                    if attempt >= policy.max_attempts {
+                        let status = ConnectionStatus::ReconnectFailed {
+                            reason: format!("Failed after {} attempts: {}", policy.max_attempts, e),
+                        };
+
+                        if let Err(e) = status_tx.send(status).await {
+                            tracing::warn!("Failed to send reconnect failed status: {}", e);
+                        }
+
+                        return Err(anyhow!(
+                            "Reconnection failed after {} attempts: {}",
+                            policy.max_attempts,
+                            e
+                        ));
+                    }
+                }
+            }
+        }
+
+        // This shouldn't be reached due to the if statement above, but just in case
+        Err(anyhow!(
+            "Reconnection failed after {} attempts",
+            policy.max_attempts
+        ))
     }
 }
 
