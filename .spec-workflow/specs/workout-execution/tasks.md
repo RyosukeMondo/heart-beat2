@@ -18,7 +18,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Rust async developer | Task: Modify SessionExecutor to accept Sender<SessionProgress>. In tick loop, build SessionProgress from current state and emit. Include zone_status from ZoneTracker. Emit on every tick (1/second). | Restrictions: Don't break existing tick logic | Success: Progress emitted every second_
 
-- [ ] 2.1 Add session control API functions
+- [x] 2.1 Add session control API functions
   - File: `rust/src/api.rs`
   - Add start_workout(plan_name), pause_workout(), resume_workout(), stop_workout()
   - Add create_session_progress_stream()

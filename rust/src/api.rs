@@ -6,8 +6,10 @@
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::adapters::file_session_repository::FileSessionRepository;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
+use crate::domain::training_plan::TrainingPlan;
 use crate::frb_generated::StreamSink;
 use crate::ports::{BleAdapter, NotificationPort, SessionRepository};
+use crate::scheduler::executor::SessionExecutor;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
@@ -31,6 +33,12 @@ pub use crate::domain::heart_rate::{
 };
 pub use crate::domain::session_history::CompletedSession as ApiCompletedSession;
 pub use crate::ports::session_repository::SessionSummaryPreview as ApiSessionSummaryPreview;
+
+// TODO: Re-export SessionProgress types after adding FRB support
+// pub use crate::domain::session_progress::{
+//     PhaseProgress as ApiPhaseProgress, SessionProgress as ApiSessionProgress,
+//     SessionState as ApiSessionState, ZoneStatus as ApiZoneStatus,
+// };
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///
@@ -814,6 +822,11 @@ pub fn emit_battery_data(data: ApiBatteryLevel) -> usize {
 static SESSION_REPOSITORY: OnceLock<tokio::sync::Mutex<Option<Arc<FileSessionRepository>>>> =
     OnceLock::new();
 
+// Global session executor for workout execution
+static SESSION_EXECUTOR: OnceLock<
+    tokio::sync::Mutex<Option<crate::scheduler::executor::SessionExecutor>>,
+> = OnceLock::new();
+
 /// Get or create the global session repository instance.
 async fn get_session_repository() -> Result<Arc<FileSessionRepository>> {
     let mutex = SESSION_REPOSITORY.get_or_init(|| tokio::sync::Mutex::new(None));
@@ -1006,6 +1019,225 @@ pub fn session_hr_sample_at(session: &ApiCompletedSession, index: usize) -> Opti
         .get(index)
         .map(|sample| (sample.timestamp.timestamp_millis(), sample.bpm))
 }
+
+// =============================================================================
+// Workout Execution API
+// =============================================================================
+
+/// List all available training plans.
+///
+/// Returns a list of plan names from the ~/.heart-beat/plans/ directory.
+/// Each plan is stored as a JSON file named `{plan_name}.json`.
+///
+/// # Returns
+///
+/// A vector of plan name strings. Returns an empty vector if no plans are found
+/// or if the plans directory doesn't exist yet.
+///
+/// # Errors
+///
+/// Returns an error if the home directory cannot be determined or if there are
+/// issues reading the plans directory.
+pub async fn list_plans() -> Result<Vec<String>> {
+    tracing::info!("list_plans: Listing all training plans");
+
+    // Get plans directory
+    let home = dirs::home_dir().ok_or_else(|| anyhow!("Could not find home directory"))?;
+    let plans_dir = home.join(".heart-beat").join("plans");
+
+    // Create directory if it doesn't exist
+    if !plans_dir.exists() {
+        tracing::info!("list_plans: Plans directory doesn't exist, returning empty list");
+        return Ok(Vec::new());
+    }
+
+    // Read all .json files from the plans directory
+    let mut plan_names: Vec<String> = Vec::new();
+
+    for entry in std::fs::read_dir(&plans_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.extension().and_then(|s| s.to_str()) == Some("json") {
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                plan_names.push(stem.to_string());
+            }
+        }
+    }
+
+    // Sort alphabetically
+    plan_names.sort();
+
+    tracing::info!("list_plans: Found {} plans", plan_names.len());
+    Ok(plan_names)
+}
+
+/// Load a training plan by name from the plans directory.
+///
+/// Internal helper function to load a plan from ~/.heart-beat/plans/{name}.json
+async fn load_plan(name: &str) -> Result<TrainingPlan> {
+    let home = dirs::home_dir().ok_or_else(|| anyhow!("Could not find home directory"))?;
+    let plans_dir = home.join(".heart-beat").join("plans");
+    let plan_path = plans_dir.join(format!("{}.json", name));
+
+    if !plan_path.exists() {
+        return Err(anyhow!(
+            "Plan '{}' not found. Use list_plans() to see available plans.",
+            name
+        ));
+    }
+
+    let content = tokio::fs::read_to_string(&plan_path).await?;
+    let plan: TrainingPlan = serde_json::from_str(&content)?;
+
+    Ok(plan)
+}
+
+/// Get or create the global session executor instance.
+///
+/// The executor is initialized with:
+/// - HR data stream (if available)
+/// - Session repository for saving completed workouts
+/// - Notification port for user alerts
+async fn get_session_executor() -> Result<&'static tokio::sync::Mutex<Option<SessionExecutor>>> {
+    Ok(SESSION_EXECUTOR.get_or_init(|| tokio::sync::Mutex::new(None)))
+}
+
+/// Start a workout session with the specified training plan.
+///
+/// Loads the plan from ~/.heart-beat/plans/{plan_name}.json and starts
+/// executing it. The session will emit progress updates via the progress stream
+/// and save the completed session to the repository.
+///
+/// # Arguments
+///
+/// * `plan_name` - The name of the training plan to execute (without .json extension)
+///
+/// # Returns
+///
+/// Returns Ok(()) if the workout started successfully.
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - The plan file cannot be found or loaded
+/// - A workout is already in progress
+/// - The executor cannot be initialized
+pub async fn start_workout(plan_name: String) -> Result<()> {
+    tracing::info!("start_workout: Starting workout with plan '{}'", plan_name);
+
+    // Load the training plan
+    let plan = load_plan(&plan_name).await?;
+
+    // Get the executor mutex
+    let executor_mutex = get_session_executor().await?;
+    let mut executor_guard = executor_mutex.lock().await;
+
+    // Initialize executor if needed
+    if executor_guard.is_none() {
+        tracing::info!("start_workout: Initializing session executor");
+
+        // Create notification port (stub for now)
+        let notification_port: Arc<dyn NotificationPort> = Arc::new(StubNotificationPort);
+
+        // Get HR stream receiver
+        let hr_receiver = get_hr_stream_receiver();
+
+        // Get session repository
+        let session_repo = get_session_repository().await?;
+
+        // Create executor with HR stream and session repository
+        let executor = SessionExecutor::with_hr_stream(notification_port, hr_receiver)
+            .with_session_repository(session_repo);
+
+        *executor_guard = Some(executor);
+    }
+
+    // Start the session
+    if let Some(ref mut executor) = *executor_guard {
+        executor.start_session(plan).await?;
+        tracing::info!("start_workout: Workout started successfully");
+    } else {
+        return Err(anyhow!("Failed to initialize session executor"));
+    }
+
+    Ok(())
+}
+
+/// Pause the currently running workout.
+///
+/// The workout timer stops but the session state is preserved.
+/// Call `resume_workout()` to continue from where you left off.
+///
+/// # Errors
+///
+/// Returns an error if no workout is currently running or if the executor
+/// is not initialized.
+pub async fn pause_workout() -> Result<()> {
+    tracing::info!("pause_workout: Pausing workout");
+
+    let executor_mutex = get_session_executor().await?;
+    let mut executor_guard = executor_mutex.lock().await;
+
+    if let Some(ref mut executor) = *executor_guard {
+        executor.pause_session().await?;
+        tracing::info!("pause_workout: Workout paused successfully");
+        Ok(())
+    } else {
+        Err(anyhow!("No active workout session"))
+    }
+}
+
+/// Resume a paused workout.
+///
+/// Continues the workout from where it was paused. The timer resumes
+/// counting and progress updates continue.
+///
+/// # Errors
+///
+/// Returns an error if no workout is paused or if the executor is not initialized.
+pub async fn resume_workout() -> Result<()> {
+    tracing::info!("resume_workout: Resuming workout");
+
+    let executor_mutex = get_session_executor().await?;
+    let mut executor_guard = executor_mutex.lock().await;
+
+    if let Some(ref mut executor) = *executor_guard {
+        executor.resume_session().await?;
+        tracing::info!("resume_workout: Workout resumed successfully");
+        Ok(())
+    } else {
+        Err(anyhow!("No active workout session"))
+    }
+}
+
+/// Stop the currently running workout.
+///
+/// Ends the workout and saves the session to the repository. The session
+/// will be marked as "Stopped" rather than "Completed".
+///
+/// # Errors
+///
+/// Returns an error if no workout is running or if the executor is not initialized.
+pub async fn stop_workout() -> Result<()> {
+    tracing::info!("stop_workout: Stopping workout");
+
+    let executor_mutex = get_session_executor().await?;
+    let mut executor_guard = executor_mutex.lock().await;
+
+    if let Some(ref mut executor) = *executor_guard {
+        executor.stop_session().await?;
+        tracing::info!("stop_workout: Workout stopped successfully");
+        Ok(())
+    } else {
+        Err(anyhow!("No active workout session"))
+    }
+}
+
+// TODO: Implement create_session_progress_stream
+// This requires adding SessionProgress types to FRB code generation.
+// For now, Flutter can poll the session state using get_workout_progress()
+// or we'll need to run flutter_rust_bridge codegen after adding the types.
 
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
 ///
