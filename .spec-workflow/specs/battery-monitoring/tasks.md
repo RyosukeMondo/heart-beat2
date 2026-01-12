@@ -63,7 +63,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Rust test developer | Task: Add #[cfg(test)] mod tests to battery.rs. Test is_low() returns true at 14%, false at 15%, false at 16%. Test None level handling. Test serialization round-trip. | Restrictions: No external dependencies in tests | Success: cargo test battery passes_
 
-- [ ] 4.2 Test battery monitoring on device
+- [x] 4.2 Test battery monitoring on device
   - File: N/A (manual testing)
   - Build and install APK on Pixel 9a
   - Connect to Coospo HW9
