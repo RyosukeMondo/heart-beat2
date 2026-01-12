@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -264137699;
+  int get rustContentHash => -931171174;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -77,6 +77,46 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
 abstract class RustLibApi extends BaseApi {
   Future<void> crateApiConnectDevice({required String deviceId});
+
+  Future<int?> crateApiConnectionStatusAttempt({
+    required ApiConnectionStatus status,
+  });
+
+  Future<String?> crateApiConnectionStatusDeviceId({
+    required ApiConnectionStatus status,
+  });
+
+  Future<String?> crateApiConnectionStatusFailureReason({
+    required ApiConnectionStatus status,
+  });
+
+  Future<bool> crateApiConnectionStatusIsConnected({
+    required ApiConnectionStatus status,
+  });
+
+  Future<bool> crateApiConnectionStatusIsConnecting({
+    required ApiConnectionStatus status,
+  });
+
+  Future<bool> crateApiConnectionStatusIsDisconnected({
+    required ApiConnectionStatus status,
+  });
+
+  Future<bool> crateApiConnectionStatusIsReconnectFailed({
+    required ApiConnectionStatus status,
+  });
+
+  Future<bool> crateApiConnectionStatusIsReconnecting({
+    required ApiConnectionStatus status,
+  });
+
+  Future<int?> crateApiConnectionStatusMaxAttempts({
+    required ApiConnectionStatus status,
+  });
+
+  Future<String> crateApiConnectionStatusToString({
+    required ApiConnectionStatus status,
+  });
 
   Stream<ApiBatteryLevel> crateApiCreateBatteryStream();
 
@@ -393,6 +433,333 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiConnectDeviceConstMeta =>
       const TaskConstMeta(debugName: "connect_device", argNames: ["deviceId"]);
+
+  @override
+  Future<int?> crateApiConnectionStatusAttempt({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_attempt(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_u_8,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusAttemptConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusAttemptConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_attempt",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<String?> crateApiConnectionStatusDeviceId({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_device_id(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusDeviceIdConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusDeviceIdConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_device_id",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<String?> crateApiConnectionStatusFailureReason({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_failure_reason(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusFailureReasonConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusFailureReasonConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_failure_reason",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiConnectionStatusIsConnected({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_is_connected(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusIsConnectedConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusIsConnectedConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_is_connected",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiConnectionStatusIsConnecting({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_is_connecting(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusIsConnectingConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusIsConnectingConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_is_connecting",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiConnectionStatusIsDisconnected({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_is_disconnected(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusIsDisconnectedConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusIsDisconnectedConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_is_disconnected",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiConnectionStatusIsReconnectFailed({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_is_reconnect_failed(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusIsReconnectFailedConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusIsReconnectFailedConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_is_reconnect_failed",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<bool> crateApiConnectionStatusIsReconnecting({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_is_reconnecting(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusIsReconnectingConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusIsReconnectingConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_is_reconnecting",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<int?> crateApiConnectionStatusMaxAttempts({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_max_attempts(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_u_8,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusMaxAttemptsConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusMaxAttemptsConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_max_attempts",
+        argNames: ["status"],
+      );
+
+  @override
+  Future<String> crateApiConnectionStatusToString({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__connection_status_to_string(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiConnectionStatusToStringConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiConnectionStatusToStringConstMeta =>
+      const TaskConstMeta(
+        debugName: "connection_status_to_string",
+        argNames: ["status"],
+      );
 
   @override
   Stream<ApiBatteryLevel> crateApiCreateBatteryStream() {
@@ -2524,6 +2891,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiConnectionStatus
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
@@ -3051,6 +3427,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ApiCompletedSessionImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiConnectionStatus
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -3654,6 +4042,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiConnectionStatusImpl).frbInternalCstEncode(move: false);
+  }
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   ) {
@@ -3976,6 +4374,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiCompletedSessionImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiConnectionStatusImpl).frbInternalSseEncode(move: false),
       serializer,
     );
   }

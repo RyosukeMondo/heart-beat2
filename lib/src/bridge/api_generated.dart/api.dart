@@ -391,6 +391,64 @@ Stream<ApiConnectionStatus> createConnectionStatusStream() =>
 Future<BigInt> emitConnectionStatus({required ApiConnectionStatus status}) =>
     RustLib.instance.api.crateApiEmitConnectionStatus(status: status);
 
+/// Check if the connection status is Disconnected.
+Future<bool> connectionStatusIsDisconnected({
+  required ApiConnectionStatus status,
+}) =>
+    RustLib.instance.api.crateApiConnectionStatusIsDisconnected(status: status);
+
+/// Check if the connection status is Connecting.
+Future<bool> connectionStatusIsConnecting({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusIsConnecting(status: status);
+
+/// Check if the connection status is Connected.
+Future<bool> connectionStatusIsConnected({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusIsConnected(status: status);
+
+/// Check if the connection status is Reconnecting.
+Future<bool> connectionStatusIsReconnecting({
+  required ApiConnectionStatus status,
+}) =>
+    RustLib.instance.api.crateApiConnectionStatusIsReconnecting(status: status);
+
+/// Check if the connection status is ReconnectFailed.
+Future<bool> connectionStatusIsReconnectFailed({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusIsReconnectFailed(
+  status: status,
+);
+
+/// Get the device ID from a Connected status.
+/// Returns None if the status is not Connected.
+Future<String?> connectionStatusDeviceId({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusDeviceId(status: status);
+
+/// Get the current attempt number from a Reconnecting status.
+/// Returns None if the status is not Reconnecting.
+Future<int?> connectionStatusAttempt({required ApiConnectionStatus status}) =>
+    RustLib.instance.api.crateApiConnectionStatusAttempt(status: status);
+
+/// Get the max attempts from a Reconnecting status.
+/// Returns None if the status is not Reconnecting.
+Future<int?> connectionStatusMaxAttempts({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusMaxAttempts(status: status);
+
+/// Get the failure reason from a ReconnectFailed status.
+/// Returns None if the status is not ReconnectFailed.
+Future<String?> connectionStatusFailureReason({
+  required ApiConnectionStatus status,
+}) =>
+    RustLib.instance.api.crateApiConnectionStatusFailureReason(status: status);
+
+/// Convert connection status to a human-readable string.
+Future<String> connectionStatusToString({
+  required ApiConnectionStatus status,
+}) => RustLib.instance.api.crateApiConnectionStatusToString(status: status);
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).

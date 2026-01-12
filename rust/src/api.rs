@@ -1060,6 +1060,83 @@ pub fn emit_connection_status(status: ApiConnectionStatus) -> usize {
     tx.send(status).unwrap_or_default()
 }
 
+/// Check if the connection status is Disconnected.
+pub fn connection_status_is_disconnected(status: &ApiConnectionStatus) -> bool {
+    matches!(status, ApiConnectionStatus::Disconnected)
+}
+
+/// Check if the connection status is Connecting.
+pub fn connection_status_is_connecting(status: &ApiConnectionStatus) -> bool {
+    matches!(status, ApiConnectionStatus::Connecting)
+}
+
+/// Check if the connection status is Connected.
+pub fn connection_status_is_connected(status: &ApiConnectionStatus) -> bool {
+    matches!(status, ApiConnectionStatus::Connected { .. })
+}
+
+/// Check if the connection status is Reconnecting.
+pub fn connection_status_is_reconnecting(status: &ApiConnectionStatus) -> bool {
+    matches!(status, ApiConnectionStatus::Reconnecting { .. })
+}
+
+/// Check if the connection status is ReconnectFailed.
+pub fn connection_status_is_reconnect_failed(status: &ApiConnectionStatus) -> bool {
+    matches!(status, ApiConnectionStatus::ReconnectFailed { .. })
+}
+
+/// Get the device ID from a Connected status.
+/// Returns None if the status is not Connected.
+pub fn connection_status_device_id(status: &ApiConnectionStatus) -> Option<String> {
+    match status {
+        ApiConnectionStatus::Connected { device_id } => Some(device_id.clone()),
+        _ => None,
+    }
+}
+
+/// Get the current attempt number from a Reconnecting status.
+/// Returns None if the status is not Reconnecting.
+pub fn connection_status_attempt(status: &ApiConnectionStatus) -> Option<u8> {
+    match status {
+        ApiConnectionStatus::Reconnecting { attempt, .. } => Some(*attempt),
+        _ => None,
+    }
+}
+
+/// Get the max attempts from a Reconnecting status.
+/// Returns None if the status is not Reconnecting.
+pub fn connection_status_max_attempts(status: &ApiConnectionStatus) -> Option<u8> {
+    match status {
+        ApiConnectionStatus::Reconnecting { max_attempts, .. } => Some(*max_attempts),
+        _ => None,
+    }
+}
+
+/// Get the failure reason from a ReconnectFailed status.
+/// Returns None if the status is not ReconnectFailed.
+pub fn connection_status_failure_reason(status: &ApiConnectionStatus) -> Option<String> {
+    match status {
+        ApiConnectionStatus::ReconnectFailed { reason } => Some(reason.clone()),
+        _ => None,
+    }
+}
+
+/// Convert connection status to a human-readable string.
+pub fn connection_status_to_string(status: &ApiConnectionStatus) -> String {
+    match status {
+        ApiConnectionStatus::Disconnected => "Disconnected".to_string(),
+        ApiConnectionStatus::Connecting => "Connecting".to_string(),
+        ApiConnectionStatus::Connected { device_id } => format!("Connected to {}", device_id),
+        ApiConnectionStatus::Reconnecting {
+            attempt,
+            max_attempts,
+        } => format!("Reconnecting (attempt {}/{})", attempt, max_attempts),
+        ApiConnectionStatus::ReconnectFailed { reason } => {
+            format!("Connection failed: {}", reason)
+        }
+    }
+}
+
 // Global session repository
 static SESSION_REPOSITORY: OnceLock<tokio::sync::Mutex<Option<Arc<FileSessionRepository>>>> =
     OnceLock::new();

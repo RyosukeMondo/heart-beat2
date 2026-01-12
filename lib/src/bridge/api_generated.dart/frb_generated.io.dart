@@ -109,6 +109,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiConnectionStatus
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    dynamic raw,
+  );
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
@@ -382,6 +388,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiCompletedSession
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiConnectionStatus
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
     SseDeserializer deserializer,
   );
 
@@ -988,6 +1000,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   );
@@ -1166,6 +1184,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     ApiCompletedSession self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus self,
     SseSerializer serializer,
   );
 
@@ -1497,6 +1522,144 @@ class RustLibWire implements BaseWire {
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
+
+  void wire__crate__api__connection_status_attempt(int port_, int status) {
+    return _wire__crate__api__connection_status_attempt(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_attemptPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_attempt',
+      );
+  late final _wire__crate__api__connection_status_attempt =
+      _wire__crate__api__connection_status_attemptPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_device_id(int port_, int status) {
+    return _wire__crate__api__connection_status_device_id(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_device_idPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_device_id',
+      );
+  late final _wire__crate__api__connection_status_device_id =
+      _wire__crate__api__connection_status_device_idPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_failure_reason(
+    int port_,
+    int status,
+  ) {
+    return _wire__crate__api__connection_status_failure_reason(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_failure_reasonPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_failure_reason',
+      );
+  late final _wire__crate__api__connection_status_failure_reason =
+      _wire__crate__api__connection_status_failure_reasonPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_is_connected(int port_, int status) {
+    return _wire__crate__api__connection_status_is_connected(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_is_connectedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_is_connected',
+      );
+  late final _wire__crate__api__connection_status_is_connected =
+      _wire__crate__api__connection_status_is_connectedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_is_connecting(
+    int port_,
+    int status,
+  ) {
+    return _wire__crate__api__connection_status_is_connecting(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_is_connectingPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_is_connecting',
+      );
+  late final _wire__crate__api__connection_status_is_connecting =
+      _wire__crate__api__connection_status_is_connectingPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_is_disconnected(
+    int port_,
+    int status,
+  ) {
+    return _wire__crate__api__connection_status_is_disconnected(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_is_disconnectedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_is_disconnected',
+      );
+  late final _wire__crate__api__connection_status_is_disconnected =
+      _wire__crate__api__connection_status_is_disconnectedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_is_reconnect_failed(
+    int port_,
+    int status,
+  ) {
+    return _wire__crate__api__connection_status_is_reconnect_failed(
+      port_,
+      status,
+    );
+  }
+
+  late final _wire__crate__api__connection_status_is_reconnect_failedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_is_reconnect_failed',
+      );
+  late final _wire__crate__api__connection_status_is_reconnect_failed =
+      _wire__crate__api__connection_status_is_reconnect_failedPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_is_reconnecting(
+    int port_,
+    int status,
+  ) {
+    return _wire__crate__api__connection_status_is_reconnecting(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_is_reconnectingPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_is_reconnecting',
+      );
+  late final _wire__crate__api__connection_status_is_reconnecting =
+      _wire__crate__api__connection_status_is_reconnectingPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_max_attempts(int port_, int status) {
+    return _wire__crate__api__connection_status_max_attempts(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_max_attemptsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_max_attempts',
+      );
+  late final _wire__crate__api__connection_status_max_attempts =
+      _wire__crate__api__connection_status_max_attemptsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__connection_status_to_string(int port_, int status) {
+    return _wire__crate__api__connection_status_to_string(port_, status);
+  }
+
+  late final _wire__crate__api__connection_status_to_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__connection_status_to_string',
+      );
+  late final _wire__crate__api__connection_status_to_string =
+      _wire__crate__api__connection_status_to_stringPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__create_battery_stream(
     int port_,

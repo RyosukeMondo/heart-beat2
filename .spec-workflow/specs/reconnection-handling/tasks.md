@@ -45,7 +45,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Rust FFI developer | Task: Add pub async fn create_connection_status_stream() -> StreamSink<ConnectionStatus>. Create broadcast channel, wire to BtleplugAdapter connection events. Emit status changes: Connected on connect, Reconnecting during reconnect attempts, ReconnectFailed on max attempts. | Restrictions: FRB-compatible | Success: Flutter receives connection status_
 
-- [ ] 3.2 Add reconnection UI banner
+- [x] 3.2 Add reconnection UI banner
   - File: `lib/src/widgets/connection_banner.dart`
   - Display connection status as top banner
   - Show attempt count during reconnection
