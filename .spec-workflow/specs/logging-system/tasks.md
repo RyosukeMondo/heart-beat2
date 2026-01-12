@@ -8,7 +8,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec logging-system, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust developer | Task: Add android_logger = "0.13" as a target-specific dependency for Android in Cargo.toml. Use [target.'cfg(target_os = "android")'.dependencies] section. | Restrictions: Do not add as regular dependency, only Android-specific | Success: cargo build succeeds, android_logger available on Android target | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.2 Update init_logging to support dual output on Android
+- [x] 1.2 Update init_logging to support dual output on Android
   - File: `rust/src/api.rs`
   - Add android_logger initialization alongside FlutterLogWriter
   - Use cfg attributes for Android-specific code

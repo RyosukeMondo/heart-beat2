@@ -266,6 +266,23 @@ pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
     // Get log level from RUST_LOG env var, default to INFO
     let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
+    // On Android, also initialize android_logger for logcat output
+    #[cfg(target_os = "android")]
+    {
+        // Parse the env_filter to get the log level for android_logger
+        // Default to Info if parsing fails
+        let log_level = env_filter
+            .to_string()
+            .parse::<log::LevelFilter>()
+            .unwrap_or(log::LevelFilter::Info);
+
+        android_logger::init_once(
+            android_logger::Config::default()
+                .with_max_level(log_level)
+                .with_tag("heart_beat"),
+        );
+    }
+
     // Create a tracing subscriber that uses our custom writer
     let subscriber = tracing_subscriber::fmt()
         .with_writer(FlutterLogWriter)
