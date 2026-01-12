@@ -37,6 +37,9 @@ dependencies:
   # Temporary file paths
   path_provider: ^2.1.0
 
+  # ZIP archive creation
+  archive: ^3.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

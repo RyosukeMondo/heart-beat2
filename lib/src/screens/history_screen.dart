@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive_io.dart';
 import '../bridge/api_generated.dart/api.dart';
+import '../services/share_service.dart';
 
 /// History screen displaying list of completed training sessions
 class HistoryScreen extends StatefulWidget {
@@ -14,6 +18,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   List<ApiSessionSummaryPreview> _sessions = [];
   bool _isLoading = false;
   String? _error;
+  bool _selectionMode = false;
+  final Set<String> _selectedSessionIds = {};
 
   @override
   void initState() {
@@ -43,60 +49,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  Future<void> _deleteSession(ApiSessionSummaryPreview session) async {
-    final sessionId = await sessionPreviewId(preview: session);
-
-    // Show confirmation dialog
-    if (!mounted) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Session'),
-        content: Text('Are you sure you want to delete this session?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    try {
-      await deleteSession(id: sessionId);
-      if (!mounted) return;
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Session deleted'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // Reload sessions
-      _loadSessions();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete session: $e'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
-  }
-
-  void _openSessionDetail(ApiSessionSummaryPreview session) async {
+void _openSessionDetail(ApiSessionSummaryPreview session) async {
     final sessionId = await sessionPreviewId(preview: session);
     if (!mounted) return;
 
@@ -122,11 +75,180 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  void _toggleSelectionMode() {
+    setState(() {
+      _selectionMode = !_selectionMode;
+      if (!_selectionMode) {
+        _selectedSessionIds.clear();
+      }
+    });
+  }
+
+  void _toggleSessionSelection(String sessionId) {
+    setState(() {
+      if (_selectedSessionIds.contains(sessionId)) {
+        _selectedSessionIds.remove(sessionId);
+        // Exit selection mode if no sessions are selected
+        if (_selectedSessionIds.isEmpty) {
+          _selectionMode = false;
+        }
+      } else {
+        _selectedSessionIds.add(sessionId);
+      }
+    });
+  }
+
+  Future<void> _exportSelectedSessions() async {
+    if (_selectedSessionIds.isEmpty) return;
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Exporting sessions...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      // Get temporary directory
+      final tempDir = await getTemporaryDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final zipPath = '${tempDir.path}/sessions_export_$timestamp.zip';
+
+      // Create archive
+      final archive = Archive();
+
+      int exportCount = 0;
+      for (final sessionId in _selectedSessionIds) {
+        try {
+          // Export session as JSON
+          final jsonContent = await exportSession(
+            id: sessionId,
+            format: ExportFormat.json,
+          );
+
+          // Add to archive with a filename based on session ID
+          final fileName = 'session_$sessionId.json';
+          final bytes = jsonContent.codeUnits;
+          archive.addFile(
+            ArchiveFile(fileName, bytes.length, bytes),
+          );
+
+          exportCount++;
+        } catch (e) {
+          debugPrint('Failed to export session $sessionId: $e');
+          // Continue with other sessions
+        }
+      }
+
+      if (exportCount == 0) {
+        throw Exception('Failed to export any sessions');
+      }
+
+      // Write ZIP file
+      final zipData = ZipEncoder().encode(archive);
+      if (zipData == null) {
+        throw Exception('Failed to create ZIP archive');
+      }
+      final zipFile = File(zipPath);
+      await zipFile.writeAsBytes(zipData);
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Share the ZIP file
+      await ShareService.instance.shareFile(
+        zipPath,
+        'application/zip',
+        subject: 'Training Sessions Export',
+        text: 'Exported $exportCount training session(s)',
+      );
+
+      // Exit selection mode
+      setState(() {
+        _selectionMode = false;
+        _selectedSessionIds.clear();
+      });
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exported $exportCount session(s)'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to export sessions: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Session History'),
+        title: Text(
+          _selectionMode
+              ? '${_selectedSessionIds.length} selected'
+              : 'Session History',
+        ),
+        leading: _selectionMode
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: _toggleSelectionMode,
+              )
+            : null,
+        actions: _selectionMode
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.select_all),
+                  onPressed: () {
+                    setState(() {
+                      if (_selectedSessionIds.length == _sessions.length) {
+                        // Deselect all
+                        _selectedSessionIds.clear();
+                      } else {
+                        // Select all
+                        for (final session in _sessions) {
+                          sessionPreviewId(preview: session).then((id) {
+                            if (mounted) {
+                              setState(() {
+                                _selectedSessionIds.add(id);
+                              });
+                            }
+                          });
+                        }
+                      }
+                    });
+                  },
+                ),
+              ]
+            : null,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -206,7 +328,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               final startTime = data['startTime'] as int;
                               final durationSecs = data['durationSecs'] as int;
                               final avgHr = data['avgHr'] as int;
-                              final status = data['status'] as String;
 
                               final dateTime = DateTime.fromMillisecondsSinceEpoch(startTime);
                               final dateFormat = DateFormat('MMM d, y');
@@ -223,7 +344,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                direction: DismissDirection.endToStart,
+                                direction: _selectionMode
+                                    ? DismissDirection.none
+                                    : DismissDirection.endToStart,
                                 confirmDismiss: (direction) async {
                                   return await showDialog<bool>(
                                     context: context,
@@ -280,16 +403,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     vertical: 8,
                                   ),
                                   child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primaryContainer,
-                                      child: Icon(
-                                        Icons.favorite,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                      ),
-                                    ),
+                                    leading: _selectionMode
+                                        ? Checkbox(
+                                            value: _selectedSessionIds
+                                                .contains(data['id'] as String),
+                                            onChanged: (selected) {
+                                              _toggleSessionSelection(
+                                                  data['id'] as String);
+                                            },
+                                          )
+                                        : CircleAvatar(
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer,
+                                            child: Icon(
+                                              Icons.favorite,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                            ),
+                                          ),
                                     title: Text(
                                       planName,
                                       style: Theme.of(context).textTheme.titleMedium,
@@ -338,8 +471,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ),
                                       ],
                                     ),
-                                    trailing: const Icon(Icons.arrow_forward_ios),
-                                    onTap: () => _openSessionDetail(session),
+                                    trailing: _selectionMode
+                                        ? null
+                                        : const Icon(Icons.arrow_forward_ios),
+                                    onTap: _selectionMode
+                                        ? () => _toggleSessionSelection(
+                                            data['id'] as String)
+                                        : () => _openSessionDetail(session),
+                                    onLongPress: () {
+                                      if (!_selectionMode) {
+                                        setState(() {
+                                          _selectionMode = true;
+                                          _selectedSessionIds.add(data['id'] as String);
+                                        });
+                                      }
+                                    },
                                   ),
                                 ),
                               );
@@ -348,6 +494,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         },
                       ),
                     ),
+      floatingActionButton: _selectionMode && _selectedSessionIds.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _exportSelectedSessions,
+              icon: const Icon(Icons.file_download),
+              label: const Text('Export All'),
+            )
+          : null,
     );
   }
 
@@ -358,7 +511,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final startTime = await sessionPreviewStartTime(preview: session);
     final durationSecs = await sessionPreviewDurationSecs(preview: session);
     final avgHr = await sessionPreviewAvgHr(preview: session);
-    final status = await sessionPreviewStatus(preview: session);
 
     return {
       'id': id,
@@ -366,7 +518,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
       'startTime': startTime,
       'durationSecs': durationSecs,
       'avgHr': avgHr,
-      'status': status,
     };
   }
 }

@@ -43,7 +43,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Flutter developer | Task: Add PopupMenuButton to AppBar actions with items: Export CSV, Export JSON, Share Summary. On tap, call exportSession() API with format, write content to temp file (CSV/JSON) or share directly (text). Use ShareService. Show loading indicator during export. | Restrictions: Handle errors gracefully | Success: All export options work_
 
-- [ ] 3.2 Add batch export to HistoryScreen
+- [-] 3.2 Add batch export to HistoryScreen
   - File: `lib/src/screens/history_screen.dart`
   - Add multi-select mode for sessions
   - Add "Export All" button when sessions selected
