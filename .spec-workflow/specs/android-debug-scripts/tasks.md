@@ -38,7 +38,7 @@
   - _Requirements: 4_
   - _Prompt: Implement the task for spec android-debug-scripts, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/adb-ble-debug.sh with subcommands: enable, disable, status. Use adb shell settings put secure bluetooth_hci_log 1/0. Restart Bluetooth with adb shell svc bluetooth disable/enable. Show current status and instructions for viewing HCI logs. | Restrictions: Requires USB debugging enabled | Success: Script toggles BLE debug mode | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.5 Test all scripts with Pixel 9a
+- [x] 1.5 Test all scripts with Pixel 9a
   - File: N/A (testing)
   - Test each script with connected device
   - Verify error handling
