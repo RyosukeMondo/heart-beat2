@@ -4,6 +4,7 @@ import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/phase_progress.dart';
+import '../widgets/zone_feedback.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -36,7 +37,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   int _phaseRemaining = 0;
   int _totalElapsed = 0;
   int _totalRemaining = 0;
-  String _zoneStatus = '';
+  api.ApiZoneStatus? _zoneStatus;
   Zone? _targetZone;
 
   bool _isStarting = true;
@@ -79,7 +80,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           final totalElapsed = await api.sessionProgressTotalElapsedSecs(progress: progress);
           final totalRemaining = await api.sessionProgressTotalRemainingSecs(progress: progress);
           final zoneStatusObj = await api.sessionProgressZoneStatus(progress: progress);
-          final zoneStatusString = await api.zoneStatusToString(status: zoneStatusObj);
           final targetZone = await api.phaseProgressTargetZone(progress: phaseProgress);
 
           if (!mounted) return;
@@ -93,7 +93,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             _phaseRemaining = phaseRemaining;
             _totalElapsed = totalElapsed;
             _totalRemaining = totalRemaining;
-            _zoneStatus = zoneStatusString;
+            _zoneStatus = zoneStatusObj;
             _targetZone = targetZone;
             _isStarting = false;
           });
@@ -283,7 +283,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 const SizedBox(height: 32),
 
                 // Zone feedback
-                _buildZoneFeedback(colorScheme),
+                if (_zoneStatus != null)
+                  ZoneFeedbackWidget(zoneStatus: _zoneStatus!),
 
                 const SizedBox(height: 32),
 
@@ -319,41 +320,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         // Control buttons
         _buildControls(colorScheme),
       ],
-    );
-  }
-
-  Widget _buildZoneFeedback(ColorScheme colorScheme) {
-    if (_zoneStatus == 'InZone') {
-      return const SizedBox.shrink();
-    }
-
-    final isTooLow = _zoneStatus == 'TooLow';
-    final color = isTooLow ? Colors.blue : Colors.red;
-    final text = isTooLow ? 'SPEED UP' : 'SLOW DOWN';
-    final icon = isTooLow ? Icons.arrow_upward : Icons.arrow_downward;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color, width: 2),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(
-              color: color,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
