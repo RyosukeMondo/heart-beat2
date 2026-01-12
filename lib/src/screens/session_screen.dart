@@ -4,6 +4,7 @@ import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
+import '../widgets/plan_selector.dart';
 import '../services/background_service.dart';
 import 'dart:async';
 
@@ -116,9 +117,11 @@ class _SessionScreenState extends State<SessionScreen> {
       floatingActionButton: _hrStream != null
           ? FloatingActionButton.extended(
               onPressed: () {
-                // TODO: Start workout tracking
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Start Workout - Coming Soon')),
+                PlanSelector.show(
+                  context,
+                  onSelect: (planName) {
+                    Navigator.of(context).pushNamed('/workout/$planName');
+                  },
                 );
               },
               icon: const Icon(Icons.play_arrow),
