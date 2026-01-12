@@ -45,7 +45,7 @@
   - _Requirements: 1, 3_
   - _Prompt: Role: Rust FFI developer | Task: Add pub async fn create_battery_stream() -> StreamSink<BatteryLevel> to api.rs. Create broadcast channel, start polling when device connected. Follow create_hr_stream() pattern exactly. | Restrictions: Must work with FRB codegen | Success: Flutter can subscribe to battery updates_
 
-- [ ] 3.2 Update Flutter session_screen.dart battery display
+- [x] 3.2 Update Flutter session_screen.dart battery display
   - File: `lib/src/screens/session_screen.dart`
   - Subscribe to battery stream from Rust
   - Pass battery level to BatteryIndicator widget
