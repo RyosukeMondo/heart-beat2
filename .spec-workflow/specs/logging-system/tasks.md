@@ -26,7 +26,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec logging-system, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter developer | Task: Create LogService singleton in lib/src/services/log_service.dart. Implement: subscribe(Stream<LogMessage>) to connect to Rust, broadcast stream for listeners, logs getter for all stored logs, clear() method. Limit buffer to 1000 entries (remove oldest). Print to debugPrint in debug mode. | Restrictions: Use singleton pattern, do not use external packages | Success: LogService can receive, store, and broadcast logs | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.4 Initialize logging in main.dart
+- [x] 1.4 Initialize logging in main.dart
   - File: `lib/main.dart`
   - Call initPanicHandler() and initLogging() on startup
   - Connect log stream to LogService
