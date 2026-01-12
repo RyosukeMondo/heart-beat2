@@ -64,7 +64,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Rust integration developer | Task: Modify SessionExecutor to observe connection status. On ConnectionStatus::Disconnected or Reconnecting, call pause_session() if in progress. On ConnectionStatus::Connected, call resume_session() if was paused for reconnection. Track reason_for_pause to distinguish user pause vs reconnect pause. | Restrictions: Don't resume if user paused | Success: Session preserves progress_
 
-- [ ] 4.2 Add connection banner to screens
+- [x] 4.2 Add connection banner to screens
   - File: `lib/src/screens/session_screen.dart`, `workout_screen.dart`
   - Add ConnectionBanner at top of screens
   - Purpose: Show status during sessions
@@ -72,7 +72,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Add ConnectionBanner widget to session_screen.dart and workout_screen.dart. Place at top of screen body using Column with banner first. Ensure banner shows/hides based on connection state. | Restrictions: Don't obstruct critical UI | Success: Reconnection visible during workout_
 
-- [ ] 5.1 Add reconnection unit tests
+- [x] 5.1 Add reconnection unit tests
   - File: `rust/src/domain/reconnection.rs` (tests module)
   - Test backoff calculation
   - Test attempt counting
