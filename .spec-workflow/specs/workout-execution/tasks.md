@@ -64,7 +64,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Create ZoneFeedbackWidget taking ZoneStatus. When TooLow, show blue "SPEED UP" overlay with up arrow. When TooHigh, show red "SLOW DOWN" overlay with down arrow. Animate opacity for attention. InZone shows nothing. | Restrictions: High visibility, non-intrusive | Success: Zone feedback immediately visible_
 
-- [ ] 4.1 Add session controls
+- [x] 4.1 Add session controls
   - File: `lib/src/widgets/session_controls.dart`
   - Pause/Resume and Stop buttons
   - Confirmation dialog for stop

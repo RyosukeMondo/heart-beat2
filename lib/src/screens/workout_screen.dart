@@ -5,6 +5,7 @@ import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/phase_progress.dart';
 import '../widgets/zone_feedback.dart';
+import '../widgets/session_controls.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -151,27 +152,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Future<void> _stopWorkout() async {
-    // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Stop Workout?'),
-        content: const Text('Are you sure you want to stop this workout? Your progress will be saved.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Stop'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
     try {
       await api.stopWorkout();
       if (mounted) {
@@ -318,56 +298,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
 
         // Control buttons
-        _buildControls(colorScheme),
-      ],
-    );
-  }
-
-  Widget _buildControls(ColorScheme colorScheme) {
-    final isPaused = _currentState == 'Paused';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Pause/Resume button
-            ElevatedButton.icon(
-              onPressed: isPaused ? _resumeWorkout : _pauseWorkout,
-              icon: Icon(isPaused ? Icons.play_arrow : Icons.pause),
-              label: Text(isPaused ? 'Resume' : 'Pause'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(140, 56),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
-            ),
-
-            // Stop button
-            ElevatedButton.icon(
-              onPressed: _stopWorkout,
-              icon: const Icon(Icons.stop),
-              label: const Text('Stop'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.errorContainer,
-                foregroundColor: colorScheme.onErrorContainer,
-                minimumSize: const Size(140, 56),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
-            ),
-          ],
+        SessionControls(
+          currentState: _currentState,
+          onPause: _pauseWorkout,
+          onResume: _resumeWorkout,
+          onStop: _stopWorkout,
         ),
-      ),
+      ],
     );
   }
 
