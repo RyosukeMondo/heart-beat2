@@ -168,6 +168,47 @@ pub fn init_panic_handler() {
     }));
 }
 
+/// Initialize platform-specific BLE requirements.
+///
+/// This function performs platform-specific initialization required for BLE operations.
+/// On Android, btleplug requires JNI environment initialization before any BLE operations
+/// can be performed. On other platforms (Linux, macOS, Windows, iOS), this is a no-op.
+///
+/// **IMPORTANT**: This function should be called once during Flutter app initialization,
+/// after RustLib.init() but before making any BLE API calls (scan_devices, connect_device, etc.).
+///
+/// # Returns
+///
+/// Returns Ok(()) if initialization succeeds, or an error if platform-specific setup fails.
+///
+/// # Errors
+///
+/// On Android: Returns an error if btleplug platform initialization fails (e.g., missing
+/// Bluetooth permissions, BLE hardware unavailable).
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// void main() async {
+///   await RustLib.init();
+///   await initPlatform(); // Initialize BLE platform
+///
+///   runApp(MyApp());
+/// }
+/// ```
+pub fn init_platform() -> Result<()> {
+    #[cfg(target_os = "android")]
+    {
+        // On Android, btleplug requires JNI initialization
+        btleplug::platform::init()
+            .map_err(|e| anyhow!("Failed to initialize btleplug on Android: {}", e))?;
+    }
+
+    // No-op on other platforms (Linux, macOS, Windows, iOS)
+    Ok(())
+}
+
 /// Initialize logging and forward Rust tracing logs to Flutter.
 ///
 /// This function sets up a tracing subscriber that captures all Rust log messages
