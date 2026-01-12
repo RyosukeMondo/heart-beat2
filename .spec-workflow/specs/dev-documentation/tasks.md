@@ -20,7 +20,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec dev-documentation, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical writer | Task: Create docs/DEVELOPER-GUIDE.md starting with Environment Setup section covering: 1) Linux dependencies (libudev-dev, libdbus-1-dev, libssl-dev, pkg-config), 2) Android SDK/NDK setup with paths, 3) Flutter configuration, 4) Rust toolchain with Android targets. | Restrictions: Clear step-by-step instructions | Success: New developer can set up environment | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.3 Add development workflows section to DEVELOPER-GUIDE.md
+- [x] 1.3 Add development workflows section to DEVELOPER-GUIDE.md
   - File: `docs/DEVELOPER-GUIDE.md` (continue)
   - Document Linux CLI workflow
   - Document Linux Desktop workflow

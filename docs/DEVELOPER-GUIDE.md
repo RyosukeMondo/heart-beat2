@@ -264,4 +264,256 @@ rustup target add aarch64-linux-android
 
 ---
 
-For development workflows and debugging guides, continue reading the sections below.
+## Development Workflows
+
+This section covers different development approaches for building and testing Heart Beat. Choose the workflow that best fits your current task.
+
+### Overview
+
+Heart Beat supports three primary development workflows:
+
+1. **Linux CLI** - Fastest iteration for Rust development
+2. **Linux Desktop** - Full UI testing on Linux
+3. **Android** - On-device testing with real BLE hardware
+
+Each workflow has different build times and use cases.
+
+### 1. Linux CLI Workflow (Fastest)
+
+**Use when:**
+- Developing or testing core Rust logic
+- Writing unit tests
+- Quick iteration without UI concerns
+- No BLE hardware available (use mock mode)
+
+**Basic usage:**
+```bash
+# Run the CLI binary
+cargo run --bin cli
+
+# Run with debug logging
+RUST_LOG=debug cargo run --bin cli
+
+# Run with mock BLE adapter (no real Bluetooth required)
+cargo run --bin cli --mock
+```
+
+**Build time:** ~5-15 seconds for incremental builds
+
+**Advantages:**
+- Extremely fast compile times
+- No Flutter/Android build overhead
+- Direct access to Rust output and errors
+- Easy to debug with print statements or debuggers
+
+**Limitations:**
+- No UI testing
+- No real BLE on most Linux systems without adapter
+- Mock mode required for BLE testing
+
+**Example workflow:**
+```bash
+# 1. Make changes to Rust code in rust/src/
+vim rust/src/training/mod.rs
+
+# 2. Run tests
+cargo test
+
+# 3. Test in CLI with mock BLE
+RUST_LOG=heart_beat::ble=debug cargo run --bin cli --mock
+
+# 4. Iterate quickly
+# (Repeat steps 1-3 as needed)
+```
+
+### 2. Linux Desktop Workflow
+
+**Use when:**
+- Testing Flutter UI components
+- Verifying UI/Rust integration via FFI
+- Developing UI features
+- QA testing before Android deployment
+
+**Basic usage:**
+```bash
+# One-command build and launch (release mode)
+./scripts/dev-linux.sh
+
+# Build in debug mode for faster compilation
+./scripts/dev-linux.sh debug
+
+# Manual build and run
+cd rust && cargo build --release && cd ..
+flutter run -d linux
+```
+
+**Build time:**
+- Initial build: ~2-4 minutes (Rust + Flutter)
+- Incremental Rust: ~10-30 seconds
+- Incremental Flutter: ~5-15 seconds
+
+**What the script does:**
+1. Builds the Rust library (`libheart_beat.so`)
+2. Launches Flutter Linux app
+3. Hot reload works for Flutter code changes
+
+**Advantages:**
+- Full UI testing without deploying to Android
+- Faster than Android builds
+- Hot reload for Flutter changes
+- Desktop debugging tools available
+
+**Limitations:**
+- Linux BLE stack differs from Android
+- May not catch Android-specific issues
+- Performance characteristics differ from mobile
+
+**Example workflow:**
+```bash
+# 1. Start the app
+./scripts/dev-linux.sh debug
+
+# 2. Make Flutter UI changes
+vim lib/pages/home_page.dart
+
+# 3. Press 'r' in the terminal for hot reload (Flutter changes only)
+
+# 4. For Rust changes:
+#    - Stop the app (Ctrl+C)
+#    - Rebuild: cd rust && cargo build && cd ..
+#    - Restart: flutter run -d linux
+
+# 5. Test UI flows manually
+```
+
+### 3. Android Workflow
+
+**Use when:**
+- Testing on real hardware
+- Verifying BLE functionality with heart rate monitors
+- Testing training scenarios end-to-end
+- Final QA before release
+
+**Basic usage:**
+```bash
+# One-command: build + install + launch
+./scripts/adb-install.sh
+
+# Build release APK
+./scripts/adb-install.sh --release
+
+# Manual steps
+./build-android.sh
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
+adb shell am start -n com.example.heart_beat/.MainActivity
+```
+
+**Build time:**
+- Initial build: ~5-10 minutes (cross-compile Rust for 4 architectures + Flutter)
+- Incremental: ~1-3 minutes
+- Install + launch: ~10-30 seconds
+
+**What the script does:**
+1. Checks for connected Android device
+2. Cross-compiles Rust for Android architectures (ARM64, ARMv7, x86_64, x86)
+3. Builds Flutter APK
+4. Installs APK on device
+5. Launches the app
+
+**Advantages:**
+- Real BLE hardware testing
+- Actual mobile performance characteristics
+- Android-specific features (permissions, services)
+- Production-like environment
+
+**Limitations:**
+- Slowest build times
+- Requires USB connection or wireless ADB
+- No hot reload (full rebuild required)
+
+**Example workflow:**
+```bash
+# 1. Connect Android device via USB
+adb devices
+
+# 2. Deploy to device
+./scripts/adb-install.sh
+
+# 3. Monitor logs
+./scripts/adb-logs.sh --follow
+
+# 4. Test with real heart rate monitor
+# (Pair BLE device, start training session)
+
+# 5. Make changes and redeploy
+vim rust/src/ble/mod.rs
+./scripts/adb-install.sh
+```
+
+### 4. Mock Mode
+
+**Use when:**
+- Developing without BLE hardware
+- Testing training logic in isolation
+- Automated testing
+- CI/CD environments
+
+**Usage:**
+```bash
+# CLI with mock BLE adapter
+cargo run --bin cli --mock
+
+# Mock adapter provides simulated heart rate data
+# Useful for testing training calculations without real sensors
+```
+
+**Mock behavior:**
+- Simulates BLE adapter discovery
+- Generates fake heart rate data (60-180 bpm)
+- Predictable data patterns for testing
+- No real Bluetooth required
+
+### Recommended Development Flow
+
+For most feature development, use this progression:
+
+1. **Start with Linux CLI** (`cargo run --bin cli --mock`)
+   - Implement and test core Rust logic
+   - Write unit tests
+   - Fast iteration
+
+2. **Move to Linux Desktop** (`./scripts/dev-linux.sh debug`)
+   - Integrate with Flutter UI
+   - Test UI components
+   - Verify FFI bindings
+
+3. **Deploy to Android** (`./scripts/adb-install.sh`)
+   - Test on real hardware
+   - Verify BLE functionality
+   - Performance testing
+   - Final QA
+
+This approach minimizes build time while maintaining confidence in code quality.
+
+### Watch Mode (Auto-rebuild)
+
+For continuous development, use watch mode:
+
+```bash
+# Auto-rebuild Rust on file changes
+./scripts/dev-watch.sh
+
+# Watches rust/src/ and rebuilds automatically
+# Useful when developing Rust code alongside Flutter
+```
+
+**How it works:**
+- Monitors `rust/src/` for changes
+- Triggers `cargo build` on modification
+- Flutter hot reload still works for UI changes
+
+**Use case:** Keep watch mode running while developing features that touch both Rust and Flutter.
+
+---
+
+For debugging tools and logging, continue reading the next section.
