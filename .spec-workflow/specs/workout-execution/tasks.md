@@ -82,7 +82,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Flutter developer | Task: Add '/workout/:planName' route to app.dart. Replace "Coming Soon" button in session_screen.dart with "Start Workout" that shows PlanSelector, then navigates to workout route. | Restrictions: Pass plan name as route parameter | Success: User can navigate to workout_
 
-- [ ] 5.1 Test workout flow end-to-end
+- [x] 5.1 Test workout flow end-to-end
   - File: N/A (manual testing)
   - Test complete workout cycle on device
   - Verify phase transitions and zone feedback
