@@ -9,7 +9,7 @@
   - _Requirements: 1, 2_
   - _Prompt: Role: Rust domain developer | Task: Create rust/src/domain/battery.rs with BatteryLevel struct. Fields: level (Option<u8>), is_charging (bool), timestamp (SystemTime). Add is_low() returning true if level < 15. Derive Debug, Clone, Serialize. | Restrictions: Pure domain type, no I/O dependencies | Success: Type compiles, is_low() works correctly_
 
-- [ ] 1.2 Add battery module to domain mod.rs
+- [x] 1.2 Add battery module to domain mod.rs
   - File: `rust/src/domain/mod.rs`
   - Export battery module
   - Purpose: Make BatteryLevel available
