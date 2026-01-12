@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create DebugConsole widget
+- [x] 1.1 Create DebugConsole widget
   - File: `lib/src/widgets/debug_console.dart`
   - Implement log display with StreamBuilder
   - Add level and search filtering
