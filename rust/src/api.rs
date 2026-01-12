@@ -4,9 +4,10 @@
 //! It orchestrates domain, state, and adapter components without containing business logic.
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
+use crate::adapters::file_session_repository::FileSessionRepository;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::frb_generated::StreamSink;
-use crate::ports::{BleAdapter, NotificationPort};
+use crate::ports::{BleAdapter, NotificationPort, SessionRepository};
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
@@ -28,6 +29,8 @@ use log::LevelFilter;
 pub use crate::domain::heart_rate::{
     DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate, Zone,
 };
+pub use crate::domain::session_history::CompletedSession as ApiCompletedSession;
+pub use crate::ports::session_repository::SessionSummaryPreview as ApiSessionSummaryPreview;
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///
@@ -807,6 +810,99 @@ pub fn emit_battery_data(data: ApiBatteryLevel) -> usize {
     tx.send(data).unwrap_or_default()
 }
 
+// Global session repository
+static SESSION_REPOSITORY: OnceLock<tokio::sync::Mutex<Option<Arc<FileSessionRepository>>>> =
+    OnceLock::new();
+
+/// Get or create the global session repository instance.
+async fn get_session_repository() -> Result<Arc<FileSessionRepository>> {
+    let mutex = SESSION_REPOSITORY.get_or_init(|| tokio::sync::Mutex::new(None));
+    let mut guard = mutex.lock().await;
+
+    if let Some(ref repo) = *guard {
+        return Ok(repo.clone());
+    }
+
+    // Create new repository and store it
+    tracing::info!("Creating new FileSessionRepository");
+    let repo = Arc::new(FileSessionRepository::new().await?);
+    *guard = Some(repo.clone());
+    Ok(repo)
+}
+
+/// List all completed training sessions.
+///
+/// Returns a list of session summaries sorted by start time (most recent first).
+/// This is optimized for displaying in a list view - full session data is not loaded.
+///
+/// # Returns
+///
+/// A vector of session summary previews containing ID, plan name, start time,
+/// duration, average heart rate, and status.
+///
+/// # Errors
+///
+/// Returns an error if the sessions directory cannot be read or if the repository
+/// cannot be initialized.
+pub async fn list_sessions() -> Result<Vec<ApiSessionSummaryPreview>> {
+    tracing::info!("list_sessions: Listing all sessions");
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+    tracing::info!("list_sessions: Found {} sessions", previews.len());
+    Ok(previews)
+}
+
+/// Get a complete session by its ID.
+///
+/// Loads the full session data including all heart rate samples and statistics.
+/// This is intended for displaying detailed session information.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to retrieve
+///
+/// # Returns
+///
+/// The complete session if found, or `None` if no session with the given ID exists.
+///
+/// # Errors
+///
+/// Returns an error if the session file cannot be read or parsed, or if the
+/// repository cannot be initialized.
+pub async fn get_session(id: String) -> Result<Option<ApiCompletedSession>> {
+    tracing::info!("get_session: Getting session with id: {}", id);
+    let repo = get_session_repository().await?;
+    let session = repo.get(&id).await?;
+
+    if session.is_some() {
+        tracing::info!("get_session: Found session {}", id);
+    } else {
+        tracing::warn!("get_session: Session {} not found", id);
+    }
+
+    Ok(session)
+}
+
+/// Delete a session by its ID.
+///
+/// Permanently removes the session and all its data from storage.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to delete
+///
+/// # Errors
+///
+/// Returns an error if the session file cannot be deleted or if the repository
+/// cannot be initialized. Succeeds silently if the session doesn't exist.
+pub async fn delete_session(id: String) -> Result<()> {
+    tracing::info!("delete_session: Deleting session with id: {}", id);
+    let repo = get_session_repository().await?;
+    repo.delete(&id).await?;
+    tracing::info!("delete_session: Successfully deleted session {}", id);
+    Ok(())
+}
+
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
 ///
 /// This function is called by the Android runtime when the native library is loaded.
@@ -870,6 +966,10 @@ pub extern "C" fn JNI_OnLoad(vm: jni::JavaVM, _res: *mut std::os::raw::c_void) -
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::session_history::{
+        CompletedSession, HrSample, SessionStatus, SessionSummary,
+    };
+    use chrono::Utc;
 
     fn create_test_hr_data(raw_bpm: u16, filtered_bpm: u16) -> ApiFilteredHeartRate {
         ApiFilteredHeartRate {
@@ -881,6 +981,39 @@ mod tests {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_millis() as u64,
+        }
+    }
+
+    fn create_test_session(id: &str, plan_name: &str) -> CompletedSession {
+        let now = Utc::now();
+        CompletedSession {
+            id: id.to_string(),
+            plan_name: plan_name.to_string(),
+            start_time: now,
+            end_time: now + chrono::Duration::seconds(1800),
+            status: SessionStatus::Completed,
+            hr_samples: vec![
+                HrSample {
+                    timestamp: now,
+                    bpm: 120,
+                },
+                HrSample {
+                    timestamp: now + chrono::Duration::seconds(900),
+                    bpm: 140,
+                },
+                HrSample {
+                    timestamp: now + chrono::Duration::seconds(1800),
+                    bpm: 130,
+                },
+            ],
+            phases_completed: 2,
+            summary: SessionSummary {
+                duration_secs: 1800,
+                avg_hr: 130,
+                max_hr: 140,
+                min_hr: 120,
+                time_in_zone: [0, 900, 900, 0, 0],
+            },
         }
     }
 
@@ -971,5 +1104,66 @@ mod tests {
             }
             Err(e) => panic!("Unexpected error: {:?}", e),
         }
+    }
+
+    #[tokio::test]
+    async fn test_session_api_integration() {
+        use std::env;
+        use tempfile::tempdir;
+
+        // Create a temporary directory for this test
+        let temp_dir = tempdir().unwrap();
+        let temp_path = temp_dir.path().to_str().unwrap();
+
+        // Set HOME environment variable to temp directory so FileSessionRepository
+        // will use a temporary .heart-beat/sessions directory
+        let original_home = env::var("HOME").ok();
+        env::set_var("HOME", temp_path);
+
+        // Clear the global repository to force re-initialization
+        // This is a bit hacky but necessary for testing with a temp directory
+        if let Some(mutex) = SESSION_REPOSITORY.get() {
+            *mutex.lock().await = None;
+        }
+
+        // Create a test session
+        let session = create_test_session("test-api-123", "Test Workout");
+
+        // Save the session directly using the repository
+        let repo = get_session_repository().await.unwrap();
+        repo.save(&session).await.unwrap();
+
+        // Test list_sessions
+        let sessions = list_sessions().await.unwrap();
+        assert_eq!(sessions.len(), 1);
+        assert_eq!(sessions[0].id, "test-api-123");
+        assert_eq!(sessions[0].plan_name, "Test Workout");
+        assert_eq!(sessions[0].avg_hr, 130);
+
+        // Test get_session
+        let retrieved = get_session("test-api-123".to_string()).await.unwrap();
+        assert!(retrieved.is_some());
+        let retrieved_session = retrieved.unwrap();
+        assert_eq!(retrieved_session.id, "test-api-123");
+        assert_eq!(retrieved_session.hr_samples.len(), 3);
+
+        // Test get_session with non-existent ID
+        let not_found = get_session("nonexistent".to_string()).await.unwrap();
+        assert!(not_found.is_none());
+
+        // Test delete_session
+        delete_session("test-api-123".to_string()).await.unwrap();
+        let sessions_after_delete = list_sessions().await.unwrap();
+        assert_eq!(sessions_after_delete.len(), 0);
+
+        // Restore original HOME
+        if let Some(home) = original_home {
+            env::set_var("HOME", home);
+        } else {
+            env::remove_var("HOME");
+        }
+
+        // Clean up temp directory
+        temp_dir.close().unwrap();
     }
 }

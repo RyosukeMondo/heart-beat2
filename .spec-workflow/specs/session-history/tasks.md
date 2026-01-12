@@ -36,7 +36,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust integration developer | Task: Modify SessionExecutor to accept Arc<dyn SessionRepository>. Collect HrSamples in Vec during session. On session_completed/stopped/interrupted, build CompletedSession with summary calculation, call repository.save(). | Restrictions: Don't break existing session flow | Success: Sessions saved automatically on completion_
 
-- [ ] 3.1 Add session history API to api.rs
+- [x] 3.1 Add session history API to api.rs
   - File: `rust/src/api.rs`
   - Add list_sessions(), get_session(id), delete_session(id)
   - Initialize FileSessionRepository
