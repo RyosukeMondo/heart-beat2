@@ -74,7 +74,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Flutter developer | Task: Add '/history' route to app.dart pointing to HistoryScreen. Add IconButton to HomeScreen AppBar navigating to history. | Restrictions: Consistent navigation pattern | Success: User can access history from home_
 
-- [ ] 4.2 Add session history tests
+- [x] 4.2 Add session history tests
   - File: `rust/tests/session_history_test.rs`
   - Test save/list/get/delete cycle
   - Test summary calculation
