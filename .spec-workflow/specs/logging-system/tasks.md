@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Add android_logger dependency to Cargo.toml
+- [x] 1.1 Add android_logger dependency to Cargo.toml
   - File: `rust/Cargo.toml`
   - Add android_logger as Android-only dependency using target cfg
   - Purpose: Enable native Android logcat output
