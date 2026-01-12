@@ -62,7 +62,7 @@
   - _Requirements: 1, 3_
   - _Prompt: Role: Flutter developer | Task: Update zone_indicator.dart to get zone from ProfileService.getZoneForBpm() instead of hardcoded thresholds. Ensure zone colors match profile-based calculation. | Restrictions: Don't break existing display | Success: Zone indicator uses profile_
 
-- [ ] 4.2 Add profile unit tests
+- [x] 4.2 Add profile unit tests
   - File: `test/services/profile_service_test.dart`
   - Test profile save/load
   - Test zone calculation with custom zones
