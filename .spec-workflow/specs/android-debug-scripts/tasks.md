@@ -10,7 +10,7 @@
   - _Requirements: 1_
   - _Prompt: Implement the task for spec android-debug-scripts, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/adb-logs.sh that: 1) checks for connected device, 2) clears logcat with adb logcat -c, 3) shows filtered logs with grep for heart_beat|flutter|btleplug|BluetoothGatt. Add --follow flag for continuous output. Use color codes for ERROR (red), WARN (yellow), INFO (green). | Restrictions: Bash only, no external dependencies | Success: Script shows filtered, colored logs | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.2 Create adb-install.sh script
+- [x] 1.2 Create adb-install.sh script
   - File: `scripts/adb-install.sh`
   - Build debug APK using build-android.sh
   - Install APK to connected device
