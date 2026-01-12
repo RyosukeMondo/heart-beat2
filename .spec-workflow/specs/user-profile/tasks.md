@@ -36,7 +36,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Add getZoneForBpm(int bpm) -> Zone method to ProfileService. If customZones set, use custom thresholds. Otherwise use defaults (50/60/70/80/90%). Calculate thresholds from effective maxHr (actual or age-based). | Restrictions: Return Zone enum | Success: Correct zone returned_
 
-- [ ] 3.1 Enhance SettingsScreen with profile editing
+- [x] 3.1 Enhance SettingsScreen with profile editing
   - File: `lib/src/screens/settings_screen.dart`
   - Add age input with max HR estimation toggle
   - Show calculated zones based on settings
