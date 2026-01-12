@@ -91,6 +91,21 @@ install(CODE "
 set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
+# Rust library configuration
+set(RUST_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../rust/target/release")
+set(RUST_LIB_NAME "libheart_beat.so")
+set(RUST_LIB_PATH "${RUST_LIB_DIR}/${RUST_LIB_NAME}")
+
+# Install Rust library to bundle
+if(EXISTS "${RUST_LIB_PATH}")
+  install(FILES "${RUST_LIB_PATH}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+  message(STATUS "Rust library found: ${RUST_LIB_PATH}")
+else()
+  message(WARNING "Rust library not found at: ${RUST_LIB_PATH}. Run 'cd rust && cargo build --release' first.")
+endif()
+
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 

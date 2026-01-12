@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Add Flutter Linux desktop support
+- [x] 1.1 Add Flutter Linux desktop support
   - File: `linux/` directory (created by Flutter)
   - Run `flutter create --platforms=linux .` to add Linux support
   - Configure CMakeLists.txt for Rust library linking
