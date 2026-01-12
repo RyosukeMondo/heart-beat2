@@ -7,9 +7,10 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_hr_broadcast_sender`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `flush`, `fmt`, `make_writer`, `write`
+// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`
+// These functions are ignored because they have generic arguments: `notify`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `flush`, `fmt`, `fmt`, `make_writer`, `write`
 
 /// Initialize the panic handler for FFI safety.
 ///
@@ -235,8 +236,72 @@ Future<BigInt> hrTimestamp({required ApiFilteredHeartRate data}) =>
 Future<Zone> hrZone({required ApiFilteredHeartRate data, required int maxHr}) =>
     RustLib.instance.api.crateApiHrZone(data: data, maxHr: maxHr);
 
+/// Create a dummy battery level for testing (temporary helper for FRB codegen).
+///
+/// This function helps FRB discover the ApiBatteryLevel type during code generation.
+/// TODO: Remove this after ApiBatteryLevel is properly integrated.
+Future<ApiBatteryLevel> dummyBatteryLevelForCodegen() =>
+    RustLib.instance.api.crateApiDummyBatteryLevelForCodegen();
+
+/// Emit battery level data to all stream subscribers.
+///
+/// This function should be called by the battery polling task when new battery
+/// data is available. It broadcasts the data to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `data` - The battery level measurement to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the data. Returns 0 if no receivers
+/// are currently subscribed.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// // In your battery polling task:
+/// let battery_data = BatteryLevel { /* ... */ };
+/// emit_battery_data(battery_data);
+/// ```
+Future<BigInt> emitBatteryData({required ApiBatteryLevel data}) =>
+    RustLib.instance.api.crateApiEmitBatteryData(data: data);
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}
+
+/// Battery level data for FFI boundary (FRB-compatible).
+///
+/// This is a simplified version of domain::BatteryLevel that uses u64 timestamps
+/// instead of SystemTime to be compatible with Flutter Rust Bridge.
+class ApiBatteryLevel {
+  /// Battery level as a percentage (0-100).
+  final int? level;
+
+  /// Whether the device is currently charging.
+  final bool isCharging;
+
+  /// Unix timestamp in milliseconds when this battery level was measured.
+  final BigInt timestamp;
+
+  const ApiBatteryLevel({
+    this.level,
+    required this.isCharging,
+    required this.timestamp,
+  });
+
+  @override
+  int get hashCode => level.hashCode ^ isCharging.hashCode ^ timestamp.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiBatteryLevel &&
+          runtimeType == other.runtimeType &&
+          level == other.level &&
+          isCharging == other.isCharging &&
+          timestamp == other.timestamp;
+}
 
 /// Log message that can be sent to Flutter for debugging.
 ///

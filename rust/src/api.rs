@@ -6,9 +6,10 @@
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::frb_generated::StreamSink;
-use crate::ports::BleAdapter;
+use crate::ports::{BleAdapter, NotificationPort};
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use anyhow::{anyhow, Result};
+use async_trait::async_trait;
 use std::io::Write;
 use std::panic;
 use std::sync::{Arc, Mutex, OnceLock};
@@ -28,8 +29,25 @@ pub use crate::domain::heart_rate::{
     DiscoveredDevice as ApiDiscoveredDevice, FilteredHeartRate as ApiFilteredHeartRate, Zone,
 };
 
+/// Battery level data for FFI boundary (FRB-compatible).
+///
+/// This is a simplified version of domain::BatteryLevel that uses u64 timestamps
+/// instead of SystemTime to be compatible with Flutter Rust Bridge.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiBatteryLevel {
+    /// Battery level as a percentage (0-100).
+    pub level: Option<u8>,
+    /// Whether the device is currently charging.
+    pub is_charging: bool,
+    /// Unix timestamp in milliseconds when this battery level was measured.
+    pub timestamp: u64,
+}
+
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
+
+// Global state for battery data streaming
+static BATTERY_CHANNEL_CAPACITY: usize = 10;
 
 /// Log message that can be sent to Flutter for debugging.
 ///
@@ -55,6 +73,19 @@ static LOG_SINK: OnceLock<Mutex<Option<StreamSink<LogMessage>>>> = OnceLock::new
 // This is critical: we must use the same adapter instance that discovered the devices
 // to connect to them, otherwise btleplug won't find the peripheral.
 static BLE_ADAPTER: OnceLock<tokio::sync::Mutex<Option<Arc<BtleplugAdapter>>>> = OnceLock::new();
+
+/// Stub notification port for battery monitoring.
+/// This is a temporary implementation until full notification system is wired up.
+struct StubNotificationPort;
+
+#[async_trait]
+impl NotificationPort for StubNotificationPort {
+    async fn notify(&self, event: crate::ports::NotificationEvent) -> Result<()> {
+        // Just log the notification for now
+        tracing::info!("Notification: {:?}", event);
+        Ok(())
+    }
+}
 
 /// Get or create the global BLE adapter instance.
 /// Returns the same adapter across all calls to ensure device discovery persists.
@@ -416,6 +447,47 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 
             tracing::info!("Subscribed to HR notifications, starting data stream");
 
+            // Start battery polling
+            let adapter_clone = adapter.clone();
+            tokio::spawn(async move {
+                let (battery_tx, mut battery_rx) = tokio::sync::mpsc::channel(10);
+                let notification_port: Arc<dyn NotificationPort> = Arc::new(StubNotificationPort);
+
+                // Start battery polling task
+                let poll_result = adapter_clone
+                    .start_battery_polling(battery_tx, notification_port)
+                    .await;
+
+                match poll_result {
+                    Ok(poll_handle) => {
+                        // Receive battery updates and emit to broadcast channel
+                        while let Some(battery_level) = battery_rx.recv().await {
+                            // Convert domain BatteryLevel to API BatteryLevel
+                            let api_battery = ApiBatteryLevel {
+                                level: battery_level.level,
+                                is_charging: battery_level.is_charging,
+                                timestamp: battery_level
+                                    .timestamp
+                                    .duration_since(std::time::UNIX_EPOCH)
+                                    .map(|d| d.as_millis() as u64)
+                                    .unwrap_or(0),
+                            };
+
+                            let receivers = emit_battery_data(api_battery);
+                            tracing::debug!("Emitted battery data to {} receivers", receivers);
+                        }
+
+                        tracing::warn!("Battery polling stream ended");
+
+                        // Cancel the polling task if the receiver ends
+                        poll_handle.abort();
+                    }
+                    Err(e) => {
+                        tracing::error!("Failed to start battery polling: {}", e);
+                    }
+                }
+            });
+
             // Spawn background task to receive and emit HR data
             tokio::spawn(async move {
                 while let Some(data) = hr_receiver.recv().await {
@@ -641,6 +713,98 @@ pub fn hr_zone(data: &ApiFilteredHeartRate, max_hr: u16) -> Zone {
         p if p < 90.0 => Zone::Zone4,
         _ => Zone::Zone5,
     }
+}
+
+/// Create a dummy battery level for testing (temporary helper for FRB codegen).
+///
+/// This function helps FRB discover the ApiBatteryLevel type during code generation.
+/// TODO: Remove this after ApiBatteryLevel is properly integrated.
+pub fn dummy_battery_level_for_codegen() -> ApiBatteryLevel {
+    ApiBatteryLevel {
+        level: Some(100),
+        is_charging: false,
+        timestamp: 0,
+    }
+}
+
+/// Create a stream for receiving battery level data.
+///
+/// Sets up a stream that will receive real-time battery level measurements
+/// from the connected BLE device. This function is used by Flutter via FRB to
+/// create a reactive data stream.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the battery data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+pub async fn create_battery_stream(sink: StreamSink<ApiBatteryLevel>) -> Result<()> {
+    let mut rx = get_battery_stream_receiver();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data).ok();
+        }
+    });
+    Ok(())
+}
+
+/// Get a receiver for streaming battery level data (internal use).
+///
+/// Creates a broadcast receiver that can be used to subscribe to real-time
+/// battery level measurements from the connected BLE device.
+///
+/// # Returns
+///
+/// A tokio broadcast receiver that will receive BatteryLevel updates.
+/// Multiple receivers can be created for fan-out streaming to multiple consumers.
+fn get_battery_stream_receiver() -> broadcast::Receiver<ApiBatteryLevel> {
+    // Get or create the global broadcast sender
+    let tx = get_or_create_battery_broadcast_sender();
+    tx.subscribe()
+}
+
+/// Get or create the global battery broadcast sender.
+///
+/// Returns the global broadcast sender for emitting battery data to all stream subscribers.
+/// This is thread-safe and can be called from multiple locations.
+fn get_or_create_battery_broadcast_sender() -> broadcast::Sender<ApiBatteryLevel> {
+    use std::sync::OnceLock;
+    static BATTERY_TX: OnceLock<broadcast::Sender<ApiBatteryLevel>> = OnceLock::new();
+
+    BATTERY_TX
+        .get_or_init(|| {
+            let (tx, _rx) = broadcast::channel(BATTERY_CHANNEL_CAPACITY);
+            tx
+        })
+        .clone()
+}
+
+/// Emit battery level data to all stream subscribers.
+///
+/// This function should be called by the battery polling task when new battery
+/// data is available. It broadcasts the data to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `data` - The battery level measurement to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the data. Returns 0 if no receivers
+/// are currently subscribed.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// // In your battery polling task:
+/// let battery_data = BatteryLevel { /* ... */ };
+/// emit_battery_data(battery_data);
+/// ```
+pub fn emit_battery_data(data: ApiBatteryLevel) -> usize {
+    let tx = get_or_create_battery_broadcast_sender();
+    tx.send(data).unwrap_or_default()
 }
 
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations

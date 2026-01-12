@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 1049298710;
+  int get rustContentHash => 1772927952;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -81,6 +81,10 @@ abstract class RustLibApi extends BaseApi {
   Stream<ApiFilteredHeartRate> crateApiCreateHrStream();
 
   Future<void> crateApiDisconnect();
+
+  Future<ApiBatteryLevel> crateApiDummyBatteryLevelForCodegen();
+
+  Future<BigInt> crateApiEmitBatteryData({required ApiBatteryLevel data});
 
   Future<BigInt> crateApiEmitHrData({required ApiFilteredHeartRate data});
 
@@ -198,6 +202,52 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiDisconnectConstMeta =>
       const TaskConstMeta(debugName: "disconnect", argNames: []);
+
+  @override
+  Future<ApiBatteryLevel> crateApiDummyBatteryLevelForCodegen() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__dummy_battery_level_for_codegen(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_battery_level,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiDummyBatteryLevelForCodegenConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDummyBatteryLevelForCodegenConstMeta =>
+      const TaskConstMeta(
+        debugName: "dummy_battery_level_for_codegen",
+        argNames: [],
+      );
+
+  @override
+  Future<BigInt> crateApiEmitBatteryData({required ApiBatteryLevel data}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_battery_level(data);
+          return wire.wire__crate__api__emit_battery_data(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_usize,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmitBatteryDataConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmitBatteryDataConstMeta =>
+      const TaskConstMeta(debugName: "emit_battery_data", argNames: ["data"]);
 
   @override
   Future<BigInt> crateApiEmitHrData({required ApiFilteredHeartRate data}) {
@@ -553,6 +603,31 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiBatteryLevel dco_decode_api_battery_level(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return ApiBatteryLevel(
+      level: dco_decode_opt_box_autoadd_u_8(arr[0]),
+      isCharging: dco_decode_bool(arr[1]),
+      timestamp: dco_decode_u_64(arr[2]),
+    );
+  }
+
+  @protected
+  bool dco_decode_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as bool;
+  }
+
+  @protected
+  ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_api_battery_level(raw);
+  }
+
+  @protected
   double dco_decode_box_autoadd_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
@@ -743,6 +818,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_level = sse_decode_opt_box_autoadd_u_8(deserializer);
+    var var_isCharging = sse_decode_bool(deserializer);
+    var var_timestamp = sse_decode_u_64(deserializer);
+    return ApiBatteryLevel(
+      level: var_level,
+      isCharging: var_isCharging,
+      timestamp: var_timestamp,
+    );
+  }
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint8() != 0;
+  }
+
+  @protected
+  ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_api_battery_level(deserializer));
+  }
+
+  @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_f_64(deserializer));
@@ -887,12 +989,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getUint8() != 0;
-  }
-
-  @protected
   int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
@@ -920,6 +1016,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Cst (C-struct based), see doc to use other codecs
     // ignore: invalid_use_of_internal_member
     return (raw as ApiFilteredHeartRateImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  bool cst_encode_bool(bool raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw;
   }
 
   @protected
@@ -1052,6 +1154,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_u_8(self.level, serializer);
+    sse_encode_bool(self.isCharging, serializer);
+    sse_encode_u_64(self.timestamp, serializer);
+  }
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint8(self ? 1 : 0);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_api_battery_level(self, serializer);
   }
 
   @protected
@@ -1189,12 +1317,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_zone(Zone self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
-  }
-
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putUint8(self ? 1 : 0);
   }
 }
 

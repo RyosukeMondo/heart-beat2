@@ -86,3 +86,9 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // btleplug Android BLE support (local JARs extracted from AAR)
+    implementation(files("libs/btleplug-classes.jar"))
+    implementation(files("libs/jni-utils.jar"))
+}

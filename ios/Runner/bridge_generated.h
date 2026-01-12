@@ -19,6 +19,12 @@ typedef struct wire_cst_list_prim_u_8_strict {
   int32_t len;
 } wire_cst_list_prim_u_8_strict;
 
+typedef struct wire_cst_api_battery_level {
+  uint8_t *level;
+  bool is_charging;
+  uint64_t timestamp;
+} wire_cst_api_battery_level;
+
 typedef struct wire_cst_discovered_device {
   struct wire_cst_list_prim_u_8_strict *id;
   struct wire_cst_list_prim_u_8_strict *name;
@@ -44,6 +50,11 @@ void frbgen_heart_beat_wire__crate__api__create_hr_stream(int64_t port_,
                                                           struct wire_cst_list_prim_u_8_strict *sink);
 
 void frbgen_heart_beat_wire__crate__api__disconnect(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__emit_battery_data(int64_t port_,
+                                                           struct wire_cst_api_battery_level *data);
 
 void frbgen_heart_beat_wire__crate__api__emit_hr_data(int64_t port_, uintptr_t data);
 
@@ -74,6 +85,8 @@ void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_b
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(const void *ptr);
 
+struct wire_cst_api_battery_level *frbgen_heart_beat_cst_new_box_autoadd_api_battery_level(void);
+
 double *frbgen_heart_beat_cst_new_box_autoadd_f_64(double value);
 
 uint8_t *frbgen_heart_beat_cst_new_box_autoadd_u_8(uint8_t value);
@@ -81,8 +94,17 @@ uint8_t *frbgen_heart_beat_cst_new_box_autoadd_u_8(uint8_t value);
 struct wire_cst_list_discovered_device *frbgen_heart_beat_cst_new_list_discovered_device(int32_t len);
 
 struct wire_cst_list_prim_u_8_strict *frbgen_heart_beat_cst_new_list_prim_u_8_strict(int32_t len);
+
+/**
+ * JNI_OnLoad - Initialize Android context and btleplug for JNI operations
+ *
+ * This function is called by the Android runtime when the native library is loaded.
+ * It initializes the ndk-context and btleplug while we have access to the app's classloader.
+ */
+jint JNI_OnLoad(JavaVM vm, void *_res);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_battery_level);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_f_64);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_8);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_discovered_device);
@@ -92,6 +114,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connect_device);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_hr_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__disconnect);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_battery_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_hr_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_battery_level);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filtered_bpm);

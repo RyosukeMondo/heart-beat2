@@ -57,6 +57,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  ApiBatteryLevel dco_decode_api_battery_level(dynamic raw);
+
+  @protected
+  bool dco_decode_bool(dynamic raw);
+
+  @protected
+  ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
+
+  @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
 
   @protected
@@ -146,6 +155,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer);
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer);
+
+  @protected
+  ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
@@ -202,9 +222,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Zone sse_decode_zone(SseDeserializer deserializer);
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer);
-
-  @protected
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_AnyhowException(
     AnyhowException raw,
   ) {
@@ -247,6 +264,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_String(String raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_list_prim_u_8_strict(utf8.encoder.convert(raw));
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_api_battery_level>
+  cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_api_battery_level();
+    cst_api_fill_to_wire_api_battery_level(raw, ptr.ref);
+    return ptr;
   }
 
   @protected
@@ -315,6 +341,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_api_battery_level(
+    ApiBatteryLevel apiObj,
+    wire_cst_api_battery_level wireObj,
+  ) {
+    wireObj.level = cst_encode_opt_box_autoadd_u_8(apiObj.level);
+    wireObj.is_charging = cst_encode_bool(apiObj.isCharging);
+    wireObj.timestamp = cst_encode_u_64(apiObj.timestamp);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_box_autoadd_api_battery_level(
+    ApiBatteryLevel apiObj,
+    ffi.Pointer<wire_cst_api_battery_level> wireObj,
+  ) {
+    cst_api_fill_to_wire_api_battery_level(apiObj, wireObj.ref);
+  }
+
+  @protected
   void cst_api_fill_to_wire_discovered_device(
     DiscoveredDevice apiObj,
     wire_cst_discovered_device wireObj,
@@ -352,6 +396,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   );
+
+  @protected
+  bool cst_encode_bool(bool raw);
 
   @protected
   double cst_encode_f_64(double raw);
@@ -418,6 +465,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
 
   @protected
@@ -479,9 +541,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_zone(Zone self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer);
 }
 
 // Section: wire_class
@@ -575,6 +634,37 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__disconnect = _wire__crate__api__disconnectPtr
       .asFunction<void Function(int)>();
+
+  void wire__crate__api__dummy_battery_level_for_codegen(int port_) {
+    return _wire__crate__api__dummy_battery_level_for_codegen(port_);
+  }
+
+  late final _wire__crate__api__dummy_battery_level_for_codegenPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen',
+      );
+  late final _wire__crate__api__dummy_battery_level_for_codegen =
+      _wire__crate__api__dummy_battery_level_for_codegenPtr
+          .asFunction<void Function(int)>();
+
+  void wire__crate__api__emit_battery_data(
+    int port_,
+    ffi.Pointer<wire_cst_api_battery_level> data,
+  ) {
+    return _wire__crate__api__emit_battery_data(port_, data);
+  }
+
+  late final _wire__crate__api__emit_battery_dataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_battery_level>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__emit_battery_data');
+  late final _wire__crate__api__emit_battery_data =
+      _wire__crate__api__emit_battery_dataPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_battery_level>)
+          >();
 
   void wire__crate__api__emit_hr_data(int port_, int data) {
     return _wire__crate__api__emit_hr_data(port_, data);
@@ -757,6 +847,19 @@ class RustLibWire implements BaseWire {
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRatePtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
+  ffi.Pointer<wire_cst_api_battery_level>
+  cst_new_box_autoadd_api_battery_level() {
+    return _cst_new_box_autoadd_api_battery_level();
+  }
+
+  late final _cst_new_box_autoadd_api_battery_levelPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_api_battery_level> Function()>
+      >('frbgen_heart_beat_cst_new_box_autoadd_api_battery_level');
+  late final _cst_new_box_autoadd_api_battery_level =
+      _cst_new_box_autoadd_api_battery_levelPtr
+          .asFunction<ffi.Pointer<wire_cst_api_battery_level> Function()>();
+
   ffi.Pointer<ffi.Double> cst_new_box_autoadd_f_64(double value) {
     return _cst_new_box_autoadd_f_64(value);
   }
@@ -849,6 +952,16 @@ final class wire_cst_list_prim_u_8_strict extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
+}
+
+final class wire_cst_api_battery_level extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> level;
+
+  @ffi.Bool()
+  external bool is_charging;
+
+  @ffi.Uint64()
+  external int timestamp;
 }
 
 final class wire_cst_discovered_device extends ffi.Struct {

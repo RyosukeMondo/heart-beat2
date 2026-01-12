@@ -59,6 +59,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  ApiBatteryLevel dco_decode_api_battery_level(dynamic raw);
+
+  @protected
+  bool dco_decode_bool(dynamic raw);
+
+  @protected
+  ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
+
+  @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
 
   @protected
@@ -148,6 +157,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer);
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer);
+
+  @protected
+  ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
@@ -204,9 +224,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Zone sse_decode_zone(SseDeserializer deserializer);
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer);
-
-  @protected
   String cst_encode_AnyhowException(AnyhowException raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     throw UnimplementedError();
@@ -246,6 +263,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String cst_encode_String(String raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw;
+  }
+
+  @protected
+  JSAny cst_encode_api_battery_level(ApiBatteryLevel raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_opt_box_autoadd_u_8(raw.level),
+      cst_encode_bool(raw.isCharging),
+      cst_encode_u_64(raw.timestamp),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_api_battery_level(raw);
   }
 
   @protected
@@ -342,6 +375,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  bool cst_encode_bool(bool raw);
+
+  @protected
   double cst_encode_f_64(double raw);
 
   @protected
@@ -406,6 +442,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_api_battery_level(
+    ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
 
   @protected
@@ -467,9 +518,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_zone(Zone self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer);
 }
 
 // Section: wire_class
@@ -487,6 +535,13 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__disconnect(NativePortType port_) =>
       wasmModule.wire__crate__api__disconnect(port_);
+
+  void wire__crate__api__dummy_battery_level_for_codegen(
+    NativePortType port_,
+  ) => wasmModule.wire__crate__api__dummy_battery_level_for_codegen(port_);
+
+  void wire__crate__api__emit_battery_data(NativePortType port_, JSAny data) =>
+      wasmModule.wire__crate__api__emit_battery_data(port_, data);
 
   void wire__crate__api__emit_hr_data(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__emit_hr_data(port_, data);
@@ -558,6 +613,15 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__disconnect(NativePortType port_);
+
+  external void wire__crate__api__dummy_battery_level_for_codegen(
+    NativePortType port_,
+  );
+
+  external void wire__crate__api__emit_battery_data(
+    NativePortType port_,
+    JSAny data,
+  );
 
   external void wire__crate__api__emit_hr_data(NativePortType port_, int data);
 

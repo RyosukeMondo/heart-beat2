@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1049298710;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1772927952;
 
 // Section: executor
 
@@ -110,6 +110,47 @@ fn wire__crate__api__disconnect_impl(port_: flutter_rust_bridge::for_generated::
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__dummy_battery_level_for_codegen_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "dummy_battery_level_for_codegen",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::dummy_battery_level_for_codegen())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__emit_battery_data_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiBatteryLevel>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "emit_battery_data",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::emit_battery_data(api_data))?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -483,6 +524,12 @@ fn wire__crate__api__start_mock_mode_impl(port_: flutter_rust_bridge::for_genera
 
 // Section: dart2rust
 
+impl CstDecode<bool> for bool {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> bool {
+        self
+    }
+}
 impl CstDecode<f64> for f64 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> f64 {
@@ -589,6 +636,27 @@ impl SseDecode for String {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <Vec<u8>>::sse_decode(deserializer);
         return String::from_utf8(inner).unwrap();
+    }
+}
+
+impl SseDecode for crate::api::ApiBatteryLevel {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_level = <Option<u8>>::sse_decode(deserializer);
+        let mut var_isCharging = <bool>::sse_decode(deserializer);
+        let mut var_timestamp = <u64>::sse_decode(deserializer);
+        return crate::api::ApiBatteryLevel {
+            level: var_level,
+            is_charging: var_isCharging,
+            timestamp: var_timestamp,
+        };
+    }
+}
+
+impl SseDecode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u8().unwrap() != 0
     }
 }
 
@@ -750,13 +818,6 @@ impl SseDecode for crate::domain::heart_rate::Zone {
     }
 }
 
-impl SseDecode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u8().unwrap() != 0
-    }
-}
-
 fn pde_ffi_dispatcher_primary_impl(
     func_id: i32,
     port: flutter_rust_bridge::for_generated::MessagePort,
@@ -802,6 +863,25 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiFilteredHeartRate>> for Api
     }
 }
 
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiBatteryLevel {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.level.into_into_dart().into_dart(),
+            self.is_charging.into_into_dart().into_dart(),
+            self.timestamp.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiBatteryLevel {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiBatteryLevel>
+    for crate::api::ApiBatteryLevel
+{
+    fn into_into_dart(self) -> crate::api::ApiBatteryLevel {
+        self
+    }
+}
 // Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::domain::heart_rate::DiscoveredDevice {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
@@ -917,6 +997,22 @@ impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<u8>>::sse_encode(self.into_bytes(), serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiBatteryLevel {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<u8>>::sse_encode(self.level, serializer);
+        <bool>::sse_encode(self.is_charging, serializer);
+        <u64>::sse_encode(self.timestamp, serializer);
+    }
+}
+
+impl SseEncode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u8(self as _).unwrap();
     }
 }
 
@@ -1065,13 +1161,6 @@ impl SseEncode for crate::domain::heart_rate::Zone {
     }
 }
 
-impl SseEncode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u8(self as _).unwrap();
-    }
-}
-
 #[cfg(not(target_family = "wasm"))]
 mod io {
     // This file is automatically generated, so please do not edit it.
@@ -1160,6 +1249,23 @@ mod io {
             String::from_utf8(vec).unwrap()
         }
     }
+    impl CstDecode<crate::api::ApiBatteryLevel> for wire_cst_api_battery_level {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiBatteryLevel {
+            crate::api::ApiBatteryLevel {
+                level: self.level.cst_decode(),
+                is_charging: self.is_charging.cst_decode(),
+                timestamp: self.timestamp.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiBatteryLevel> for *mut wire_cst_api_battery_level {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiBatteryLevel {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<crate::api::ApiBatteryLevel>::cst_decode(*wrap).into()
+        }
+    }
     impl CstDecode<f64> for *mut f64 {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> f64 {
@@ -1214,6 +1320,20 @@ mod io {
             }
         }
     }
+    impl NewWithNullPtr for wire_cst_api_battery_level {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                level: core::ptr::null_mut(),
+                is_charging: Default::default(),
+                timestamp: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_battery_level {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
     impl NewWithNullPtr for wire_cst_discovered_device {
         fn new_with_null_ptr() -> Self {
             Self {
@@ -1263,6 +1383,21 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__disconnect(port_: i64) {
         wire__crate__api__disconnect_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen(
+        port_: i64,
+    ) {
+        wire__crate__api__dummy_battery_level_for_codegen_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_battery_data(
+        port_: i64,
+        data: *mut wire_cst_api_battery_level,
+    ) {
+        wire__crate__api__emit_battery_data_impl(port_, data)
     }
 
     #[unsafe(no_mangle)]
@@ -1354,6 +1489,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_battery_level(
+    ) -> *mut wire_cst_api_battery_level {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_api_battery_level::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_f_64(value: f64) -> *mut f64 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
@@ -1388,6 +1531,13 @@ mod io {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(ans)
     }
 
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_battery_level {
+        level: *mut u8,
+        is_charging: bool,
+        timestamp: u64,
+    }
     #[repr(C)]
     #[derive(Clone, Copy)]
     pub struct wire_cst_discovered_device {
@@ -1475,6 +1625,27 @@ mod web {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> String {
             self
+        }
+    }
+    impl CstDecode<crate::api::ApiBatteryLevel>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiBatteryLevel {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                3,
+                "Expected 3 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiBatteryLevel {
+                level: self_.get(0).cst_decode(),
+                is_charging: self_.get(1).cst_decode(),
+                timestamp: self_.get(2).cst_decode(),
+            }
         }
     }
     impl CstDecode<crate::domain::heart_rate::DiscoveredDevice>
@@ -1612,6 +1783,12 @@ mod web {
             self.as_string().expect("non-UTF-8 string, or not a string")
         }
     }
+    impl CstDecode<bool> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> bool {
+            self.is_truthy()
+        }
+    }
     impl CstDecode<f64> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> f64 {
@@ -1690,6 +1867,21 @@ mod web {
     #[wasm_bindgen]
     pub fn wire__crate__api__disconnect(port_: flutter_rust_bridge::for_generated::MessagePort) {
         wire__crate__api__disconnect_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__dummy_battery_level_for_codegen(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__dummy_battery_level_for_codegen_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__emit_battery_data(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__emit_battery_data_impl(port_, data)
     }
 
     #[wasm_bindgen]

@@ -36,7 +36,7 @@
   - _Requirements: 1, 2_
   - _Prompt: Role: Rust async developer | Task: Add start_battery_polling(tx: Sender<BatteryLevel>, notification_port: Arc<dyn NotificationPort>) method. Use tokio::interval(Duration::from_secs(60)). On each tick call read_battery_level(), emit to tx, check is_low() and emit NotificationEvent::BatteryLow if true. | Restrictions: Must be cancellable, don't spam notifications | Success: Battery level emitted every 60s, low battery triggers notification once_
 
-- [ ] 3.1 Add battery stream to api.rs
+- [x] 3.1 Add battery stream to api.rs
   - File: `rust/src/api.rs`
   - Add create_battery_stream() function
   - Wire to battery polling in connect flow
