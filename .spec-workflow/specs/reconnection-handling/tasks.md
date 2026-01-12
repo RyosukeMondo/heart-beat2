@@ -55,7 +55,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Create ConnectionBanner widget subscribing to connection status stream. When Reconnecting, show MaterialBanner with "Reconnecting... (attempt X/5)" and spinner. When ReconnectFailed, show "Connection lost" with Retry button. When Connected, hide banner (or show brief success). | Restrictions: Non-intrusive positioning | Success: Status clearly visible_
 
-- [ ] 4.1 Integrate reconnection with SessionExecutor
+- [x] 4.1 Integrate reconnection with SessionExecutor
   - File: `rust/src/scheduler/executor.rs`
   - Pause session on disconnect
   - Resume session on successful reconnect

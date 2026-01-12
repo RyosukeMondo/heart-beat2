@@ -5,6 +5,7 @@
 //! session persistence, and cron-based scheduling.
 
 use crate::domain::heart_rate::FilteredHeartRate;
+use crate::domain::reconnection::ConnectionStatus;
 use crate::domain::session_history::{CompletedSession, HrSample, SessionStatus, SessionSummary};
 use crate::domain::session_progress::{
     PhaseProgress, SessionProgress, SessionState as ProgressState, ZoneStatus,
@@ -49,6 +50,18 @@ struct PendingSession {
     scheduled_time: Instant,
 }
 
+/// Reason why a session was paused.
+///
+/// This enum helps distinguish between user-initiated pauses and
+/// automatic pauses triggered by connection loss.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PauseReason {
+    /// User explicitly paused the session
+    UserInitiated,
+    /// Session was automatically paused due to connection loss
+    ConnectionLoss,
+}
+
 /// Executes training sessions with real-time HR monitoring and state management.
 ///
 /// The executor manages the lifecycle of training sessions, coordinating between
@@ -86,6 +99,12 @@ pub struct SessionExecutor {
 
     /// Optional progress sender for streaming session state to the UI
     progress_sender: Option<mpsc::UnboundedSender<SessionProgress>>,
+
+    /// Optional connection status receiver for automatic pause/resume
+    connection_status_receiver: Option<broadcast::Receiver<ConnectionStatus>>,
+
+    /// Tracks the reason why the session was paused
+    pause_reason: Arc<Mutex<Option<PauseReason>>>,
 }
 
 impl SessionExecutor {
@@ -107,6 +126,8 @@ impl SessionExecutor {
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
             progress_sender: None,
+            connection_status_receiver: None,
+            pause_reason: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -132,6 +153,8 @@ impl SessionExecutor {
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
             progress_sender: None,
+            connection_status_receiver: None,
+            pause_reason: Arc::new(Mutex::new(None)),
         };
 
         // Try to load existing checkpoint
@@ -162,6 +185,8 @@ impl SessionExecutor {
             hr_samples: Arc::new(Mutex::new(Vec::new())),
             session_start_time: Arc::new(Mutex::new(None)),
             progress_sender: None,
+            connection_status_receiver: None,
+            pause_reason: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -182,6 +207,24 @@ impl SessionExecutor {
     /// * `sender` - Unbounded sender for SessionProgress updates
     pub fn with_progress_sender(mut self, sender: mpsc::UnboundedSender<SessionProgress>) -> Self {
         self.progress_sender = Some(sender);
+        self
+    }
+
+    /// Set the connection status receiver for automatic pause/resume on connection loss.
+    ///
+    /// When a connection status receiver is set, the executor will automatically:
+    /// - Pause the session when connection is lost (Disconnected or Reconnecting status)
+    /// - Resume the session when reconnected (Connected status), but only if it was
+    ///   paused due to connection loss (not user-initiated pause)
+    ///
+    /// # Arguments
+    ///
+    /// * `receiver` - Broadcast receiver for ConnectionStatus updates
+    pub fn with_connection_status(
+        mut self,
+        receiver: broadcast::Receiver<ConnectionStatus>,
+    ) -> Self {
+        self.connection_status_receiver = Some(receiver);
         self
     }
 
@@ -368,6 +411,11 @@ impl SessionExecutor {
         let session_repository_clone = self.session_repository.clone();
         let plan_name = plan.name.clone();
         let progress_tx = self.progress_sender.clone();
+        let mut connection_rx = self
+            .connection_status_receiver
+            .as_ref()
+            .map(|rx| rx.resubscribe());
+        let pause_reason_clone = Arc::clone(&self.pause_reason);
 
         let tick_task = tokio::spawn(async move {
             let mut ticker = interval(Duration::from_secs(1));
@@ -433,6 +481,80 @@ impl SessionExecutor {
                             Err(broadcast::error::TryRecvError::Closed) => {
                                 // Channel closed, stop HR monitoring but continue session
                                 hr_rx = None;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Check for connection status updates (non-blocking)
+                if let Some(ref mut rx) = connection_rx {
+                    loop {
+                        match rx.try_recv() {
+                            Ok(status) => {
+                                match status {
+                                    ConnectionStatus::Disconnected
+                                    | ConnectionStatus::Reconnecting { .. } => {
+                                        // Connection lost - pause the session if it's running
+                                        let should_pause = {
+                                            let state = state_clone.lock().await;
+                                            matches!(state.state(), State::InProgress { .. })
+                                        };
+
+                                        if should_pause {
+                                            // Mark as connection-loss pause
+                                            {
+                                                let mut reason = pause_reason_clone.lock().await;
+                                                *reason = Some(PauseReason::ConnectionLoss);
+                                            }
+
+                                            // Pause the session
+                                            let mut state = state_clone.lock().await;
+                                            state.handle(SessionEvent::Pause);
+                                        }
+                                    }
+                                    ConnectionStatus::Connected { .. } => {
+                                        // Connection restored - resume only if paused due to connection loss
+                                        let should_resume = {
+                                            let reason = pause_reason_clone.lock().await;
+                                            matches!(*reason, Some(PauseReason::ConnectionLoss))
+                                        };
+
+                                        if should_resume {
+                                            let is_paused = {
+                                                let state = state_clone.lock().await;
+                                                matches!(state.state(), State::Paused { .. })
+                                            };
+
+                                            if is_paused {
+                                                // Clear pause reason and resume
+                                                {
+                                                    let mut reason =
+                                                        pause_reason_clone.lock().await;
+                                                    *reason = None;
+                                                }
+
+                                                let mut state = state_clone.lock().await;
+                                                state.handle(SessionEvent::Resume);
+                                            }
+                                        }
+                                    }
+                                    _ => {
+                                        // Ignore other statuses (Connecting, ReconnectFailed)
+                                    }
+                                }
+                            }
+                            Err(broadcast::error::TryRecvError::Empty) => {
+                                // No more data available, exit inner loop
+                                break;
+                            }
+                            Err(broadcast::error::TryRecvError::Lagged(_)) => {
+                                // Lagged behind, continue reading
+                                continue;
+                            }
+                            Err(broadcast::error::TryRecvError::Closed) => {
+                                // Channel closed, stop connection monitoring
+                                connection_rx = None;
                                 break;
                             }
                         }
@@ -567,6 +689,12 @@ impl SessionExecutor {
     /// Sends a Pause event to the state machine, which stops the timer
     /// but preserves the session state for resumption.
     pub async fn pause_session(&mut self) -> Result<()> {
+        // Mark this as a user-initiated pause
+        {
+            let mut pause_reason = self.pause_reason.lock().await;
+            *pause_reason = Some(PauseReason::UserInitiated);
+        }
+
         let mut state = self.session_state.lock().await;
         state.handle(SessionEvent::Pause);
         Ok(())
@@ -577,6 +705,12 @@ impl SessionExecutor {
     /// Sends a Resume event to the state machine, which continues the
     /// session from where it was paused.
     pub async fn resume_session(&mut self) -> Result<()> {
+        // Clear the pause reason when resuming
+        {
+            let mut pause_reason = self.pause_reason.lock().await;
+            *pause_reason = None;
+        }
+
         let mut state = self.session_state.lock().await;
         state.handle(SessionEvent::Resume);
         Ok(())
