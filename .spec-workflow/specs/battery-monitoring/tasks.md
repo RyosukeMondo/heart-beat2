@@ -54,7 +54,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Update session_screen.dart to call createBatteryStream() after connection. Use StreamBuilder to receive BatteryLevel updates. Pass level to existing BatteryIndicator widget. Handle null case with "?" display. | Restrictions: Don't break existing HR streaming | Success: Battery indicator shows real percentage_
 
-- [ ] 4.1 Add battery unit tests
+- [x] 4.1 Add battery unit tests
   - File: `rust/src/domain/battery.rs` (tests module)
   - Test BatteryLevel::is_low() at boundary values
   - Test serialization
