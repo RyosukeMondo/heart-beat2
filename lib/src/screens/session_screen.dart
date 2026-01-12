@@ -5,6 +5,7 @@ import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../services/background_service.dart';
+import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
 class SessionScreen extends StatefulWidget {
@@ -16,6 +17,8 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends State<SessionScreen> {
   Stream<api.ApiFilteredHeartRate>? _hrStream;
+  StreamSubscription<api.ApiBatteryLevel>? _batterySubscription;
+  int? _batteryLevel;
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
@@ -48,6 +51,16 @@ class _SessionScreenState extends State<SessionScreen> {
 
       // Create the HR stream
       final stream = api.createHrStream();
+
+      // Create the battery stream and subscribe to updates
+      final batteryStream = await api.createBatteryStream();
+      _batterySubscription = batteryStream.listen((batteryLevel) {
+        if (mounted) {
+          setState(() {
+            _batteryLevel = batteryLevel.level;
+          });
+        }
+      });
 
       // Start background service to maintain connection during screen lock
       await _startBackgroundService();
@@ -83,6 +96,8 @@ class _SessionScreenState extends State<SessionScreen> {
     if (_isServiceRunning) {
       _backgroundService.stopService();
     }
+    // Clean up battery subscription
+    _batterySubscription?.cancel();
     // Stream will be automatically cleaned up
     super.dispose();
   }
@@ -199,7 +214,6 @@ class _SessionScreenState extends State<SessionScreen> {
         final hrData = snapshot.data!;
         final bpm = hrData['bpm'] as int;
         final zone = hrData['zone'] as Zone;
-        final batteryLevel = hrData['battery'] as int?;
 
         // Update background service notification with current BPM and zone
         if (_isServiceRunning) {
@@ -221,8 +235,8 @@ class _SessionScreenState extends State<SessionScreen> {
               const SizedBox(height: 32),
 
               // Battery Indicator
-              if (batteryLevel != null)
-                BatteryIndicator(batteryLevel: batteryLevel),
+              if (_batteryLevel != null)
+                BatteryIndicator(batteryLevel: _batteryLevel!),
             ],
           ),
         );
@@ -233,12 +247,10 @@ class _SessionScreenState extends State<SessionScreen> {
   Future<Map<String, dynamic>> _extractHrData(api.ApiFilteredHeartRate data) async {
     final bpm = await api.hrFilteredBpm(data: data);
     final zone = await api.hrZone(data: data, maxHr: _maxHr);
-    final battery = await api.hrBatteryLevel(data: data);
 
     return {
       'bpm': bpm,
       'zone': zone,
-      'battery': battery,
     };
   }
 }
