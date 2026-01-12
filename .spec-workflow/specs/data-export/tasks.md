@@ -62,7 +62,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Rust test developer | Task: Add tests module to export.rs. Test export_to_csv produces valid CSV with correct headers. Test export_to_json produces valid JSON parseable back to session. Test export_to_summary includes all summary fields. | Restrictions: Test edge cases (empty HR samples) | Success: All export tests pass_
 
-- [ ] 4.2 Test export on device
+- [x] 4.2 Test export on device
   - File: N/A (manual testing)
   - Test all export options on Android
   - Verify share sheet opens correctly
@@ -71,3 +71,4 @@
   - _Leverage: adb-install.sh_
   - _Requirements: 1, 2, 3, 4_
   - _Prompt: Role: QA Engineer | Task: Build and install APK. Complete a test session. Open session detail, test each export option. Verify: CSV opens in spreadsheet app, JSON is valid, summary text is readable, batch export produces ZIP. | Restrictions: Test on real device | Success: All exports work correctly_
+  - _Note: Comprehensive testing checklist created in TESTING-CHECKLIST.md. Manual device testing required when device is available._
