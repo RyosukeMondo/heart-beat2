@@ -31,6 +31,9 @@ dependencies:
   # Charting library
   fl_chart: ^0.69.0
 
+  # Sharing files and text
+  share_plus: ^10.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -17,7 +17,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Rust FFI developer | Task: Add ExportFormat enum (Csv, Json, Summary). Add pub async fn export_session(id: String, format: ExportFormat) -> Result<String> that loads session from repository, calls appropriate export function, returns content string. | Restrictions: FRB-compatible types | Success: Flutter can request exports_
 
-- [ ] 2.1 Add share_plus dependency
+- [x] 2.1 Add share_plus dependency
   - File: `pubspec.yaml`
   - Add share_plus package for native sharing
   - Purpose: Enable platform share sheets
