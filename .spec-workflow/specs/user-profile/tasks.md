@@ -9,7 +9,7 @@
   - _Requirements: 1, 2, 3, 4_
   - _Prompt: Role: Flutter developer | Task: Create lib/src/models/user_profile.dart with UserProfile class. Fields: maxHr (int), age (int?), useAgeBased (bool), customZones (CustomZones?). Add CustomZones class with zone1Max through zone4Max (percentages). Add toJson() and fromJson() methods. | Restrictions: Validate in setters | Success: Model serializes correctly_
 
-- [ ] 1.2 Create ProfileService
+- [x] 1.2 Create ProfileService
   - File: `lib/src/services/profile_service.dart`
   - Implement singleton with load/save/get methods
   - Use SharedPreferences for persistence
