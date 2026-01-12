@@ -52,7 +52,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Flutter developer | Task: Add selection mode to HistoryScreen with long-press to enable. Show checkboxes when in selection mode. Add FAB "Export All" when items selected. Export as ZIP containing all selected sessions as JSON. Use archive package. | Restrictions: Show progress for large exports | Success: Multiple sessions exportable at once_
 
-- [ ] 4.1 Add export unit tests
+- [x] 4.1 Add export unit tests
   - File: `rust/src/domain/export.rs` (tests module)
   - Test CSV format correctness
   - Test JSON validity
