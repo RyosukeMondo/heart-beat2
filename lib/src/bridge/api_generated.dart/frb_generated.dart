@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 697133896;
+  int get rustContentHash => -1671379399;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -96,6 +96,11 @@ abstract class RustLibApi extends BaseApi {
 
   Future<BigInt> crateApiEmitSessionProgress({
     required ApiSessionProgress data,
+  });
+
+  Future<String> crateApiExportSession({
+    required String id,
+    required ExportFormat format,
   });
 
   Future<ApiCompletedSession?> crateApiGetSession({required String id});
@@ -608,6 +613,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "emit_session_progress",
         argNames: ["data"],
       );
+
+  @override
+  Future<String> crateApiExportSession({
+    required String id,
+    required ExportFormat format,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(id);
+          var arg1 = cst_encode_export_format(format);
+          return wire.wire__crate__api__export_session(port_, arg0, arg1);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiExportSessionConstMeta,
+        argValues: [id, format],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiExportSessionConstMeta => const TaskConstMeta(
+    debugName: "export_session",
+    argNames: ["id", "format"],
+  );
 
   @override
   Future<ApiCompletedSession?> crateApiGetSession({required String id}) {
@@ -2593,6 +2626,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ExportFormat dco_decode_export_format(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ExportFormat.values[raw as int];
+  }
+
+  @protected
   double dco_decode_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
@@ -3126,6 +3165,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ExportFormat sse_decode_export_format(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ExportFormat.values[inner];
+  }
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getFloat64();
@@ -3555,6 +3601,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool cst_encode_bool(bool raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw;
+  }
+
+  @protected
+  int cst_encode_export_format(ExportFormat raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
   }
 
   @protected
@@ -4034,6 +4086,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.id, serializer);
     sse_encode_opt_String(self.name, serializer);
     sse_encode_i_16(self.rssi, serializer);
+  }
+
+  @protected
+  void sse_encode_export_format(ExportFormat self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
   }
 
   @protected

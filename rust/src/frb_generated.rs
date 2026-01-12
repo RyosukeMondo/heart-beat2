@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 697133896;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1671379399;
 
 // Section: executor
 
@@ -269,6 +269,32 @@ fn wire__crate__api__emit_session_progress_impl(
                         Result::<_, ()>::Ok(crate::api::emit_session_progress(api_data))?;
                     Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__export_session_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    id: impl CstDecode<String>,
+    format: impl CstDecode<crate::api::ExportFormat>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "export_session",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_id = id.cst_decode();
+            let api_format = format.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::export_session(api_id, api_format).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
             }
         },
     )
@@ -2413,6 +2439,17 @@ impl CstDecode<bool> for bool {
         self
     }
 }
+impl CstDecode<crate::api::ExportFormat> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::ExportFormat {
+        match self {
+            0 => crate::api::ExportFormat::Csv,
+            1 => crate::api::ExportFormat::Json,
+            2 => crate::api::ExportFormat::Summary,
+            _ => unreachable!("Invalid variant for ExportFormat: {}", self),
+        }
+    }
+}
 impl CstDecode<f64> for f64 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> f64 {
@@ -2705,6 +2742,19 @@ impl SseDecode for crate::domain::heart_rate::DiscoveredDevice {
             id: var_id,
             name: var_name,
             rssi: var_rssi,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ExportFormat {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::ExportFormat::Csv,
+            1 => crate::api::ExportFormat::Json,
+            2 => crate::api::ExportFormat::Summary,
+            _ => unreachable!("Invalid variant for ExportFormat: {}", inner),
         };
     }
 }
@@ -3122,6 +3172,23 @@ impl flutter_rust_bridge::IntoIntoDart<crate::domain::heart_rate::DiscoveredDevi
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ExportFormat {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Csv => 0.into_dart(),
+            Self::Json => 1.into_dart(),
+            Self::Summary => 2.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ExportFormat {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ExportFormat> for crate::api::ExportFormat {
+    fn into_into_dart(self) -> crate::api::ExportFormat {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::LogMessage {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -3370,6 +3437,23 @@ impl SseEncode for crate::domain::heart_rate::DiscoveredDevice {
         <String>::sse_encode(self.id, serializer);
         <Option<String>>::sse_encode(self.name, serializer);
         <i16>::sse_encode(self.rssi, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ExportFormat {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::ExportFormat::Csv => 0,
+                crate::api::ExportFormat::Json => 1,
+                crate::api::ExportFormat::Summary => 2,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
     }
 }
 
@@ -4105,6 +4189,15 @@ mod io {
         data: usize,
     ) {
         wire__crate__api__emit_session_progress_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__export_session(
+        port_: i64,
+        id: *mut wire_cst_list_prim_u_8_strict,
+        format: i32,
+    ) {
+        wire__crate__api__export_session_impl(port_, id, format)
     }
 
     #[unsafe(no_mangle)]
@@ -5309,6 +5402,14 @@ mod web {
             self.is_truthy()
         }
     }
+    impl CstDecode<crate::api::ExportFormat>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ExportFormat {
+            (self.unchecked_into_f64() as i32).cst_decode()
+        }
+    }
     impl CstDecode<f64> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> f64 {
@@ -5462,6 +5563,15 @@ mod web {
         data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__emit_session_progress_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__export_session(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        id: String,
+        format: i32,
+    ) {
+        wire__crate__api__export_session_impl(port_, id, format)
     }
 
     #[wasm_bindgen]

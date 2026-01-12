@@ -227,6 +227,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   DiscoveredDevice dco_decode_discovered_device(dynamic raw);
 
   @protected
+  ExportFormat dco_decode_export_format(dynamic raw);
+
+  @protected
   double dco_decode_f_64(dynamic raw);
 
   @protected
@@ -487,6 +490,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   DiscoveredDevice sse_decode_discovered_device(SseDeserializer deserializer);
+
+  @protected
+  ExportFormat sse_decode_export_format(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_64(SseDeserializer deserializer);
@@ -999,6 +1005,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool cst_encode_bool(bool raw);
 
   @protected
+  int cst_encode_export_format(ExportFormat raw);
+
+  @protected
   double cst_encode_f_64(double raw);
 
   @protected
@@ -1243,6 +1252,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     DiscoveredDevice self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_export_format(ExportFormat self, SseSerializer serializer);
 
   @protected
   void sse_encode_f_64(double self, SseSerializer serializer);
@@ -1548,6 +1560,30 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__emit_session_progress =
       _wire__crate__api__emit_session_progressPtr
           .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__export_session(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> id,
+    int format,
+  ) {
+    return _wire__crate__api__export_session(port_, id, format);
+  }
+
+  late final _wire__crate__api__export_sessionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Int32,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__export_session');
+  late final _wire__crate__api__export_session =
+      _wire__crate__api__export_sessionPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>, int)
+          >();
 
   void wire__crate__api__get_session(
     int port_,

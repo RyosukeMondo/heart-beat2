@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:path_provider/path_provider.dart';
 import '../bridge/api_generated.dart/api.dart';
+import '../services/share_service.dart';
 
 /// Detail screen showing comprehensive information about a completed training session
 class SessionDetailScreen extends StatefulWidget {
@@ -13,6 +16,7 @@ class SessionDetailScreen extends StatefulWidget {
 
 class _SessionDetailScreenState extends State<SessionDetailScreen> {
   // Session data
+  String? _sessionId;
   String? _planName;
   int? _startTime;
   String? _status;
@@ -25,6 +29,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
 
   bool _isLoading = true;
   String? _error;
+  bool _isExporting = false;
 
   @override
   void didChangeDependencies() {
@@ -32,6 +37,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final sessionId = args['session_id'] as String;
+    _sessionId = sessionId;
     _loadSession(sessionId);
   }
 
@@ -520,11 +526,159 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     );
   }
 
+  Future<void> _handleExport(ExportFormat format) async {
+    if (_sessionId == null) {
+      _showErrorSnackBar('Session ID not available');
+      return;
+    }
+
+    setState(() {
+      _isExporting = true;
+    });
+
+    try {
+      // Call the Rust API to generate export content
+      final content = await exportSession(id: _sessionId!, format: format);
+
+      if (!mounted) return;
+
+      // Handle based on format
+      switch (format) {
+        case ExportFormat.csv:
+          await _shareFile(content, 'csv', 'text/csv');
+          break;
+        case ExportFormat.json:
+          await _shareFile(content, 'json', 'application/json');
+          break;
+        case ExportFormat.summary:
+          await _shareText(content);
+          break;
+      }
+
+      if (mounted) {
+        _showSuccessSnackBar('Export completed successfully');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorSnackBar('Export failed: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isExporting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _shareFile(
+      String content, String extension, String mimeType) async {
+    try {
+      // Get temporary directory
+      final tempDir = await getTemporaryDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'session_${_sessionId}_$timestamp.$extension';
+      final filePath = '${tempDir.path}/$fileName';
+
+      // Write content to file
+      final file = File(filePath);
+      await file.writeAsString(content);
+
+      // Share the file
+      await ShareService.instance.shareFile(
+        filePath,
+        mimeType,
+        subject: 'Training Session Export',
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _shareText(String content) async {
+    try {
+      await ShareService.instance.shareText(
+        content,
+        subject: 'Training Session Summary',
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Session Details'),
+        actions: [
+          if (!_isLoading && _error == null && _planName != null)
+            _isExporting
+                ? const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  )
+                : PopupMenuButton<ExportFormat>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: _handleExport,
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: ExportFormat.csv,
+                        child: Row(
+                          children: [
+                            Icon(Icons.table_chart),
+                            SizedBox(width: 8),
+                            Text('Export as CSV'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: ExportFormat.json,
+                        child: Row(
+                          children: [
+                            Icon(Icons.code),
+                            SizedBox(width: 8),
+                            Text('Export as JSON'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: ExportFormat.summary,
+                        child: Row(
+                          children: [
+                            Icon(Icons.share),
+                            SizedBox(width: 8),
+                            Text('Share Summary'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

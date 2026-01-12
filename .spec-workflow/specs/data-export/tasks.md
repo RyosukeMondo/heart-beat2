@@ -34,7 +34,7 @@
   - _Requirements: 1, 2, 3_
   - _Prompt: Role: Flutter developer | Task: Create ShareService class with shareText(String text, String subject) using Share.share(), and shareFile(String path, String mimeType) using Share.shareXFiles(). Handle platform differences. | Restrictions: Abstract share_plus dependency | Success: Service shares content correctly_
 
-- [ ] 3.1 Add export buttons to SessionDetailScreen
+- [-] 3.1 Add export buttons to SessionDetailScreen
   - File: `lib/src/screens/session_detail_screen.dart`
   - Add overflow menu with Export CSV, Export JSON, Share Summary
   - Call export API and share

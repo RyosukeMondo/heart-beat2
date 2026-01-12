@@ -10,7 +10,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `flush`, `fmt`, `fmt`, `make_writer`, `write`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
 
 /// Initialize the panic handler for FFI safety.
 ///
@@ -378,6 +378,43 @@ Future<ApiCompletedSession?> getSession({required String id}) =>
 Future<void> deleteSession({required String id}) =>
     RustLib.instance.api.crateApiDeleteSession(id: id);
 
+/// Export a session to a specified format.
+///
+/// Loads a completed session and exports it in the requested format (CSV, JSON, or text summary).
+/// The returned string can be saved to a file or shared directly.
+///
+/// # Arguments
+///
+/// * `id` - The unique identifier of the session to export
+/// * `format` - The desired export format (Csv, Json, or Summary)
+///
+/// # Returns
+///
+/// A string containing the exported session data in the requested format.
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - The session cannot be found
+/// - The session repository cannot be initialized
+/// - The session data cannot be formatted (should not normally occur)
+///
+/// # Examples
+///
+/// ```no_run
+/// # use heart_beat::api::{export_session, ExportFormat};
+/// # tokio_test::block_on(async {
+/// let csv_data = export_session("session-123".to_string(), ExportFormat::Csv).await?;
+/// let json_data = export_session("session-123".to_string(), ExportFormat::Json).await?;
+/// let summary = export_session("session-123".to_string(), ExportFormat::Summary).await?;
+/// # Ok::<(), anyhow::Error>(())
+/// # });
+/// ```
+Future<String> exportSession({
+  required String id,
+  required ExportFormat format,
+}) => RustLib.instance.api.crateApiExportSession(id: id, format: format);
+
 /// Get the session ID from a session summary preview
 Future<String> sessionPreviewId({required ApiSessionSummaryPreview preview}) =>
     RustLib.instance.api.crateApiSessionPreviewId(preview: preview);
@@ -689,6 +726,20 @@ class ApiBatteryLevel {
           level == other.level &&
           isCharging == other.isCharging &&
           timestamp == other.timestamp;
+}
+
+/// Format for exporting session data.
+///
+/// Specifies the output format when exporting a completed training session.
+enum ExportFormat {
+  /// Export as comma-separated values (CSV) with timestamp, bpm, and zone columns
+  csv,
+
+  /// Export as pretty-printed JSON containing the full session structure
+  json,
+
+  /// Export as human-readable text summary with statistics
+  summary,
 }
 
 /// Log message that can be sent to Flutter for debugging.

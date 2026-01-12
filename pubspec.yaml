@@ -34,6 +34,9 @@ dependencies:
   # Sharing files and text
   share_plus: ^10.1.2
 
+  # Temporary file paths
+  path_provider: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
