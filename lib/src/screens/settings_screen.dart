@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
+import 'zone_editor_screen.dart';
 
 /// Settings screen for user configuration
 class SettingsScreen extends StatefulWidget {
@@ -239,9 +240,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                           const SizedBox(height: 24),
-                          Text(
-                            'Training Zones',
-                            style: Theme.of(context).textTheme.titleMedium,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Training Zones',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              TextButton.icon(
+                                onPressed: () async {
+                                  final result = await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const ZoneEditorScreen(),
+                                    ),
+                                  );
+                                  // Reload profile if zones were changed
+                                  if (result == true) {
+                                    await _loadProfile();
+                                  }
+                                },
+                                icon: const Icon(Icons.edit),
+                                label: const Text('Customize'),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 8),
                           _buildZoneDisplay(),

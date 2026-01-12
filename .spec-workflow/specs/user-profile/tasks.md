@@ -45,7 +45,7 @@
   - _Requirements: 1, 2_
   - _Prompt: Role: Flutter developer | Task: Enhance settings_screen.dart: Add age TextField, Switch for "Use age-based max HR", show estimated max HR when enabled. Display current zones as colored bars with BPM ranges. Save to ProfileService on change. | Restrictions: Maintain existing max HR field | Success: Profile editable in settings_
 
-- [ ] 3.2 Add custom zone editor
+- [x] 3.2 Add custom zone editor
   - File: `lib/src/screens/zone_editor_screen.dart`
   - Slider-based zone threshold editor
   - Validate no overlap
