@@ -27,7 +27,7 @@
   - _Requirements: 2_
   - _Prompt: Role: Flutter developer | Task: Add static method calculateMaxHrFromAge(int age) -> int returning 220 - age. Add getter estimatedMaxHr on UserProfile that uses age if useAgeBased is true. | Restrictions: Return null if age not set | Success: Age-based calculation works_
 
-- [ ] 2.2 Add zone calculation with custom zones
+- [x] 2.2 Add zone calculation with custom zones
   - File: `lib/src/services/profile_service.dart`
   - Add getZoneForBpm(bpm) using profile zones
   - Support both default and custom zones
