@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create adb-logs.sh script
+- [x] 1.1 Create adb-logs.sh script
   - File: `scripts/adb-logs.sh`
   - Clear logcat and show filtered output
   - Filter for heart_beat, flutter, btleplug, BluetoothGatt
