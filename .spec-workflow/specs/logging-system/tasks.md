@@ -17,7 +17,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec logging-system, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Rust tracing expert | Task: Modify init_logging in api.rs to also initialize android_logger on Android. Use cfg(target_os = "android") to conditionally call android_logger::init_once(). Set appropriate log level filter matching RUST_LOG. | Restrictions: Keep existing FlutterLogWriter functionality, android_logger is additive | Success: Logs appear in both Flutter stream and adb logcat on Android | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.3 Create LogService singleton in Flutter
+- [x] 1.3 Create LogService singleton in Flutter
   - File: `lib/src/services/log_service.dart`
   - Implement singleton LogService with subscribe, stream, logs, clear methods
   - Add log buffer with 1000 entry limit
