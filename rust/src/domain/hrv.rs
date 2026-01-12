@@ -4,8 +4,6 @@
 //! extracted from Bluetooth heart rate monitors. HRV metrics are useful for
 //! assessing stress, recovery, and autonomic nervous system function.
 
-use cardio_rs::metrics::time_domain::TimeMetrics;
-
 /// Calculates RMSSD (Root Mean Square of Successive Differences) from RR-intervals.
 ///
 /// RMSSD is a time-domain HRV metric that measures short-term heart rate variability.
@@ -68,11 +66,20 @@ pub fn calculate_rmssd(rr_intervals: &[u16]) -> Option<f64> {
         }
     }
 
-    // Use cardio-rs to compute time-domain metrics
-    let metrics = TimeMetrics::compute(&rr_ms);
+    // Calculate RMSSD: sqrt(mean of squared successive differences)
+    // RMSSD = sqrt(sum((RR[i+1] - RR[i])^2) / (n-1))
+    let sum_squared_diff: f64 = rr_ms
+        .windows(2)
+        .map(|w| {
+            let diff = w[1] - w[0];
+            diff * diff
+        })
+        .sum();
 
-    // Return the RMSSD value
-    Some(metrics.rmssd)
+    let n = rr_ms.len() - 1; // number of successive differences
+    let rmssd = (sum_squared_diff / n as f64).sqrt();
+
+    Some(rmssd)
 }
 
 /// Calculates SDNN (Standard Deviation of NN intervals) from RR-intervals.
@@ -122,11 +129,14 @@ pub fn calculate_sdnn(rr_intervals: &[u16]) -> Option<f64> {
         }
     }
 
-    // Use cardio-rs to compute time-domain metrics
-    let metrics = TimeMetrics::compute(&rr_ms);
+    // Calculate SDNN: standard deviation of all RR intervals
+    // SDNN = sqrt(sum((RR[i] - mean)^2) / n)
+    let n = rr_ms.len() as f64;
+    let mean: f64 = rr_ms.iter().sum::<f64>() / n;
+    let variance: f64 = rr_ms.iter().map(|&rr| (rr - mean).powi(2)).sum::<f64>() / n;
+    let sdnn = variance.sqrt();
 
-    // Return the SDNN value
-    Some(metrics.sdnn)
+    Some(sdnn)
 }
 
 #[cfg(test)]

@@ -116,7 +116,7 @@ fi
 echo -e "${BLUE}[1/3]${NC} Generating Flutter-Rust bridge bindings..."
 echo "======================================="
 if command -v flutter_rust_bridge_codegen &> /dev/null; then
-    flutter_rust_bridge_codegen
+    flutter_rust_bridge_codegen generate
     echo -e "${GREEN}✓ Bindings generated${NC}"
 else
     echo -e "${RED}❌ flutter_rust_bridge_codegen not found${NC}"

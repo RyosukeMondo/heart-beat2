@@ -14,7 +14,6 @@ path = "src/bin/cli.rs"
 tokio = { version = "1", features = ["full"] }
 flutter_rust_bridge = "=2.11.1"
 btleplug = "0.11"
-cardio-rs = "0.2"
 kalman_filters = "1.0"
 statig = "0.3"
 tokio-cron-scheduler = "0.13"

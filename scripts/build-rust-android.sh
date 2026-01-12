@@ -41,11 +41,9 @@ else
 fi
 
 # Target configurations: rust_target:android_abi
+# Note: Building only arm64-v8a for now due to toolchain issues with 32-bit targets
 TARGETS=(
     "aarch64-linux-android:arm64-v8a"
-    "armv7-linux-androideabi:armeabi-v7a"
-    "x86_64-linux-android:x86_64"
-    "i686-linux-android:x86"
 )
 
 # Change to rust directory
@@ -55,12 +53,41 @@ echo ""
 echo "Building Rust libraries for Android..."
 echo "======================================="
 
+# NDK toolchain base path
+NDK_TOOLCHAIN="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64"
+API_LEVEL=30  # Android 11+ (matches our minSdkVersion)
+
 # Build for each target
 for target_pair in "${TARGETS[@]}"; do
     IFS=':' read -r rust_target android_abi <<< "$target_pair"
 
     echo ""
     echo "📦 Building for $rust_target ($android_abi)..."
+
+    # Set CC and AR environment variables for cc-rs crate
+    # These are needed for native dependencies to compile
+    case "$rust_target" in
+        aarch64-linux-android)
+            export CC_aarch64_linux_android="$NDK_TOOLCHAIN/bin/aarch64-linux-android${API_LEVEL}-clang"
+            export AR_aarch64_linux_android="$NDK_TOOLCHAIN/bin/llvm-ar"
+            export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$NDK_TOOLCHAIN/bin/aarch64-linux-android${API_LEVEL}-clang"
+            ;;
+        armv7-linux-androideabi)
+            export CC_armv7_linux_androideabi="$NDK_TOOLCHAIN/bin/armv7a-linux-androideabi${API_LEVEL}-clang"
+            export AR_armv7_linux_androideabi="$NDK_TOOLCHAIN/bin/llvm-ar"
+            export CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER="$NDK_TOOLCHAIN/bin/armv7a-linux-androideabi${API_LEVEL}-clang"
+            ;;
+        x86_64-linux-android)
+            export CC_x86_64_linux_android="$NDK_TOOLCHAIN/bin/x86_64-linux-android${API_LEVEL}-clang"
+            export AR_x86_64_linux_android="$NDK_TOOLCHAIN/bin/llvm-ar"
+            export CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER="$NDK_TOOLCHAIN/bin/x86_64-linux-android${API_LEVEL}-clang"
+            ;;
+        i686-linux-android)
+            export CC_i686_linux_android="$NDK_TOOLCHAIN/bin/i686-linux-android${API_LEVEL}-clang"
+            export AR_i686_linux_android="$NDK_TOOLCHAIN/bin/llvm-ar"
+            export CARGO_TARGET_I686_LINUX_ANDROID_LINKER="$NDK_TOOLCHAIN/bin/i686-linux-android${API_LEVEL}-clang"
+            ;;
+    esac
 
     # Build with cargo
     cargo build $CARGO_FLAGS --target "$rust_target"
