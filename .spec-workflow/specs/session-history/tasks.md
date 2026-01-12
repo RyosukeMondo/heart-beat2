@@ -26,7 +26,7 @@
   - _Requirements: 1, 2, 3, 4_
   - _Prompt: Role: Rust file I/O developer | Task: Create FileSessionRepository implementing SessionRepository. Use dirs::home_dir() + ".heart-beat/sessions/". Save as {date}_{plan}_{id}.json. List by reading directory, parse summary from filename and first few fields (lazy). | Restrictions: Create directory if missing, handle permissions | Success: Can save and list sessions_
 
-- [ ] 2.2 Add session recording to SessionExecutor
+- [-] 2.2 Add session recording to SessionExecutor
   - File: `rust/src/scheduler/executor.rs`
   - Inject SessionRepository into executor
   - Save session on complete/stop/interrupt

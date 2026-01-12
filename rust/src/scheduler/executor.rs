@@ -5,10 +5,13 @@
 //! session persistence, and cron-based scheduling.
 
 use crate::domain::heart_rate::FilteredHeartRate;
+use crate::domain::session_history::{CompletedSession, HrSample, SessionStatus, SessionSummary};
 use crate::domain::training_plan::TrainingPlan;
 use crate::ports::notification::{NotificationEvent, NotificationPort};
+use crate::ports::session_repository::SessionRepository;
 use crate::state::session::{SessionEvent, SessionStateMachineWrapper, State};
 use anyhow::{Context, Result};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -68,6 +71,15 @@ pub struct SessionExecutor {
 
     /// Pending scheduled sessions awaiting user action
     pending_sessions: Arc<Mutex<HashMap<String, PendingSession>>>,
+
+    /// Optional session repository for saving completed sessions
+    session_repository: Option<Arc<dyn SessionRepository>>,
+
+    /// HR samples collected during the current session
+    hr_samples: Arc<Mutex<Vec<HrSample>>>,
+
+    /// Start time of the current session
+    session_start_time: Arc<Mutex<Option<chrono::DateTime<Utc>>>>,
 }
 
 impl SessionExecutor {
@@ -85,6 +97,9 @@ impl SessionExecutor {
             checkpoint_path: None,
             scheduler: None,
             pending_sessions: Arc::new(Mutex::new(HashMap::new())),
+            session_repository: None,
+            hr_samples: Arc::new(Mutex::new(Vec::new())),
+            session_start_time: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -106,6 +121,9 @@ impl SessionExecutor {
             checkpoint_path: Some(checkpoint_path),
             scheduler: None,
             pending_sessions: Arc::new(Mutex::new(HashMap::new())),
+            session_repository: None,
+            hr_samples: Arc::new(Mutex::new(Vec::new())),
+            session_start_time: Arc::new(Mutex::new(None)),
         };
 
         // Try to load existing checkpoint
@@ -132,7 +150,20 @@ impl SessionExecutor {
             checkpoint_path: None,
             scheduler: None,
             pending_sessions: Arc::new(Mutex::new(HashMap::new())),
+            session_repository: None,
+            hr_samples: Arc::new(Mutex::new(Vec::new())),
+            session_start_time: Arc::new(Mutex::new(None)),
         }
+    }
+
+    /// Set the session repository for saving completed sessions.
+    ///
+    /// # Arguments
+    ///
+    /// * `repository` - The session repository implementation
+    pub fn with_session_repository(mut self, repository: Arc<dyn SessionRepository>) -> Self {
+        self.session_repository = Some(repository);
+        self
     }
 
     /// Load session checkpoint from disk if it exists.
@@ -292,6 +323,16 @@ impl SessionExecutor {
             }
         }
 
+        // Initialize session tracking
+        {
+            let mut samples = self.hr_samples.lock().await;
+            samples.clear();
+        }
+        {
+            let mut start_time = self.session_start_time.lock().await;
+            *start_time = Some(Utc::now());
+        }
+
         // Send Start event to the state machine
         {
             let mut state = self.session_state.lock().await;
@@ -303,6 +344,10 @@ impl SessionExecutor {
         let notifier_clone = Arc::clone(&self.notification_port);
         let mut hr_rx = self.hr_receiver.as_ref().map(|rx| rx.resubscribe());
         let checkpoint_path = self.checkpoint_path.clone();
+        let hr_samples_clone = Arc::clone(&self.hr_samples);
+        let session_start_time_clone = Arc::clone(&self.session_start_time);
+        let session_repository_clone = self.session_repository.clone();
+        let plan_name = plan.name.clone();
 
         let tick_task = tokio::spawn(async move {
             let mut ticker = interval(Duration::from_secs(1));
@@ -317,6 +362,15 @@ impl SessionExecutor {
                     loop {
                         match rx.try_recv() {
                             Ok(hr_data) => {
+                                // Collect HR sample for session history
+                                {
+                                    let mut samples = hr_samples_clone.lock().await;
+                                    samples.push(HrSample {
+                                        timestamp: Utc::now(),
+                                        bpm: hr_data.filtered_bpm,
+                                    });
+                                }
+
                                 // Update BPM and check for zone deviation
                                 let deviation = {
                                     let mut state = state_clone.lock().await;
@@ -422,6 +476,51 @@ impl SessionExecutor {
                 }
             }
 
+            // Session completed - save to repository if enabled
+            if let Some(ref repository) = session_repository_clone {
+                let start_time = session_start_time_clone.lock().await;
+                if let Some(start) = *start_time {
+                    let end_time = Utc::now();
+                    let duration = (end_time - start).num_seconds().max(0) as u32;
+
+                    // Collect HR samples
+                    let samples = hr_samples_clone.lock().await.clone();
+
+                    // Get session state to determine status and phases completed
+                    let (status, phases_completed) = {
+                        let state = state_clone.lock().await;
+                        let status = match state.state() {
+                            crate::state::session::State::Completed {} => SessionStatus::Completed,
+                            _ => SessionStatus::Stopped,
+                        };
+                        let phases = if let Some((phase_idx, _, _)) = state.get_progress() {
+                            phase_idx as u32
+                        } else {
+                            0
+                        };
+                        (status, phases)
+                    };
+
+                    // Calculate summary statistics
+                    let summary = SessionSummary::from_samples(&samples, duration, [0, 0, 0, 0, 0]);
+
+                    // Create completed session
+                    let session = CompletedSession {
+                        id: uuid::Uuid::new_v4().to_string(),
+                        plan_name: plan_name.clone(),
+                        start_time: start,
+                        end_time,
+                        status,
+                        hr_samples: samples,
+                        phases_completed,
+                        summary,
+                    };
+
+                    // Save the session (ignore errors to not disrupt cleanup)
+                    let _ = repository.save(&session).await;
+                }
+            }
+
             // Session completed - clear checkpoint if persistence enabled
             if let Some(ref path) = checkpoint_path {
                 if path.exists() {
@@ -459,6 +558,9 @@ impl SessionExecutor {
     ///
     /// Sends a Stop event to the state machine and cancels the tick loop task.
     pub async fn stop_session(&mut self) -> Result<()> {
+        // Save the session before stopping
+        self.save_current_session(SessionStatus::Stopped).await;
+
         // Send Stop event
         {
             let mut state = self.session_state.lock().await;
@@ -471,6 +573,56 @@ impl SessionExecutor {
         }
 
         Ok(())
+    }
+
+    /// Save the current session to the repository.
+    ///
+    /// Helper method to save session data with a specified status.
+    async fn save_current_session(&self, status: SessionStatus) {
+        if let Some(ref repository) = self.session_repository {
+            let start_time = self.session_start_time.lock().await;
+            if let Some(start) = *start_time {
+                let end_time = Utc::now();
+                let duration = (end_time - start).num_seconds().max(0) as u32;
+
+                // Collect HR samples
+                let samples = self.hr_samples.lock().await.clone();
+
+                // Get session state to determine phases completed and plan name
+                let (phases_completed, plan_name) = {
+                    let state = self.session_state.lock().await;
+                    let phases = if let Some((phase_idx, _, _)) = state.get_progress() {
+                        phase_idx as u32
+                    } else {
+                        0
+                    };
+                    let plan_name = state
+                        .context()
+                        .plan()
+                        .map(|p| p.name.clone())
+                        .unwrap_or_else(|| "Unknown".to_string());
+                    (phases, plan_name)
+                };
+
+                // Calculate summary statistics
+                let summary = SessionSummary::from_samples(&samples, duration, [0, 0, 0, 0, 0]);
+
+                // Create completed session
+                let session = CompletedSession {
+                    id: uuid::Uuid::new_v4().to_string(),
+                    plan_name,
+                    start_time: start,
+                    end_time,
+                    status,
+                    hr_samples: samples,
+                    phases_completed,
+                    summary,
+                };
+
+                // Save the session (ignore errors)
+                let _ = repository.save(&session).await;
+            }
+        }
     }
 
     /// Get the current session progress.
