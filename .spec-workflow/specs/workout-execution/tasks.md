@@ -27,7 +27,7 @@
   - _Requirements: 1, 4_
   - _Prompt: Role: Rust FFI developer | Task: Add pub async fn start_workout(plan_name: String) -> Result<()> that loads plan, creates SessionExecutor, starts session. Add pause_workout(), resume_workout(), stop_workout() delegating to executor. Add create_session_progress_stream() returning StreamSink. | Restrictions: Handle executor not initialized | Success: Flutter can control workouts_
 
-- [ ] 2.2 Create plan selection bottom sheet
+- [x] 2.2 Create plan selection bottom sheet
   - File: `lib/src/widgets/plan_selector.dart`
   - List available plans from ~/.heart-beat/plans/
   - Allow selection and start

@@ -153,6 +153,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<String> dco_decode_list_String(dynamic raw);
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
 
   @protected
@@ -332,6 +335,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   );
+
+  @protected
+  List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
@@ -523,6 +529,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
         )
         .toList()
         .jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_String(List<String> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_String).toList().jsify()!;
   }
 
   @protected
@@ -843,6 +855,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_String(List<String> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
     SseSerializer serializer,
@@ -977,8 +992,17 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__init_platform(NativePortType port_) =>
       wasmModule.wire__crate__api__init_platform(port_);
 
+  void wire__crate__api__list_plans(NativePortType port_) =>
+      wasmModule.wire__crate__api__list_plans(port_);
+
   void wire__crate__api__list_sessions(NativePortType port_) =>
       wasmModule.wire__crate__api__list_sessions(port_);
+
+  void wire__crate__api__pause_workout(NativePortType port_) =>
+      wasmModule.wire__crate__api__pause_workout(port_);
+
+  void wire__crate__api__resume_workout(NativePortType port_) =>
+      wasmModule.wire__crate__api__resume_workout(port_);
 
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
@@ -1080,6 +1104,14 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__start_mock_mode(NativePortType port_) =>
       wasmModule.wire__crate__api__start_mock_mode(port_);
+
+  void wire__crate__api__start_workout(
+    NativePortType port_,
+    String plan_name,
+  ) => wasmModule.wire__crate__api__start_workout(port_, plan_name);
+
+  void wire__crate__api__stop_workout(NativePortType port_) =>
+      wasmModule.wire__crate__api__stop_workout(port_);
 
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
@@ -1202,7 +1234,13 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void wire__crate__api__init_platform(NativePortType port_);
 
+  external void wire__crate__api__list_plans(NativePortType port_);
+
   external void wire__crate__api__list_sessions(NativePortType port_);
+
+  external void wire__crate__api__pause_workout(NativePortType port_);
+
+  external void wire__crate__api__resume_workout(NativePortType port_);
 
   external void wire__crate__api__scan_devices(NativePortType port_);
 
@@ -1300,6 +1338,13 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__start_mock_mode(NativePortType port_);
+
+  external void wire__crate__api__start_workout(
+    NativePortType port_,
+    String plan_name,
+  );
+
+  external void wire__crate__api__stop_workout(NativePortType port_);
 
   external void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(

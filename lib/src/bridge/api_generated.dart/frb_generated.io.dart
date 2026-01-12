@@ -151,6 +151,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<String> dco_decode_list_String(dynamic raw);
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
 
   @protected
@@ -330,6 +333,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
   );
+
+  @protected
+  List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
@@ -519,6 +525,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
             raw[i],
           );
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_String> cst_encode_list_String(List<String> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_String(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      ans.ref.ptr[i] = cst_encode_String(raw[i]);
     }
     return ans;
   }
@@ -894,6 +910,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     List<ApiSessionSummaryPreview> self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_discovered_device(
@@ -1279,6 +1298,17 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__init_platform =
       _wire__crate__api__init_platformPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__list_plans(int port_) {
+    return _wire__crate__api__list_plans(port_);
+  }
+
+  late final _wire__crate__api__list_plansPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__list_plans',
+      );
+  late final _wire__crate__api__list_plans = _wire__crate__api__list_plansPtr
+      .asFunction<void Function(int)>();
+
   void wire__crate__api__list_sessions(int port_) {
     return _wire__crate__api__list_sessions(port_);
   }
@@ -1289,6 +1319,28 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__list_sessions =
       _wire__crate__api__list_sessionsPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__pause_workout(int port_) {
+    return _wire__crate__api__pause_workout(port_);
+  }
+
+  late final _wire__crate__api__pause_workoutPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__pause_workout',
+      );
+  late final _wire__crate__api__pause_workout =
+      _wire__crate__api__pause_workoutPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__resume_workout(int port_) {
+    return _wire__crate__api__resume_workout(port_);
+  }
+
+  late final _wire__crate__api__resume_workoutPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__resume_workout',
+      );
+  late final _wire__crate__api__resume_workout =
+      _wire__crate__api__resume_workoutPtr.asFunction<void Function(int)>();
 
   void wire__crate__api__scan_devices(int port_) {
     return _wire__crate__api__scan_devices(port_);
@@ -1545,6 +1597,39 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__start_mock_mode =
       _wire__crate__api__start_mock_modePtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__start_workout(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> plan_name,
+  ) {
+    return _wire__crate__api__start_workout(port_, plan_name);
+  }
+
+  late final _wire__crate__api__start_workoutPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__start_workout');
+  late final _wire__crate__api__start_workout =
+      _wire__crate__api__start_workoutPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__stop_workout(int port_) {
+    return _wire__crate__api__stop_workout(port_);
+  }
+
+  late final _wire__crate__api__stop_workoutPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__stop_workout',
+      );
+  late final _wire__crate__api__stop_workout =
+      _wire__crate__api__stop_workoutPtr.asFunction<void Function(int)>();
+
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
     ffi.Pointer<ffi.Void> ptr,
@@ -1745,6 +1830,19 @@ class RustLibWire implements BaseWire {
             Function(int)
           >();
 
+  ffi.Pointer<wire_cst_list_String> cst_new_list_String(int len) {
+    return _cst_new_list_String(len);
+  }
+
+  late final _cst_new_list_StringPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_String> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_String');
+  late final _cst_new_list_String = _cst_new_list_StringPtr
+      .asFunction<ffi.Pointer<wire_cst_list_String> Function(int)>();
+
   ffi.Pointer<wire_cst_list_discovered_device> cst_new_list_discovered_device(
     int len,
   ) {
@@ -1853,6 +1951,13 @@ final class wire_cst_record_i_64_u_16 extends ffi.Struct {
 final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
     extends ffi.Struct {
   external ffi.Pointer<ffi.UintPtr> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_String extends ffi.Struct {
+  external ffi.Pointer<ffi.Pointer<wire_cst_list_prim_u_8_strict>> ptr;
 
   @ffi.Int32()
   external int len;

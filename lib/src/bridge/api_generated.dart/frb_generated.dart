@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -1932076487;
+  int get rustContentHash => -1095095358;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -115,7 +115,13 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiInitPlatform();
 
+  Future<List<String>> crateApiListPlans();
+
   Future<List<ApiSessionSummaryPreview>> crateApiListSessions();
+
+  Future<void> crateApiPauseWorkout();
+
+  Future<void> crateApiResumeWorkout();
 
   Future<List<DiscoveredDevice>> crateApiScanDevices();
 
@@ -193,6 +199,10 @@ abstract class RustLibApi extends BaseApi {
   });
 
   Future<void> crateApiStartMockMode();
+
+  Future<void> crateApiStartWorkout({required String planName});
+
+  Future<void> crateApiStopWorkout();
 
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiCompletedSession;
@@ -670,6 +680,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "init_platform", argNames: []);
 
   @override
+  Future<List<String>> crateApiListPlans() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__list_plans(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_String,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiListPlansConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiListPlansConstMeta =>
+      const TaskConstMeta(debugName: "list_plans", argNames: []);
+
+  @override
   Future<List<ApiSessionSummaryPreview>> crateApiListSessions() {
     return handler.executeNormal(
       NormalTask(
@@ -690,6 +721,48 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiListSessionsConstMeta =>
       const TaskConstMeta(debugName: "list_sessions", argNames: []);
+
+  @override
+  Future<void> crateApiPauseWorkout() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__pause_workout(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiPauseWorkoutConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiPauseWorkoutConstMeta =>
+      const TaskConstMeta(debugName: "pause_workout", argNames: []);
+
+  @override
+  Future<void> crateApiResumeWorkout() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__resume_workout(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiResumeWorkoutConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiResumeWorkoutConstMeta =>
+      const TaskConstMeta(debugName: "resume_workout", argNames: []);
 
   @override
   Future<List<DiscoveredDevice>> crateApiScanDevices() {
@@ -1297,6 +1370,49 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiStartMockModeConstMeta =>
       const TaskConstMeta(debugName: "start_mock_mode", argNames: []);
 
+  @override
+  Future<void> crateApiStartWorkout({required String planName}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(planName);
+          return wire.wire__crate__api__start_workout(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiStartWorkoutConstMeta,
+        argValues: [planName],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiStartWorkoutConstMeta =>
+      const TaskConstMeta(debugName: "start_workout", argNames: ["planName"]);
+
+  @override
+  Future<void> crateApiStopWorkout() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__stop_workout(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiStopWorkoutConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiStopWorkoutConstMeta =>
+      const TaskConstMeta(debugName: "stop_workout", argNames: []);
+
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiCompletedSession => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession;
@@ -1547,6 +1663,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview,
         )
         .toList();
+  }
+
+  @protected
+  List<String> dco_decode_list_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_String).toList();
   }
 
   @protected
@@ -1925,6 +2047,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           deserializer,
         ),
       );
+    }
+    return ans_;
+  }
+
+  @protected
+  List<String> sse_decode_list_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <String>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_String(deserializer));
     }
     return ans_;
   }
@@ -2527,6 +2661,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         item,
         serializer,
       );
+    }
+  }
+
+  @protected
+  void sse_encode_list_String(List<String> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_String(item, serializer);
     }
   }
 

@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_session_repository`
+// These functions are ignored because they are not marked as `pub`: `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_session_executor`, `get_session_repository`, `load_plan`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `flush`, `fmt`, `fmt`, `make_writer`, `write`
@@ -424,6 +424,76 @@ Future<(PlatformInt64, int)?> sessionHrSampleAt({
   session: session,
   index: index,
 );
+
+/// List all available training plans.
+///
+/// Returns a list of plan names from the ~/.heart-beat/plans/ directory.
+/// Each plan is stored as a JSON file named `{plan_name}.json`.
+///
+/// # Returns
+///
+/// A vector of plan name strings. Returns an empty vector if no plans are found
+/// or if the plans directory doesn't exist yet.
+///
+/// # Errors
+///
+/// Returns an error if the home directory cannot be determined or if there are
+/// issues reading the plans directory.
+Future<List<String>> listPlans() => RustLib.instance.api.crateApiListPlans();
+
+/// Start a workout session with the specified training plan.
+///
+/// Loads the plan from ~/.heart-beat/plans/{plan_name}.json and starts
+/// executing it. The session will emit progress updates via the progress stream
+/// and save the completed session to the repository.
+///
+/// # Arguments
+///
+/// * `plan_name` - The name of the training plan to execute (without .json extension)
+///
+/// # Returns
+///
+/// Returns Ok(()) if the workout started successfully.
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - The plan file cannot be found or loaded
+/// - A workout is already in progress
+/// - The executor cannot be initialized
+Future<void> startWorkout({required String planName}) =>
+    RustLib.instance.api.crateApiStartWorkout(planName: planName);
+
+/// Pause the currently running workout.
+///
+/// The workout timer stops but the session state is preserved.
+/// Call `resume_workout()` to continue from where you left off.
+///
+/// # Errors
+///
+/// Returns an error if no workout is currently running or if the executor
+/// is not initialized.
+Future<void> pauseWorkout() => RustLib.instance.api.crateApiPauseWorkout();
+
+/// Resume a paused workout.
+///
+/// Continues the workout from where it was paused. The timer resumes
+/// counting and progress updates continue.
+///
+/// # Errors
+///
+/// Returns an error if no workout is paused or if the executor is not initialized.
+Future<void> resumeWorkout() => RustLib.instance.api.crateApiResumeWorkout();
+
+/// Stop the currently running workout.
+///
+/// Ends the workout and saves the session to the repository. The session
+/// will be marked as "Stopped" rather than "Completed".
+///
+/// # Errors
+///
+/// Returns an error if no workout is running or if the executor is not initialized.
+Future<void> stopWorkout() => RustLib.instance.api.crateApiStopWorkout();
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
 abstract class ApiCompletedSession implements RustOpaqueInterface {}

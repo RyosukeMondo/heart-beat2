@@ -35,6 +35,11 @@ typedef struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_genera
   int32_t len;
 } wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
 
+typedef struct wire_cst_list_String {
+  struct wire_cst_list_prim_u_8_strict **ptr;
+  int32_t len;
+} wire_cst_list_String;
+
 typedef struct wire_cst_discovered_device {
   struct wire_cst_list_prim_u_8_strict *id;
   struct wire_cst_list_prim_u_8_strict *name;
@@ -101,7 +106,13 @@ void frbgen_heart_beat_wire__crate__api__init_panic_handler(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__init_platform(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__list_plans(int64_t port_);
+
 void frbgen_heart_beat_wire__crate__api__list_sessions(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__pause_workout(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__resume_workout(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__scan_devices(int64_t port_);
 
@@ -152,6 +163,11 @@ void frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone(int64_t po
 
 void frbgen_heart_beat_wire__crate__api__start_mock_mode(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__start_workout(int64_t port_,
+                                                       struct wire_cst_list_prim_u_8_strict *plan_name);
+
+void frbgen_heart_beat_wire__crate__api__stop_workout(int64_t port_);
+
 void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(const void *ptr);
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(const void *ptr);
@@ -176,6 +192,8 @@ uint8_t *frbgen_heart_beat_cst_new_box_autoadd_u_8(uint8_t value);
 
 struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview *frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(int32_t len);
 
+struct wire_cst_list_String *frbgen_heart_beat_cst_new_list_String(int32_t len);
+
 struct wire_cst_list_discovered_device *frbgen_heart_beat_cst_new_list_discovered_device(int32_t len);
 
 struct wire_cst_list_prim_u_32_strict *frbgen_heart_beat_cst_new_list_prim_u_32_strict(int32_t len);
@@ -197,6 +215,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_8);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_String);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_discovered_device);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_32_strict);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_8_strict);
@@ -224,7 +243,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_logging);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_panic_handler);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_platform);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__list_plans);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__list_sessions);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__pause_workout);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__resume_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__scan_devices);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_end_time);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_hr_sample_at);
@@ -246,6 +268,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_min_hr);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_workout);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__stop_workout);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     return dummy_var;
 }
