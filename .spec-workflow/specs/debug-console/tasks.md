@@ -20,7 +20,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec debug-console, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter developer | Task: Create DebugConsoleOverlay StatefulWidget that wraps child and detects triple-tap anywhere. On triple-tap, show/hide DebugConsole as Overlay. Use kDebugMode to disable in release builds. Position overlay at bottom half of screen with drag handle. | Restrictions: Must not interfere with child widget interactions | Success: Triple-tap toggles console, release builds have no console | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.3 Integrate overlay in app.dart
+- [x] 1.3 Integrate overlay in app.dart
   - File: `lib/src/app.dart`
   - Wrap MaterialApp.router with DebugConsoleOverlay
   - Purpose: Enable console toggle throughout app
