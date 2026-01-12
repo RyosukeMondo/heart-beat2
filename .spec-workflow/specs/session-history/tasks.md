@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create CompletedSession domain types
+- [x] 1.1 Create CompletedSession domain types
   - File: `rust/src/domain/session_history.rs`
   - Define CompletedSession, SessionSummary, HrSample, PhaseResult
   - Add SessionStatus enum (Completed, Interrupted, Stopped)
