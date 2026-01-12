@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create export formatters in Rust
+- [x] 1.1 Create export formatters in Rust
   - File: `rust/src/domain/export.rs`
   - Implement export_to_csv(), export_to_json(), export_to_summary()
   - Purpose: Generate export content

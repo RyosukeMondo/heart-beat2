@@ -4,6 +4,7 @@
 //! following hexagonal architecture principles.
 
 pub mod battery;
+pub mod export;
 pub mod filters;
 pub mod heart_rate;
 pub mod hrv;
@@ -13,6 +14,7 @@ pub mod training_plan;
 
 // Re-export key types for convenient access
 pub use battery::BatteryLevel;
+pub use export::{export_to_csv, export_to_json, export_to_summary};
 pub use filters::{is_valid_bpm, KalmanFilter};
 pub use heart_rate::{
     parse_heart_rate, DiscoveredDevice, FilteredHeartRate, HeartRateMeasurement, Zone,
