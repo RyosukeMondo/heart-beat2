@@ -36,7 +36,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust async developer | Task: Add async fn reconnect(&self, device_id: &str, policy: &ReconnectionPolicy, status_tx: Sender<ConnectionStatus>) method. Loop: emit Reconnecting status, delay using policy.calculate_delay(attempt), call connect_to_device, on success emit Connected and return, on failure increment attempt. After max_attempts emit ReconnectFailed. | Restrictions: Cancellable via CancellationToken | Success: Reconnection with backoff works_
 
-- [ ] 3.1 Add connection status stream to api.rs
+- [x] 3.1 Add connection status stream to api.rs
   - File: `rust/src/api.rs`
   - Add create_connection_status_stream()
   - Wire to adapter connection events

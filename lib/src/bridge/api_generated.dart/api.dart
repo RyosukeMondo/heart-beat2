@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`
+// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
@@ -243,6 +243,12 @@ Future<Zone> hrZone({required ApiFilteredHeartRate data, required int maxHr}) =>
 Future<ApiBatteryLevel> dummyBatteryLevelForCodegen() =>
     RustLib.instance.api.crateApiDummyBatteryLevelForCodegen();
 
+/// Create a dummy connection status for testing (temporary helper for FRB codegen).
+///
+/// This function helps FRB discover the ApiConnectionStatus type during code generation.
+Future<ApiConnectionStatus> dummyConnectionStatusForCodegen() =>
+    RustLib.instance.api.crateApiDummyConnectionStatusForCodegen();
+
 /// Create a stream for receiving battery level data.
 ///
 /// Sets up a stream that will receive real-time battery level measurements
@@ -325,6 +331,65 @@ Stream<ApiSessionProgress> createSessionProgressStream() =>
 /// are currently subscribed.
 Future<BigInt> emitSessionProgress({required ApiSessionProgress data}) =>
     RustLib.instance.api.crateApiEmitSessionProgress(data: data);
+
+/// Create a stream for receiving connection status updates.
+///
+/// Sets up a stream that will receive real-time connection status updates
+/// during BLE device connection, reconnection attempts, and failures.
+/// This function is used by Flutter via FRB to create a reactive data stream.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the connection status data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+///
+/// # Example
+///
+/// ```dart
+/// // In Flutter:
+/// final stream = await api.createConnectionStatusStream();
+/// stream.listen((status) {
+///   if (status.type == 'reconnecting') {
+///     print('Reconnecting... attempt ${status.attempt}/${status.max_attempts}');
+///   } else if (status.type == 'connected') {
+///     print('Connected to ${status.device_id}');
+///   }
+/// });
+/// ```
+Stream<ApiConnectionStatus> createConnectionStatusStream() =>
+    RustLib.instance.api.crateApiCreateConnectionStatusStream();
+
+/// Emit connection status data to all stream subscribers.
+///
+/// This function should be called by the BLE adapter when connection status changes.
+/// It broadcasts the status to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `status` - The connection status to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the status. Returns 0 if no receivers
+/// are currently subscribed.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// // When starting reconnection:
+/// emit_connection_status(ConnectionStatus::Reconnecting { attempt: 1, max_attempts: 5 });
+///
+/// // When connected:
+/// emit_connection_status(ConnectionStatus::Connected { device_id: "AA:BB:CC:DD:EE:FF".to_string() });
+///
+/// // When reconnection fails:
+/// emit_connection_status(ConnectionStatus::ReconnectFailed { reason: "Max attempts exceeded".to_string() });
+/// ```
+Future<BigInt> emitConnectionStatus({required ApiConnectionStatus status}) =>
+    RustLib.instance.api.crateApiEmitConnectionStatus(status: status);
 
 /// List all completed training sessions.
 ///
@@ -676,6 +741,9 @@ Future<String> zoneStatusToString({required ApiZoneStatus status}) =>
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
 abstract class ApiCompletedSession implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>
+abstract class ApiConnectionStatus implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}

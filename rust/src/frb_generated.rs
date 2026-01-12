@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1671379399;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -264137699;
 
 // Section: executor
 
@@ -88,6 +88,31 @@ fn wire__crate__api__create_battery_stream_impl(
                 transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || async move {
                         let output_ok = crate::api::create_battery_stream(api_sink).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__create_connection_status_stream_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sink: impl CstDecode<StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_connection_status_stream",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sink = sink.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok =
+                            crate::api::create_connection_status_stream(api_sink).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -209,6 +234,26 @@ fn wire__crate__api__dummy_battery_level_for_codegen_impl(
         },
     )
 }
+fn wire__crate__api__dummy_connection_status_for_codegen_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "dummy_connection_status_for_codegen",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::dummy_connection_status_for_codegen())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__emit_battery_data_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     data: impl CstDecode<crate::api::ApiBatteryLevel>,
@@ -224,6 +269,28 @@ fn wire__crate__api__emit_battery_data_impl(
             move |context| {
                 transform_result_dco::<_, _, ()>((move || {
                     let output_ok = Result::<_, ()>::Ok(crate::api::emit_battery_data(api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__emit_connection_status_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<ApiConnectionStatus>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "emit_connection_status",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::emit_connection_status(api_status))?;
                     Ok(output_ok)
                 })())
             }
@@ -2535,6 +2602,16 @@ impl SseDecode for ApiCompletedSession {
     }
 }
 
+impl SseDecode for ApiConnectionStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
 impl SseDecode for ApiFilteredHeartRate {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2606,6 +2683,16 @@ impl SseDecode
 }
 
 impl SseDecode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
+impl SseDecode
     for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -2664,6 +2751,14 @@ impl SseDecode
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <usize>::sse_decode(deserializer);
         return unsafe { decode_rust_opaque_nom(inner) };
+    }
+}
+
+impl SseDecode for StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <String>::sse_decode(deserializer);
+        return StreamSink::deserialize(inner);
     }
 }
 
@@ -3030,6 +3125,24 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiCompletedSession>> for ApiC
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiConnectionStatus> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<ApiConnectionStatus>
+{
+}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiConnectionStatus>> for ApiConnectionStatus {
+    fn into_into_dart(self) -> FrbWrapper<ApiConnectionStatus> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<ApiFilteredHeartRate> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self.0)
@@ -3245,6 +3358,13 @@ impl SseEncode for ApiCompletedSession {
     }
 }
 
+impl SseEncode for ApiConnectionStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, StdArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode for ApiFilteredHeartRate {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3299,6 +3419,17 @@ impl SseEncode for ApiZoneStatus {
 
 impl SseEncode
     for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
+    for RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3373,6 +3504,13 @@ impl SseEncode
         let (ptr, size) = self.sse_encode_raw();
         <usize>::sse_encode(ptr, serializer);
         <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode for StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        unimplemented!("")
     }
 }
 
@@ -3706,6 +3844,18 @@ mod io {
             ))
         }
     }
+    impl CstDecode<ApiConnectionStatus> for usize {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiConnectionStatus {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
     impl CstDecode<ApiFilteredHeartRate> for usize {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> ApiFilteredHeartRate {
@@ -3799,6 +3949,22 @@ mod io {
     impl
         CstDecode<
             RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+            >,
+        > for usize
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+        > {
+            unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
                 flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiFilteredHeartRate>,
             >,
         > for usize
@@ -3883,6 +4049,17 @@ mod io {
         ) -> RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
         {
             unsafe { decode_rust_opaque_nom(self as _) }
+        }
+    }
+    impl CstDecode<StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec>>
+        for *mut wire_cst_list_prim_u_8_strict
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec> {
+            let raw: String = self.cst_decode();
+            StreamSink::deserialize(raw)
         }
     }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
@@ -4135,6 +4312,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_connection_status_stream(
+        port_: i64,
+        sink: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__create_connection_status_stream_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_hr_stream(
         port_: i64,
         sink: *mut wire_cst_list_prim_u_8_strict,
@@ -4171,11 +4356,26 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__dummy_connection_status_for_codegen(
+        port_: i64,
+    ) {
+        wire__crate__api__dummy_connection_status_for_codegen_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_battery_data(
         port_: i64,
         data: *mut wire_cst_api_battery_level,
     ) {
         wire__crate__api__emit_battery_data_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__emit_connection_status(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__emit_connection_status_impl(port_, status)
     }
 
     #[unsafe(no_mangle)]
@@ -4643,6 +4843,24 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
         ptr: *const std::ffi::c_void,
     ) {
@@ -4934,6 +5152,16 @@ mod web {
             unimplemented!()
         }
     }
+    impl CstDecode<StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec>>
+        for String
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec> {
+            StreamSink::deserialize(self)
+        }
+    }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
         for String
     {
@@ -5136,6 +5364,18 @@ mod web {
             ))
         }
     }
+    impl CstDecode<ApiConnectionStatus> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> ApiConnectionStatus {
+            flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(CstDecode::<
+                RustOpaqueNom<
+                    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+                >,
+            >::cst_decode(
+                self
+            ))
+        }
+    }
     impl CstDecode<ApiFilteredHeartRate> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> ApiFilteredHeartRate {
@@ -5224,6 +5464,26 @@ mod web {
             self,
         ) -> RustOpaqueNom<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>,
+        > {
+            #[cfg(target_pointer_width = "64")]
+            {
+                compile_error!("64-bit pointers are not supported.");
+            }
+            unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
+    impl
+        CstDecode<
+            RustOpaqueNom<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
+            >,
+        > for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> RustOpaqueNom<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>,
         > {
             #[cfg(target_pointer_width = "64")]
             {
@@ -5343,6 +5603,16 @@ mod web {
                 compile_error!("64-bit pointers are not supported.");
             }
             unsafe { decode_rust_opaque_nom((self.as_f64().unwrap() as usize) as _) }
+        }
+    }
+    impl CstDecode<StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(
+            self,
+        ) -> StreamSink<ApiConnectionStatus, flutter_rust_bridge::for_generated::DcoCodec> {
+            StreamSink::deserialize(self.as_string().expect("should be a string"))
         }
     }
     impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>
@@ -5506,6 +5776,14 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__create_connection_status_stream(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sink: String,
+    ) {
+        wire__crate__api__create_connection_status_stream_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__create_hr_stream(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         sink: String,
@@ -5542,11 +5820,26 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__dummy_connection_status_for_codegen(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__dummy_connection_status_for_codegen_impl(port_)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__emit_battery_data(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__emit_battery_data_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__emit_connection_status(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__emit_connection_status_impl(port_, status)
     }
 
     #[wasm_bindgen]
@@ -6034,6 +6327,24 @@ mod web {
     ) {
         unsafe {
             StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>::decrement_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>::increment_strong_count(ptr as _);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+        ptr: *const std::ffi::c_void,
+    ) {
+        unsafe {
+            StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>::decrement_strong_count(ptr as _);
         }
     }
 

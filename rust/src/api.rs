@@ -40,6 +40,9 @@ pub use crate::domain::session_progress::{
     SessionState as ApiSessionState, ZoneStatus as ApiZoneStatus,
 };
 
+// Re-export reconnection types for FRB code generation
+pub use crate::domain::reconnection::ConnectionStatus as ApiConnectionStatus;
+
 /// Format for exporting session data.
 ///
 /// Specifies the output format when exporting a completed training session.
@@ -75,6 +78,9 @@ static BATTERY_CHANNEL_CAPACITY: usize = 10;
 
 // Global state for session progress streaming
 static SESSION_PROGRESS_CHANNEL_CAPACITY: usize = 100;
+
+// Global state for connection status streaming
+static CONNECTION_STATUS_CHANNEL_CAPACITY: usize = 10;
 
 /// Log message that can be sent to Flutter for debugging.
 ///
@@ -443,6 +449,9 @@ pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
 pub async fn connect_device(device_id: String) -> Result<()> {
     tracing::info!("connect_device: Connecting to device {}", device_id);
 
+    // Emit Connecting status
+    emit_connection_status(ApiConnectionStatus::Connecting);
+
     // Get the shared adapter (same instance that discovered the devices)
     let adapter = get_ble_adapter().await?;
 
@@ -462,6 +471,11 @@ pub async fn connect_device(device_id: String) -> Result<()> {
         Ok(Ok(())) => {
             // Connection successful, signal the state machine
             state_machine.handle(ConnectionEvent::ConnectionSuccess)?;
+
+            // Emit Connected status
+            emit_connection_status(ApiConnectionStatus::Connected {
+                device_id: device_id.clone(),
+            });
 
             // Discover services
             state_machine.handle(ConnectionEvent::ServicesDiscovered)?;
@@ -573,11 +587,13 @@ pub async fn connect_device(device_id: String) -> Result<()> {
         Ok(Err(e)) => {
             // Connection failed
             state_machine.handle(ConnectionEvent::ConnectionFailed)?;
+            emit_connection_status(ApiConnectionStatus::Disconnected);
             Err(anyhow!("Connection failed: {}", e))
         }
         Err(_) => {
             // Timeout
             state_machine.handle(ConnectionEvent::ConnectionFailed)?;
+            emit_connection_status(ApiConnectionStatus::Disconnected);
             Err(anyhow!("Connection timeout after 15 seconds"))
         }
     }
@@ -751,6 +767,15 @@ pub fn dummy_battery_level_for_codegen() -> ApiBatteryLevel {
         level: Some(100),
         is_charging: false,
         timestamp: 0,
+    }
+}
+
+/// Create a dummy connection status for testing (temporary helper for FRB codegen).
+///
+/// This function helps FRB discover the ApiConnectionStatus type during code generation.
+pub fn dummy_connection_status_for_codegen() -> ApiConnectionStatus {
+    ApiConnectionStatus::Connected {
+        device_id: "dummy".to_string(),
     }
 }
 
@@ -935,6 +960,104 @@ fn create_session_progress_forwarder() -> tokio::sync::mpsc::UnboundedSender<Api
     });
 
     tx
+}
+
+/// Create a stream for receiving connection status updates.
+///
+/// Sets up a stream that will receive real-time connection status updates
+/// during BLE device connection, reconnection attempts, and failures.
+/// This function is used by Flutter via FRB to create a reactive data stream.
+///
+/// # Arguments
+///
+/// * `sink` - The FRB StreamSink that will receive the connection status data
+///
+/// # Returns
+///
+/// Returns Ok(()) if the stream was successfully set up.
+///
+/// # Example
+///
+/// ```dart
+/// // In Flutter:
+/// final stream = await api.createConnectionStatusStream();
+/// stream.listen((status) {
+///   if (status.type == 'reconnecting') {
+///     print('Reconnecting... attempt ${status.attempt}/${status.max_attempts}');
+///   } else if (status.type == 'connected') {
+///     print('Connected to ${status.device_id}');
+///   }
+/// });
+/// ```
+pub async fn create_connection_status_stream(sink: StreamSink<ApiConnectionStatus>) -> Result<()> {
+    let mut rx = get_connection_status_receiver();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data).ok();
+        }
+    });
+    Ok(())
+}
+
+/// Get a receiver for streaming connection status data (internal use).
+///
+/// Creates a broadcast receiver that can be used to subscribe to real-time
+/// connection status updates from the BLE adapter.
+///
+/// # Returns
+///
+/// A tokio broadcast receiver that will receive ConnectionStatus updates.
+/// Multiple receivers can be created for fan-out streaming to multiple consumers.
+fn get_connection_status_receiver() -> broadcast::Receiver<ApiConnectionStatus> {
+    let tx = get_or_create_connection_status_broadcast_sender();
+    tx.subscribe()
+}
+
+/// Get or create the global connection status broadcast sender.
+///
+/// Returns the global broadcast sender for emitting connection status data to all
+/// stream subscribers. This is thread-safe and can be called from multiple locations.
+fn get_or_create_connection_status_broadcast_sender() -> broadcast::Sender<ApiConnectionStatus> {
+    use std::sync::OnceLock;
+    static CONNECTION_STATUS_TX: OnceLock<broadcast::Sender<ApiConnectionStatus>> = OnceLock::new();
+
+    CONNECTION_STATUS_TX
+        .get_or_init(|| {
+            let (tx, _rx) = broadcast::channel(CONNECTION_STATUS_CHANNEL_CAPACITY);
+            tx
+        })
+        .clone()
+}
+
+/// Emit connection status data to all stream subscribers.
+///
+/// This function should be called by the BLE adapter when connection status changes.
+/// It broadcasts the status to all active stream subscribers.
+///
+/// # Arguments
+///
+/// * `status` - The connection status to broadcast
+///
+/// # Returns
+///
+/// The number of receivers that received the status. Returns 0 if no receivers
+/// are currently subscribed.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// // When starting reconnection:
+/// emit_connection_status(ConnectionStatus::Reconnecting { attempt: 1, max_attempts: 5 });
+///
+/// // When connected:
+/// emit_connection_status(ConnectionStatus::Connected { device_id: "AA:BB:CC:DD:EE:FF".to_string() });
+///
+/// // When reconnection fails:
+/// emit_connection_status(ConnectionStatus::ReconnectFailed { reason: "Max attempts exceeded".to_string() });
+/// ```
+pub fn emit_connection_status(status: ApiConnectionStatus) -> usize {
+    let tx = get_or_create_connection_status_broadcast_sender();
+    tx.send(status).unwrap_or_default()
 }
 
 // Global session repository

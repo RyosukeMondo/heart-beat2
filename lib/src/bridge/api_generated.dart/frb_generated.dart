@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -1671379399;
+  int get rustContentHash => -264137699;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -80,6 +80,8 @@ abstract class RustLibApi extends BaseApi {
 
   Stream<ApiBatteryLevel> crateApiCreateBatteryStream();
 
+  Stream<ApiConnectionStatus> crateApiCreateConnectionStatusStream();
+
   Stream<ApiFilteredHeartRate> crateApiCreateHrStream();
 
   Stream<ApiSessionProgress> crateApiCreateSessionProgressStream();
@@ -90,7 +92,13 @@ abstract class RustLibApi extends BaseApi {
 
   Future<ApiBatteryLevel> crateApiDummyBatteryLevelForCodegen();
 
+  Future<ApiConnectionStatus> crateApiDummyConnectionStatusForCodegen();
+
   Future<BigInt> crateApiEmitBatteryData({required ApiBatteryLevel data});
+
+  Future<BigInt> crateApiEmitConnectionStatus({
+    required ApiConnectionStatus status,
+  });
 
   Future<BigInt> crateApiEmitHrData({required ApiFilteredHeartRate data});
 
@@ -293,6 +301,15 @@ abstract class RustLibApi extends BaseApi {
   get rust_arc_decrement_strong_count_ApiCompletedSessionPtr;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiConnectionStatus;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiConnectionStatus;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiConnectionStatusPtr;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiFilteredHeartRate;
 
   RustArcDecrementStrongCountFnType
@@ -403,6 +420,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiCreateBatteryStreamConstMeta =>
       const TaskConstMeta(
         debugName: "create_battery_stream",
+        argNames: ["sink"],
+      );
+
+  @override
+  Stream<ApiConnectionStatus> crateApiCreateConnectionStatusStream() {
+    final sink = RustStreamSink<ApiConnectionStatus>();
+    unawaited(
+      handler.executeNormal(
+        NormalTask(
+          callFfi: (port_) {
+            var arg0 =
+                cst_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus_Dco(
+                  sink,
+                );
+            return wire.wire__crate__api__create_connection_status_stream(
+              port_,
+              arg0,
+            );
+          },
+          codec: DcoCodec(
+            decodeSuccessData: dco_decode_unit,
+            decodeErrorData: dco_decode_AnyhowException,
+          ),
+          constMeta: kCrateApiCreateConnectionStatusStreamConstMeta,
+          argValues: [sink],
+          apiImpl: this,
+        ),
+      ),
+    );
+    return sink.stream;
+  }
+
+  TaskConstMeta get kCrateApiCreateConnectionStatusStreamConstMeta =>
+      const TaskConstMeta(
+        debugName: "create_connection_status_stream",
         argNames: ["sink"],
       );
 
@@ -538,6 +590,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<ApiConnectionStatus> crateApiDummyConnectionStatusForCodegen() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__dummy_connection_status_for_codegen(
+            port_,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiDummyConnectionStatusForCodegenConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDummyConnectionStatusForCodegenConstMeta =>
+      const TaskConstMeta(
+        debugName: "dummy_connection_status_for_codegen",
+        argNames: [],
+      );
+
+  @override
   Future<BigInt> crateApiEmitBatteryData({required ApiBatteryLevel data}) {
     return handler.executeNormal(
       NormalTask(
@@ -558,6 +637,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiEmitBatteryDataConstMeta =>
       const TaskConstMeta(debugName: "emit_battery_data", argNames: ["data"]);
+
+  @override
+  Future<BigInt> crateApiEmitConnectionStatus({
+    required ApiConnectionStatus status,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+                status,
+              );
+          return wire.wire__crate__api__emit_connection_status(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_usize,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmitConnectionStatusConstMeta,
+        argValues: [status],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmitConnectionStatusConstMeta =>
+      const TaskConstMeta(
+        debugName: "emit_connection_status",
+        argNames: ["status"],
+      );
 
   @override
   Future<BigInt> crateApiEmitHrData({required ApiFilteredHeartRate data}) {
@@ -2270,6 +2379,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_ApiConnectionStatus => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_ApiConnectionStatus => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_ApiFilteredHeartRate => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate;
 
@@ -2330,6 +2447,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ApiCompletedSessionImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ApiConnectionStatus
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -2463,6 +2589,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiConnectionStatus
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiFilteredHeartRate
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     dynamic raw,
@@ -2516,6 +2651,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ApiZoneStatusImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  RustStreamSink<ApiConnectionStatus>
+  dco_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus_Dco(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
   }
 
   @protected
@@ -2817,6 +2961,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiConnectionStatus
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     SseDeserializer deserializer,
@@ -2985,6 +3141,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiConnectionStatus
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiConnectionStatusImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   ApiFilteredHeartRate
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     SseDeserializer deserializer,
@@ -3054,6 +3222,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
+  }
+
+  @protected
+  RustStreamSink<ApiConnectionStatus>
+  sse_decode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus_Dco(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    throw UnimplementedError('Unreachable ()');
   }
 
   @protected
@@ -3395,6 +3572,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiConnectionStatusImpl).frbInternalCstEncode(move: true);
+  }
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   ) {
@@ -3539,6 +3726,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiConnectionStatusImpl).frbInternalCstEncode();
+  }
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate raw,
   ) {
@@ -3675,6 +3872,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiCompletedSessionImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiConnectionStatusImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
@@ -3863,6 +4073,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(
+    ApiConnectionStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiConnectionStatusImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
     ApiFilteredHeartRate self,
     SseSerializer serializer,
@@ -3935,6 +4158,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiZoneStatusImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_StreamSink_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus_Dco(
+    RustStreamSink<ApiConnectionStatus> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(
+      self.setupAndSerialize(
+        codec: DcoCodec(
+          decodeSuccessData:
+              dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+      ),
       serializer,
     );
   }
@@ -4322,6 +4564,35 @@ class ApiCompletedSessionImpl extends RustOpaque
         .instance
         .api
         .rust_arc_decrement_strong_count_ApiCompletedSessionPtr,
+  );
+}
+
+@sealed
+class ApiConnectionStatusImpl extends RustOpaque
+    implements ApiConnectionStatus {
+  // Not to be used by end users
+  ApiConnectionStatusImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  ApiConnectionStatusImpl.frbInternalSseDecode(
+    BigInt ptr,
+    int externalSizeOnNative,
+  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount: RustLib
+        .instance
+        .api
+        .rust_arc_increment_strong_count_ApiConnectionStatus,
+    rustArcDecrementStrongCount: RustLib
+        .instance
+        .api
+        .rust_arc_decrement_strong_count_ApiConnectionStatus,
+    rustArcDecrementStrongCountPtr: RustLib
+        .instance
+        .api
+        .rust_arc_decrement_strong_count_ApiConnectionStatusPtr,
   );
 }
 

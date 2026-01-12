@@ -69,6 +69,9 @@ void frbgen_heart_beat_wire__crate__api__connect_device(int64_t port_,
 void frbgen_heart_beat_wire__crate__api__create_battery_stream(int64_t port_,
                                                                struct wire_cst_list_prim_u_8_strict *sink);
 
+void frbgen_heart_beat_wire__crate__api__create_connection_status_stream(int64_t port_,
+                                                                         struct wire_cst_list_prim_u_8_strict *sink);
+
 void frbgen_heart_beat_wire__crate__api__create_hr_stream(int64_t port_,
                                                           struct wire_cst_list_prim_u_8_strict *sink);
 
@@ -82,8 +85,12 @@ void frbgen_heart_beat_wire__crate__api__disconnect(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__dummy_connection_status_for_codegen(int64_t port_);
+
 void frbgen_heart_beat_wire__crate__api__emit_battery_data(int64_t port_,
                                                            struct wire_cst_api_battery_level *data);
+
+void frbgen_heart_beat_wire__crate__api__emit_connection_status(int64_t port_, uintptr_t status);
 
 void frbgen_heart_beat_wire__crate__api__emit_hr_data(int64_t port_, uintptr_t data);
 
@@ -234,6 +241,10 @@ void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_b
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(const void *ptr);
 
+void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(const void *ptr);
+
+void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus(const void *ptr);
+
 void frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(const void *ptr);
 
 void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(const void *ptr);
@@ -298,6 +309,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_32_strict);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_8_strict);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress);
@@ -305,6 +317,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress);
@@ -313,12 +326,15 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connect_device);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_battery_stream);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_connection_status_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_hr_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_session_progress_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__delete_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__disconnect);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__dummy_connection_status_for_codegen);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_battery_data);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_connection_status);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_hr_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_session_progress);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__export_session);
