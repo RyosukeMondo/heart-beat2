@@ -31,7 +31,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec dev-documentation, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical writer | Task: Add Development Workflows section to DEVELOPER-GUIDE.md covering: 1) Linux CLI (fastest, cargo run --bin cli), 2) Linux Desktop (flutter run -d linux, dev-linux.sh), 3) Android (adb-install.sh, build times), 4) Mock mode (--mock flag). Include when to use each. | Restrictions: Practical examples | Success: Developer knows which workflow to use | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.4 Add debugging section to DEVELOPER-GUIDE.md
+- [x] 1.4 Add debugging section to DEVELOPER-GUIDE.md
   - File: `docs/DEVELOPER-GUIDE.md` (continue)
   - Document debug console usage
   - Document log levels and filtering

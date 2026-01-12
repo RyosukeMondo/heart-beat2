@@ -516,4 +516,376 @@ For continuous development, use watch mode:
 
 ---
 
-For debugging tools and logging, continue reading the next section.
+## Debugging
+
+This section covers debugging tools, log levels, and techniques for troubleshooting issues during development.
+
+### Overview
+
+Heart Beat provides multiple debugging mechanisms:
+
+1. **Debug Console** - In-app UI for viewing logs and filters
+2. **Log Levels** - Control Rust logging verbosity via `RUST_LOG`
+3. **Android Logcat** - View logs from Android devices using `adb-logs.sh`
+4. **BLE HCI Snoop** - Capture low-level Bluetooth packets using `adb-ble-debug.sh`
+
+### 1. Debug Console (In-App)
+
+The Flutter app includes a built-in debug console for viewing Rust logs in real-time.
+
+**Activate the console:**
+- Triple-tap anywhere on the screen to toggle the debug overlay
+
+**Features:**
+- Real-time log streaming from Rust layer
+- Filter logs by level (ERROR, WARN, INFO, DEBUG, TRACE)
+- Filter logs by module (ble, training, storage, etc.)
+- Pause/resume log capture
+- Clear log buffer
+
+**Use cases:**
+- Quick debugging on device without ADB
+- Show logs to QA or non-technical users
+- Demo logging during development
+- On-device troubleshooting
+
+**Limitations:**
+- Only shows logs from current session
+- Limited buffer size (~1000 lines)
+- UI overhead may affect performance
+- Not available in release builds (disabled by default)
+
+### 2. Rust Log Levels
+
+Control Rust logging verbosity using the `RUST_LOG` environment variable.
+
+**Available log levels (lowest to highest):**
+- `trace` - Very detailed, every function call
+- `debug` - Detailed information for debugging
+- `info` - General informational messages
+- `warn` - Warning messages
+- `error` - Error messages only
+
+**Basic usage:**
+
+```bash
+# Enable all debug logs
+RUST_LOG=debug cargo run --bin cli
+
+# Enable only heart_beat module debug logs
+RUST_LOG=heart_beat=debug cargo run --bin cli
+
+# Enable trace logs for specific module
+RUST_LOG=heart_beat::ble=trace cargo run --bin cli
+
+# Multiple modules with different levels
+RUST_LOG=heart_beat::ble=debug,heart_beat::training=info cargo run --bin cli
+
+# Error level only (minimal logging)
+RUST_LOG=error cargo run --bin cli
+```
+
+**Module hierarchy:**
+```
+heart_beat
+├── ble          - Bluetooth Low Energy
+├── training     - Training session management
+├── storage      - Data persistence
+├── hr_zone      - Heart rate zone calculations
+└── cli          - CLI interface
+```
+
+**Examples for common debugging scenarios:**
+
+```bash
+# Debug BLE connection issues
+RUST_LOG=heart_beat::ble=debug cargo run --bin cli
+
+# Debug training calculations
+RUST_LOG=heart_beat::training=debug,heart_beat::hr_zone=debug cargo run --bin cli
+
+# Verbose output for all heart_beat code
+RUST_LOG=heart_beat=trace cargo run --bin cli
+
+# Production-like logging (errors and warnings only)
+RUST_LOG=warn cargo run --bin cli
+```
+
+**Performance considerations:**
+- `trace` and `debug` levels have significant overhead
+- Use `info` or `warn` for production builds
+- Excessive logging can affect BLE timing and responsiveness
+
+### 3. Android Logcat (adb-logs.sh)
+
+View logs from Android devices using the `adb-logs.sh` script.
+
+**Basic usage:**
+
+```bash
+# Show filtered logs (one-time dump)
+./scripts/adb-logs.sh
+
+# Follow logs continuously (like tail -f)
+./scripts/adb-logs.sh --follow
+
+# Show help
+./scripts/adb-logs.sh --help
+```
+
+**What it does:**
+1. Checks for connected Android device
+2. Clears logcat buffer for clean output
+3. Filters logs for relevant tags: `heart_beat`, `flutter`, `btleplug`, `BluetoothGatt`
+4. Colorizes output by log level (red=ERROR, yellow=WARN, green=INFO)
+
+**Use cases:**
+- Real-time debugging during Android development
+- Capture logs from device testing
+- Monitor app behavior during BLE sessions
+- Debug native Android issues
+
+**Advanced filtering:**
+
+The script filters for these tags by default:
+- `heart_beat` - Rust FFI logs
+- `flutter` - Flutter framework logs
+- `btleplug` - BLE library logs
+- `BluetoothGatt` - Android BLE stack logs
+
+For custom filtering, use `adb logcat` directly:
+
+```bash
+# Show only ERROR logs
+adb logcat | grep " E " | grep heart_beat
+
+# Show logs with specific keyword
+adb logcat | grep "heart rate"
+
+# Show logs from specific PID
+adb logcat --pid=$(adb shell pidof -s com.example.heart_beat)
+
+# Save logs to file
+./scripts/adb-logs.sh > debug.log
+```
+
+**Common issues:**
+
+**No device connected:**
+```bash
+# Check device connection
+adb devices
+
+# If no devices shown:
+# 1. Check USB cable
+# 2. Enable USB debugging in Developer Options
+# 3. Authorize computer on device
+```
+
+**Too many logs:**
+```bash
+# Use grep to narrow down
+./scripts/adb-logs.sh --follow | grep "BLE"
+
+# Reduce log level in Rust code
+# Edit rust/src/lib.rs or module files
+```
+
+**Logs delayed or missing:**
+```bash
+# Restart ADB server
+adb kill-server
+adb start-server
+
+# Clear and restart logging
+adb logcat -c
+./scripts/adb-logs.sh --follow
+```
+
+### 4. BLE HCI Snoop Logging (adb-ble-debug.sh)
+
+Capture low-level Bluetooth HCI (Host Controller Interface) packets for deep BLE debugging.
+
+**What is HCI snoop logging?**
+- Records all Bluetooth packets between the host and controller
+- Captures connection establishment, service discovery, characteristic reads/writes
+- Output format compatible with Wireshark for analysis
+- Critical for debugging BLE protocol issues
+
+**Basic usage:**
+
+```bash
+# Enable HCI snoop logging
+./scripts/adb-ble-debug.sh enable
+
+# Check logging status
+./scripts/adb-ble-debug.sh status
+
+# Disable HCI snoop logging
+./scripts/adb-ble-debug.sh disable
+```
+
+**What `enable` does:**
+1. Enables `bluetooth_hci_log` setting on device
+2. Restarts Bluetooth service to activate logging
+3. Creates log file at `/data/misc/bluetooth/logs/btsnoop_hci.log`
+
+**Retrieving the log file:**
+
+```bash
+# Enable root access (may not work on all devices)
+adb root
+
+# Pull the log file
+adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
+
+# If adb root fails, try:
+adb shell "su -c 'cp /data/misc/bluetooth/logs/btsnoop_hci.log /sdcard/'"
+adb pull /sdcard/btsnoop_hci.log .
+```
+
+**Analyzing with Wireshark:**
+
+1. Install Wireshark: `sudo apt install wireshark`
+2. Open `btsnoop_hci.log` in Wireshark
+3. Use filters:
+   - `bluetooth` - All Bluetooth traffic
+   - `bthci_acl` - ACL data packets
+   - `btatt` - ATT protocol (GATT operations)
+   - `btle` - Bluetooth Low Energy
+
+**Common BLE debugging scenarios:**
+
+**Connection failures:**
+```bash
+# Enable logging
+./scripts/adb-ble-debug.sh enable
+
+# Reproduce the connection issue in the app
+
+# Retrieve and analyze log
+adb root
+adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
+
+# Look for:
+# - Connection request packets
+# - Connection complete events
+# - Disconnection events with reason codes
+```
+
+**Service discovery issues:**
+```bash
+# Enable logging, reproduce issue, retrieve log
+
+# In Wireshark, filter for:
+# btatt.opcode == 0x10  (Read By Group Type - primary service discovery)
+# btatt.opcode == 0x08  (Read By Type - characteristic discovery)
+```
+
+**Characteristic read/write failures:**
+```bash
+# Filter in Wireshark:
+# btatt.opcode == 0x0a  (Read Request)
+# btatt.opcode == 0x0b  (Read Response)
+# btatt.opcode == 0x12  (Write Request)
+# btatt.opcode == 0x13  (Write Response)
+# btatt.opcode == 0x01  (Error Response)
+```
+
+**Performance considerations:**
+- HCI logging adds overhead (~5-10% CPU)
+- May affect BLE connection timing
+- Log file can grow large (several MB for long sessions)
+- Disable logging after capturing issue
+
+**Disable when done:**
+```bash
+./scripts/adb-ble-debug.sh disable
+```
+
+### 5. Common Debugging Workflows
+
+**BLE connection not working:**
+
+1. Check device Bluetooth is enabled
+2. Enable debug logging:
+   ```bash
+   RUST_LOG=heart_beat::ble=debug cargo run --bin cli
+   ```
+3. Check for error messages in logs
+4. If issue persists, enable HCI snoop:
+   ```bash
+   ./scripts/adb-ble-debug.sh enable
+   # Reproduce issue
+   # Analyze with Wireshark
+   ```
+
+**Training calculations incorrect:**
+
+1. Enable training module logging:
+   ```bash
+   RUST_LOG=heart_beat::training=debug cargo run --bin cli
+   ```
+2. Check heart rate zone calculations
+3. Verify input data (heart rate values, zone thresholds)
+4. Test with mock data:
+   ```bash
+   cargo run --bin cli --mock
+   ```
+
+**App crashes on Android:**
+
+1. Capture crash logs:
+   ```bash
+   ./scripts/adb-logs.sh --follow > crash.log
+   ```
+2. Look for stack traces or panic messages
+3. Check for null pointer dereferences or FFI issues
+4. Reproduce with Linux Desktop build for easier debugging
+
+**Performance issues:**
+
+1. Profile with reduced logging:
+   ```bash
+   RUST_LOG=warn cargo run --bin cli
+   ```
+2. Monitor BLE event timing:
+   ```bash
+   RUST_LOG=heart_beat::ble=info cargo run --bin cli
+   ```
+3. Check for blocking operations in Rust code
+4. Analyze HCI timing with Wireshark
+
+### 6. Debugging Tips
+
+**Use the right tool for the job:**
+- **Quick checks:** Debug console (triple-tap)
+- **Development:** `RUST_LOG` with `cargo run`
+- **Android testing:** `adb-logs.sh --follow`
+- **BLE protocol issues:** `adb-ble-debug.sh` + Wireshark
+
+**Isolate the problem:**
+- Test with mock mode first (`--mock` flag)
+- Test on Linux Desktop before Android
+- Reduce log noise by filtering specific modules
+
+**Save logs for later:**
+```bash
+# Save to file with timestamps
+./scripts/adb-logs.sh > "debug-$(date +%Y%m%d-%H%M%S).log"
+
+# Or for continuous logging
+./scripts/adb-logs.sh --follow | tee debug.log
+```
+
+**Don't debug blind:**
+- Always enable appropriate log level
+- Use `debug` or `trace` when investigating issues
+- Reduce to `info` or `warn` after fixing
+
+**Performance debugging:**
+- Use `info` level to minimize overhead
+- Profile with release builds (`cargo build --release`)
+- Compare timings with and without logging
+
+---
