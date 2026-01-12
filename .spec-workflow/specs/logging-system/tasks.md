@@ -35,7 +35,7 @@
   - _Requirements: 1_
   - _Prompt: Implement the task for spec logging-system, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter developer | Task: Update main.dart to call initPanicHandler() and initLogging() after RustLib.init(). Pass the returned Stream<LogMessage> to LogService.instance.subscribe(). Wrap in try-catch for graceful error handling. | Restrictions: Keep existing initialization order, add after RustLib.init() | Success: App starts with logging active, no errors on startup | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.5 Test logging on Android device
+- [x] 1.5 Test logging on Android device
   - File: N/A (manual testing)
   - Rebuild APK and test on Pixel 9a
   - Verify logs in adb logcat
