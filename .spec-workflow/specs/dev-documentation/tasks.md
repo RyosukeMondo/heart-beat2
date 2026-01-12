@@ -10,7 +10,7 @@
   - _Requirements: 1_
   - _Prompt: Implement the task for spec dev-documentation, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical writer | Task: Add "Development Quick Reference" section to CLAUDE.md with: 1) command table for Linux CLI, Linux Desktop, Android Deploy, Android Logs, Run Tests, 2) debug log level examples (RUST_LOG=debug, RUST_LOG=heart_beat=debug), 3) link to docs/DEVELOPER-GUIDE.md for details. | Restrictions: Keep brief, use markdown table | Success: Quick commands visible in CLAUDE.md | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.2 Create DEVELOPER-GUIDE.md environment setup section
+- [x] 1.2 Create DEVELOPER-GUIDE.md environment setup section
   - File: `docs/DEVELOPER-GUIDE.md`
   - Document Linux dependencies
   - Document Android SDK/NDK setup
