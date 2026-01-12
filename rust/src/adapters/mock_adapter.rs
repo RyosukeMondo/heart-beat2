@@ -249,7 +249,7 @@ impl BleAdapter for MockAdapter {
         Ok(rx)
     }
 
-    async fn read_battery(&self) -> Result<u8> {
+    async fn read_battery(&self) -> Result<Option<u8>> {
         if !*self.is_connected.lock().await {
             return Err(anyhow!("No device connected"));
         }
@@ -259,7 +259,7 @@ impl BleAdapter for MockAdapter {
         // Simulate read delay
         time::sleep(Duration::from_millis(100)).await;
 
-        Ok(self.config.battery_level)
+        Ok(Some(self.config.battery_level))
     }
 }
 
@@ -381,7 +381,11 @@ mod tests {
         adapter.connect(&devices[0].id).await.unwrap();
 
         let battery = adapter.read_battery().await.unwrap();
-        assert!(battery <= 100, "Battery level should be valid percentage");
+        assert!(battery.is_some(), "Battery level should be available");
+        assert!(
+            battery.unwrap() <= 100,
+            "Battery level should be valid percentage"
+        );
     }
 
     #[tokio::test]
@@ -399,7 +403,7 @@ mod tests {
         adapter.connect(&devices[0].id).await.unwrap();
 
         let battery = adapter.read_battery().await.unwrap();
-        assert_eq!(battery, 42, "Should use custom battery level");
+        assert_eq!(battery, Some(42), "Should use custom battery level");
     }
 
     #[test]

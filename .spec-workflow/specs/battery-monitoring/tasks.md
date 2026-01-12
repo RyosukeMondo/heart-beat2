@@ -17,7 +17,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust developer | Task: Add pub mod battery; to rust/src/domain/mod.rs. Re-export BatteryLevel for convenience. | Restrictions: Follow existing export pattern | Success: crate::domain::BatteryLevel accessible_
 
-- [ ] 2.1 Add battery read method to BtleplugAdapter
+- [x] 2.1 Add battery read method to BtleplugAdapter
   - File: `rust/src/adapters/btleplug_adapter.rs`
   - Implement read_battery_level() async method
   - Read from Battery Service UUID 0x180F, characteristic 0x2A19

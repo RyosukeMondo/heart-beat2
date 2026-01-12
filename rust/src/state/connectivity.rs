@@ -275,7 +275,7 @@ mod tests {
             async fn connect(&self, device_id: &str) -> Result<()>;
             async fn disconnect(&self) -> Result<()>;
             async fn subscribe_hr(&self) -> Result<tokio::sync::mpsc::Receiver<Vec<u8>>>;
-            async fn read_battery(&self) -> Result<u8>;
+            async fn read_battery(&self) -> Result<Option<u8>>;
         }
     }
 
@@ -309,8 +309,8 @@ mod tests {
             Ok(rx)
         }
 
-        async fn read_battery(&self) -> Result<u8> {
-            Ok(100)
+        async fn read_battery(&self) -> Result<Option<u8>> {
+            Ok(Some(100))
         }
     }
 

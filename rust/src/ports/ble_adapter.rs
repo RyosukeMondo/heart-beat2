@@ -84,11 +84,12 @@ pub trait BleAdapter: Send + Sync {
     ///
     /// # Returns
     ///
-    /// Battery level as a percentage (0-100).
+    /// Battery level as a percentage (0-100), or `None` if the device doesn't
+    /// support the Battery Service.
     ///
     /// # Errors
     ///
-    /// Returns an error if the read fails or the device doesn't support the
-    /// Battery Service.
-    async fn read_battery(&self) -> Result<u8>;
+    /// Returns an error if the read fails due to connection issues, but returns
+    /// `Ok(None)` if the Battery Service is not found.
+    async fn read_battery(&self) -> Result<Option<u8>>;
 }

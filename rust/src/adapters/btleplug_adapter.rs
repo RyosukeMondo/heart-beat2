@@ -367,15 +367,27 @@ impl BleAdapter for BtleplugAdapter {
         Ok(rx)
     }
 
-    async fn read_battery(&self) -> Result<u8> {
+    async fn read_battery(&self) -> Result<Option<u8>> {
+        // Ensure thread is attached to JVM for Android
+        ensure_jvm_attached()?;
+
         let guard = self.connected_peripheral.lock().await;
         let peripheral = guard
             .as_ref()
             .ok_or_else(|| anyhow!("No device connected"))?;
 
-        // Get the battery level characteristic
+        // Try to get the battery level characteristic
+        // If the service is not found, return None gracefully
         let battery_char =
-            Self::get_characteristic(peripheral, BATTERY_SERVICE_UUID, BATTERY_LEVEL_UUID).await?;
+            match Self::get_characteristic(peripheral, BATTERY_SERVICE_UUID, BATTERY_LEVEL_UUID)
+                .await
+            {
+                Ok(char) => char,
+                Err(e) => {
+                    tracing::debug!("Battery service not found: {}", e);
+                    return Ok(None);
+                }
+            };
 
         // Read the characteristic
         let value = peripheral
@@ -384,9 +396,11 @@ impl BleAdapter for BtleplugAdapter {
             .context("Failed to read battery level")?;
 
         // Battery level is a single byte (0-100)
-        value
+        let level = value
             .first()
             .copied()
-            .ok_or_else(|| anyhow!("Empty battery level response"))
+            .ok_or_else(|| anyhow!("Empty battery level response"))?;
+
+        Ok(Some(level))
     }
 }

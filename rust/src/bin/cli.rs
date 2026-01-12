@@ -387,13 +387,16 @@ async fn handle_devices_connect(device_id: &str) -> anyhow::Result<()> {
 
     // Try to read battery level
     match adapter.read_battery().await {
-        Ok(battery) => {
+        Ok(Some(battery)) => {
             let battery_icon = if battery > 20 { "🔋" } else { "🪫" };
             println!(
                 "{} Battery level: {}%\n",
                 battery_icon,
                 battery.to_string().cyan().bold()
             );
+        }
+        Ok(None) => {
+            println!("⚠ Battery level not available (service not supported)\n");
         }
         Err(e) => {
             warn!("Could not read battery level: {}", e);
@@ -645,7 +648,8 @@ async fn handle_mock_steady(bpm: u16) -> anyhow::Result<()> {
 
     // Read battery level
     match adapter.read_battery().await {
-        Ok(battery) => println!("✓ Battery level: {}%\n", battery),
+        Ok(Some(battery)) => println!("✓ Battery level: {}%\n", battery),
+        Ok(None) => println!("⚠ Battery level not available (service not supported)\n"),
         Err(e) => {
             warn!("Could not read battery level: {}", e);
             println!("⚠ Battery level not available\n");
