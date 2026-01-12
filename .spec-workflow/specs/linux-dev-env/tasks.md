@@ -18,7 +18,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec linux-dev-env, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/dev-linux.sh that: 1) cd rust && cargo build --release, 2) cd .. && flutter run -d linux. Support --release flag for optimized build. Add color output and error handling. Make executable with chmod +x. | Restrictions: Keep simple and readable | Success: ./scripts/dev-linux.sh builds and runs app | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.3 Create dev-watch.sh script
+- [x] 1.3 Create dev-watch.sh script
   - File: `scripts/dev-watch.sh`
   - Use cargo-watch for auto-rebuild on Rust changes
   - Restart Flutter on rebuild
