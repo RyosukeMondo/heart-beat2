@@ -889,3 +889,644 @@ adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
 - Compare timings with and without logging
 
 ---
+
+## Scripts Reference
+
+This section documents all helper scripts in the `scripts/` directory. Each script automates common development tasks.
+
+### Setup and Verification Scripts
+
+#### dev-setup.sh
+
+Automated development environment setup for first-time installation.
+
+**Purpose:** Install and configure all dependencies needed for Heart Beat development.
+
+**Usage:**
+```bash
+./scripts/dev-setup.sh
+```
+
+**What it does:**
+1. Checks for Rust installation (installs via rustup if missing)
+2. Checks for Flutter installation (provides instructions if missing)
+3. Verifies Android SDK/NDK configuration
+4. Installs Rust Android cross-compilation targets
+5. Runs `flutter pub get` to install Flutter dependencies
+6. Runs `flutter doctor` for comprehensive verification
+
+**When to use:**
+- First-time project setup
+- Setting up a new development machine
+- After major system updates
+- When dependencies become outdated
+
+**Exit codes:**
+- `0` - Setup completed successfully
+- `1` - Setup failed (check error messages)
+
+#### check-deps.sh
+
+Verifies all development dependencies are correctly installed and configured.
+
+**Purpose:** Quick health check of your development environment.
+
+**Usage:**
+```bash
+./scripts/check-deps.sh
+```
+
+**What it checks:**
+- Rust toolchain (rustc, cargo, rustup)
+- Flutter SDK and Dart version
+- Android SDK location and components
+- Android NDK version (ensures r25+)
+- Rust Android targets
+- System libraries (git, llvm tools)
+- Project dependencies (flutter_rust_bridge, ffigen)
+
+**Output:**
+```
+✓ rustc 1.75.0
+✓ cargo 1.75.0
+✓ Flutter 3.16.0
+✓ ANDROID_HOME: /home/user/Android/Sdk
+✓ NDK version 25.2.9519653 (>= r25 required)
+✓ aarch64-linux-android
+✓ All required dependencies are installed!
+```
+
+**When to use:**
+- Before starting development work
+- After running dev-setup.sh
+- When troubleshooting build issues
+- To verify environment after system updates
+
+**Exit codes:**
+- `0` - All dependencies OK
+- `1` - Missing or misconfigured dependencies
+
+### Build Scripts
+
+#### dev-linux.sh
+
+One-command build and launch for Linux desktop development.
+
+**Purpose:** Build Rust library and launch Flutter Linux app in a single command.
+
+**Usage:**
+```bash
+./scripts/dev-linux.sh [release|debug]
+```
+
+**Examples:**
+```bash
+./scripts/dev-linux.sh          # Build release mode (default)
+./scripts/dev-linux.sh release  # Build release mode (faster runtime)
+./scripts/dev-linux.sh debug    # Build debug mode (faster compilation)
+```
+
+**What it does:**
+1. Builds Rust library (`libheart_beat.so`) in specified mode
+2. Launches Flutter Linux app with `flutter run -d linux`
+3. Provides colorized output showing build progress
+
+**Build times:**
+- Initial: ~2-4 minutes
+- Incremental: ~10-30 seconds
+
+**When to use:**
+- Testing UI features on Linux
+- Developing Flutter/Rust integration
+- Quick testing without Android device
+- Before deploying to Android
+
+#### dev-watch.sh
+
+Continuous development mode with auto-rebuild on file changes.
+
+**Purpose:** Watch Rust source files and automatically rebuild when changes are detected.
+
+**Prerequisites:**
+```bash
+cargo install cargo-watch
+```
+
+**Usage:**
+```bash
+./scripts/dev-watch.sh [release|debug]
+```
+
+**Examples:**
+```bash
+./scripts/dev-watch.sh          # Watch in release mode
+./scripts/dev-watch.sh debug    # Watch in debug mode (faster builds)
+```
+
+**What it does:**
+1. Performs initial Rust build
+2. Launches Flutter Linux app in background
+3. Watches `rust/src/` for file changes
+4. Auto-rebuilds Rust library on changes
+5. Restarts Flutter app after successful rebuild
+
+**How to stop:**
+- Press Ctrl+C (automatically kills Flutter app)
+
+**When to use:**
+- Active Rust development alongside Flutter
+- Frequent Rust code changes
+- Rapid iteration on core logic
+
+**Note:** Flutter hot reload still works for Flutter-only changes.
+
+#### build-rust-android.sh
+
+Cross-compiles Rust library for all Android architectures.
+
+**Purpose:** Build native Android libraries (.so files) for ARM and x86 targets.
+
+**Usage:**
+```bash
+./scripts/build-rust-android.sh [release|debug]
+```
+
+**Examples:**
+```bash
+./scripts/build-rust-android.sh          # Build release (default)
+./scripts/build-rust-android.sh release  # Build release with optimizations
+./scripts/build-rust-android.sh debug    # Build debug (faster, larger)
+```
+
+**What it does:**
+1. Verifies `ANDROID_NDK_HOME` is set
+2. Configures NDK toolchain for each architecture
+3. Builds for: `aarch64` (ARM64), `armv7` (ARM32), `x86_64`, `i686`
+4. Copies .so files to `android/app/src/main/jniLibs/`
+5. Strips symbols in release mode to reduce size
+
+**Build times:**
+- Initial: ~5-10 minutes
+- Incremental: ~1-3 minutes
+
+**Output:**
+```
+📦 Building for aarch64-linux-android (arm64-v8a)...
+   ✓ Built and stripped (2.1M)
+📦 Building for armv7-linux-androideabi (armeabi-v7a)...
+   ✓ Built and stripped (1.8M)
+```
+
+**When to use:**
+- Before building Android APK
+- After Rust code changes
+- When testing on Android devices
+
+**Requirements:**
+- `ANDROID_NDK_HOME` environment variable set
+- Rust Android targets installed
+
+### Android Deployment Scripts
+
+#### adb-install.sh
+
+One-command Android deployment: build, install, and launch.
+
+**Purpose:** Streamlined Android deployment workflow.
+
+**Usage:**
+```bash
+./scripts/adb-install.sh [--release|--debug]
+```
+
+**Examples:**
+```bash
+./scripts/adb-install.sh          # Deploy debug APK (default)
+./scripts/adb-install.sh --debug  # Deploy debug APK
+./scripts/adb-install.sh --release # Deploy release APK
+```
+
+**What it does:**
+1. Checks for connected Android device
+2. Builds APK using `build-android.sh`
+3. Installs APK on device (replaces existing)
+4. Launches Heart Beat app
+5. Reports total deployment time
+
+**Build + deploy time:**
+- Initial: ~5-10 minutes
+- Incremental: ~1-3 minutes
+- Install + launch: ~10-30 seconds
+
+**Output:**
+```
+[OK] Device connected: AB12CD34EF56
+[STEP] Building debug APK...
+[STEP] Installing APK on device...
+[STEP] Launching Heart Beat app...
+
+╔════════════════════════════════════════╗
+║     Deployment Successful! 🎉          ║
+╚════════════════════════════════════════╝
+
+Total time: 3m 24s
+
+Next steps:
+  • Check logs: ./scripts/adb-logs.sh --follow
+  • Debug mode: flutter run
+```
+
+**When to use:**
+- Testing on real Android device
+- Deploying after code changes
+- QA testing before release
+- BLE hardware testing
+
+**Requirements:**
+- Android device connected via USB
+- USB debugging enabled
+- Device authorized
+
+#### adb-logs.sh
+
+View filtered and colorized Android logcat output.
+
+**Purpose:** Monitor app logs from Android device with automatic filtering.
+
+**Usage:**
+```bash
+./scripts/adb-logs.sh [OPTIONS]
+```
+
+**Options:**
+- `--follow, -f` - Continuous log output (like `tail -f`)
+- `--help, -h` - Show help message
+
+**Examples:**
+```bash
+./scripts/adb-logs.sh              # Show logs once
+./scripts/adb-logs.sh --follow     # Follow logs continuously
+./scripts/adb-logs.sh -f           # Short form
+```
+
+**What it does:**
+1. Checks for connected device
+2. Clears logcat buffer
+3. Filters logs for: `heart_beat`, `flutter`, `btleplug`, `BluetoothGatt`
+4. Colorizes by level: ERROR (red), WARN (yellow), INFO (green)
+
+**Output:**
+```
+[OK] Device connected
+[INFO] Clearing logcat buffer...
+[INFO] Showing filtered logs...
+
+I/heart_beat: BLE adapter initialized
+D/btleplug: Starting device scan...
+I/flutter: UI initialized
+```
+
+**When to use:**
+- Real-time debugging during development
+- Monitoring app behavior
+- Capturing error messages
+- BLE debugging
+
+**Tip:** Save logs to file:
+```bash
+./scripts/adb-logs.sh > debug.log
+./scripts/adb-logs.sh --follow | tee debug.log
+```
+
+#### adb-permissions.sh
+
+Check and display app permissions, highlighting BLE/Location permissions.
+
+**Purpose:** Verify Bluetooth and Location permissions are granted.
+
+**Usage:**
+```bash
+./scripts/adb-permissions.sh [--all]
+```
+
+**Options:**
+- `--all` - Show all permissions (not just BLE-related)
+
+**Examples:**
+```bash
+./scripts/adb-permissions.sh        # Show BLE permissions only
+./scripts/adb-permissions.sh --all  # Show all permissions
+```
+
+**What it shows:**
+- `BLUETOOTH_SCAN` - Required for BLE device discovery
+- `BLUETOOTH_CONNECT` - Required for BLE connections
+- `BLUETOOTH_ADVERTISE` - Required for advertising
+- `ACCESS_FINE_LOCATION` - Required for BLE on Android
+- `ACCESS_COARSE_LOCATION` - Alternative location permission
+
+**Output:**
+```
+Declared Permissions:
+
+  ✓ BLUETOOTH_SCAN: GRANTED
+  ✓ BLUETOOTH_CONNECT: GRANTED
+  ✗ ACCESS_FINE_LOCATION: DENIED
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Summary:
+
+  Bluetooth/Location permissions:
+    Granted: 2
+    Denied:  1
+
+[WARN] Some Bluetooth/Location permissions are denied
+
+For full BLE functionality, grant these permissions:
+  • Settings → Apps → Heart Beat → Permissions
+  • Enable all Bluetooth and Location permissions
+```
+
+**When to use:**
+- Debugging BLE connection issues
+- Verifying app setup
+- After fresh installation
+- Troubleshooting permission errors
+
+#### adb-ble-debug.sh
+
+Enable/disable Bluetooth HCI snoop logging for low-level BLE debugging.
+
+**Purpose:** Capture raw Bluetooth packets for Wireshark analysis.
+
+**Usage:**
+```bash
+./scripts/adb-ble-debug.sh <command>
+```
+
+**Commands:**
+- `enable` - Enable HCI logging and restart Bluetooth
+- `disable` - Disable HCI logging and restart Bluetooth
+- `status` - Show current logging status
+- `help` - Show help message
+
+**Examples:**
+```bash
+./scripts/adb-ble-debug.sh enable   # Enable logging
+./scripts/adb-ble-debug.sh status   # Check if enabled
+./scripts/adb-ble-debug.sh disable  # Disable logging
+```
+
+**What it does:**
+1. Enables `bluetooth_hci_log` setting on device
+2. Restarts Bluetooth service
+3. Logs HCI packets to `/data/misc/bluetooth/logs/btsnoop_hci.log`
+
+**Retrieving logs:**
+```bash
+adb root
+adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
+```
+
+**Analyzing with Wireshark:**
+1. Open `btsnoop_hci.log` in Wireshark
+2. Filter: `bluetooth`, `btatt`, `bthci_acl`, `btle`
+3. Analyze connection events, GATT operations, errors
+
+**When to use:**
+- Deep BLE protocol debugging
+- Connection failure analysis
+- Service discovery issues
+- Characteristic read/write failures
+- Performance analysis
+
+**Warning:** HCI logging adds overhead (~5-10% CPU). Disable after capturing issue.
+
+### BLE Setup Scripts (Linux Only)
+
+#### ble-setup.sh
+
+Configure Linux system for BLE heart rate monitor access.
+
+**Purpose:** Set up Bluetooth permissions, services, and udev rules for BLE development.
+
+**Usage:**
+```bash
+sudo ./scripts/ble-setup.sh
+```
+
+**What it does:**
+1. Installs Bluetooth packages: `bluez`, `bluez-tools`, `bluetooth`, `libbluetooth-dev`
+2. Enables and starts Bluetooth service
+3. Checks Bluetooth adapter (hci0) and brings it UP
+4. Adds user to `bluetooth` and `plugdev` groups
+5. Creates udev rules for BLE device access
+6. Powers on Bluetooth adapter
+
+**Output:**
+```
+[1/6] Checking Bluetooth packages...
+[OK] bluez is installed
+[2/6] Enabling Bluetooth service...
+[OK] Bluetooth service is running
+[3/6] Checking Bluetooth adapter...
+[OK] Bluetooth adapter is UP and RUNNING
+[OK] Bluetooth adapter supports BLE
+...
+[OK] BLE Setup Complete!
+```
+
+**When to use:**
+- First-time Linux setup for BLE
+- After system reinstallation
+- When BLE permission errors occur
+
+**Important:** Log out and log back in after running for group changes to take effect.
+
+#### ble-pair.sh
+
+Scan for and pair with BLE heart rate monitors.
+
+**Purpose:** Interactive pairing workflow for heart rate chest straps.
+
+**Usage:**
+```bash
+./scripts/ble-pair.sh [OPTIONS]
+```
+
+**Options:**
+- `-h, --help` - Show help message
+- `-s, --scan` - Force new scan (ignore saved device)
+- `-d, --duration <seconds>` - Scan duration (default: 10)
+
+**Examples:**
+```bash
+./scripts/ble-pair.sh              # Normal pairing
+./scripts/ble-pair.sh --scan       # Force scan for new device
+SCAN_DURATION=20 ./scripts/ble-pair.sh  # Longer scan
+```
+
+**Interactive workflow:**
+1. Checks prerequisites (bluetoothctl, Bluetooth service)
+2. Checks for previously paired device
+3. Prompts to wear heart rate strap
+4. Scans for HR monitors (looks for: HW9, CooSpo, Polar, Garmin, Wahoo)
+5. Displays discovered devices
+6. Pairs, trusts, and verifies connection
+7. Saves device config to `~/.heart-beat/device.conf`
+
+**Output:**
+```
+======================================
+  IMPORTANT: Prepare Your Device
+======================================
+
+Heart rate monitors only broadcast when worn:
+  1. Moisten the sensor pads on the chest strap
+  2. Put on the chest strap
+  3. Wait a few seconds for skin contact detection
+
+Press ENTER when you're wearing the device...
+
+[INFO] Scanning for BLE heart rate monitors (10s)...
+
+[OK] Found 1 heart rate monitor(s):
+
+  [1] HW9 (F4:8C:C9:1B:E6:1B)
+
+[OK] Selected: HW9 (F4:8C:C9:1B:E6:1B)
+[OK] Pairing successful
+[OK] Device trusted
+[OK] Connected to device
+```
+
+**Saved configuration:**
+```
+~/.heart-beat/device.conf
+```
+
+**When to use:**
+- First-time device setup
+- Pairing new heart rate monitor
+- Switching between devices
+
+#### ble-realtime.sh
+
+Connect to paired device and display real-time heart rate data.
+
+**Purpose:** Monitor heart rate data in terminal for testing.
+
+**Usage:**
+```bash
+./scripts/ble-realtime.sh [OPTIONS] [DEVICE_MAC]
+```
+
+**Options:**
+- `-h, --help` - Show help message
+- `-s, --simple` - Simple status monitor (no HR data)
+
+**Examples:**
+```bash
+./scripts/ble-realtime.sh                    # Use saved device
+./scripts/ble-realtime.sh F4:8C:C9:1B:E6:1B # Specify MAC
+./scripts/ble-realtime.sh --simple           # Status only
+```
+
+**What it does:**
+1. Loads device config from `~/.heart-beat/device.conf`
+2. Connects to device via bluetoothctl
+3. Monitors heart rate characteristic
+4. Displays BPM values in real-time
+
+**Output:**
+```
+======================================
+  Real-time Heart Rate Data
+======================================
+
+Press Ctrl+C to stop monitoring
+
+Timestamp            BPM           Status
+-----------------------------------------------
+14:32:15             72 BPM        OK
+14:32:16             74 BPM        OK
+14:32:17             75 BPM        OK
+```
+
+**When to use:**
+- Testing BLE connectivity
+- Verifying heart rate monitor works
+- Debugging before app development
+- Quick HR monitor check
+
+**Requirements:**
+- Device paired via `ble-pair.sh`
+- Python with `bleak` library (optional but recommended)
+- Or `gatttool` for fallback
+
+### Script Dependencies
+
+**All scripts:**
+- Bash 4.0+
+- Core utilities (grep, sed, awk)
+
+**Android scripts:**
+- Android SDK with `adb` in PATH
+- USB debugging enabled on device
+
+**Linux desktop scripts:**
+- Rust toolchain
+- Flutter SDK
+- Linux development libraries
+
+**BLE scripts (Linux):**
+- BlueZ stack (`bluez`, `bluez-tools`)
+- Bluetooth adapter (hci0)
+- Python 3.8+ with `bleak` (optional)
+
+### Common Script Workflows
+
+**First-time setup:**
+```bash
+./scripts/dev-setup.sh
+./scripts/check-deps.sh
+```
+
+**Linux desktop development:**
+```bash
+./scripts/dev-linux.sh debug
+# Make changes, hot reload Flutter
+# For Rust changes, Ctrl+C and re-run
+```
+
+**Watch mode development:**
+```bash
+./scripts/dev-watch.sh debug
+# Edit Rust files, auto-rebuilds
+# Edit Flutter files, hot reload
+```
+
+**Android deployment:**
+```bash
+./scripts/adb-install.sh
+./scripts/adb-logs.sh --follow
+# Test app, monitor logs
+```
+
+**BLE debugging (Linux):**
+```bash
+sudo ./scripts/ble-setup.sh
+./scripts/ble-pair.sh
+./scripts/ble-realtime.sh
+```
+
+**BLE debugging (Android):**
+```bash
+./scripts/adb-permissions.sh
+./scripts/adb-ble-debug.sh enable
+# Reproduce issue
+adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
+./scripts/adb-ble-debug.sh disable
+```
+
+---

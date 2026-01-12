@@ -42,7 +42,7 @@
   - _Requirements: 2_
   - _Prompt: Implement the task for spec dev-documentation, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical writer | Task: Add Debugging section to DEVELOPER-GUIDE.md covering: 1) Debug console (triple-tap toggle, filters), 2) Log levels (RUST_LOG env var), 3) Android logcat (adb-logs.sh, grep patterns), 4) BLE HCI snoop (adb-ble-debug.sh enable/disable/status). | Restrictions: Include common issues | Success: Developer can debug effectively | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.5 Add scripts reference section to DEVELOPER-GUIDE.md
+- [x] 1.5 Add scripts reference section to DEVELOPER-GUIDE.md
   - File: `docs/DEVELOPER-GUIDE.md` (continue)
   - Document all scripts in scripts/
   - Include usage examples
