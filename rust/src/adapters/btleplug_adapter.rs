@@ -4,8 +4,10 @@
 //! It supports scanning for heart rate monitors, connecting to devices, and subscribing
 //! to heart rate measurements on Linux (BlueZ), macOS, and Windows platforms.
 
+use crate::domain::battery::BatteryLevel;
 use crate::domain::heart_rate::DiscoveredDevice;
 use crate::ports::ble_adapter::BleAdapter;
+use crate::ports::notification::{NotificationEvent, NotificationPort};
 use anyhow::{anyhow, Context, Result};
 use async_trait::async_trait;
 use btleplug::api::{
@@ -14,6 +16,7 @@ use btleplug::api::{
 use btleplug::platform::{Adapter, Manager, Peripheral};
 use futures::StreamExt;
 use std::sync::Arc;
+use std::time::SystemTime;
 use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
@@ -148,6 +151,144 @@ impl BtleplugAdapter {
             .ok_or_else(|| anyhow!("Characteristic {} not found", char_uuid))?;
 
         Ok(characteristic.clone())
+    }
+
+    /// Start periodic battery level polling.
+    ///
+    /// This method spawns a background task that reads the battery level every 60 seconds
+    /// and emits `BatteryLevel` updates via the provided channel. It also monitors for
+    /// low battery conditions (< 15%) and emits notifications when detected.
+    ///
+    /// # Arguments
+    ///
+    /// * `tx` - Channel sender for emitting battery level updates
+    /// * `notification_port` - Port for emitting low battery notifications
+    ///
+    /// # Returns
+    ///
+    /// A `JoinHandle` that can be used to cancel the polling task.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use heart_beat::adapters::btleplug_adapter::BtleplugAdapter;
+    /// # use tokio::sync::mpsc;
+    /// # use std::sync::Arc;
+    /// # async fn example() -> anyhow::Result<()> {
+    /// let adapter = BtleplugAdapter::new().await?;
+    /// let (tx, mut rx) = mpsc::channel(32);
+    /// let notification_port = Arc::new(MockNotificationAdapter::new());
+    ///
+    /// let handle = adapter.start_battery_polling(tx, notification_port).await?;
+    ///
+    /// // Later, to stop polling:
+    /// handle.abort();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn start_battery_polling(
+        &self,
+        tx: mpsc::Sender<BatteryLevel>,
+        notification_port: Arc<dyn NotificationPort>,
+    ) -> Result<tokio::task::JoinHandle<()>> {
+        // Clone the connected_peripheral for use in the background task
+        let connected_peripheral = self.connected_peripheral.clone();
+
+        // Spawn the polling task
+        let handle = tokio::spawn(async move {
+            // Create a 60-second interval
+            let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60));
+
+            // Track whether we've already notified about low battery
+            // to avoid spamming notifications
+            let mut low_battery_notified = false;
+
+            loop {
+                // Wait for the next interval tick
+                interval.tick().await;
+
+                // Ensure thread is attached to JVM for Android
+                if let Err(e) = ensure_jvm_attached() {
+                    tracing::error!("Failed to attach JVM during battery polling: {}", e);
+                    continue;
+                }
+
+                // Get the peripheral
+                let guard = connected_peripheral.lock().await;
+                let peripheral = match guard.as_ref() {
+                    Some(p) => p,
+                    None => {
+                        tracing::debug!("No device connected, stopping battery polling");
+                        break;
+                    }
+                };
+
+                // Try to get and read the battery level characteristic
+                let battery_level = match Self::get_characteristic(
+                    peripheral,
+                    BATTERY_SERVICE_UUID,
+                    BATTERY_LEVEL_UUID,
+                )
+                .await
+                {
+                    Ok(battery_char) => match peripheral.read(&battery_char).await {
+                        Ok(value) => value.first().copied(),
+                        Err(e) => {
+                            tracing::warn!("Failed to read battery level: {}", e);
+                            None
+                        }
+                    },
+                    Err(e) => {
+                        tracing::debug!("Battery service not available: {}", e);
+                        None
+                    }
+                };
+
+                // Create BatteryLevel struct
+                let battery = BatteryLevel {
+                    level: battery_level,
+                    is_charging: false, // BLE Battery Service doesn't provide charging status
+                    timestamp: SystemTime::now(),
+                };
+
+                // Log the battery level
+                if let Some(level) = battery_level {
+                    tracing::info!("Battery level: {}%", level);
+                } else {
+                    tracing::debug!("Battery level not available");
+                }
+
+                // Check for low battery and emit notification if needed
+                if battery.is_low() {
+                    if !low_battery_notified {
+                        // Only notify once per low battery condition
+                        if let Some(level) = battery.level {
+                            tracing::warn!("Low battery detected: {}%", level);
+                            if let Err(e) = notification_port
+                                .notify(NotificationEvent::BatteryLow { percentage: level })
+                                .await
+                            {
+                                tracing::error!("Failed to send low battery notification: {}", e);
+                            }
+                            low_battery_notified = true;
+                        }
+                    }
+                } else {
+                    // Reset the notification flag when battery is back above threshold
+                    low_battery_notified = false;
+                }
+
+                // Emit battery level update
+                if tx.send(battery).await.is_err() {
+                    tracing::debug!("Battery level receiver dropped, stopping polling");
+                    break;
+                }
+            }
+
+            tracing::info!("Battery polling task stopped");
+        });
+
+        Ok(handle)
     }
 }
 

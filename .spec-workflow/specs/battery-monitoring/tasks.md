@@ -26,7 +26,7 @@
   - _Requirements: 1_
   - _Prompt: Role: Rust BLE developer | Task: Add async fn read_battery_level(&self) -> Result<Option<u8>> to BtleplugAdapter. Find Battery Service (0x180F), read Battery Level characteristic (0x2A19). Parse single byte as percentage. Return None if service not found. | Restrictions: Do not block HR streaming, handle missing service gracefully | Success: Returns battery percentage when available_
 
-- [ ] 2.2 Add battery polling loop to BtleplugAdapter
+- [x] 2.2 Add battery polling loop to BtleplugAdapter
   - File: `rust/src/adapters/btleplug_adapter.rs`
   - Implement start_battery_polling() with 60s interval
   - Emit BatteryLevel via channel
