@@ -36,7 +36,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec linux-dev-env, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer | Task: Test the CLI on Linux: 1) cargo run --bin cli -- --help, 2) cargo run --bin cli -- devices scan (with Bluetooth on), 3) cargo run --bin cli -- session start --mock. Document any issues found. | Restrictions: Test on Linux with BlueZ | Success: CLI commands work as expected | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.5 Test Flutter Linux app with real BLE
+- [x] 1.5 Test Flutter Linux app with real BLE
   - File: N/A (testing)
   - Run Flutter Linux app
   - Test BLE scanning for Coospo HW9
