@@ -201,7 +201,15 @@ pub fn init_platform() -> Result<()> {
     #[cfg(target_os = "android")]
     {
         // On Android, btleplug requires JNI initialization
-        btleplug::platform::init()
+        // Get the JNI environment using ndk-context
+        let ctx = ndk_context::android_context();
+        let vm = unsafe { jni::JavaVM::from_raw(ctx.vm().cast()) }
+            .map_err(|e| anyhow!("Failed to get JavaVM: {}", e))?;
+        let env = vm
+            .get_env()
+            .map_err(|e| anyhow!("Failed to get JNI environment: {}", e))?;
+
+        btleplug::platform::init(&env)
             .map_err(|e| anyhow!("Failed to initialize btleplug on Android: {}", e))?;
     }
 
@@ -522,6 +530,21 @@ pub fn hr_zone(data: &ApiFilteredHeartRate, max_hr: u16) -> Zone {
         p if p < 90.0 => Zone::Zone4,
         _ => Zone::Zone5,
     }
+}
+
+/// JNI_OnLoad - Initialize Android context for JNI operations
+///
+/// This function is called by the Android runtime when the native library is loaded.
+/// It initializes the ndk-context which allows us to access JNI environment from Rust.
+#[cfg(target_os = "android")]
+#[no_mangle]
+pub extern "C" fn JNI_OnLoad(vm: jni::JavaVM, _res: *mut std::os::raw::c_void) -> jni::sys::jint {
+    use std::ffi::c_void;
+    let vm_ptr = vm.get_java_vm_pointer() as *mut c_void;
+    unsafe {
+        ndk_context::initialize_android_context(vm_ptr, _res);
+    }
+    jni::JNIVersion::V6.into()
 }
 
 #[cfg(test)]

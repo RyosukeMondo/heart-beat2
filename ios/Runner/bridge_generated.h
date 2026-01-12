@@ -64,6 +64,8 @@ void frbgen_heart_beat_wire__crate__api__init_logging(int64_t port_,
 
 void frbgen_heart_beat_wire__crate__api__init_panic_handler(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__init_platform(int64_t port_);
+
 void frbgen_heart_beat_wire__crate__api__scan_devices(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__start_mock_mode(int64_t port_);
@@ -99,6 +101,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_zone);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_logging);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_panic_handler);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__init_platform);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__scan_devices);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
