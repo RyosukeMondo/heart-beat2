@@ -78,6 +78,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Heart Beat'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.pushNamed(context, '/history');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, '/settings');

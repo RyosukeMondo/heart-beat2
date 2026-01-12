@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:heart_beat/src/screens/home_screen.dart';
 import 'package:heart_beat/src/screens/session_screen.dart';
 import 'package:heart_beat/src/screens/settings_screen.dart';
+import 'package:heart_beat/src/screens/history_screen.dart';
 import 'package:heart_beat/src/screens/session_detail_screen.dart';
 import 'package:heart_beat/src/widgets/debug_console_overlay.dart';
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => const HomeScreen(),
           '/session': (context) => const SessionScreen(),
           '/settings': (context) => const SettingsScreen(),
+          '/history': (context) => const HistoryScreen(),
           '/session-detail': (context) => const SessionDetailScreen(),
         },
         initialRoute: '/',

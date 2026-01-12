@@ -65,7 +65,7 @@
   - _Requirements: 3_
   - _Prompt: Role: Flutter developer | Task: Create SessionDetailScreen taking session id. Call getSession(id). Display: header with date/duration, summary card with min/max/avg HR, LineChart of HR over time using fl_chart, ListView of phases with duration and avg HR per phase. | Restrictions: Handle loading state, missing session | Success: Detail screen shows comprehensive data_
 
-- [ ] 4.1 Add history navigation to app
+- [x] 4.1 Add history navigation to app
   - File: `lib/src/app.dart`
   - Add /history route
   - Add history button to home screen
