@@ -6,6 +6,7 @@ import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
 import '../services/background_service.dart';
+import '../services/profile_service.dart';
 import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
@@ -23,13 +24,16 @@ class _SessionScreenState extends State<SessionScreen> {
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
-  final int _maxHr = 180; // Default max HR, will be loaded from settings
   final BackgroundService _backgroundService = BackgroundService();
   bool _isServiceRunning = false;
+  final ProfileService _profileService = ProfileService.instance;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // Load profile to ensure zone calculations use user settings
+    _profileService.loadProfile();
 
     // Get route arguments
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
@@ -249,7 +253,8 @@ class _SessionScreenState extends State<SessionScreen> {
 
   Future<Map<String, dynamic>> _extractHrData(api.ApiFilteredHeartRate data) async {
     final bpm = await api.hrFilteredBpm(data: data);
-    final zone = await api.hrZone(data: data, maxHr: _maxHr);
+    // Use ProfileService to calculate zone based on user's profile settings
+    final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
 
     return {
       'bpm': bpm,
