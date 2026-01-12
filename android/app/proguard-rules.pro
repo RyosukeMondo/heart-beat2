@@ -15,3 +15,8 @@
 
 # Keep BLE related classes
 -keep class * extends android.bluetooth.** { *; }
+
+# Ignore Play Core library warnings (not using deferred components)
+-dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
