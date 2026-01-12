@@ -18,7 +18,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Flutter developer | Task: Create ProfileService singleton in lib/src/services/profile_service.dart. Methods: loadProfile() -> UserProfile (from SharedPreferences), saveProfile(UserProfile), getDefaultProfile(). Store as JSON string in SharedPreferences key 'user_profile'. Load on app start. | Restrictions: Thread-safe singleton | Success: Profile persists across restarts_
 
-- [ ] 2.1 Add age-based max HR calculator
+- [x] 2.1 Add age-based max HR calculator
   - File: `lib/src/models/user_profile.dart`
   - Add calculateMaxHrFromAge(age) method
   - Use formula: 220 - age
