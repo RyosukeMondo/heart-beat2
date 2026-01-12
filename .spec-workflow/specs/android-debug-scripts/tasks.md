@@ -29,7 +29,7 @@
   - _Requirements: 3_
   - _Prompt: Implement the task for spec android-debug-scripts, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps engineer | Task: Create scripts/adb-permissions.sh that runs adb shell dumpsys package com.example.heart_beat and filters for granted permissions. Highlight BLUETOOTH_SCAN, BLUETOOTH_CONNECT, ACCESS_FINE_LOCATION with colors. Show granted=true vs granted=false status. | Restrictions: Use dumpsys, parse output with grep/awk | Success: Script shows clear permission status | After implementation: Mark task [-] as in_progress before starting, use log-implementation tool to record changes, then mark [x] when complete_
 
-- [ ] 1.4 Create adb-ble-debug.sh script
+- [x] 1.4 Create adb-ble-debug.sh script
   - File: `scripts/adb-ble-debug.sh`
   - Enable/disable HCI snoop logging
   - Restart Bluetooth service
