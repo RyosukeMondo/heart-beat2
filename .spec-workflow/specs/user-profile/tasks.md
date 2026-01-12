@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Create UserProfile model in Flutter
+- [x] 1.1 Create UserProfile model in Flutter
   - File: `lib/src/models/user_profile.dart`
   - Define UserProfile class with maxHr, age, useAgeBased, customZones
   - Add JSON serialization
