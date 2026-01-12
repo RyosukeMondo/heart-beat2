@@ -17,7 +17,7 @@
   - _Requirements: 1, 2, 4_
   - _Prompt: Role: Rust interface designer | Task: Create rust/src/ports/session_repository.rs with SessionRepository trait. Methods: async fn save(&self, session: &CompletedSession) -> Result<()>, async fn list(&self) -> Result<Vec<SessionSummaryPreview>>, async fn get(&self, id: &str) -> Result<Option<CompletedSession>>, async fn delete(&self, id: &str) -> Result<()>. | Restrictions: Async trait, use anyhow::Result | Success: Trait compiles, can be mocked_
 
-- [ ] 2.1 Implement FileSessionRepository adapter
+- [x] 2.1 Implement FileSessionRepository adapter
   - File: `rust/src/adapters/file_session_repository.rs`
   - Implement SessionRepository using JSON files
   - Store in ~/.heart-beat/sessions/
