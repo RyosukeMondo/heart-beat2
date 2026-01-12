@@ -1,6 +1,6 @@
 # Tasks Document
 
-- [ ] 1.1 Add SessionProgress type for UI updates
+- [x] 1.1 Add SessionProgress type for UI updates
   - File: `rust/src/domain/session_progress.rs`
   - Define SessionProgress and PhaseProgress structs
   - Add ZoneStatus enum (InZone, TooLow, TooHigh)
