@@ -73,7 +73,7 @@
   - _Requirements: 4_
   - _Prompt: Role: Flutter developer | Task: Create SessionControls widget with Row of buttons: Pause/Resume toggle (calls pauseWorkout/resumeWorkout), Stop (shows confirmation AlertDialog, calls stopWorkout on confirm). Large touch targets (48dp minimum). | Restrictions: Glove-friendly sizing | Success: Controls work reliably_
 
-- [ ] 4.2 Add workout route and navigation
+- [x] 4.2 Add workout route and navigation
   - File: `lib/src/app.dart`
   - Add /workout/:planName route
   - Navigate from session screen
