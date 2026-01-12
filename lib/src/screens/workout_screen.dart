@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
+import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
+import '../widgets/phase_progress.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -35,7 +37,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   int _totalElapsed = 0;
   int _totalRemaining = 0;
   String _zoneStatus = '';
-  api.Zone? _targetZone;
+  Zone? _targetZone;
 
   bool _isStarting = true;
   String? _errorMessage;
@@ -261,10 +263,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Widget _buildWorkoutDisplay(ColorScheme colorScheme) {
-    final phaseFraction = _phaseRemaining > 0
-        ? _phaseElapsed / (_phaseElapsed + _phaseRemaining)
-        : 0.0;
-
     return Column(
       children: [
         // Main content area
@@ -289,30 +287,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
                 const SizedBox(height: 32),
 
-                // Phase info
-                Text(
-                  _currentPhaseName,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Phase progress bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    children: [
-                      LinearProgressIndicator(
-                        value: phaseFraction,
-                        minHeight: 8,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${_formatTime(_phaseElapsed)} / ${_formatTime(_phaseElapsed + _phaseRemaining)}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
+                // Phase progress widget
+                PhaseProgressWidget(
+                  phaseName: _currentPhaseName,
+                  targetZone: _targetZone!,
+                  elapsedSecs: _phaseElapsed,
+                  remainingSecs: _phaseRemaining,
                 ),
 
                 const SizedBox(height: 16),
@@ -355,7 +335,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color, width: 2),
       ),
@@ -386,7 +366,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         color: colorScheme.surfaceContainerHighest,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -428,6 +408,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   String _formatTime(int seconds) {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
-    return '${minutes}:${remainingSeconds.toString().padLeft(2, '0')}';
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }

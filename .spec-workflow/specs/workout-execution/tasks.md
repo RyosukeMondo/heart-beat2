@@ -46,7 +46,7 @@
   - _Requirements: 2, 3_
   - _Prompt: Role: Flutter developer | Task: Create WorkoutScreen receiving plan_name parameter. Call startWorkout() on init. Subscribe to createSessionProgressStream(). Display: large HR, zone indicator, phase name, time remaining, progress bar. Update on stream events. | Restrictions: Landscape-friendly layout | Success: Workout progress displays in real-time_
 
-- [ ] 3.2 Create PhaseProgressWidget
+- [x] 3.2 Create PhaseProgressWidget
   - File: `lib/src/widgets/phase_progress.dart`
   - Show current phase with progress bar
   - Display upcoming phases
