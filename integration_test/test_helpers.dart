@@ -491,6 +491,19 @@ void verifyWorkoutScreen(PatrolIntegrationTester $) {
   expect($(const Key('workoutScreen')), findsOneWidget);
 }
 
+/// Navigates to the history screen via the AppBar icon.
+///
+/// Example:
+/// ```dart
+/// await launchApp($);
+/// await navigateToHistory($);
+/// expect($(const Key('historyScreen')), findsOneWidget);
+/// ```
+Future<void> navigateToHistory(PatrolIntegrationTester $) async {
+  await $(Icons.history).tap();
+  await $.pumpAndSettle();
+}
+
 /// Verifies the history screen is visible.
 ///
 /// Example:

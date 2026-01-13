@@ -46,7 +46,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Test profile persistence_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Developer | Task: Create integration test for settings modification and persistence | Restrictions: Clean up test data after test | Success: Settings changes persist across app restart | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 6. Create history flow test
+- [x] 6. Create history flow test
   - File: integration_test/history_flow_test.dart
   - Test: Navigate to history -> View sessions -> Select session detail
   - Purpose: Verify session history navigation works
