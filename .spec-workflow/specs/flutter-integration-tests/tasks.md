@@ -2,7 +2,7 @@
 
 Integration tests that run on device/emulator to test full app flows.
 
-- [ ] 1. Enhance integration test infrastructure
+- [-] 1. Enhance integration test infrastructure
   - File: integration_test/test_helpers.dart
   - Create reusable test helpers for integration tests
   - Set up mock BLE device simulation
