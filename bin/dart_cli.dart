@@ -3,6 +3,8 @@ import 'package:args/args.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'package:heart_beat/src/models/user_profile.dart';
+import 'cli_profile_service.dart';
 
 /// Dart CLI for Heart Beat - exercises the same code paths as Flutter UI
 /// for rapid testing without device deployment.
@@ -178,8 +180,10 @@ Future<void> main(List<String> arguments) async {
         exit(0);
 
       case 'profile':
-        print('Profile command not yet implemented');
-        exit(1);
+        final age = command['age'] as String?;
+        final maxHr = command['max-hr'] as String?;
+        await handleProfileCommand(age: age, maxHr: maxHr);
+        exit(0);
 
       default:
         stderr.writeln('Unknown command: ${command.name}');
@@ -673,4 +677,122 @@ String _formatDuration(int seconds) {
   } else {
     return '${secs}s';
   }
+}
+
+/// Handle profile command - view and modify user profile
+Future<void> handleProfileCommand({String? age, String? maxHr}) async {
+  try {
+    final profileService = CliProfileService.instance;
+
+    // Load current profile
+    final profile = await profileService.getProfile();
+
+    // If no options provided, just display current profile
+    if (age == null && maxHr == null) {
+      _displayProfile(profile);
+      return;
+    }
+
+    // Validate and update profile if options provided
+    int? newAge;
+    int? newMaxHr;
+
+    if (age != null) {
+      newAge = int.tryParse(age);
+      if (newAge == null) {
+        stderr.writeln('Error: Age must be a valid integer');
+        exit(1);
+      }
+      if (newAge < 10 || newAge > 120) {
+        stderr.writeln('Error: Age must be between 10 and 120');
+        exit(1);
+      }
+    }
+
+    if (maxHr != null) {
+      newMaxHr = int.tryParse(maxHr);
+      if (newMaxHr == null) {
+        stderr.writeln('Error: Max HR must be a valid integer');
+        exit(1);
+      }
+      if (newMaxHr < 100 || newMaxHr > 220) {
+        stderr.writeln('Error: Max HR must be between 100 and 220 BPM');
+        exit(1);
+      }
+    }
+
+    // Create updated profile
+    final updatedProfile = UserProfile(
+      maxHr: newMaxHr ?? profile.maxHr,
+      age: newAge ?? profile.age,
+      useAgeBased: profile.useAgeBased,
+      customZones: profile.customZones,
+      audioFeedbackEnabled: profile.audioFeedbackEnabled,
+      audioVolume: profile.audioVolume,
+    );
+
+    // Save updated profile
+    await profileService.saveProfile(updatedProfile);
+
+    print('Profile updated successfully!\n');
+    _displayProfile(updatedProfile);
+
+  } catch (e) {
+    stderr.writeln('Error managing profile: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Ensure valid values are provided');
+    stderr.writeln('  - Age: 10-120 years');
+    stderr.writeln('  - Max HR: 100-220 BPM');
+    rethrow;
+  }
+}
+
+/// Display user profile information
+void _displayProfile(UserProfile profile) {
+  print('User Profile:');
+  print('═══════════════════════════════════════════════════════════════════\n');
+
+  // Basic info
+  print('Age:              ${profile.age ?? "Not set"}');
+  print('Manual Max HR:    ${profile.maxHr} BPM');
+  print('Use Age-Based:    ${profile.useAgeBased ? "Yes" : "No"}');
+
+  // Effective max HR
+  final effectiveMaxHr = profile.effectiveMaxHr;
+  if (profile.useAgeBased && profile.age != null) {
+    final calculatedMaxHr = UserProfile.calculateMaxHrFromAge(profile.age!);
+    print('Effective Max HR: $effectiveMaxHr BPM (calculated: 220 - ${profile.age})');
+  } else {
+    print('Effective Max HR: $effectiveMaxHr BPM');
+  }
+
+  // Training zones
+  print('\nTraining Zones:');
+  final zones = profile.effectiveZones;
+  final isCustom = profile.customZones != null;
+  print('  Using ${isCustom ? "custom" : "default"} zone thresholds\n');
+
+  _printZone('Zone 1 (Recovery)', 0, zones.zone1Max, effectiveMaxHr);
+  _printZone('Zone 2 (Fat Burn)', zones.zone1Max, zones.zone2Max, effectiveMaxHr);
+  _printZone('Zone 3 (Aerobic)', zones.zone2Max, zones.zone3Max, effectiveMaxHr);
+  _printZone('Zone 4 (Threshold)', zones.zone3Max, zones.zone4Max, effectiveMaxHr);
+  _printZone('Zone 5 (Max)', zones.zone4Max, 100, effectiveMaxHr);
+
+  // Audio settings
+  print('\nAudio Feedback:');
+  print('  Enabled:  ${profile.audioFeedbackEnabled ? "Yes" : "No"}');
+  print('  Volume:   ${(profile.audioVolume * 100).toStringAsFixed(0)}%');
+
+  print('\n═══════════════════════════════════════════════════════════════════');
+  print('\nTo update profile:');
+  print('  dart run bin/dart_cli.dart profile --age <age>');
+  print('  dart run bin/dart_cli.dart profile --max-hr <bpm>');
+  print('  dart run bin/dart_cli.dart profile --age <age> --max-hr <bpm>');
+}
+
+/// Print training zone information
+void _printZone(String name, int minPercent, int maxPercent, int maxHr) {
+  final minBpm = (minPercent / 100 * maxHr).round();
+  final maxBpm = (maxPercent / 100 * maxHr).round();
+  print('  $name: ${minPercent}%-${maxPercent}% ($minBpm-$maxBpm BPM)');
 }

@@ -56,7 +56,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Show session summary_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add history command that lists past workout sessions | Restrictions: Format dates nicely, show key metrics | Success: `dart run bin/dart_cli.dart history` shows past sessions | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 7. Add profile command
+- [x] 7. Add profile command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart profile [--age N] [--max-hr N]`
   - View and modify user profile
