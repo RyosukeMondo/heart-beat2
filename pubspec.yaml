@@ -46,6 +46,9 @@ dependencies:
   # CLI argument parsing
   args: ^2.5.0
 
+executables:
+  heart_beat_cli: dart_cli
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

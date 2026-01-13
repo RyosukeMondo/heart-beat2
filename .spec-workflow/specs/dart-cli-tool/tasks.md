@@ -74,7 +74,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Fast feedback on bridge issues_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: DevOps Engineer | Task: Create test script that runs Dart CLI commands and verifies output | Restrictions: Don't require BLE device, test offline commands | Success: Script catches Dart/Rust bridge issues before device deploy | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 9. Add to pubspec.yaml executables
+- [x] 9. Add to pubspec.yaml executables
   - File: pubspec.yaml (modify)
   - Register dart_cli as executable
   - Purpose: Enable `dart pub global activate` installation
