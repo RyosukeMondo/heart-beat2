@@ -24,7 +24,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: product.md latency measurement_
   - _Prompt: Role: Rust Developer | Task: Add receive timestamp to HR data structures for latency tracking, capturing time at BLE notification receipt | Restrictions: Use appropriate precision (microseconds), minimal overhead, propagate through pipeline | Success: Timestamp captured at BLE receive, available in Flutter via FRB, accurate timing_
 
-- [ ] 3. Instrument BLE notification handler
+- [x] 3. Instrument BLE notification handler
   - File: rust/src/adapters/btleplug_adapter.rs
   - Record timestamp immediately when BLE notification received
   - Use monotonic clock for accurate duration measurement
