@@ -4,7 +4,7 @@
 
 Implement audio feedback for heart rate zone deviations as documented in product.md ("Audio/visual notifications when heart rate deviates from target zone").
 
-- [ ] 1. Research Flutter audio packages
+- [x] 1. Research Flutter audio packages
   - File: pubspec.yaml (for dependency selection)
   - Evaluate audioplayers, just_audio, or flutter_tts packages
   - Consider: background playback, low latency, Android compatibility
@@ -13,6 +13,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: Flutter package ecosystem research_
   - _Requirements: product.md biofeedback loop feature_
   - _Prompt: Role: Flutter Developer specializing in audio | Task: Research and evaluate Flutter audio packages for real-time biofeedback notifications, considering latency, background playback, and Android compatibility | Restrictions: Must work reliably during workout, low latency critical, battery efficient | Success: Package selected with clear rationale, compatible with foreground service, meets latency requirements_
+  - **Decision**: Selected `audioplayers` v6.5.1 for superior Android audio quality, lower latency, and simpler API suited for short sound effects playback
 
 - [ ] 2. Add audio package dependency
   - File: pubspec.yaml
