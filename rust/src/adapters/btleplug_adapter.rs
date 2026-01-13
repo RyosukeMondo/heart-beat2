@@ -660,10 +660,21 @@ impl BleAdapter for BtleplugAdapter {
             };
 
             while let Some(notification) = notification_stream.next().await {
+                // Capture high-precision timestamp immediately upon BLE notification receipt
+                // Using monotonic clock for accurate duration measurement
+                let ble_receive_timestamp = std::time::Instant::now();
+
                 // Only forward HR measurement notifications
                 if notification.uuid != HR_MEASUREMENT_UUID {
                     continue;
                 }
+
+                // Log BLE notification receipt with timestamp for debugging latency
+                tracing::debug!(
+                    "BLE notification received: {} bytes at {:?}",
+                    notification.value.len(),
+                    ble_receive_timestamp
+                );
 
                 if tx.send(notification.value).await.is_err() {
                     tracing::debug!("HR notification receiver dropped");
