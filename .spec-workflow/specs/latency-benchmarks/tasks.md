@@ -4,7 +4,7 @@
 
 Implement latency measurement and benchmarking to validate the P95 < 100ms requirement from BLE event to UI update.
 
-- [ ] 1. Design latency measurement approach
+- [x] 1. Design latency measurement approach
   - File: docs/ or design document
   - Define measurement points: BLE notification → Rust processing → FRB → Flutter UI
   - Plan instrumentation strategy (timestamps at each stage)
