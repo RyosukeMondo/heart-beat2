@@ -21,7 +21,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: Test different BPM values_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Developer | Task: Create golden tests for HrDisplay widget at various BPM values (60, 150, 200) | Restrictions: Use consistent widget size, generate baseline goldens | Success: Golden files generated and tests pass | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 3. Create ZoneIndicator golden tests
+- [x] 3. Create ZoneIndicator golden tests
   - File: test/golden/zone_indicator_golden_test.dart
   - Golden: test/golden/goldens/zone_indicator_zone1.png through zone5.png
   - Purpose: Catch visual regressions in zone display
