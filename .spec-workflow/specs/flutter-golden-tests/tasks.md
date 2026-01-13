@@ -48,7 +48,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: Reconnecting and failed states_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Developer | Task: Create golden tests for ConnectionBanner widget states | Restrictions: Mock connection status data | Success: Banner states visually captured | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 6. Create full screen golden tests
+- [x] 6. Create full screen golden tests
   - File: test/golden/screens_golden_test.dart
   - Golden: test/golden/goldens/home_screen.png
   - Golden: test/golden/goldens/session_screen.png
