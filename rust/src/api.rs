@@ -5,6 +5,7 @@
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::adapters::file_session_repository::FileSessionRepository;
+use crate::domain::filters::KalmanFilter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::domain::training_plan::TrainingPlan;
 use crate::frb_generated::StreamSink;
@@ -69,6 +70,11 @@ pub struct ApiBatteryLevel {
     /// Unix timestamp in milliseconds when this battery level was measured.
     pub timestamp: u64,
 }
+
+// Global data directory for storing app data (plans, sessions, etc.)
+// On Android, this must be set via set_data_dir() before using file-based APIs.
+// On desktop, it falls back to ~/.heart-beat if not set.
+static DATA_DIR: OnceLock<Mutex<Option<std::path::PathBuf>>> = OnceLock::new();
 
 // Global state for HR data streaming
 static HR_CHANNEL_CAPACITY: usize = 100;
@@ -380,6 +386,85 @@ pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
     Ok(())
 }
 
+/// Set the base data directory for storing app data.
+///
+/// On Android, this must be called during app initialization before using any
+/// file-based APIs (list_plans, start_workout, list_sessions, etc.). The path
+/// should be the app's documents directory obtained from Flutter's path_provider.
+///
+/// On desktop platforms (Linux, macOS, Windows), this is optional - if not set,
+/// the APIs will fall back to using ~/.heart-beat as the data directory.
+///
+/// # Arguments
+///
+/// * `path` - Absolute path to the app's data directory
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// import 'package:path_provider/path_provider.dart';
+///
+/// void main() async {
+///   await RustLib.init();
+///
+///   // Set data directory for file storage
+///   final appDir = await getApplicationDocumentsDirectory();
+///   await setDataDir(path: appDir.path);
+///
+///   runApp(MyApp());
+/// }
+/// ```
+pub fn set_data_dir(path: String) -> Result<()> {
+    let path_buf = std::path::PathBuf::from(&path);
+
+    // Verify the path exists or can be created
+    if !path_buf.exists() {
+        std::fs::create_dir_all(&path_buf)
+            .map_err(|e| anyhow!("Failed to create data directory '{}': {}", path, e))?;
+    }
+
+    DATA_DIR
+        .get_or_init(|| Mutex::new(None))
+        .lock()
+        .map_err(|e| anyhow!("Failed to lock DATA_DIR: {}", e))?
+        .replace(path_buf);
+
+    tracing::info!("Data directory set to: {}", path);
+    Ok(())
+}
+
+/// Get the base data directory for storing app data.
+///
+/// Returns the directory set via `set_data_dir()`, or falls back to
+/// ~/.heart-beat on desktop platforms if not set.
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - On Android: `set_data_dir()` was not called during initialization
+/// - On desktop: The home directory cannot be determined
+fn get_data_dir() -> Result<std::path::PathBuf> {
+    // Check if data dir was explicitly set
+    if let Some(mutex) = DATA_DIR.get() {
+        if let Ok(guard) = mutex.lock() {
+            if let Some(ref path) = *guard {
+                return Ok(path.clone());
+            }
+        }
+    }
+
+    // Fall back to home directory (works on desktop, fails on Android)
+    let home = dirs::home_dir().ok_or_else(|| {
+        anyhow!(
+            "Data directory not set. On Android, call set_data_dir() during app initialization. \
+             On desktop, ensure HOME environment variable is set."
+        )
+    })?;
+
+    Ok(home.join(".heart-beat"))
+}
+
 /// Scan for BLE heart rate devices.
 ///
 /// Initiates a BLE scan and returns all discovered devices advertising
@@ -531,14 +616,27 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 
             // Spawn background task to receive and emit HR data
             tokio::spawn(async move {
+                // Initialize Kalman filter for this connection
+                // Using default parameters (process_noise=0.1, measurement_noise=2.0)
+                let mut kalman_filter = KalmanFilter::default();
+
                 while let Some(data) = hr_receiver.recv().await {
                     tracing::debug!("Received {} bytes of HR data", data.len());
 
                     match parse_heart_rate(&data) {
                         Ok(measurement) => {
-                            // Simple filtering: use raw BPM for now
-                            // TODO: Implement proper Kalman filter
-                            let filtered_bpm = measurement.bpm;
+                            // Apply Kalman filter to raw BPM measurement
+                            // filter_if_valid rejects physiologically implausible values
+                            let filtered_bpm_f64 =
+                                kalman_filter.filter_if_valid(measurement.bpm as f64);
+                            let filtered_bpm = filtered_bpm_f64.round() as u16;
+
+                            tracing::trace!(
+                                "HR filter: raw={} -> filtered={} (diff={})",
+                                measurement.bpm,
+                                filtered_bpm,
+                                measurement.bpm as i32 - filtered_bpm as i32
+                            );
 
                             // Calculate RMSSD if RR-intervals are available
                             let rmssd = if measurement.rr_intervals.len() >= 2 {
@@ -1155,9 +1253,11 @@ async fn get_session_repository() -> Result<Arc<FileSessionRepository>> {
         return Ok(repo.clone());
     }
 
-    // Create new repository and store it
-    tracing::info!("Creating new FileSessionRepository");
-    let repo = Arc::new(FileSessionRepository::new().await?);
+    // Create new repository with the correct data directory
+    let data_dir = get_data_dir()?;
+    let sessions_dir = data_dir.join("sessions");
+    tracing::info!("Creating FileSessionRepository at {:?}", sessions_dir);
+    let repo = Arc::new(FileSessionRepository::with_directory(sessions_dir).await?);
     *guard = Some(repo.clone());
     Ok(repo)
 }
@@ -1401,7 +1501,7 @@ pub fn session_hr_sample_at(session: &ApiCompletedSession, index: usize) -> Opti
 
 /// List all available training plans.
 ///
-/// Returns a list of plan names from the ~/.heart-beat/plans/ directory.
+/// Returns a list of plan names from the data directory's plans/ subdirectory.
 /// Each plan is stored as a JSON file named `{plan_name}.json`.
 ///
 /// # Returns
@@ -1411,14 +1511,14 @@ pub fn session_hr_sample_at(session: &ApiCompletedSession, index: usize) -> Opti
 ///
 /// # Errors
 ///
-/// Returns an error if the home directory cannot be determined or if there are
+/// Returns an error if the data directory cannot be determined or if there are
 /// issues reading the plans directory.
 pub async fn list_plans() -> Result<Vec<String>> {
     tracing::info!("list_plans: Listing all training plans");
 
     // Get plans directory
-    let home = dirs::home_dir().ok_or_else(|| anyhow!("Could not find home directory"))?;
-    let plans_dir = home.join(".heart-beat").join("plans");
+    let data_dir = get_data_dir()?;
+    let plans_dir = data_dir.join("plans");
 
     // Create directory if it doesn't exist
     if !plans_dir.exists() {
@@ -1449,10 +1549,10 @@ pub async fn list_plans() -> Result<Vec<String>> {
 
 /// Load a training plan by name from the plans directory.
 ///
-/// Internal helper function to load a plan from ~/.heart-beat/plans/{name}.json
+/// Internal helper function to load a plan from {data_dir}/plans/{name}.json
 async fn load_plan(name: &str) -> Result<TrainingPlan> {
-    let home = dirs::home_dir().ok_or_else(|| anyhow!("Could not find home directory"))?;
-    let plans_dir = home.join(".heart-beat").join("plans");
+    let data_dir = get_data_dir()?;
+    let plans_dir = data_dir.join("plans");
     let plan_path = plans_dir.join(format!("{}.json", name));
 
     if !plan_path.exists() {
@@ -1466,6 +1566,202 @@ async fn load_plan(name: &str) -> Result<TrainingPlan> {
     let plan: TrainingPlan = serde_json::from_str(&content)?;
 
     Ok(plan)
+}
+
+/// Save a training plan to the plans directory.
+///
+/// Creates the plan file at {data_dir}/plans/{plan_name}.json.
+/// Overwrites if the plan already exists.
+async fn save_plan(plan: &TrainingPlan) -> Result<()> {
+    let data_dir = get_data_dir()?;
+    let plans_dir = data_dir.join("plans");
+
+    // Create plans directory if it doesn't exist
+    if !plans_dir.exists() {
+        tokio::fs::create_dir_all(&plans_dir).await?;
+    }
+
+    let plan_path = plans_dir.join(format!("{}.json", plan.name));
+    let json = serde_json::to_string_pretty(plan)?;
+    tokio::fs::write(&plan_path, json).await?;
+
+    tracing::info!("save_plan: Saved plan '{}' to {:?}", plan.name, plan_path);
+    Ok(())
+}
+
+/// Seed default training plans if none exist.
+///
+/// Creates a set of sample training plans for users to get started with.
+/// This function is idempotent - it only creates plans if the plans directory
+/// is empty or doesn't exist.
+///
+/// # Default Plans Created
+///
+/// - **Easy Run** (30 min): 10min Zone2 warmup, 10min Zone2 main, 10min Zone1 cooldown
+/// - **Tempo Run** (40 min): 10min Zone2 warmup, 20min Zone3 tempo, 10min Zone1 cooldown
+/// - **Interval Training** (35 min): Warmup + 5x(3min Zone4 / 2min Zone2) + Cooldown
+/// - **Long Slow Distance** (60 min): Steady Zone2 aerobic base building
+/// - **Recovery Run** (20 min): Easy Zone1 active recovery
+///
+/// # Returns
+///
+/// The number of plans created. Returns 0 if plans already exist.
+pub async fn seed_default_plans() -> Result<u32> {
+    use crate::domain::heart_rate::Zone;
+    use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+    use chrono::Utc;
+
+    let data_dir = get_data_dir()?;
+    let plans_dir = data_dir.join("plans");
+
+    // Check if plans already exist
+    let existing_plans = list_plans().await.unwrap_or_default();
+    if !existing_plans.is_empty() {
+        tracing::info!(
+            "seed_default_plans: {} plans already exist, skipping seed",
+            existing_plans.len()
+        );
+        return Ok(0);
+    }
+
+    tracing::info!("seed_default_plans: Creating default training plans");
+
+    // Create plans directory
+    if !plans_dir.exists() {
+        tokio::fs::create_dir_all(&plans_dir).await?;
+    }
+
+    let mut count = 0;
+
+    // 1. Easy Run - 30 minutes
+    let easy_run = TrainingPlan {
+        name: "Easy Run".to_string(),
+        phases: vec![
+            TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 600, // 10 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+            TrainingPhase {
+                name: "Easy Pace".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 600, // 10 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+            TrainingPhase {
+                name: "Cooldown".to_string(),
+                target_zone: Zone::Zone1,
+                duration_secs: 600, // 10 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+        ],
+        created_at: Utc::now(),
+        max_hr: 180,
+    };
+    save_plan(&easy_run).await?;
+    count += 1;
+
+    // 2. Tempo Run - 40 minutes
+    let tempo_run = TrainingPlan {
+        name: "Tempo Run".to_string(),
+        phases: vec![
+            TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 600, // 10 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+            TrainingPhase {
+                name: "Tempo".to_string(),
+                target_zone: Zone::Zone3,
+                duration_secs: 1200, // 20 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+            TrainingPhase {
+                name: "Cooldown".to_string(),
+                target_zone: Zone::Zone1,
+                duration_secs: 600, // 10 min
+                transition: TransitionCondition::TimeElapsed,
+            },
+        ],
+        created_at: Utc::now(),
+        max_hr: 180,
+    };
+    save_plan(&tempo_run).await?;
+    count += 1;
+
+    // 3. Interval Training - 35 minutes
+    let mut interval_phases = vec![TrainingPhase {
+        name: "Warmup".to_string(),
+        target_zone: Zone::Zone2,
+        duration_secs: 300, // 5 min
+        transition: TransitionCondition::TimeElapsed,
+    }];
+
+    for i in 1..=5 {
+        interval_phases.push(TrainingPhase {
+            name: format!("Interval {}", i),
+            target_zone: Zone::Zone4,
+            duration_secs: 180, // 3 min
+            transition: TransitionCondition::TimeElapsed,
+        });
+        interval_phases.push(TrainingPhase {
+            name: format!("Recovery {}", i),
+            target_zone: Zone::Zone2,
+            duration_secs: 120, // 2 min
+            transition: TransitionCondition::TimeElapsed,
+        });
+    }
+
+    interval_phases.push(TrainingPhase {
+        name: "Cooldown".to_string(),
+        target_zone: Zone::Zone1,
+        duration_secs: 300, // 5 min
+        transition: TransitionCondition::TimeElapsed,
+    });
+
+    let interval_training = TrainingPlan {
+        name: "Interval Training".to_string(),
+        phases: interval_phases,
+        created_at: Utc::now(),
+        max_hr: 180,
+    };
+    save_plan(&interval_training).await?;
+    count += 1;
+
+    // 4. Long Slow Distance - 60 minutes
+    let lsd = TrainingPlan {
+        name: "Long Slow Distance".to_string(),
+        phases: vec![TrainingPhase {
+            name: "Steady Aerobic".to_string(),
+            target_zone: Zone::Zone2,
+            duration_secs: 3600, // 60 min
+            transition: TransitionCondition::TimeElapsed,
+        }],
+        created_at: Utc::now(),
+        max_hr: 180,
+    };
+    save_plan(&lsd).await?;
+    count += 1;
+
+    // 5. Recovery Run - 20 minutes
+    let recovery = TrainingPlan {
+        name: "Recovery Run".to_string(),
+        phases: vec![TrainingPhase {
+            name: "Easy Recovery".to_string(),
+            target_zone: Zone::Zone1,
+            duration_secs: 1200, // 20 min
+            transition: TransitionCondition::TimeElapsed,
+        }],
+        created_at: Utc::now(),
+        max_hr: 180,
+    };
+    save_plan(&recovery).await?;
+    count += 1;
+
+    tracing::info!("seed_default_plans: Created {} default plans", count);
+    Ok(count)
 }
 
 /// Get or create the global session executor instance.
