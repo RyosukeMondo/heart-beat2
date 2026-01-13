@@ -64,3 +64,4 @@ flutter:
   # Assets directory
   assets:
     - assets/
+    - assets/audio/

@@ -48,7 +48,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Prompt: Role: UX Designer with audio expertise | Task: Source or create distinct audio assets for zone deviation feedback (too high, too low) and phase transitions | Restrictions: Files must be small, sounds distinct but not annoying, appropriate for exercise context | Success: Audio files created, clearly distinguishable, appropriate volume and duration_
   - **Completed**: Generated three distinct MP3 files using ffmpeg: too_high.mp3 (800Hz, 4.6KB), too_low.mp3 (300Hz, 4.6KB), phase_change.mp3 (550Hz with fade, 3.7KB). All files are well under 100KB limit, clearly distinguishable by frequency, and appropriate for workout context.
 
-- [ ] 5. Register audio assets in pubspec.yaml
+- [x] 5. Register audio assets in pubspec.yaml
   - File: pubspec.yaml
   - Add assets/audio/ to flutter assets section
   - Ensure assets bundled in release build
@@ -57,6 +57,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: pubspec.yaml flutter assets configuration_
   - _Requirements: Flutter asset bundling_
   - _Prompt: Role: Flutter Developer | Task: Register audio asset files in pubspec.yaml flutter assets section | Restrictions: Use correct path format, verify bundling works | Success: Assets registered, accessible via asset path at runtime_
+  - **Completed**: Added `assets/audio/` to flutter assets section in pubspec.yaml. Verified successful bundling by building debug APK and confirming all three audio files (too_high.mp3, too_low.mp3, phase_change.mp3) are present in the APK at assets/flutter_assets/assets/audio/
 
 - [ ] 6. Integrate audio feedback with WorkoutScreen
   - File: lib/src/screens/workout_screen.dart
