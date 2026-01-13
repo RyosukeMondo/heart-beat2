@@ -29,7 +29,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: All 5 zones captured_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Developer | Task: Create golden tests for ZoneIndicator widget for all 5 HR zones | Restrictions: Consistent sizing, verify zone colors are distinct | Success: 5 golden files generated, visual differences detectable | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 4. Create PhaseProgress golden tests
+- [x] 4. Create PhaseProgress golden tests
   - File: test/golden/phase_progress_golden_test.dart
   - Golden: test/golden/goldens/phase_progress_warmup.png
   - Golden: test/golden/goldens/phase_progress_active.png
