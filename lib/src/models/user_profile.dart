@@ -82,6 +82,8 @@ class UserProfile {
   int? _age;
   bool _useAgeBased;
   CustomZones? _customZones;
+  bool _audioFeedbackEnabled;
+  double _audioVolume;
 
   /// Manual maximum heart rate in BPM
   int get maxHr => _maxHr;
@@ -113,6 +115,21 @@ class UserProfile {
     _customZones = value;
   }
 
+  /// Whether audio feedback is enabled during workouts
+  bool get audioFeedbackEnabled => _audioFeedbackEnabled;
+  set audioFeedbackEnabled(bool value) {
+    _audioFeedbackEnabled = value;
+  }
+
+  /// Audio feedback volume (0.0 to 1.0)
+  double get audioVolume => _audioVolume;
+  set audioVolume(double value) {
+    if (value < 0.0 || value > 1.0) {
+      throw ArgumentError('Audio volume must be between 0.0 and 1.0');
+    }
+    _audioVolume = value;
+  }
+
   /// The effective max heart rate (age-based if enabled, otherwise manual)
   int get effectiveMaxHr {
     if (_useAgeBased && _age != null) {
@@ -129,16 +146,23 @@ class UserProfile {
     int? age,
     bool useAgeBased = false,
     CustomZones? customZones,
+    bool audioFeedbackEnabled = true,
+    double audioVolume = 0.7,
   })  : _maxHr = maxHr,
         _age = age,
         _useAgeBased = useAgeBased,
-        _customZones = customZones {
+        _customZones = customZones,
+        _audioFeedbackEnabled = audioFeedbackEnabled,
+        _audioVolume = audioVolume {
     // Validate in constructor
     if (maxHr < 100 || maxHr > 220) {
       throw ArgumentError('Max heart rate must be between 100 and 220');
     }
     if (age != null && (age < 10 || age > 120)) {
       throw ArgumentError('Age must be between 10 and 120');
+    }
+    if (audioVolume < 0.0 || audioVolume > 1.0) {
+      throw ArgumentError('Audio volume must be between 0.0 and 1.0');
     }
   }
 
@@ -164,6 +188,8 @@ class UserProfile {
       customZones: json['customZones'] != null
           ? CustomZones.fromJson(json['customZones'] as Map<String, dynamic>)
           : null,
+      audioFeedbackEnabled: json['audioFeedbackEnabled'] as bool? ?? true,
+      audioVolume: (json['audioVolume'] as num?)?.toDouble() ?? 0.7,
     );
   }
 
@@ -174,6 +200,8 @@ class UserProfile {
       'age': _age,
       'useAgeBased': _useAgeBased,
       'customZones': _customZones?.toJson(),
+      'audioFeedbackEnabled': _audioFeedbackEnabled,
+      'audioVolume': _audioVolume,
     };
   }
 
@@ -185,12 +213,16 @@ class UserProfile {
           _maxHr == other._maxHr &&
           _age == other._age &&
           _useAgeBased == other._useAgeBased &&
-          _customZones == other._customZones;
+          _customZones == other._customZones &&
+          _audioFeedbackEnabled == other._audioFeedbackEnabled &&
+          _audioVolume == other._audioVolume;
 
   @override
   int get hashCode =>
       _maxHr.hashCode ^
       _age.hashCode ^
       _useAgeBased.hashCode ^
-      _customZones.hashCode;
+      _customZones.hashCode ^
+      _audioFeedbackEnabled.hashCode ^
+      _audioVolume.hashCode;
 }

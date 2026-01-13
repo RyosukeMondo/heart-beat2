@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
+import '../services/audio_feedback_service.dart';
 import 'zone_editor_screen.dart';
 
 /// Settings screen for user configuration
@@ -19,6 +20,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   bool _useAgeBased = false;
+  bool _audioFeedbackEnabled = true;
+  double _audioVolume = 0.7;
   UserProfile? _currentProfile;
 
   @override
@@ -43,8 +46,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _maxHrController.text = profile.maxHr.toString();
         _ageController.text = profile.age?.toString() ?? '';
         _useAgeBased = profile.useAgeBased;
+        _audioFeedbackEnabled = profile.audioFeedbackEnabled;
+        _audioVolume = profile.audioVolume;
         _isLoading = false;
       });
+
+      // Update AudioFeedbackService with loaded settings
+      AudioFeedbackService.instance.isEnabled = profile.audioFeedbackEnabled;
+      AudioFeedbackService.instance.volume = profile.audioVolume;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -53,6 +62,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         setState(() {
           _maxHrController.text = '180';
           _useAgeBased = false;
+          _audioFeedbackEnabled = true;
+          _audioVolume = 0.7;
           _isLoading = false;
         });
       }
@@ -80,9 +91,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         age: age,
         useAgeBased: _useAgeBased,
         customZones: _currentProfile?.customZones,
+        audioFeedbackEnabled: _audioFeedbackEnabled,
+        audioVolume: _audioVolume,
       );
 
       await ProfileService.instance.saveProfile(profile);
+
+      // Update AudioFeedbackService with new settings
+      AudioFeedbackService.instance.isEnabled = _audioFeedbackEnabled;
+      AudioFeedbackService.instance.volume = _audioVolume;
 
       if (mounted) {
         setState(() {
@@ -266,6 +283,98 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 8),
                           _buildZoneDisplay(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Audio Feedback',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Audio notifications during workouts for zone deviations and phase transitions',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 16),
+                          SwitchListTile(
+                            key: const Key('audioFeedbackEnabledSwitch'),
+                            title: const Text('Enable audio feedback'),
+                            subtitle: Text(
+                              _audioFeedbackEnabled
+                                  ? 'Audio notifications enabled'
+                                  : 'Audio notifications disabled',
+                            ),
+                            value: _audioFeedbackEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _audioFeedbackEnabled = value;
+                              });
+                            },
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Volume',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.volume_down),
+                              Expanded(
+                                child: Slider(
+                                  key: const Key('audioVolumeSlider'),
+                                  value: _audioVolume,
+                                  min: 0.0,
+                                  max: 1.0,
+                                  divisions: 10,
+                                  label: '${(_audioVolume * 100).round()}%',
+                                  onChanged: _audioFeedbackEnabled
+                                      ? (value) {
+                                          setState(() {
+                                            _audioVolume = value;
+                                          });
+                                        }
+                                      : null,
+                                ),
+                              ),
+                              const Icon(Icons.volume_up),
+                              const SizedBox(width: 16),
+                              SizedBox(
+                                width: 50,
+                                child: Text(
+                                  '${(_audioVolume * 100).round()}%',
+                                  textAlign: TextAlign.right,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton.icon(
+                                onPressed: _audioFeedbackEnabled
+                                    ? () async {
+                                        // Test audio playback
+                                        await AudioFeedbackService.instance
+                                            .playZoneTooHigh();
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.play_arrow),
+                                label: const Text('Test Sound'),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
