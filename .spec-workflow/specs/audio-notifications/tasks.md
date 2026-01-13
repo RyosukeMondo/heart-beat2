@@ -37,7 +37,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Prompt: Role: Flutter Service Developer | Task: Create AudioFeedbackService singleton with methods for zone deviation and phase transition audio feedback | Restrictions: Must work during background execution, handle audio focus properly, be battery efficient | Success: Service plays audio reliably, works with foreground service, handles audio focus conflicts_
   - **Completed**: Created singleton service with audioplayers package integration, 3-second debouncing, volume control, enable/disable toggle, and methods for zone deviation (too high/low) and phase transition audio
 
-- [ ] 4. Create or source audio assets
+- [x] 4. Create or source audio assets
   - File: assets/audio/ (new directory)
   - Create or source distinct sounds for: too_high.mp3, too_low.mp3, phase_change.mp3
   - Keep files small for fast loading (<100KB each)
@@ -46,6 +46,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: Free sound resources or simple tone generation_
   - _Requirements: product.md user experience_
   - _Prompt: Role: UX Designer with audio expertise | Task: Source or create distinct audio assets for zone deviation feedback (too high, too low) and phase transitions | Restrictions: Files must be small, sounds distinct but not annoying, appropriate for exercise context | Success: Audio files created, clearly distinguishable, appropriate volume and duration_
+  - **Completed**: Generated three distinct MP3 files using ffmpeg: too_high.mp3 (800Hz, 4.6KB), too_low.mp3 (300Hz, 4.6KB), phase_change.mp3 (550Hz with fade, 3.7KB). All files are well under 100KB limit, clearly distinguishable by frequency, and appropriate for workout context.
 
 - [ ] 5. Register audio assets in pubspec.yaml
   - File: pubspec.yaml
