@@ -70,7 +70,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: Rust Developer | Task: Add unit tests to adapter layer to achieve 80%+ coverage using mocked dependencies | Restrictions: Mock external dependencies, test error paths, maintain isolation | Success: Adapter layer coverage >= 80%, external deps mocked, error handling tested_
   - **Completed**: Added 15 comprehensive tests for btleplug_adapter covering error paths and edge cases. Coverage improved from 7.41% (16/216) to 41.20% (89/216), gaining +73 lines. All adapter modules now meet or exceed coverage targets: cli_notification_adapter (100%), file_session_repository (89.01%), mock_adapter (91.76%), mock_notification_adapter (84.62%). Tests cover UUID validation, JVM attachment, connection error handling, device discovery, scan lifecycle, and reconnection policies with cancellation support.
 
-- [ ] 7. Add tests for state machine gaps
+- [x] 7. Add tests for state machine gaps
   - File: rust/src/state/*.rs test modules
   - Test all state transitions in connectivity and session machines
   - Test invalid transition handling
@@ -79,6 +79,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: rust/src/state/ modules, statig testing patterns_
   - _Requirements: product.md coverage_
   - _Prompt: Role: Rust Developer with state machine expertise | Task: Add comprehensive tests for state machine transitions and edge cases | Restrictions: Test all valid transitions, verify invalid transition handling, use statig patterns | Success: State machine coverage >= 80%, all transitions tested, edge cases covered_
+  - **Completed**: Added 25 comprehensive tests for state machines. Coverage significantly improved: connectivity.rs 97.0% (65/67, +13.43%), session.rs 94.2% (131/139, +8.63%). Connectivity tests cover: ConnectionContext with custom policy, accessor methods (adapter, policy), state machine state/context accessors, state transitions with assertions, reconnect_delay edge cases, invalid events in Connecting/Reconnecting states, UserDisconnect from DiscoveringServices. Session tests cover: ZoneTracker with invalid max_hr and below-threshold BPM, SessionContext default/accessors, SessionStateMachineWrapper::default(), events in Idle/Completed/Paused states, UpdateBpm while InProgress, time_remaining edge cases, context_mut accessor, ZoneDeviation equality, zone tracker transitions.
 
 - [ ] 8. Add tests for scheduler/executor gaps
   - File: rust/src/scheduler/*.rs test modules
