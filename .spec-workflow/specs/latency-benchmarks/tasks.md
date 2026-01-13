@@ -65,7 +65,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: ci-cd spec_
   - _Prompt: Role: Rust Developer | Task: Add criterion benchmark framework to Cargo.toml with proper configuration | Restrictions: Dev dependency only, configure harness correctly | Success: cargo bench runs successfully, criterion generates reports_
 
-- [ ] 7. Create CI benchmark workflow
+- [x] 7. Create CI benchmark workflow
   - File: .github/workflows/benchmark.yml
   - Run benchmarks on PR and main branch
   - Compare results against baseline
