@@ -38,7 +38,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Test full workout lifecycle_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Developer | Task: Create integration test for workout execution including pause/resume/stop and phase transitions | Restrictions: Use mock HR data for predictable testing | Success: Full workout lifecycle tested | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 5. Create settings flow test
+- [x] 5. Create settings flow test
   - File: integration_test/settings_flow_test.dart
   - Test: Navigate to settings -> Modify profile -> Save -> Verify persistence
   - Purpose: Verify settings changes persist correctly
