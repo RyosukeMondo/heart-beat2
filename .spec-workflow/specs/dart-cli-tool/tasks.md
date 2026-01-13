@@ -20,7 +20,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Match Rust CLI scan behavior_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add scan command that calls scanDevices and displays results | Restrictions: Format output similar to Rust CLI | Success: `dart run bin/dart_cli.dart scan` shows discovered devices | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 3. Add connect command
+- [x] 3. Add connect command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart connect <device_id>`
   - Connect to device and show HR stream

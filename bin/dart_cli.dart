@@ -135,8 +135,21 @@ Future<void> main(List<String> arguments) async {
         exit(0);
 
       case 'connect':
-        print('Connect command not yet implemented');
-        exit(1);
+        final deviceId = command['device'] as String?;
+        if (deviceId == null || command.rest.isNotEmpty) {
+          // Support both --device and positional argument
+          final finalDeviceId = deviceId ?? (command.rest.isNotEmpty ? command.rest[0] : null);
+          if (finalDeviceId == null) {
+            stderr.writeln('Error: Device ID is required');
+            stderr.writeln('Usage: dart run bin/dart_cli.dart connect <device_id>');
+            stderr.writeln('   or: dart run bin/dart_cli.dart connect --device <device_id>');
+            exit(1);
+          }
+          await handleConnectCommand(finalDeviceId);
+        } else {
+          await handleConnectCommand(deviceId);
+        }
+        exit(0);
 
       case 'list-plans':
         print('List-plans command not yet implemented');
@@ -286,5 +299,67 @@ String _formatSignalStrength(int rssi) {
     return 'Weak';
   } else {
     return 'Very Weak';
+  }
+}
+
+/// Handle connect command - connect to device and stream HR data
+Future<void> handleConnectCommand(String deviceId) async {
+  try {
+    print('Connecting to device: $deviceId');
+    print('This may take a few seconds...\n');
+
+    // Connect to the device
+    await connectDevice(deviceId: deviceId);
+    print('✓ Connected successfully!\n');
+
+    // Create HR stream
+    final hrStream = createHrStream();
+
+    print('Streaming heart rate data (press Ctrl+C to stop):\n');
+    print('Time       | Raw BPM | Filtered BPM');
+    print('-----------+---------+-------------');
+
+    // Set up signal handler for graceful shutdown
+    bool shouldExit = false;
+
+    // Listen to Ctrl+C
+    ProcessSignal.sigint.watch().listen((_) async {
+      if (!shouldExit) {
+        shouldExit = true;
+        print('\n\nDisconnecting...');
+        await disconnect();
+        print('Disconnected.');
+        exit(0);
+      }
+    });
+
+    // Stream heart rate data
+    await for (final hrData in hrStream) {
+      if (shouldExit) break;
+
+      final rawBpm = await hrRawBpm(data: hrData);
+      final filteredBpm = await hrFilteredBpm(data: hrData);
+      final now = DateTime.now();
+      final timeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+
+      print('$timeStr   | ${rawBpm.toString().padLeft(7)} | ${filteredBpm.toString().padLeft(12)}');
+    }
+
+  } catch (e) {
+    stderr.writeln('\nError connecting to device: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Verify the device ID is correct (use scan command)');
+    stderr.writeln('  - Ensure the device is powered on and nearby');
+    stderr.writeln('  - Check that Bluetooth is enabled');
+    stderr.writeln('  - Make sure the device is not already connected to another app');
+
+    // Try to disconnect cleanly
+    try {
+      await disconnect();
+    } catch (_) {
+      // Ignore disconnect errors during error handling
+    }
+
+    rethrow;
   }
 }
