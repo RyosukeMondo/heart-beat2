@@ -39,7 +39,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: Test onSelect callback, navigation_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Widget Test Developer | Task: Test PlanSelector widget including plan list display, tap callbacks, empty state, and error state | Restrictions: Mock listPlans API, verify callback is invoked with correct plan name | Success: Plan selection triggers callback correctly, all states render properly | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 5. Create SessionControls widget tests
+- [x] 5. Create SessionControls widget tests
   - File: test/widgets/session_controls_test.dart
   - Test pause/resume/stop button states
   - Test callback invocations
