@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/doctest-fix/design.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2026-01-13T04:06:15.253Z",
+      "trigger": "initial",
+      "approvalId": "approval_1768277175249_8xi645ndz",
+      "approvalTitle": "Design Document for doctest-fix spec"
+    }
+  ]
+}

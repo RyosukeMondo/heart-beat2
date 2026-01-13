@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/audio-notifications/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2026-01-13T04:07:24.868Z",
+      "trigger": "initial",
+      "approvalId": "approval_1768277244863_i3tcz4lca",
+      "approvalTitle": "Audio Notifications Requirements Document"
+    }
+  ]
+}

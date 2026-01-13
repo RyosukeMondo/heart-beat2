@@ -29,10 +29,15 @@ class _SessionScreenState extends State<SessionScreen> {
   final BackgroundService _backgroundService = BackgroundService();
   bool _isServiceRunning = false;
   final ProfileService _profileService = ProfileService.instance;
+  bool _hasInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // Only initialize once to prevent reconnection on navigation events
+    if (_hasInitialized) return;
+    _hasInitialized = true;
 
     // Load profile to ensure zone calculations use user settings
     _profileService.loadProfile();
@@ -184,10 +189,13 @@ class _SessionScreenState extends State<SessionScreen> {
       floatingActionButton: _hrStream != null
           ? FloatingActionButton.extended(
               onPressed: () {
+                debugPrint('SessionScreen: Start Workout FAB tapped');
                 PlanSelector.show(
                   context,
                   onSelect: (planName) {
-                    Navigator.of(context).pushNamed('/workout/$planName');
+                    debugPrint('SessionScreen: Plan selected callback: $planName');
+                    // Use rootNavigator to escape the modal bottom sheet context
+                    Navigator.of(context, rootNavigator: true).pushNamed('/workout/$planName');
                   },
                 );
               },

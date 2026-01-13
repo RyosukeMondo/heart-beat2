@@ -140,6 +140,8 @@ void frbgen_heart_beat_wire__crate__api__hr_filtered_bpm(int64_t port_, uintptr_
 
 void frbgen_heart_beat_wire__crate__api__hr_raw_bpm(int64_t port_, uintptr_t data);
 
+void frbgen_heart_beat_wire__crate__api__hr_receive_timestamp_micros(int64_t port_, uintptr_t data);
+
 void frbgen_heart_beat_wire__crate__api__hr_rmssd(int64_t port_, uintptr_t data);
 
 void frbgen_heart_beat_wire__crate__api__hr_timestamp(int64_t port_, uintptr_t data);
@@ -313,6 +315,8 @@ double *frbgen_heart_beat_cst_new_box_autoadd_f_64(double value);
 
 struct wire_cst_record_i_64_u_16 *frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16(void);
 
+uint64_t *frbgen_heart_beat_cst_new_box_autoadd_u_64(uint64_t value);
+
 uint8_t *frbgen_heart_beat_cst_new_box_autoadd_u_8(uint8_t value);
 
 struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview *frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(int32_t len);
@@ -338,6 +342,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_battery_level);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_f_64);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_64);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_8);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_String);
@@ -389,6 +394,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filter_variance);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filtered_bpm);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_raw_bpm);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_receive_timestamp_micros);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_rmssd);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_timestamp);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_zone);

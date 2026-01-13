@@ -6,12 +6,15 @@ import '../bridge/api_generated.dart/api.dart';
 /// Shows reconnection progress, connection failures, and other connection
 /// state changes to keep users informed during workouts.
 class ConnectionBanner extends StatelessWidget {
-  const ConnectionBanner({super.key});
+  /// Optional stream for testing. If not provided, uses the real connection stream.
+  final Stream<ApiConnectionStatus>? statusStream;
+
+  const ConnectionBanner({super.key, this.statusStream});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ApiConnectionStatus>(
-      stream: createConnectionStatusStream(),
+      stream: statusStream ?? createConnectionStatusStream(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const SizedBox.shrink();

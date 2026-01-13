@@ -48,7 +48,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: Test all button states and callbacks_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Widget Test Developer | Task: Test SessionControls widget for pause/resume/stop buttons, verify correct visibility based on state, test callback invocations | Restrictions: Mock workout state, test UI behavior only | Success: All button states tested, callbacks verified | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 6. Create ConnectionBanner widget tests
+- [x] 6. Create ConnectionBanner widget tests
   - File: test/widgets/connection_banner_test.dart
   - Test reconnecting state display
   - Test disconnected state display

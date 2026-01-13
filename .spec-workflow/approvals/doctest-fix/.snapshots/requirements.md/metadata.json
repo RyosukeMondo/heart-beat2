@@ -1,0 +1,14 @@
+{
+  "filePath": ".spec-workflow/specs/doctest-fix/requirements.md",
+  "currentVersion": 1,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2026-01-13T04:04:16.642Z",
+      "trigger": "initial",
+      "approvalId": "approval_1768277056638_8sj5skve5",
+      "approvalTitle": "Requirements document for doctest-fix spec"
+    }
+  ]
+}
