@@ -43,6 +43,9 @@ dependencies:
   # Audio playback for biofeedback notifications
   audioplayers: ^6.5.1
 
+  # CLI argument parsing
+  args: ^2.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

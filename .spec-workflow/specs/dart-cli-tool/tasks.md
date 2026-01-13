@@ -2,7 +2,7 @@
 
 Dart CLI that exercises the same code paths as Flutter UI for rapid testing without device deployment.
 
-- [ ] 1. Create Dart CLI entry point
+- [x] 1. Create Dart CLI entry point
   - File: bin/dart_cli.dart
   - Set up CLI argument parsing with args package
   - Initialize Rust bridge in CLI mode
