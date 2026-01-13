@@ -92,7 +92,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: Rust Developer | Task: Add comprehensive tests for SessionExecutor covering all lifecycle operations and persistence | Restrictions: Test async operations properly, mock dependencies, cover error cases | Success: Executor coverage >= 80%, lifecycle tested, persistence verified_
   - **Completed**: Added 13 new test functions covering session lifecycle, pause/resume with PauseReason tracking (user vs connection loss), auto-pause/resume on connection status changes, session repository integration (completed/stopped persistence), progress sender streaming, HR sample collection, and query methods (get_plan, get_progress). Coverage improved from 44.55% (147/330) to 78.18% (258/330), gaining +111 lines. All 19 executor tests pass.
 
-- [ ] 9. Update CI workflow for coverage
+- [x] 9. Update CI workflow for coverage
   - File: .github/workflows/ci.yml or .github/workflows/coverage.yml
   - Add cargo-tarpaulin step to CI
   - Configure coverage threshold enforcement (fail if < 80%)
@@ -102,6 +102,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: .github/workflows/ existing workflows_
   - _Requirements: ci-cd spec, product.md coverage_
   - _Prompt: Role: DevOps Engineer | Task: Update CI workflow to run coverage measurement and enforce 80% threshold | Restrictions: Fail build if coverage below threshold, upload reports, minimize CI time | Success: CI runs coverage, enforces threshold, uploads reports_
+  - **Completed**: Migrated .github/workflows/coverage.yml from cargo-llvm-cov to cargo-tarpaulin for consistency with tarpaulin.toml configuration. Coverage threshold enforcement via fail-under=80.0 in tarpaulin.toml (exits non-zero if below threshold). Integrated Codecov upload with cobertura.xml output. Added PR comment script to parse XML and display coverage percentage with threshold status. HTML reports uploaded as artifacts with 30-day retention.
 
 - [ ] 10. Update README with coverage badge
   - File: README.md
