@@ -37,7 +37,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: DevOps Engineer | Task: Create tarpaulin configuration file with appropriate exclusions and 80% threshold | Restrictions: Exclude generated code, configure for CI compatibility, enable threshold enforcement | Success: Config file created, threshold enforced, appropriate exclusions_
   - **Completed**: Created `rust/tarpaulin.toml` with 80% fail-under threshold, excluded frb_generated.rs (2498 lines) and bin/cli.rs (845 lines), configured HTML+XML output to coverage/ directory. Testable codebase: 1779 lines (44.52% current coverage). Configuration verified working.
 
-- [ ] 4. Identify modules below 80% coverage
+- [x] 4. Identify modules below 80% coverage
   - File: Coverage report analysis
   - List modules/files below 80% threshold
   - Prioritize based on criticality (domain > adapters > generated)
@@ -46,6 +46,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: Baseline coverage report from task 2_
   - _Requirements: product.md coverage target_
   - _Prompt: Role: QA Engineer | Task: Analyze coverage report and identify specific modules, functions, and branches below 80% coverage | Restrictions: Focus on critical business logic, deprioritize generated code, be specific about gaps | Success: Gap list created, prioritized by criticality, specific test needs identified_
+  - **Completed**: Created comprehensive `coverage-gap-analysis.md` with detailed line-level analysis. Identified 3 critical modules: API layer (11.33%, 548 lines needed), Executor (44.55%, 117 lines needed), BLE Adapter (7.41%, 157 lines needed). Documented 631 total lines needed to reach 80% target. Prioritized by criticality: P1 (API/Executor/BLE), P2 (State machines at 83-85%), P3 (Domain layer at 97%). Included specific function names, line ranges, and test implementation patterns.
 
 - [ ] 5. Add tests for domain layer gaps
   - File: rust/src/domain/*.rs test modules
