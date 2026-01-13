@@ -66,6 +66,35 @@ typedef struct wire_cst_log_message {
 void frbgen_heart_beat_wire__crate__api__connect_device(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *device_id);
 
+void frbgen_heart_beat_wire__crate__api__connection_status_attempt(int64_t port_, uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_device_id(int64_t port_,
+                                                                     uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_failure_reason(int64_t port_,
+                                                                          uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_is_connected(int64_t port_,
+                                                                        uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_is_connecting(int64_t port_,
+                                                                         uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_is_disconnected(int64_t port_,
+                                                                           uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_is_reconnect_failed(int64_t port_,
+                                                                               uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_is_reconnecting(int64_t port_,
+                                                                           uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_max_attempts(int64_t port_,
+                                                                        uintptr_t status);
+
+void frbgen_heart_beat_wire__crate__api__connection_status_to_string(int64_t port_,
+                                                                     uintptr_t status);
+
 void frbgen_heart_beat_wire__crate__api__create_battery_stream(int64_t port_,
                                                                struct wire_cst_list_prim_u_8_strict *sink);
 
@@ -147,6 +176,8 @@ void frbgen_heart_beat_wire__crate__api__resume_workout(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__scan_devices(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__seed_default_plans(int64_t port_);
+
 void frbgen_heart_beat_wire__crate__api__session_end_time(int64_t port_, uintptr_t session);
 
 void frbgen_heart_beat_wire__crate__api__session_hr_sample_at(int64_t port_,
@@ -221,6 +252,9 @@ void frbgen_heart_beat_wire__crate__api__session_summary_min_hr(int64_t port_, u
 
 void frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone(int64_t port_,
                                                                       uintptr_t session);
+
+void frbgen_heart_beat_wire__crate__api__set_data_dir(int64_t port_,
+                                                      struct wire_cst_list_prim_u_8_strict *path);
 
 void frbgen_heart_beat_wire__crate__api__start_mock_mode(int64_t port_);
 
@@ -325,6 +359,16 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connect_device);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_attempt);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_device_id);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_failure_reason);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_is_connected);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_is_connecting);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_is_disconnected);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_is_reconnect_failed);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_is_reconnecting);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_max_attempts);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_to_string);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_battery_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_connection_status_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_hr_stream);
@@ -358,6 +402,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__phase_progress_target_zone);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__resume_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__scan_devices);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__seed_default_plans);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_end_time);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_hr_sample_at);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_hr_samples_count);
@@ -389,6 +434,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_max_hr);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_min_hr);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__set_data_dir);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__stop_workout);

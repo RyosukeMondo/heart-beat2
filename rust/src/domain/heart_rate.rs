@@ -118,6 +118,20 @@ pub struct FilteredHeartRate {
     /// HRV metric used for stress and recovery assessment.
     pub rmssd: Option<f64>,
 
+    /// Filter confidence/variance in BPM².
+    ///
+    /// Represents the Kalman filter's estimated uncertainty in the filtered value.
+    /// Lower values indicate higher confidence (filter has converged), while higher
+    /// values indicate lower confidence (filter is warming up or tracking changes).
+    ///
+    /// This field is optional for backward compatibility. When present:
+    /// - Values < 1.0: High confidence, filter has converged
+    /// - Values 1.0-5.0: Moderate confidence, filter is stable
+    /// - Values > 5.0: Low confidence, filter is warming up or adjusting to changes
+    ///
+    /// UI can use this to display confidence indicators or warning messages.
+    pub filter_variance: Option<f64>,
+
     /// Device battery level as a percentage (0-100).
     ///
     /// May be `None` if the device doesn't support battery level reporting

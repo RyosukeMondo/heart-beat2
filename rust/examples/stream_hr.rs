@@ -97,6 +97,7 @@ async fn main() -> anyhow::Result<()> {
                             raw_bpm,
                             filtered_bpm,
                             rmssd,
+                            filter_variance: None, // Not using Kalman filter in this example
                             battery_level: Some(85),
                             timestamp: std::time::SystemTime::now()
                                 .duration_since(std::time::UNIX_EPOCH)

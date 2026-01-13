@@ -5,6 +5,7 @@ import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
+import '../widgets/connection_banner.dart';
 import '../services/background_service.dart';
 import '../services/profile_service.dart';
 import 'dart:async';
@@ -227,25 +228,35 @@ class _SessionScreenState extends State<SessionScreen> {
           _backgroundService.updateBpm(bpm, zone: zone.name);
         }
 
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // BPM Display
-              HrDisplay(bpm: bpm),
+        return Column(
+          children: [
+            // Connection status banner
+            const ConnectionBanner(),
 
-              const SizedBox(height: 32),
+            // Main content
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // BPM Display
+                    HrDisplay(bpm: bpm),
 
-              // Zone Indicator
-              ZoneIndicator(zone: zone),
+                    const SizedBox(height: 32),
 
-              const SizedBox(height: 32),
+                    // Zone Indicator
+                    ZoneIndicator(zone: zone),
 
-              // Battery Indicator
-              if (_batteryLevel != null)
-                BatteryIndicator(batteryLevel: _batteryLevel!),
-            ],
-          ),
+                    const SizedBox(height: 32),
+
+                    // Battery Indicator
+                    if (_batteryLevel != null)
+                      BatteryIndicator(batteryLevel: _batteryLevel!),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

@@ -2137,6 +2137,17 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__scan_devices =
       _wire__crate__api__scan_devicesPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__seed_default_plans(int port_) {
+    return _wire__crate__api__seed_default_plans(port_);
+  }
+
+  late final _wire__crate__api__seed_default_plansPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__seed_default_plans',
+      );
+  late final _wire__crate__api__seed_default_plans =
+      _wire__crate__api__seed_default_plansPtr.asFunction<void Function(int)>();
+
   void wire__crate__api__session_end_time(int port_, int session) {
     return _wire__crate__api__session_end_time(port_, session);
   }
@@ -2531,6 +2542,28 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__session_summary_time_in_zone =
       _wire__crate__api__session_summary_time_in_zonePtr
           .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__set_data_dir(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> path,
+  ) {
+    return _wire__crate__api__set_data_dir(port_, path);
+  }
+
+  late final _wire__crate__api__set_data_dirPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__set_data_dir');
+  late final _wire__crate__api__set_data_dir =
+      _wire__crate__api__set_data_dirPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
 
   void wire__crate__api__start_mock_mode(int port_) {
     return _wire__crate__api__start_mock_mode(port_);

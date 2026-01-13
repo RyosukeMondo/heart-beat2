@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -264137699;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -908293046;
 
 // Section: executor
 
@@ -66,6 +66,416 @@ fn wire__crate__api__connect_device_impl(
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_attempt_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_attempt",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::connection_status_attempt(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_device_id_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_device_id",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::connection_status_device_id(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_failure_reason_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_failure_reason",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_failure_reason(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_is_connected_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_is_connected",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_is_connected(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_is_connecting_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_is_connecting",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_is_connecting(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_is_disconnected_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_is_disconnected",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_is_disconnected(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_is_reconnect_failed_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_is_reconnect_failed",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_is_reconnect_failed(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_is_reconnecting_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_is_reconnecting",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_is_reconnecting(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_max_attempts_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_max_attempts",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(
+                        crate::api::connection_status_max_attempts(&*api_status_guard),
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__connection_status_to_string_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    status: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiConnectionStatus>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "connection_status_to_string",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_status = status.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_status_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_status,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_status_guard = Some(api_status.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_status_guard = api_status_guard.unwrap();
+                    let output_ok = Result::<_, ()>::Ok(crate::api::connection_status_to_string(
+                        &*api_status_guard,
+                    ))?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -992,6 +1402,28 @@ fn wire__crate__api__scan_devices_impl(port_: flutter_rust_bridge::for_generated
                 transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || async move {
                         let output_ok = crate::api::scan_devices().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__seed_default_plans_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "seed_default_plans",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::seed_default_plans().await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -2266,6 +2698,29 @@ fn wire__crate__api__session_summary_time_in_zone_impl(
                     ))?;
                     Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__set_data_dir_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    path: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "set_data_dir",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_path = path.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::set_data_dir(api_path)?;
+                        Ok(output_ok)
+                    })(),
+                )
             }
         },
     )
@@ -4304,6 +4759,86 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_attempt(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_attempt_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_device_id(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_device_id_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_failure_reason(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_failure_reason_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_is_connected(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_is_connected_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_is_connecting(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_is_connecting_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_is_disconnected(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_is_disconnected_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_is_reconnect_failed(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_is_reconnect_failed_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_is_reconnecting(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_is_reconnecting_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_max_attempts(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_max_attempts_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__connection_status_to_string(
+        port_: i64,
+        status: usize,
+    ) {
+        wire__crate__api__connection_status_to_string_impl(port_, status)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_battery_stream(
         port_: i64,
         sink: *mut wire_cst_list_prim_u_8_strict,
@@ -4526,6 +5061,11 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__scan_devices(port_: i64) {
         wire__crate__api__scan_devices_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__seed_default_plans(port_: i64) {
+        wire__crate__api__seed_default_plans_impl(port_)
     }
 
     #[unsafe(no_mangle)]
@@ -4772,6 +5312,14 @@ mod io {
         session: usize,
     ) {
         wire__crate__api__session_summary_time_in_zone_impl(port_, session)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__set_data_dir(
+        port_: i64,
+        path: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__set_data_dir_impl(port_, path)
     }
 
     #[unsafe(no_mangle)]
@@ -5768,6 +6316,86 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_attempt(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_attempt_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_device_id(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_device_id_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_failure_reason(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_failure_reason_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_is_connected(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_is_connected_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_is_connecting(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_is_connecting_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_is_disconnected(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_is_disconnected_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_is_reconnect_failed(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_is_reconnect_failed_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_is_reconnecting(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_is_reconnecting_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_max_attempts(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_max_attempts_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__connection_status_to_string(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        status: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__connection_status_to_string_impl(port_, status)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__create_battery_stream(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         sink: String,
@@ -6009,6 +6637,13 @@ mod web {
     #[wasm_bindgen]
     pub fn wire__crate__api__scan_devices(port_: flutter_rust_bridge::for_generated::MessagePort) {
         wire__crate__api__scan_devices_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__seed_default_plans(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__seed_default_plans_impl(port_)
     }
 
     #[wasm_bindgen]
@@ -6258,6 +6893,14 @@ mod web {
         session: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
     ) {
         wire__crate__api__session_summary_time_in_zone_impl(port_, session)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__set_data_dir(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        path: String,
+    ) {
+        wire__crate__api__set_data_dir_impl(port_, path)
     }
 
     #[wasm_bindgen]

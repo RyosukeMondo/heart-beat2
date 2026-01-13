@@ -6,6 +6,7 @@ import '../widgets/zone_indicator.dart';
 import '../widgets/phase_progress.dart';
 import '../widgets/zone_feedback.dart';
 import '../widgets/session_controls.dart';
+import '../widgets/connection_banner.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -245,6 +246,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   Widget _buildWorkoutDisplay(ColorScheme colorScheme) {
     return Column(
       children: [
+        // Connection status banner
+        const ConnectionBanner(),
+
         // Main content area
         Expanded(
           child: Center(

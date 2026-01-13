@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -931171174;
+  int get rustContentHash => -908293046;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -204,6 +204,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<List<DiscoveredDevice>> crateApiScanDevices();
 
+  Future<int> crateApiSeedDefaultPlans();
+
   Future<PlatformInt64> crateApiSessionEndTime({
     required ApiCompletedSession session,
   });
@@ -316,6 +318,8 @@ abstract class RustLibApi extends BaseApi {
   Future<Uint32List> crateApiSessionSummaryTimeInZone({
     required ApiCompletedSession session,
   });
+
+  Future<void> crateApiSetDataDir({required String path});
 
   Future<void> crateApiStartMockMode();
 
@@ -1626,6 +1630,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "scan_devices", argNames: []);
 
   @override
+  Future<int> crateApiSeedDefaultPlans() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__seed_default_plans(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiSeedDefaultPlansConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSeedDefaultPlansConstMeta =>
+      const TaskConstMeta(debugName: "seed_default_plans", argNames: []);
+
+  @override
   Future<PlatformInt64> crateApiSessionEndTime({
     required ApiCompletedSession session,
   }) {
@@ -2563,6 +2588,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "session_summary_time_in_zone",
         argNames: ["session"],
       );
+
+  @override
+  Future<void> crateApiSetDataDir({required String path}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(path);
+          return wire.wire__crate__api__set_data_dir(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiSetDataDirConstMeta,
+        argValues: [path],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSetDataDirConstMeta =>
+      const TaskConstMeta(debugName: "set_data_dir", argNames: ["path"]);
 
   @override
   Future<void> crateApiStartMockMode() {

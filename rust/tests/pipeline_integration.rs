@@ -95,6 +95,7 @@ async fn test_full_pipeline_with_mock_adapter() {
             raw_bpm,
             filtered_bpm,
             rmssd,
+            filter_variance: None,   // Not using Kalman filter in this test
             battery_level: Some(90), // Would come from adapter.read_battery()
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

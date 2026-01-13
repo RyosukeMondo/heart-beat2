@@ -1617,6 +1617,9 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__scan_devices(NativePortType port_) =>
       wasmModule.wire__crate__api__scan_devices(port_);
 
+  void wire__crate__api__seed_default_plans(NativePortType port_) =>
+      wasmModule.wire__crate__api__seed_default_plans(port_);
+
   void wire__crate__api__session_end_time(NativePortType port_, int session) =>
       wasmModule.wire__crate__api__session_end_time(port_, session);
 
@@ -1789,6 +1792,9 @@ class RustLibWire implements BaseWire {
     int session,
   ) =>
       wasmModule.wire__crate__api__session_summary_time_in_zone(port_, session);
+
+  void wire__crate__api__set_data_dir(NativePortType port_, String path) =>
+      wasmModule.wire__crate__api__set_data_dir(port_, path);
 
   void wire__crate__api__start_mock_mode(NativePortType port_) =>
       wasmModule.wire__crate__api__start_mock_mode(port_);
@@ -2137,6 +2143,8 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void wire__crate__api__scan_devices(NativePortType port_);
 
+  external void wire__crate__api__seed_default_plans(NativePortType port_);
+
   external void wire__crate__api__session_end_time(
     NativePortType port_,
     int session,
@@ -2288,6 +2296,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__session_summary_time_in_zone(
     NativePortType port_,
     int session,
+  );
+
+  external void wire__crate__api__set_data_dir(
+    NativePortType port_,
+    String path,
   );
 
   external void wire__crate__api__start_mock_mode(NativePortType port_);

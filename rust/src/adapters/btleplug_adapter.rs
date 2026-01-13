@@ -38,15 +38,24 @@ fn ensure_jvm_attached() -> Result<()> {
     let jvm = unsafe { JavaVM::from_raw(vm_ptr as *mut jni::sys::JavaVM) }
         .map_err(|e| anyhow!("Failed to create JavaVM from pointer: {:?}", e))?;
 
+    // Check if thread is already attached
+    match jvm.get_env() {
+        Ok(_) => {
+            // Thread already attached
+            return Ok(());
+        }
+        Err(jni::errors::Error::JniCall(jni::errors::JniError::ThreadDetached)) => {
+            // Thread not attached, need to attach it
+        }
+        Err(e) => {
+            return Err(anyhow!("Failed to check JVM attachment: {:?}", e));
+        }
+    }
+
     // Attach the current thread permanently (it will auto-detach on thread exit)
     match jvm.attach_current_thread_permanently() {
         Ok(_env) => {
             tracing::debug!("Thread attached to JVM successfully");
-            Ok(())
-        }
-        Err(jni::errors::Error::JniCall(jni::errors::JniError::ThreadDetached)) => {
-            // Already attached, this is fine
-            tracing::debug!("Thread was already attached to JVM");
             Ok(())
         }
         Err(e) => Err(anyhow!("Failed to attach thread to JVM: {:?}", e)),
@@ -545,10 +554,18 @@ impl BleAdapter for BtleplugAdapter {
         // Retry connection up to 3 times (Android BLE can fail with GATT error 133)
         let mut last_error = None;
         for attempt in 1..=3 {
+            // Re-attach to JVM before each attempt (tokio may switch worker threads)
+            if let Err(e) = ensure_jvm_attached() {
+                tracing::warn!("Failed to attach to JVM for attempt {}: {}", attempt, e);
+            }
+
             tracing::info!("Connection attempt {} for device {}", attempt, device_id);
 
             match peripheral.connect().await {
                 Ok(()) => {
+                    // Re-attach after async operation
+                    ensure_jvm_attached()?;
+
                     tracing::info!("Connected successfully on attempt {}", attempt);
 
                     // Discover services and characteristics
@@ -628,6 +645,12 @@ impl BleAdapter for BtleplugAdapter {
 
         // Spawn task to forward notifications
         tokio::spawn(async move {
+            // Attach this worker thread to JVM (Android)
+            if let Err(e) = ensure_jvm_attached() {
+                tracing::error!("Failed to attach notification thread to JVM: {}", e);
+                return;
+            }
+
             let mut notification_stream = match peripheral_clone.notifications().await {
                 Ok(stream) => stream,
                 Err(e) => {

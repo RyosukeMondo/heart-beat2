@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`
+// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
@@ -106,6 +106,38 @@ Future<void> initPlatform() => RustLib.instance.api.crateApiInitPlatform();
 /// }
 /// ```
 Stream<LogMessage> initLogging() => RustLib.instance.api.crateApiInitLogging();
+
+/// Set the base data directory for storing app data.
+///
+/// On Android, this must be called during app initialization before using any
+/// file-based APIs (list_plans, start_workout, list_sessions, etc.). The path
+/// should be the app's documents directory obtained from Flutter's path_provider.
+///
+/// On desktop platforms (Linux, macOS, Windows), this is optional - if not set,
+/// the APIs will fall back to using ~/.heart-beat as the data directory.
+///
+/// # Arguments
+///
+/// * `path` - Absolute path to the app's data directory
+///
+/// # Examples
+///
+/// In your Flutter/Dart code:
+/// ```dart
+/// import 'package:path_provider/path_provider.dart';
+///
+/// void main() async {
+///   await RustLib.init();
+///
+///   // Set data directory for file storage
+///   final appDir = await getApplicationDocumentsDirectory();
+///   await setDataDir(path: appDir.path);
+///
+///   runApp(MyApp());
+/// }
+/// ```
+Future<void> setDataDir({required String path}) =>
+    RustLib.instance.api.crateApiSetDataDir(path: path);
 
 /// Scan for BLE heart rate devices.
 ///
@@ -630,7 +662,7 @@ Future<(PlatformInt64, int)?> sessionHrSampleAt({
 
 /// List all available training plans.
 ///
-/// Returns a list of plan names from the ~/.heart-beat/plans/ directory.
+/// Returns a list of plan names from the data directory's plans/ subdirectory.
 /// Each plan is stored as a JSON file named `{plan_name}.json`.
 ///
 /// # Returns
@@ -640,9 +672,29 @@ Future<(PlatformInt64, int)?> sessionHrSampleAt({
 ///
 /// # Errors
 ///
-/// Returns an error if the home directory cannot be determined or if there are
+/// Returns an error if the data directory cannot be determined or if there are
 /// issues reading the plans directory.
 Future<List<String>> listPlans() => RustLib.instance.api.crateApiListPlans();
+
+/// Seed default training plans if none exist.
+///
+/// Creates a set of sample training plans for users to get started with.
+/// This function is idempotent - it only creates plans if the plans directory
+/// is empty or doesn't exist.
+///
+/// # Default Plans Created
+///
+/// - **Easy Run** (30 min): 10min Zone2 warmup, 10min Zone2 main, 10min Zone1 cooldown
+/// - **Tempo Run** (40 min): 10min Zone2 warmup, 20min Zone3 tempo, 10min Zone1 cooldown
+/// - **Interval Training** (35 min): Warmup + 5x(3min Zone4 / 2min Zone2) + Cooldown
+/// - **Long Slow Distance** (60 min): Steady Zone2 aerobic base building
+/// - **Recovery Run** (20 min): Easy Zone1 active recovery
+///
+/// # Returns
+///
+/// The number of plans created. Returns 0 if plans already exist.
+Future<int> seedDefaultPlans() =>
+    RustLib.instance.api.crateApiSeedDefaultPlans();
 
 /// Start a workout session with the specified training plan.
 ///

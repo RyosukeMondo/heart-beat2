@@ -631,11 +631,15 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 kalman_filter.filter_if_valid(measurement.bpm as f64);
                             let filtered_bpm = filtered_bpm_f64.round() as u16;
 
+                            // Get filter variance (confidence indicator)
+                            let filter_variance = kalman_filter.variance();
+
                             tracing::trace!(
-                                "HR filter: raw={} -> filtered={} (diff={})",
+                                "HR filter: raw={} -> filtered={} (diff={}, variance={:.2})",
                                 measurement.bpm,
                                 filtered_bpm,
-                                measurement.bpm as i32 - filtered_bpm as i32
+                                measurement.bpm as i32 - filtered_bpm as i32,
+                                filter_variance
                             );
 
                             // Calculate RMSSD if RR-intervals are available
@@ -664,6 +668,7 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 raw_bpm: measurement.bpm,
                                 filtered_bpm,
                                 rmssd,
+                                filter_variance: Some(filter_variance),
                                 battery_level: None, // TODO: Read battery periodically
                                 timestamp,
                             };
@@ -2104,6 +2109,7 @@ mod tests {
             raw_bpm,
             filtered_bpm,
             rmssd: Some(45.0),
+            filter_variance: Some(1.5),
             battery_level: Some(85),
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

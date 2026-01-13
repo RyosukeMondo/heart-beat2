@@ -1109,6 +1109,7 @@ mod tests {
             raw_bpm: 120,
             filtered_bpm: 120,
             rmssd: Some(45.0),
+            filter_variance: Some(1.5),
             battery_level: Some(85),
             timestamp: 0,
         };

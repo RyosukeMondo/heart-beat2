@@ -89,6 +89,7 @@ async fn test_p95_latency_under_100ms() {
             raw_bpm,
             filtered_bpm,
             rmssd,
+            filter_variance: None,
             battery_level: Some(90),
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -205,6 +206,7 @@ async fn test_latency_under_stress() {
             raw_bpm,
             filtered_bpm,
             rmssd,
+            filter_variance: None,
             battery_level: Some(75),
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
