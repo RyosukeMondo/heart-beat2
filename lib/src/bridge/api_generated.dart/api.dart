@@ -247,6 +247,15 @@ Future<int> hrFilteredBpm({required ApiFilteredHeartRate data}) =>
 Future<double?> hrRmssd({required ApiFilteredHeartRate data}) =>
     RustLib.instance.api.crateApiHrRmssd(data: data);
 
+/// Get the filter variance (confidence indicator) in BPM²
+///
+/// The variance represents the Kalman filter's estimated uncertainty:
+/// - < 1.0: High confidence (filter has converged)
+/// - 1.0-5.0: Moderate confidence (filter is stable)
+/// - > 5.0: Low confidence (filter is warming up or tracking changes)
+Future<double?> hrFilterVariance({required ApiFilteredHeartRate data}) =>
+    RustLib.instance.api.crateApiHrFilterVariance(data: data);
+
 /// Get the battery level as a percentage (0-100)
 Future<int?> hrBatteryLevel({required ApiFilteredHeartRate data}) =>
     RustLib.instance.api.crateApiHrBatteryLevel(data: data);

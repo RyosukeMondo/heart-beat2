@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -908293046;
+  int get rustContentHash => 1370675283;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -154,6 +154,10 @@ abstract class RustLibApi extends BaseApi {
   Future<ApiCompletedSession?> crateApiGetSession({required String id});
 
   Future<int?> crateApiHrBatteryLevel({required ApiFilteredHeartRate data});
+
+  Future<double?> crateApiHrFilterVariance({
+    required ApiFilteredHeartRate data,
+  });
 
   Future<int> crateApiHrFilteredBpm({required ApiFilteredHeartRate data});
 
@@ -1169,6 +1173,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiHrBatteryLevelConstMeta =>
       const TaskConstMeta(debugName: "hr_battery_level", argNames: ["data"]);
+
+  @override
+  Future<double?> crateApiHrFilterVariance({
+    required ApiFilteredHeartRate data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiFilteredHeartRate(
+                data,
+              );
+          return wire.wire__crate__api__hr_filter_variance(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_f_64,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiHrFilterVarianceConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiHrFilterVarianceConstMeta =>
+      const TaskConstMeta(debugName: "hr_filter_variance", argNames: ["data"]);
 
   @override
   Future<int> crateApiHrFilteredBpm({required ApiFilteredHeartRate data}) {

@@ -1549,6 +1549,9 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__hr_battery_level(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_battery_level(port_, data);
 
+  void wire__crate__api__hr_filter_variance(NativePortType port_, int data) =>
+      wasmModule.wire__crate__api__hr_filter_variance(port_, data);
+
   void wire__crate__api__hr_filtered_bpm(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_filtered_bpm(port_, data);
 
@@ -2078,6 +2081,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__get_session(NativePortType port_, String id);
 
   external void wire__crate__api__hr_battery_level(
+    NativePortType port_,
+    int data,
+  );
+
+  external void wire__crate__api__hr_filter_variance(
     NativePortType port_,
     int data,
   );

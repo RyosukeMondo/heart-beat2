@@ -1917,6 +1917,18 @@ class RustLibWire implements BaseWire {
       _wire__crate__api__hr_battery_levelPtr
           .asFunction<void Function(int, int)>();
 
+  void wire__crate__api__hr_filter_variance(int port_, int data) {
+    return _wire__crate__api__hr_filter_variance(port_, data);
+  }
+
+  late final _wire__crate__api__hr_filter_variancePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__hr_filter_variance',
+      );
+  late final _wire__crate__api__hr_filter_variance =
+      _wire__crate__api__hr_filter_variancePtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__hr_filtered_bpm(int port_, int data) {
     return _wire__crate__api__hr_filtered_bpm(port_, data);
   }

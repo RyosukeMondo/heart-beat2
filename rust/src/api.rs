@@ -829,6 +829,16 @@ pub fn hr_rmssd(data: &ApiFilteredHeartRate) -> Option<f64> {
     data.rmssd
 }
 
+/// Get the filter variance (confidence indicator) in BPM²
+///
+/// The variance represents the Kalman filter's estimated uncertainty:
+/// - < 1.0: High confidence (filter has converged)
+/// - 1.0-5.0: Moderate confidence (filter is stable)
+/// - > 5.0: Low confidence (filter is warming up or tracking changes)
+pub fn hr_filter_variance(data: &ApiFilteredHeartRate) -> Option<f64> {
+    data.filter_variance
+}
+
 /// Get the battery level as a percentage (0-100)
 pub fn hr_battery_level(data: &ApiFilteredHeartRate) -> Option<u8> {
     data.battery_level

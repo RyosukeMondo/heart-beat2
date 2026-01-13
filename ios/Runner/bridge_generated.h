@@ -134,6 +134,8 @@ void frbgen_heart_beat_wire__crate__api__get_session(int64_t port_,
 
 void frbgen_heart_beat_wire__crate__api__hr_battery_level(int64_t port_, uintptr_t data);
 
+void frbgen_heart_beat_wire__crate__api__hr_filter_variance(int64_t port_, uintptr_t data);
+
 void frbgen_heart_beat_wire__crate__api__hr_filtered_bpm(int64_t port_, uintptr_t data);
 
 void frbgen_heart_beat_wire__crate__api__hr_raw_bpm(int64_t port_, uintptr_t data);
@@ -384,6 +386,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__export_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_battery_level);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filter_variance);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filtered_bpm);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_raw_bpm);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_rmssd);
