@@ -29,7 +29,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Verify navigation works correctly_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Developer | Task: Create integration test for workout start flow - specifically testing the PlanSelector navigation that was broken | Restrictions: Must verify actual navigation occurs, not just callback | Success: Test catches the navigation bug we fixed | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 4. Create workout execution flow test
+- [x] 4. Create workout execution flow test
   - File: integration_test/workout_execution_test.dart
   - Test: Start workout -> Verify HR display -> Pause -> Resume -> Stop
   - Test phase transitions during workout
