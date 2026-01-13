@@ -76,7 +76,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: ci-cd spec_
   - _Prompt: Role: DevOps Engineer | Task: Create GitHub Actions workflow for running latency benchmarks and detecting regressions | Restrictions: Must compare against baseline, fail on significant regression, archive results | Success: CI runs benchmarks, compares to baseline, fails on regression, results archived_
 
-- [ ] 8. Document latency budget
+- [x] 8. Document latency budget
   - File: docs/LATENCY.md or docs/DEVELOPER-GUIDE.md
   - Document target latency budget allocation across components
   - BLE stack: Xms, Rust processing: Xms, FRB: Xms, Flutter: Xms
