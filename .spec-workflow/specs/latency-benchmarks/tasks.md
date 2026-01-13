@@ -44,7 +44,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: product.md latency monitoring_
   - _Prompt: Role: Flutter Developer | Task: Add latency calculation and logging in Flutter when HR data is received, computing end-to-end delay | Restrictions: Low overhead, log periodically not every sample, handle clock differences | Success: Latency calculated accurately, percentiles logged, usable for benchmarking_
 
-- [ ] 5. Create Rust benchmark suite
+- [x] 5. Create Rust benchmark suite
   - File: rust/benches/latency_bench.rs
   - Benchmark HR parsing latency
   - Benchmark Kalman filter processing latency
@@ -55,7 +55,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: ci-cd spec benchmark workflow_
   - _Prompt: Role: Rust Performance Engineer | Task: Create criterion benchmark suite measuring latency of HR processing pipeline components | Restrictions: Statistically rigorous, reproducible, CI-compatible | Success: Benchmarks measure key components, results reproducible, baseline established_
 
-- [ ] 6. Add criterion to Cargo.toml
+- [x] 6. Add criterion to Cargo.toml
   - File: rust/Cargo.toml
   - Add criterion as dev-dependency
   - Configure benchmark harness
