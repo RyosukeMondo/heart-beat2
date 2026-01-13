@@ -15,7 +15,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: DevOps Engineer | Task: Install and verify cargo-tarpaulin for Rust code coverage measurement | Restrictions: Use latest stable version, verify compatibility with project | Success: cargo-tarpaulin installed, runs successfully on project_
   - **Completed**: cargo-tarpaulin v0.35.0 installed and verified
 
-- [ ] 2. Run baseline coverage measurement
+- [x] 2. Run baseline coverage measurement
   - File: rust/ directory
   - Run: cargo tarpaulin --out Html --output-dir coverage/
   - Review coverage report to identify gaps
@@ -24,6 +24,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: cargo-tarpaulin_
   - _Requirements: product.md 80% coverage target_
   - _Prompt: Role: QA Engineer | Task: Run initial code coverage measurement and document baseline coverage by module | Restrictions: Include all test types, generate HTML report, identify modules below 80% | Success: Baseline coverage documented, gaps identified, HTML report generated_
+  - **Completed**: Overall 15.46% coverage (792/5122 lines), detailed report in baseline-coverage-report.md. Key findings: Domain layer 97%, Scheduler 44.55%, API 11.33%, btleplug adapter 7.41%. Excluding generated code (frb_generated.rs) and CLI binary, testable code is at 44.5% coverage.
 
 - [ ] 3. Create tarpaulin configuration
   - File: rust/tarpaulin.toml or rust/.tarpaulin.toml
