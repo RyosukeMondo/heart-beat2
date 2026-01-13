@@ -215,14 +215,22 @@ flutter analyze
 
 ```bash
 # Install coverage tool
-cargo install cargo-llvm-cov
+cargo install cargo-tarpaulin
 
-# Generate report
-cargo llvm-cov --html
-# Open target/llvm-cov/html/index.html
+# Generate coverage report (uses rust/tarpaulin.toml config)
+cd rust
+cargo tarpaulin --config tarpaulin.toml
+
+# Generate HTML report only
+cargo tarpaulin --config tarpaulin.toml --out Html
+
+# View HTML report
+# Open rust/coverage/index.html in browser
 ```
 
-**Target:** 80% minimum coverage (90% for critical paths)
+**Target:** 80% minimum coverage (enforced in CI via `fail-under` in `rust/tarpaulin.toml`)
+
+Coverage reports are automatically generated on every CI run and uploaded to [Codecov](https://codecov.io/gh/heart-beat/heart-beat).
 
 ### Mock Testing
 
