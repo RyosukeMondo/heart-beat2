@@ -174,8 +174,8 @@ Future<void> main(List<String> arguments) async {
         exit(0);
 
       case 'history':
-        print('History command not yet implemented');
-        exit(1);
+        await handleHistoryCommand();
+        exit(0);
 
       case 'profile':
         print('Profile command not yet implemented');
@@ -574,5 +574,103 @@ String _formatZone(Zone zone) {
       return 'Zone 4 (80-90% max HR, Threshold)';
     case Zone.zone5:
       return 'Zone 5 (90-100% max HR, Max Effort)';
+  }
+}
+
+/// Handle history command - list past workout sessions
+Future<void> handleHistoryCommand() async {
+  try {
+    print('Loading workout history...\n');
+
+    final sessions = await listSessions();
+
+    if (sessions.isEmpty) {
+      print('No workout history found.');
+      print('\nComplete some workouts to see them here!');
+      print('Use: dart run bin/dart_cli.dart start-workout <plan_name>');
+      return;
+    }
+
+    print('Workout History (${sessions.length} session(s)):\n');
+    print('═══════════════════════════════════════════════════════════════════════════════');
+
+    // Create list of sessions with timestamps for sorting
+    final sessionsWithTimestamps = <({ApiSessionSummaryPreview session, int timestamp})>[];
+    for (final session in sessions) {
+      final startTime = await sessionPreviewStartTime(preview: session);
+      sessionsWithTimestamps.add((session: session, timestamp: startTime.toInt()));
+    }
+
+    // Sort by start time (most recent first)
+    sessionsWithTimestamps.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    for (int i = 0; i < sessionsWithTimestamps.length; i++) {
+      final session = sessionsWithTimestamps[i].session;
+
+      // Extract session data
+      final id = await sessionPreviewId(preview: session);
+      final planName = await sessionPreviewPlanName(preview: session);
+      final startTime = await sessionPreviewStartTime(preview: session);
+      final durationSecs = await sessionPreviewDurationSecs(preview: session);
+      final avgHr = await sessionPreviewAvgHr(preview: session);
+      final status = await sessionPreviewStatus(preview: session);
+
+      // Format timestamp
+      final timestamp = DateTime.fromMillisecondsSinceEpoch(startTime.toInt());
+      final dateStr = _formatDate(timestamp);
+      final timeStr = _formatTimeOfDay(timestamp);
+
+      // Format duration
+      final duration = _formatDuration(durationSecs);
+
+      // Print session summary
+      print('\n${i + 1}. $planName');
+      print('   Date:     $dateStr at $timeStr');
+      print('   Duration: $duration');
+      print('   Avg HR:   $avgHr bpm');
+      print('   Status:   $status');
+      print('   ID:       $id');
+    }
+
+    print('\n═══════════════════════════════════════════════════════════════════════════════');
+    print('\nTo view detailed session data, use:');
+    print('  dart run bin/dart_cli.dart session <id>');
+
+  } catch (e) {
+    stderr.writeln('Error loading workout history: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Check that session files exist in the data directory');
+    stderr.writeln('  - Verify file permissions');
+    stderr.writeln('  - Ensure sessions were saved correctly');
+    rethrow;
+  }
+}
+
+/// Format date for display (e.g., "Jan 13, 2026")
+String _formatDate(DateTime date) {
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  return '${months[date.month - 1]} ${date.day}, ${date.year}';
+}
+
+/// Format time of day for display (e.g., "14:30")
+String _formatTimeOfDay(DateTime date) {
+  return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+}
+
+/// Format duration in seconds to human-readable string
+String _formatDuration(int seconds) {
+  final hours = seconds ~/ 3600;
+  final minutes = (seconds % 3600) ~/ 60;
+  final secs = seconds % 60;
+
+  if (hours > 0) {
+    return '${hours}h ${minutes}m ${secs}s';
+  } else if (minutes > 0) {
+    return '${minutes}m ${secs}s';
+  } else {
+    return '${secs}s';
   }
 }

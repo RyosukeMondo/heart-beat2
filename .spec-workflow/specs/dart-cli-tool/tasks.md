@@ -47,7 +47,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Display phase, time, zone status_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add start-workout command that starts workout and streams progress | Restrictions: Support pause/resume via keyboard input, format output clearly | Success: `dart run bin/dart_cli.dart start-workout "Easy Run"` runs workout | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 6. Add history command
+- [x] 6. Add history command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart history`
   - List past workout sessions
