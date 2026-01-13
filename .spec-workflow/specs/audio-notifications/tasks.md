@@ -70,7 +70,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Prompt: Role: Flutter Developer | Task: Integrate AudioFeedbackService with WorkoutScreen, triggering audio on zone deviations and phase transitions | Restrictions: Debounce to avoid audio spam, coordinate with visual feedback, respect user preferences | Success: Audio plays on zone deviation, synchronized with visual feedback, not annoying during workout_
   - **Completed**: Integrated AudioFeedbackService with WorkoutScreen. Added zone status tracking (isTooLow/isTooHigh) and phase name tracking. Audio plays on zone deviation state changes (enters too low or too high) and on phase transitions. Debouncing handled by AudioFeedbackService (3 seconds). Audio triggers synchronized with visual feedback from ZoneFeedbackWidget.
 
-- [ ] 7. Add audio settings to SettingsScreen
+- [x] 7. Add audio settings to SettingsScreen
   - File: lib/src/screens/settings_screen.dart
   - Add toggle for audio feedback enabled/disabled
   - Add volume slider or preset options
@@ -79,8 +79,9 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: lib/src/services/profile_service.dart (settings persistence pattern)_
   - _Requirements: product.md user preferences_
   - _Prompt: Role: Flutter UI Developer | Task: Add audio feedback settings to SettingsScreen with enable/disable toggle and volume control | Restrictions: Follow existing settings UI patterns, persist preferences, provide sensible defaults | Success: Settings UI added, preferences persisted, audio service respects settings_
+  - **Completed**: Added Audio Feedback card section to SettingsScreen with enable/disable toggle, volume slider (0-100%, 10% increments), and "Test Sound" button. Volume slider disabled when audio is off. Settings persist via ProfileService and sync with AudioFeedbackService on load and save.
 
-- [ ] 8. Update UserProfile model for audio settings
+- [x] 8. Update UserProfile model for audio settings
   - File: lib/src/models/user_profile.dart
   - Add audioFeedbackEnabled boolean field
   - Add audioVolume double field (0.0-1.0)
@@ -89,6 +90,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: lib/src/models/user_profile.dart existing structure_
   - _Requirements: user-profile spec compatibility_
   - _Prompt: Role: Flutter Developer | Task: Extend UserProfile model to include audio feedback settings with appropriate defaults | Restrictions: Maintain backward compatibility with existing profiles, use appropriate defaults (enabled, 0.7 volume) | Success: Model extended, JSON serialization works, existing profiles load without error_
+  - **Completed**: Extended UserProfile with audioFeedbackEnabled (bool, default true) and audioVolume (double, default 0.7) fields. Updated constructor with default values, JSON serialization/deserialization with backward compatibility (null defaults to true/0.7), validation (volume 0.0-1.0), and equality/hashCode methods. Existing profiles load without error due to default values in fromJson.
 
 - [ ] 9. Test audio feedback end-to-end
   - File: Manual testing / integration test
