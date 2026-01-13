@@ -58,7 +58,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: All connection states covered_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Widget Test Developer | Task: Test ConnectionBanner widget for reconnecting, disconnected, and connected states | Restrictions: Mock connection status stream | Success: All connection states display correctly | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 7. Add widget test CI script
+- [x] 7. Add widget test CI script
   - File: scripts/test-widgets.sh
   - Create script to run widget tests with coverage
   - Add to CI pipeline documentation
