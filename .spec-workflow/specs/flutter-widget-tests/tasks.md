@@ -29,7 +29,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: All zones covered, proper labeling_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Widget Test Developer | Task: Test ZoneIndicator widget for all 5 HR zones (Zone1-Zone5), verify correct colors, labels, and transitions | Restrictions: Mock zone data, test visual output only | Success: All 5 zones tested with correct colors and labels | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 4. Create PlanSelector widget tests
+- [x] 4. Create PlanSelector widget tests
   - File: test/widgets/plan_selector_test.dart
   - Test plan list rendering
   - Test plan selection callback firing
