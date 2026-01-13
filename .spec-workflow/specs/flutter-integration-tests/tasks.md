@@ -11,7 +11,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Tests must run on Android device/emulator_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Engineer | Task: Create integration test helpers including mock device simulation, app launch utilities, and common test patterns | Restrictions: Must work on real Android devices, use patrol or flutter_test driver | Success: Helper utilities enable reliable device testing | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 2. Create device connection flow test
+- [x] 2. Create device connection flow test
   - File: integration_test/connection_flow_test.dart
   - Test: Launch app -> Scan devices -> Select device -> Verify connection
   - Test connection error handling
