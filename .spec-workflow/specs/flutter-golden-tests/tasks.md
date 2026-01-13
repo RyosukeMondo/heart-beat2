@@ -11,7 +11,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: Reproducible screenshots across CI runs_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Engineer | Task: Set up golden test infrastructure with consistent sizing, theming, and file organization | Restrictions: Use Material 3 theme from app.dart, fix device pixel ratio for reproducibility | Success: Golden tests produce identical images across machines | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 2. Create HrDisplay golden tests
+- [x] 2. Create HrDisplay golden tests
   - File: test/golden/hr_display_golden_test.dart
   - Golden: test/golden/goldens/hr_display_60bpm.png
   - Golden: test/golden/goldens/hr_display_150bpm.png
