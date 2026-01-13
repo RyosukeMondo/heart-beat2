@@ -38,7 +38,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Show plan names_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add list-plans command that displays available training plans | Restrictions: Format output clearly | Success: `dart run bin/dart_cli.dart list-plans` shows plans | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 5. Add start-workout command
+- [x] 5. Add start-workout command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart start-workout <plan_name>`
   - Start workout and show progress stream

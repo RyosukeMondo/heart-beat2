@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
 
 /// Dart CLI for Heart Beat - exercises the same code paths as Flutter UI
@@ -156,8 +157,21 @@ Future<void> main(List<String> arguments) async {
         exit(0);
 
       case 'start-workout':
-        print('Start-workout command not yet implemented');
-        exit(1);
+        final planName = command['plan'] as String?;
+        if (planName == null || command.rest.isNotEmpty) {
+          // Support both --plan and positional argument
+          final finalPlanName = planName ?? (command.rest.isNotEmpty ? command.rest[0] : null);
+          if (finalPlanName == null) {
+            stderr.writeln('Error: Plan name is required');
+            stderr.writeln('Usage: dart run bin/dart_cli.dart start-workout <plan_name>');
+            stderr.writeln('   or: dart run bin/dart_cli.dart start-workout --plan <plan_name>');
+            exit(1);
+          }
+          await handleStartWorkoutCommand(finalPlanName);
+        } else {
+          await handleStartWorkoutCommand(planName);
+        }
+        exit(0);
 
       case 'history':
         print('History command not yet implemented');
@@ -395,5 +409,170 @@ Future<void> handleListPlansCommand() async {
     stderr.writeln('  - Check that training plans exist in the data directory');
     stderr.writeln('  - Verify file permissions');
     rethrow;
+  }
+}
+
+/// Handle start-workout command - start workout and stream progress
+Future<void> handleStartWorkoutCommand(String planName) async {
+  try {
+    print('Starting workout: $planName');
+    print('Initializing session...\n');
+
+    // Start the workout
+    await startWorkout(planName: planName);
+    print('✓ Workout started!\n');
+
+    // Create session progress stream
+    final progressStream = createSessionProgressStream();
+
+    print('Workout Progress:');
+    print('═══════════════════════════════════════════════════════════════════\n');
+
+    // Set up signal handlers for pause/resume/stop
+    bool shouldExit = false;
+    bool isPaused = false;
+
+    // Setup stdin in line mode for keyboard input
+    stdin.echoMode = false;
+    stdin.lineMode = false;
+
+    // Listen to Ctrl+C for graceful shutdown
+    ProcessSignal.sigint.watch().listen((_) async {
+      if (!shouldExit) {
+        shouldExit = true;
+        print('\n\n╔═══════════════════════════════════════╗');
+        print('║  Stopping workout...                  ║');
+        print('╚═══════════════════════════════════════╝\n');
+        await stopWorkout();
+        print('Workout stopped. Session saved.');
+        exit(0);
+      }
+    });
+
+    // Instructions
+    print('Controls:');
+    print('  [p] - Pause/Resume');
+    print('  [q] or Ctrl+C - Stop and save');
+    print('─────────────────────────────────────────────────────────────────\n');
+
+    // Listen to keyboard input in background
+    stdin.listen((List<int> data) async {
+      if (shouldExit) return;
+
+      final key = String.fromCharCodes(data).toLowerCase();
+
+      if (key == 'p') {
+        if (isPaused) {
+          print('\n▶ Resuming workout...\n');
+          await resumeWorkout();
+          isPaused = false;
+        } else {
+          print('\n⏸ Pausing workout...\n');
+          await pauseWorkout();
+          isPaused = true;
+        }
+      } else if (key == 'q') {
+        shouldExit = true;
+        print('\n\n╔═══════════════════════════════════════╗');
+        print('║  Stopping workout...                  ║');
+        print('╚═══════════════════════════════════════╝\n');
+        await stopWorkout();
+        print('Workout stopped. Session saved.');
+        exit(0);
+      }
+    });
+
+    // Stream workout progress
+    String? lastPhase;
+    int updateCount = 0;
+
+    await for (final progress in progressStream) {
+      if (shouldExit) break;
+
+      // Get progress data
+      final phaseProgress = await sessionProgressPhaseProgress(progress: progress);
+      final phaseName = await phaseProgressPhaseName(progress: phaseProgress);
+      final phaseIndex = await phaseProgressPhaseIndex(progress: phaseProgress);
+      final targetZone = await phaseProgressTargetZone(progress: phaseProgress);
+      final elapsedSecs = await phaseProgressElapsedSecs(progress: phaseProgress);
+      final remainingSecs = await phaseProgressRemainingSecs(progress: phaseProgress);
+      final currentBpm = await sessionProgressCurrentBpm(progress: progress);
+      final zoneStatus = await sessionProgressZoneStatus(progress: progress);
+      final isInZone = await zoneStatusIsInZone(status: zoneStatus);
+      final zoneStatusStr = await zoneStatusToString(status: zoneStatus);
+
+      // Print phase change header
+      if (lastPhase != phaseName) {
+        lastPhase = phaseName;
+        print('\n╔═══════════════════════════════════════════════════════════════╗');
+        print('║  Phase ${phaseIndex + 1}: $phaseName');
+        print('║  Target: ${_formatZone(targetZone)}');
+        print('╚═══════════════════════════════════════════════════════════════╝\n');
+      }
+
+      // Update progress display (every second)
+      updateCount++;
+      if (updateCount % 1 == 0) {  // Update every update
+        final elapsed = _formatTime(elapsedSecs);
+        final remaining = _formatTime(remainingSecs);
+        final zoneIndicator = isInZone ? '✓' : '✗';
+        final pauseIndicator = isPaused ? ' [PAUSED]' : '';
+
+        // Clear line and print update
+        stdout.write('\r${' ' * 100}');  // Clear line
+        stdout.write('\r  $elapsed | BPM: ${currentBpm.toString().padLeft(3)} | $zoneStatusStr $zoneIndicator | Remaining: $remaining$pauseIndicator');
+      }
+    }
+
+    // Workout completed naturally
+    if (!shouldExit) {
+      print('\n\n╔═══════════════════════════════════════╗');
+      print('║  🎉 Workout Complete!                 ║');
+      print('╚═══════════════════════════════════════╝\n');
+      print('Session saved successfully.');
+    }
+
+  } catch (e) {
+    stderr.writeln('\n\nError during workout: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Verify the plan name is correct (use list-plans command)');
+    stderr.writeln('  - Ensure training plan file is valid JSON');
+    stderr.writeln('  - Check that you are connected to a heart rate monitor (use connect command first)');
+
+    // Try to stop workout cleanly
+    try {
+      await stopWorkout();
+    } catch (_) {
+      // Ignore stop errors during error handling
+    }
+
+    rethrow;
+  } finally {
+    // Restore terminal settings
+    stdin.echoMode = true;
+    stdin.lineMode = true;
+  }
+}
+
+/// Format time in seconds to MM:SS
+String _formatTime(int seconds) {
+  final mins = seconds ~/ 60;
+  final secs = seconds % 60;
+  return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+}
+
+/// Format zone for display
+String _formatZone(Zone zone) {
+  switch (zone) {
+    case Zone.zone1:
+      return 'Zone 1 (50-60% max HR, Recovery)';
+    case Zone.zone2:
+      return 'Zone 2 (60-70% max HR, Fat Burning)';
+    case Zone.zone3:
+      return 'Zone 3 (70-80% max HR, Aerobic)';
+    case Zone.zone4:
+      return 'Zone 4 (80-90% max HR, Threshold)';
+    case Zone.zone5:
+      return 'Zone 5 (90-100% max HR, Max Effort)';
   }
 }
