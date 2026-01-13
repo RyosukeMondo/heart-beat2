@@ -39,7 +39,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: Different phase types captured_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Developer | Task: Create golden tests for PhaseProgressWidget showing different workout phases | Restrictions: Use representative phase data | Success: Phase visuals captured and verified | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 5. Create ConnectionBanner golden tests
+- [x] 5. Create ConnectionBanner golden tests
   - File: test/golden/connection_banner_golden_test.dart
   - Golden: test/golden/goldens/connection_banner_reconnecting.png
   - Golden: test/golden/goldens/connection_banner_failed.png
