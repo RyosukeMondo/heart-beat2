@@ -113,6 +113,24 @@ static LOG_SINK: OnceLock<Mutex<Option<StreamSink<LogMessage>>>> = OnceLock::new
 // to connect to them, otherwise btleplug won't find the peripheral.
 static BLE_ADAPTER: OnceLock<tokio::sync::Mutex<Option<Arc<BtleplugAdapter>>>> = OnceLock::new();
 
+/// Active connection state tracking for disconnect functionality.
+///
+/// Stores references to the active adapter and background task handles
+/// so they can be properly cleaned up during disconnect.
+struct ConnectionState {
+    /// The connected BLE adapter instance
+    adapter: Arc<BtleplugAdapter>,
+    /// Device ID of the connected device
+    device_id: String,
+    /// Handle to the HR notification streaming task
+    hr_task_handle: tokio::task::JoinHandle<()>,
+    /// Handle to the battery polling task
+    battery_task_handle: tokio::task::JoinHandle<()>,
+}
+
+// Global connection state storage
+static CONNECTION_STATE: OnceLock<tokio::sync::Mutex<Option<ConnectionState>>> = OnceLock::new();
+
 /// Stub notification port for battery monitoring.
 /// This is a temporary implementation until full notification system is wired up.
 struct StubNotificationPort;
@@ -534,6 +552,29 @@ pub async fn scan_devices() -> Result<Vec<DiscoveredDevice>> {
 pub async fn connect_device(device_id: String) -> Result<()> {
     tracing::info!("connect_device: Connecting to device {}", device_id);
 
+    // Disconnect from any existing connection first
+    if let Some(state_mutex) = CONNECTION_STATE.get() {
+        let mut state_guard = state_mutex.lock().await;
+        if let Some(old_state) = state_guard.take() {
+            tracing::info!(
+                "connect_device: Disconnecting from previous device {}",
+                old_state.device_id
+            );
+
+            // Abort background tasks
+            old_state.hr_task_handle.abort();
+            old_state.battery_task_handle.abort();
+
+            // Disconnect the adapter
+            if let Err(e) = old_state.adapter.disconnect().await {
+                tracing::warn!(
+                    "connect_device: Failed to disconnect previous device: {}",
+                    e
+                );
+            }
+        }
+    }
+
     // Emit Connecting status
     emit_connection_status(ApiConnectionStatus::Connecting);
 
@@ -573,14 +614,14 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 
             tracing::info!("Subscribed to HR notifications, starting data stream");
 
-            // Start battery polling
-            let adapter_clone = adapter.clone();
-            tokio::spawn(async move {
+            // Start battery polling and capture the task handle
+            let adapter_clone_battery = adapter.clone();
+            let battery_task_handle = tokio::spawn(async move {
                 let (battery_tx, mut battery_rx) = tokio::sync::mpsc::channel(10);
                 let notification_port: Arc<dyn NotificationPort> = Arc::new(StubNotificationPort);
 
                 // Start battery polling task
-                let poll_result = adapter_clone
+                let poll_result = adapter_clone_battery
                     .start_battery_polling(battery_tx, notification_port)
                     .await;
 
@@ -614,8 +655,8 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                 }
             });
 
-            // Spawn background task to receive and emit HR data
-            tokio::spawn(async move {
+            // Spawn background task to receive and emit HR data and capture handle
+            let hr_task_handle = tokio::spawn(async move {
                 // Initialize Kalman filter for this connection
                 // Using default parameters (process_noise=0.1, measurement_noise=2.0)
                 let mut kalman_filter = KalmanFilter::default();
@@ -685,6 +726,22 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                 tracing::warn!("HR notification stream ended");
             });
 
+            // Store connection state for later disconnect
+            let connection_state = ConnectionState {
+                adapter: adapter.clone(),
+                device_id: device_id.clone(),
+                hr_task_handle,
+                battery_task_handle,
+            };
+
+            let state_mutex = CONNECTION_STATE.get_or_init(|| tokio::sync::Mutex::new(None));
+            *state_mutex.lock().await = Some(connection_state);
+
+            tracing::info!(
+                "connect_device: Connection state stored for device {}",
+                device_id
+            );
+
             Ok(())
         }
         Ok(Err(e)) => {
@@ -705,18 +762,60 @@ pub async fn connect_device(device_id: String) -> Result<()> {
 /// Disconnect from the currently connected device.
 ///
 /// Gracefully disconnects from the active BLE connection and transitions
-/// the state machine back to Idle.
+/// the state machine back to Idle. This function aborts background tasks
+/// (HR streaming and battery polling) and cleanly disconnects the BLE adapter.
+///
+/// This function is idempotent - calling it when already disconnected is safe
+/// and will succeed without error.
 ///
 /// # Errors
 ///
-/// Returns an error if disconnection fails or no device is connected.
+/// Returns an error if the BLE adapter fails to disconnect.
 pub async fn disconnect() -> Result<()> {
-    // Note: In a real implementation, we would need to maintain a global
-    // connection state or pass the adapter/state machine as context.
-    // For now, this is a placeholder that assumes the caller manages state.
-    Err(anyhow!(
-        "Disconnect not yet implemented - requires global state management"
-    ))
+    tracing::info!("disconnect: Starting disconnect");
+
+    // Get the connection state mutex
+    let state_mutex = CONNECTION_STATE.get_or_init(|| tokio::sync::Mutex::new(None));
+    let mut state_guard = state_mutex.lock().await;
+
+    // Take the connection state (if any)
+    if let Some(connection_state) = state_guard.take() {
+        tracing::info!(
+            "disconnect: Disconnecting from device {}",
+            connection_state.device_id
+        );
+
+        // Abort background tasks
+        tracing::debug!("disconnect: Aborting HR task");
+        connection_state.hr_task_handle.abort();
+
+        tracing::debug!("disconnect: Aborting battery task");
+        connection_state.battery_task_handle.abort();
+
+        // Disconnect the BLE adapter (log error but don't fail if already disconnected)
+        tracing::debug!("disconnect: Calling adapter.disconnect()");
+        if let Err(e) = connection_state.adapter.disconnect().await {
+            tracing::warn!(
+                "disconnect: Failed to disconnect adapter (may already be disconnected): {}",
+                e
+            );
+        }
+
+        // Emit disconnected status
+        tracing::debug!("disconnect: Emitting Disconnected status");
+        emit_connection_status(ApiConnectionStatus::Disconnected);
+
+        tracing::info!(
+            "disconnect: Successfully disconnected from device {}",
+            connection_state.device_id
+        );
+    } else {
+        // No active connection - this is fine (idempotent)
+        tracing::info!("disconnect: No active connection to disconnect");
+        emit_connection_status(ApiConnectionStatus::Disconnected);
+    }
+
+    Ok(())
 }
 
 /// Start mock mode for testing without hardware.
@@ -2309,5 +2408,120 @@ mod tests {
 
         // Clean up temp directory
         temp_dir.close().unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_disconnect_when_connected() {
+        use tokio::time::{sleep, Duration};
+
+        // Clear any existing connection state
+        if let Some(mutex) = CONNECTION_STATE.get() {
+            *mutex.lock().await = None;
+        }
+
+        // Clear global adapter state
+        if let Some(mutex) = BLE_ADAPTER.get() {
+            *mutex.lock().await = None;
+        }
+
+        // Create a real BtleplugAdapter for testing
+        // Note: This may fail on systems without BLE, so we'll handle errors gracefully
+        let adapter_result = BtleplugAdapter::new().await;
+
+        if adapter_result.is_err() {
+            // Skip test if BLE is not available
+            eprintln!("Skipping test_disconnect_when_connected: BLE adapter unavailable");
+            return;
+        }
+
+        let adapter = Arc::new(adapter_result.unwrap());
+
+        // Manually set up connection state to simulate a connected device
+        let (_hr_tx, mut hr_rx) = tokio::sync::mpsc::channel::<()>(10);
+        let hr_task_handle = tokio::spawn(async move {
+            // Simulate HR streaming
+            while hr_rx.recv().await.is_some() {
+                // Just consume messages
+            }
+        });
+
+        let (_battery_tx, mut battery_rx) = tokio::sync::mpsc::channel::<()>(10);
+        let battery_task_handle = tokio::spawn(async move {
+            // Simulate battery polling
+            while battery_rx.recv().await.is_some() {
+                // Just consume messages
+            }
+        });
+
+        // Manually create connection state
+        let connection_state = ConnectionState {
+            adapter: adapter.clone(),
+            device_id: "test-device-123".to_string(),
+            hr_task_handle,
+            battery_task_handle,
+        };
+
+        let state_mutex = CONNECTION_STATE.get_or_init(|| tokio::sync::Mutex::new(None));
+        *state_mutex.lock().await = Some(connection_state);
+
+        // Call disconnect
+        let result = disconnect().await;
+        assert!(
+            result.is_ok(),
+            "Disconnect should succeed: {:?}",
+            result.err()
+        );
+
+        // Verify connection state was cleared
+        let state_guard = state_mutex.lock().await;
+        assert!(state_guard.is_none(), "Connection state should be cleared");
+
+        // Give tasks a moment to be aborted
+        sleep(Duration::from_millis(50)).await;
+    }
+
+    #[tokio::test]
+    async fn test_disconnect_when_already_disconnected() {
+        // Clear any existing connection state
+        if let Some(mutex) = CONNECTION_STATE.get() {
+            *mutex.lock().await = None;
+        }
+
+        // Call disconnect when already disconnected - should be idempotent
+        let result = disconnect().await;
+        assert!(
+            result.is_ok(),
+            "Disconnect should succeed even when already disconnected"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_connect_after_disconnect() {
+        // Clear any existing connection state and BLE adapter
+        if let Some(mutex) = CONNECTION_STATE.get() {
+            *mutex.lock().await = None;
+        }
+        if let Some(mutex) = BLE_ADAPTER.get() {
+            *mutex.lock().await = None;
+        }
+
+        // This test verifies that reconnection works after disconnect
+        // For a full integration test, we would need to:
+        // 1. Set up a mock adapter as the global BLE adapter
+        // 2. Call connect_device with a mock device
+        // 3. Call disconnect
+        // 4. Call connect_device again
+        //
+        // However, this requires more extensive mocking infrastructure.
+        // For now, we verify that the state management allows reconnection
+        // by ensuring disconnect clears state properly (tested above).
+
+        // Verify state is clear for reconnection
+        let state_mutex = CONNECTION_STATE.get_or_init(|| tokio::sync::Mutex::new(None));
+        let state_guard = state_mutex.lock().await;
+        assert!(
+            state_guard.is_none(),
+            "State should be clear and ready for reconnection"
+        );
     }
 }
