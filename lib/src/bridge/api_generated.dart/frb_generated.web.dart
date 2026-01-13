@@ -251,6 +251,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
 
   @protected
+  BigInt dco_decode_box_autoadd_u_64(dynamic raw);
+
+  @protected
   int dco_decode_box_autoadd_u_8(dynamic raw);
 
   @protected
@@ -308,6 +311,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
     dynamic raw,
   );
+
+  @protected
+  BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
@@ -540,6 +546,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_box_autoadd_u_8(SseDeserializer deserializer);
 
   @protected
@@ -599,6 +608,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
@@ -760,6 +772,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_box_autoadd_u_64(BigInt raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_u_64(raw);
+  }
+
+  @protected
   int cst_encode_box_autoadd_u_8(int raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_u_8(raw);
@@ -861,6 +879,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? null : cst_encode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
+  JSAny? cst_encode_opt_box_autoadd_u_64(BigInt? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_u_64(raw);
   }
 
   @protected
@@ -1303,6 +1327,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_u_8(int self, SseSerializer serializer);
 
   @protected
@@ -1375,6 +1402,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int)? self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
@@ -1557,6 +1587,11 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__hr_raw_bpm(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_raw_bpm(port_, data);
+
+  void wire__crate__api__hr_receive_timestamp_micros(
+    NativePortType port_,
+    int data,
+  ) => wasmModule.wire__crate__api__hr_receive_timestamp_micros(port_, data);
 
   void wire__crate__api__hr_rmssd(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_rmssd(port_, data);
@@ -2096,6 +2131,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__hr_raw_bpm(NativePortType port_, int data);
+
+  external void wire__crate__api__hr_receive_timestamp_micros(
+    NativePortType port_,
+    int data,
+  );
 
   external void wire__crate__api__hr_rmssd(NativePortType port_, int data);
 

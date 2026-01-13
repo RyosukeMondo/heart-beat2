@@ -8,6 +8,7 @@ import '../widgets/zone_feedback.dart';
 import '../widgets/session_controls.dart';
 import '../widgets/connection_banner.dart';
 import '../services/audio_feedback_service.dart';
+import '../services/latency_service.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -54,6 +55,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   void initState() {
     super.initState();
+    // Start latency tracking when workout begins
+    LatencyService.instance.start();
     _startWorkout();
   }
 
@@ -203,6 +206,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   @override
   void dispose() {
     _progressSubscription?.cancel();
+    // Stop latency tracking when workout screen is disposed
+    LatencyService.instance.stop();
     super.dispose();
   }
 

@@ -249,6 +249,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
 
   @protected
+  BigInt dco_decode_box_autoadd_u_64(dynamic raw);
+
+  @protected
   int dco_decode_box_autoadd_u_8(dynamic raw);
 
   @protected
@@ -306,6 +309,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
     dynamic raw,
   );
+
+  @protected
+  BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
@@ -538,6 +544,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_box_autoadd_u_8(SseDeserializer deserializer);
 
   @protected
@@ -597,6 +606,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
@@ -761,6 +773,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.Uint64> cst_encode_box_autoadd_u_64(BigInt raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire.cst_new_box_autoadd_u_64(cst_encode_u_64(raw));
+  }
+
+  @protected
   ffi.Pointer<ffi.Uint8> cst_encode_box_autoadd_u_8(int raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return wire.cst_new_box_autoadd_u_8(cst_encode_u_8(raw));
@@ -868,6 +886,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     return raw == null
         ? ffi.nullptr
         : cst_encode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint64> cst_encode_opt_box_autoadd_u_64(BigInt? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? ffi.nullptr : cst_encode_box_autoadd_u_64(raw);
   }
 
   @protected
@@ -1360,6 +1384,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_u_8(int self, SseSerializer serializer);
 
   @protected
@@ -1432,6 +1459,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int)? self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
@@ -1951,6 +1981,18 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__hr_raw_bpm = _wire__crate__api__hr_raw_bpmPtr
       .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__hr_receive_timestamp_micros(int port_, int data) {
+    return _wire__crate__api__hr_receive_timestamp_micros(port_, data);
+  }
+
+  late final _wire__crate__api__hr_receive_timestamp_microsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__hr_receive_timestamp_micros',
+      );
+  late final _wire__crate__api__hr_receive_timestamp_micros =
+      _wire__crate__api__hr_receive_timestamp_microsPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__hr_rmssd(int port_, int data) {
     return _wire__crate__api__hr_rmssd(port_, data);
@@ -2996,6 +3038,17 @@ class RustLibWire implements BaseWire {
   late final _cst_new_box_autoadd_record_i_64_u_16 =
       _cst_new_box_autoadd_record_i_64_u_16Ptr
           .asFunction<ffi.Pointer<wire_cst_record_i_64_u_16> Function()>();
+
+  ffi.Pointer<ffi.Uint64> cst_new_box_autoadd_u_64(int value) {
+    return _cst_new_box_autoadd_u_64(value);
+  }
+
+  late final _cst_new_box_autoadd_u_64Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint64> Function(ffi.Uint64)>>(
+        'frbgen_heart_beat_cst_new_box_autoadd_u_64',
+      );
+  late final _cst_new_box_autoadd_u_64 = _cst_new_box_autoadd_u_64Ptr
+      .asFunction<ffi.Pointer<ffi.Uint64> Function(int)>();
 
   ffi.Pointer<ffi.Uint8> cst_new_box_autoadd_u_8(int value) {
     return _cst_new_box_autoadd_u_8(value);

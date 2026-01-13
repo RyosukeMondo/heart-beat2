@@ -8,6 +8,7 @@ import '../widgets/plan_selector.dart';
 import '../widgets/connection_banner.dart';
 import '../services/background_service.dart';
 import '../services/profile_service.dart';
+import '../services/latency_service.dart';
 import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
@@ -54,6 +55,9 @@ class _SessionScreenState extends State<SessionScreen> {
 
       // Connect to the device
       await api.connectDevice(deviceId: deviceId);
+
+      // Start latency tracking
+      LatencyService.instance.start();
 
       // Create the HR stream
       final stream = api.createHrStream();
@@ -152,6 +156,8 @@ class _SessionScreenState extends State<SessionScreen> {
     }
     // Clean up battery subscription
     _batterySubscription?.cancel();
+    // Stop latency tracking
+    LatencyService.instance.stop();
     // Stream will be automatically cleaned up
     super.dispose();
   }
@@ -261,6 +267,9 @@ class _SessionScreenState extends State<SessionScreen> {
             ),
           );
         }
+
+        // Record latency sample when HR data arrives in UI
+        LatencyService.instance.recordSample(snapshot.data!);
 
         return _buildHrDisplay(snapshot.data!, colorScheme);
       },

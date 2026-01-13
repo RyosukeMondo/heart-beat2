@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`
 // These functions are ignored because they have generic arguments: `notify`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FlutterLogWriter`, `StubNotificationPort`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ConnectionState`, `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
 
 /// Initialize the panic handler for FFI safety.
@@ -178,11 +178,15 @@ Future<void> connectDevice({required String deviceId}) =>
 /// Disconnect from the currently connected device.
 ///
 /// Gracefully disconnects from the active BLE connection and transitions
-/// the state machine back to Idle.
+/// the state machine back to Idle. This function aborts background tasks
+/// (HR streaming and battery polling) and cleanly disconnects the BLE adapter.
+///
+/// This function is idempotent - calling it when already disconnected is safe
+/// and will succeed without error.
 ///
 /// # Errors
 ///
-/// Returns an error if disconnection fails or no device is connected.
+/// Returns an error if the BLE adapter fails to disconnect.
 Future<void> disconnect() => RustLib.instance.api.crateApiDisconnect();
 
 /// Start mock mode for testing without hardware.
@@ -263,6 +267,17 @@ Future<int?> hrBatteryLevel({required ApiFilteredHeartRate data}) =>
 /// Get the timestamp in milliseconds since Unix epoch
 Future<BigInt> hrTimestamp({required ApiFilteredHeartRate data}) =>
     RustLib.instance.api.crateApiHrTimestamp(data: data);
+
+/// Get the high-precision receive timestamp in microseconds since Unix epoch
+///
+/// This timestamp is captured immediately when the BLE notification is received,
+/// using a monotonic clock for accuracy. It can be used by the UI layer to
+/// calculate end-to-end latency from BLE event to UI update.
+///
+/// Returns `None` if timestamp capture was not available or not enabled.
+Future<BigInt?> hrReceiveTimestampMicros({
+  required ApiFilteredHeartRate data,
+}) => RustLib.instance.api.crateApiHrReceiveTimestampMicros(data: data);
 
 /// Calculate the heart rate zone based on a maximum heart rate
 ///
@@ -567,7 +582,7 @@ Future<void> deleteSession({required String id}) =>
 ///
 /// ```no_run
 /// # use heart_beat::api::{export_session, ExportFormat};
-/// # tokio_test::block_on(async {
+/// # tokio::runtime::Runtime::new().unwrap().block_on(async {
 /// let csv_data = export_session("session-123".to_string(), ExportFormat::Csv).await?;
 /// let json_data = export_session("session-123".to_string(), ExportFormat::Json).await?;
 /// let summary = export_session("session-123".to_string(), ExportFormat::Summary).await?;
