@@ -96,6 +96,54 @@ class _SessionScreenState extends State<SessionScreen> {
     }
   }
 
+  Future<void> _disconnectDevice() async {
+    // Show confirmation dialog
+    final shouldDisconnect = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Disconnect Device'),
+        content: const Text('Are you sure you want to disconnect? This will end your current session.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Disconnect'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDisconnect != true) return;
+
+    try {
+      // Call disconnect API
+      await api.disconnect();
+
+      // Stop background service
+      if (_isServiceRunning) {
+        await _backgroundService.stopService();
+      }
+
+      // Navigate back to home
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Show error if disconnect fails
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to disconnect: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     // Stop background service when leaving session
@@ -117,6 +165,14 @@ class _SessionScreenState extends State<SessionScreen> {
       appBar: AppBar(
         title: Text(_deviceName ?? 'Session'),
         backgroundColor: colorScheme.surfaceContainerHighest,
+        actions: [
+          if (_hrStream != null)
+            IconButton(
+              icon: const Icon(Icons.bluetooth_disabled),
+              tooltip: 'Disconnect',
+              onPressed: _disconnectDevice,
+            ),
+        ],
       ),
       body: _buildBody(colorScheme),
       floatingActionButton: _hrStream != null
