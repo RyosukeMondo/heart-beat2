@@ -4,7 +4,7 @@
 
 Implement the disconnect() API function to allow programmatic device disconnection, replacing the current stub.
 
-- [ ] 1. Design global connection state management
+- [x] 1. Design global connection state management
   - File: rust/src/api.rs
   - Define strategy for tracking active BLE connection globally
   - Consider using OnceCell/OnceLock or lazy_static for adapter reference
@@ -14,7 +14,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: tech.md BLE reconnection requirement_
   - _Prompt: Role: Rust Systems Architect specializing in async resource management | Task: Design global state management strategy for tracking active BLE adapter connection, enabling clean disconnection | Restrictions: Must be thread-safe for tokio async context, avoid deadlocks, consider reconnection scenarios | Success: Clear design for connection state tracking, handles concurrent access safely, supports clean resource cleanup_
 
-- [ ] 2. Implement connection state storage
+- [x] 2. Implement connection state storage
   - File: rust/src/api.rs
   - Add static/global storage for active BtleplugAdapter instance
   - Store JoinHandle references for background tasks (HR stream, battery polling)
@@ -24,7 +24,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: tech.md determinism principle_
   - _Prompt: Role: Rust Concurrency Developer | Task: Implement thread-safe global storage for active BLE connection state including adapter reference and task handles | Restrictions: Use appropriate sync primitives for async context, avoid blocking operations, ensure memory safety | Success: Connection state stored safely, accessible from disconnect function, no data races possible_
 
-- [ ] 3. Implement disconnect() function
+- [x] 3. Implement disconnect() function
   - File: rust/src/api.rs
   - Replace stub with actual implementation
   - Abort background HR stream and battery polling tasks
@@ -35,7 +35,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: product.md session reliability_
   - _Prompt: Role: Rust Async Developer | Task: Implement disconnect() function that cleanly terminates background tasks and disconnects BLE adapter | Restrictions: Must handle case where already disconnected, avoid panics, emit appropriate connection status | Success: Disconnect terminates all background tasks, BLE adapter disconnected, state cleared, no resource leaks_
 
-- [ ] 4. Update connect_device to store connection state
+- [x] 4. Update connect_device to store connection state
   - File: rust/src/api.rs
   - After successful connection, store adapter reference globally
   - Store spawned task JoinHandles for later cleanup
@@ -45,7 +45,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: product.md single device connection model_
   - _Prompt: Role: Rust Developer | Task: Modify connect_device to store adapter and task handles in global state, enabling later disconnect | Restrictions: Must disconnect existing connection before new one, handle errors gracefully, maintain current functionality | Success: Connection state stored on successful connect, previous connections cleaned up, existing tests still pass_
 
-- [ ] 5. Emit ConnectionStatus on disconnect
+- [x] 5. Emit ConnectionStatus on disconnect
   - File: rust/src/api.rs
   - Emit ConnectionStatus::Disconnected when disconnect() called
   - Ensure UI receives notification of intentional disconnect
@@ -55,7 +55,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: reconnection-handling spec_
   - _Prompt: Role: Event-Driven Systems Developer | Task: Emit appropriate ConnectionStatus event when disconnect() is called, enabling UI to reflect state change | Restrictions: Use existing ConnectionStatus enum, distinguish from connection loss, maintain event ordering | Success: UI receives disconnect notification, status banner updates correctly, no duplicate events_
 
-- [ ] 6. Add disconnect unit tests
+- [x] 6. Add disconnect unit tests
   - File: rust/src/api.rs (tests module)
   - Test disconnect when connected
   - Test disconnect when already disconnected (idempotent)
@@ -65,7 +65,7 @@ Implement the disconnect() API function to allow programmatic device disconnecti
   - _Requirements: product.md 80% test coverage_
   - _Prompt: Role: QA Engineer | Task: Create unit tests for disconnect() function covering connected, disconnected, and reconnection scenarios | Restrictions: Use mock adapter, tests must be deterministic, cover error cases | Success: Tests verify all disconnect scenarios, no resource leaks detected, reconnection works after disconnect_
 
-- [ ] 7. Update Flutter UI for manual disconnect
+- [x] 7. Update Flutter UI for manual disconnect
   - File: lib/src/screens/session_screen.dart
   - Add disconnect button or menu option
   - Call disconnect API and handle response
