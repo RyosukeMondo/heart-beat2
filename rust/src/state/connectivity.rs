@@ -782,4 +782,182 @@ mod tests {
 
         // Should transition to Reconnecting
     }
+
+    #[test]
+    fn test_connection_context_with_custom_policy() {
+        // Test ConnectionContext::with_policy
+        let adapter = Arc::new(TestAdapter);
+        let custom_policy = ReconnectionPolicy {
+            max_attempts: 10,
+            initial_delay: std::time::Duration::from_millis(500),
+            backoff_multiplier: 2.0,
+            max_delay: std::time::Duration::from_secs(5),
+        };
+
+        let context = ConnectionContext::with_policy(adapter.clone(), custom_policy.clone());
+
+        // Verify policy was set correctly
+        assert_eq!(context.policy().max_attempts, 10);
+        assert_eq!(
+            context.policy().initial_delay,
+            std::time::Duration::from_millis(500)
+        );
+        assert_eq!(
+            context.policy().max_delay,
+            std::time::Duration::from_secs(5)
+        );
+    }
+
+    #[test]
+    fn test_connection_context_adapter_accessor() {
+        // Test ConnectionContext::adapter() accessor
+        let adapter = Arc::new(TestAdapter);
+        let context = ConnectionContext::new(adapter);
+
+        // Verify we can get the adapter reference (just verify it doesn't panic)
+        let _adapter_ref = context.adapter();
+    }
+
+    #[test]
+    fn test_connection_context_policy_accessor() {
+        // Test ConnectionContext::policy() accessor with default policy
+        let adapter = Arc::new(TestAdapter);
+        let context = ConnectionContext::new(adapter);
+
+        // Verify default policy values
+        let policy = context.policy();
+        assert_eq!(policy.max_attempts, 5); // Default max_attempts
+    }
+
+    #[test]
+    fn test_state_machine_state_accessor() {
+        // Test ConnectionStateMachine::state() accessor
+        let adapter = Arc::new(TestAdapter);
+        let machine = ConnectionStateMachine::new(adapter);
+
+        // Get the state and verify it's Idle initially
+        let state = machine.state();
+        assert!(matches!(state, State::Idle {}));
+    }
+
+    #[test]
+    fn test_state_machine_context_accessor() {
+        // Test ConnectionStateMachine::context() accessor
+        let adapter = Arc::new(TestAdapter);
+
+        // Create machine with new adapter - uses default context
+        let machine = ConnectionStateMachine::new(adapter);
+        let context = machine.context();
+
+        // Verify we can access the context and it has default policy
+        assert_eq!(context.policy().max_attempts, 5);
+    }
+
+    #[test]
+    fn test_state_transitions_with_state_accessor() {
+        // Test that state() returns correct state after transitions
+        let adapter = Arc::new(TestAdapter);
+        let mut machine = ConnectionStateMachine::new(adapter);
+
+        // Initial state
+        assert!(matches!(machine.state(), State::Idle {}));
+
+        // After StartScan
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        assert!(matches!(machine.state(), State::Scanning {}));
+
+        // After DeviceSelected
+        machine
+            .handle(ConnectionEvent::DeviceSelected {
+                device_id: "test-device".to_string(),
+            })
+            .unwrap();
+        assert!(matches!(machine.state(), State::Connecting { .. }));
+
+        // After ConnectionSuccess
+        machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
+        assert!(matches!(machine.state(), State::DiscoveringServices { .. }));
+
+        // After ServicesDiscovered
+        machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
+        assert!(matches!(machine.state(), State::Connected { .. }));
+    }
+
+    #[test]
+    fn test_reconnect_delay_zero_attempt() {
+        // Test reconnect_delay with edge cases
+        // Attempt 0 should fall through to default case
+        assert_eq!(reconnect_delay(0), std::time::Duration::from_secs(4));
+    }
+
+    #[test]
+    fn test_invalid_events_in_connecting_state() {
+        // Test that invalid events are ignored in Connecting state
+        let adapter = Arc::new(TestAdapter);
+        let mut machine = ConnectionStateMachine::new(adapter);
+
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine
+            .handle(ConnectionEvent::DeviceSelected {
+                device_id: "device-1".to_string(),
+            })
+            .unwrap();
+
+        // These events should be ignored in Connecting state (handled by Super)
+        machine.handle(ConnectionEvent::StopScan).unwrap();
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
+        machine.handle(ConnectionEvent::ReconnectSuccess).unwrap();
+
+        // Should still be in Connecting state
+        assert!(matches!(machine.state(), State::Connecting { .. }));
+    }
+
+    #[test]
+    fn test_invalid_events_in_reconnecting_state() {
+        // Test that invalid events are ignored in Reconnecting state
+        let adapter = Arc::new(TestAdapter);
+        let mut machine = ConnectionStateMachine::new(adapter);
+
+        // Get to Reconnecting state
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine
+            .handle(ConnectionEvent::DeviceSelected {
+                device_id: "device-1".to_string(),
+            })
+            .unwrap();
+        machine.handle(ConnectionEvent::ConnectionFailed).unwrap();
+
+        assert!(matches!(machine.state(), State::Reconnecting { .. }));
+
+        // These events should be ignored
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine.handle(ConnectionEvent::StopScan).unwrap();
+        machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
+        machine.handle(ConnectionEvent::ServicesDiscovered).unwrap();
+
+        // Should still be in Reconnecting state
+        assert!(matches!(machine.state(), State::Reconnecting { .. }));
+    }
+
+    #[test]
+    fn test_user_disconnect_from_discovering_services() {
+        // Test UserDisconnect during DiscoveringServices
+        let adapter = Arc::new(TestAdapter);
+        let mut machine = ConnectionStateMachine::new(adapter);
+
+        machine.handle(ConnectionEvent::StartScan).unwrap();
+        machine
+            .handle(ConnectionEvent::DeviceSelected {
+                device_id: "device-1".to_string(),
+            })
+            .unwrap();
+        machine.handle(ConnectionEvent::ConnectionSuccess).unwrap();
+
+        assert!(matches!(machine.state(), State::DiscoveringServices { .. }));
+
+        // User cancels during service discovery
+        machine.handle(ConnectionEvent::UserDisconnect).unwrap();
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
 }

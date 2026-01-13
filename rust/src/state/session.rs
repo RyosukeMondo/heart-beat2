@@ -895,4 +895,422 @@ mod tests {
         // Should be completed, no time remaining
         assert_eq!(machine.time_remaining(), None);
     }
+
+    #[test]
+    fn test_zone_tracker_invalid_max_hr() {
+        // Test ZoneTracker when max_hr is invalid (triggers Err from calculate_zone)
+        let mut tracker = ZoneTracker::default();
+
+        // max_hr of 50 is invalid (below 100)
+        let result = tracker.check(100, Zone::Zone3, 50);
+        assert_eq!(result, None);
+
+        // max_hr of 250 is invalid (above 220)
+        let result = tracker.check(100, Zone::Zone3, 250);
+        assert_eq!(result, None);
+
+        // Counters should not be affected by invalid data
+        assert_eq!(tracker.consecutive_low_secs, 0);
+        assert_eq!(tracker.consecutive_high_secs, 0);
+    }
+
+    #[test]
+    fn test_zone_tracker_bpm_below_zone_threshold() {
+        // Test ZoneTracker when bpm is below 50% of max_hr (triggers Ok(None))
+        let mut tracker = ZoneTracker::default();
+
+        // bpm of 50 with max_hr 200 = 25%, which returns Ok(None)
+        let result = tracker.check(50, Zone::Zone3, 200);
+        assert_eq!(result, None);
+
+        // Counters should not be affected
+        assert_eq!(tracker.consecutive_low_secs, 0);
+        assert_eq!(tracker.consecutive_high_secs, 0);
+    }
+
+    #[test]
+    fn test_session_context_default() {
+        // Test SessionContext::default()
+        let context = SessionContext::default();
+
+        assert!(context.plan.is_none());
+        assert_eq!(context.current_bpm, 0);
+        assert_eq!(context.last_deviation, ZoneDeviation::InZone);
+    }
+
+    #[test]
+    fn test_session_context_plan_accessor() {
+        // Test SessionContext::plan() accessor
+        let context = SessionContext::new();
+
+        // No plan initially
+        assert!(context.plan().is_none());
+    }
+
+    #[test]
+    fn test_session_wrapper_default() {
+        // Test SessionStateMachineWrapper::default()
+        let machine = SessionStateMachineWrapper::default();
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_update_bpm_while_idle() {
+        // Test UpdateBpm event in Idle state (should be ignored)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::UpdateBpm(120));
+        assert_eq!(result, None);
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_tick_while_idle() {
+        // Test Tick event in Idle state (should be handled but do nothing)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::Tick);
+        assert_eq!(result, None);
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_pause_while_idle() {
+        // Test Pause event in Idle state (should be ignored)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::Pause);
+        assert_eq!(result, None);
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_resume_while_idle() {
+        // Test Resume event in Idle state (should be ignored)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::Resume);
+        assert_eq!(result, None);
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_stop_while_idle() {
+        // Test Stop event in Idle state (should be ignored)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::Stop);
+        assert_eq!(result, None);
+        // The statig state machine may or may not transition here
+    }
+
+    #[test]
+    fn test_session_next_phase_while_idle() {
+        // Test NextPhase event in Idle state (should be ignored)
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let result = machine.handle(SessionEvent::NextPhase(1));
+        assert_eq!(result, None);
+        assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_session_update_bpm_in_progress() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Zone 3 Work".to_string(),
+                target_zone: Zone::Zone3,
+                duration_secs: 300,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 200,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // UpdateBpm should update context.current_bpm and check zone
+        // Zone 3 is 70-80% of max_hr = 140-160 bpm with max_hr 200
+        // Note: Zone tracker state is cloned on each UpdateBpm, so deviation
+        // detection requires the Tick cycle to persist tracker state
+        let result = machine.handle(SessionEvent::UpdateBpm(150));
+        assert_eq!(result, None); // In zone, no deviation
+
+        // Verify BPM was updated in context
+        assert_eq!(machine.context().current_bpm, 150);
+
+        // Test with BPM below zone (will show as TooLow on first check
+        // if zone comparison triggers, but tracker doesn't persist across calls)
+        let result = machine.handle(SessionEvent::UpdateBpm(100));
+        // First below-zone reading doesn't trigger deviation (need 5 consecutive)
+        assert_eq!(result, None);
+        assert_eq!(machine.context().current_bpm, 100);
+    }
+
+    #[test]
+    fn test_session_update_bpm_invalid_phase() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Short Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 2,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 200,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // Complete the session
+        machine.handle(SessionEvent::Tick);
+        machine.handle(SessionEvent::Tick);
+
+        // Should be completed now
+        assert!(matches!(machine.state(), State::Completed {}));
+
+        // UpdateBpm on completed session should return None
+        let result = machine.handle(SessionEvent::UpdateBpm(120));
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_session_events_in_completed_state() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 1,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+        machine.handle(SessionEvent::Tick);
+
+        // Now in Completed state
+        assert!(matches!(machine.state(), State::Completed {}));
+
+        // All events should be handled by Super (ignored) in Completed state
+        machine.handle(SessionEvent::Tick);
+        assert!(matches!(machine.state(), State::Completed {}));
+
+        machine.handle(SessionEvent::Pause);
+        assert!(matches!(machine.state(), State::Completed {}));
+
+        machine.handle(SessionEvent::Resume);
+        assert!(matches!(machine.state(), State::Completed {}));
+
+        machine.handle(SessionEvent::Stop);
+        assert!(matches!(machine.state(), State::Completed {}));
+    }
+
+    #[test]
+    fn test_session_pause_stop() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+        machine.handle(SessionEvent::Tick);
+
+        // Pause
+        machine.handle(SessionEvent::Pause);
+        assert!(matches!(machine.state(), State::Paused { .. }));
+
+        // Stop from Paused
+        machine.handle(SessionEvent::Stop);
+        assert!(matches!(machine.state(), State::Completed {}));
+    }
+
+    #[test]
+    fn test_session_pause_invalid_events() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan.clone()));
+        machine.handle(SessionEvent::Pause);
+
+        // These events should be ignored in Paused state
+        machine.handle(SessionEvent::Tick);
+        assert!(matches!(machine.state(), State::Paused { .. }));
+
+        machine.handle(SessionEvent::Pause);
+        assert!(matches!(machine.state(), State::Paused { .. }));
+
+        machine.handle(SessionEvent::UpdateBpm(120));
+        assert!(matches!(machine.state(), State::Paused { .. }));
+
+        machine.handle(SessionEvent::NextPhase(1));
+        assert!(matches!(machine.state(), State::Paused { .. }));
+
+        // Start should also be ignored (can't start a new session while paused)
+        machine.handle(SessionEvent::Start(plan));
+        assert!(matches!(machine.state(), State::Paused { .. }));
+    }
+
+    #[test]
+    fn test_time_remaining_elapsed_exceeds_duration() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![
+                TrainingPhase {
+                    name: "Phase 1".to_string(),
+                    target_zone: Zone::Zone2,
+                    duration_secs: 3,
+                    transition: TransitionCondition::TimeElapsed,
+                },
+                TrainingPhase {
+                    name: "Phase 2".to_string(),
+                    target_zone: Zone::Zone4,
+                    duration_secs: 100,
+                    transition: TransitionCondition::TimeElapsed,
+                },
+            ],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+
+        // Tick up to phase duration
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.time_remaining(), Some(2));
+
+        machine.handle(SessionEvent::Tick);
+        assert_eq!(machine.time_remaining(), Some(1));
+
+        machine.handle(SessionEvent::Tick);
+        // Now in phase 2, elapsed is 0, duration is 100
+        assert_eq!(machine.time_remaining(), Some(100));
+    }
+
+    #[test]
+    fn test_get_progress_invalid_phase_index() {
+        // Test get_progress when phase index would be out of bounds
+        // This is hard to trigger normally, but we can test the none branch
+        let machine = SessionStateMachineWrapper::new();
+
+        // In Idle state, no progress
+        assert_eq!(machine.get_progress(), None);
+    }
+
+    #[test]
+    fn test_get_current_phase_paused() {
+        use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+        use chrono::Utc;
+
+        let mut machine = SessionStateMachineWrapper::new();
+
+        let plan = TrainingPlan {
+            name: "Test Plan".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        machine.handle(SessionEvent::Start(plan));
+        machine.handle(SessionEvent::Pause);
+
+        // Paused state doesn't return current phase
+        assert!(machine.get_current_phase().is_none());
+    }
+
+    #[test]
+    fn test_context_mut_accessor() {
+        let mut machine = SessionStateMachineWrapper::new();
+
+        // Access mutable context
+        let context = machine.context_mut();
+        context.current_bpm = 150;
+
+        // Verify the change persisted
+        assert_eq!(machine.context().current_bpm, 150);
+    }
+
+    #[test]
+    fn test_zone_deviation_equality() {
+        // Test ZoneDeviation equality comparisons
+        assert_eq!(ZoneDeviation::InZone, ZoneDeviation::InZone);
+        assert_eq!(ZoneDeviation::TooLow, ZoneDeviation::TooLow);
+        assert_eq!(ZoneDeviation::TooHigh, ZoneDeviation::TooHigh);
+        assert_ne!(ZoneDeviation::InZone, ZoneDeviation::TooLow);
+        assert_ne!(ZoneDeviation::InZone, ZoneDeviation::TooHigh);
+        assert_ne!(ZoneDeviation::TooLow, ZoneDeviation::TooHigh);
+    }
+
+    #[test]
+    fn test_zone_tracker_high_to_low_transition() {
+        // Test zone tracker transitioning from TooHigh to TooLow
+        let mut tracker = ZoneTracker::default();
+
+        // Go high for 5 seconds
+        for _ in 0..5 {
+            tracker.check(180, Zone::Zone2, 200);
+        }
+        assert_eq!(tracker.last_deviation, ZoneDeviation::TooHigh);
+
+        // Now go low for 5 seconds
+        for _ in 0..5 {
+            tracker.check(100, Zone::Zone2, 200);
+        }
+        assert_eq!(tracker.last_deviation, ZoneDeviation::TooLow);
+    }
 }
