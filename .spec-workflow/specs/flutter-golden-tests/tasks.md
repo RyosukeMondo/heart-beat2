@@ -2,7 +2,7 @@
 
 Screenshot comparison tests for UI regression detection.
 
-- [ ] 1. Set up golden test infrastructure
+- [x] 1. Set up golden test infrastructure
   - File: test/golden/golden_test_helpers.dart
   - Configure golden file location and naming convention
   - Create test wrapper with consistent theming and sizing
