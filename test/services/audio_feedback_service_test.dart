@@ -1,8 +1,44 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heart_beat/src/services/audio_feedback_service.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Mock the audioplayers plugin
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('xyz.luan/audioplayers.global'),
+    (MethodCall methodCall) async {
+      // Return success for all method calls
+      switch (methodCall.method) {
+        case 'init':
+          return null;
+        default:
+          return null;
+      }
+    },
+  );
+
+  // Mock individual player channels
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('xyz.luan/audioplayers'),
+    (MethodCall methodCall) async {
+      switch (methodCall.method) {
+        case 'create':
+          return 'mock_player_id';
+        case 'setVolume':
+        case 'setSourceAsset':
+        case 'resume':
+        case 'stop':
+        case 'dispose':
+          return null;
+        default:
+          return null;
+      }
+    },
+  );
 
   group('AudioFeedbackService', () {
     late AudioFeedbackService service;
