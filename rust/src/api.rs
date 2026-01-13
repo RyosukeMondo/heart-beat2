@@ -1474,7 +1474,7 @@ pub async fn delete_session(id: String) -> Result<()> {
 ///
 /// ```no_run
 /// # use heart_beat::api::{export_session, ExportFormat};
-/// # tokio_test::block_on(async {
+/// # tokio::runtime::Runtime::new().unwrap().block_on(async {
 /// let csv_data = export_session("session-123".to_string(), ExportFormat::Csv).await?;
 /// let json_data = export_session("session-123".to_string(), ExportFormat::Json).await?;
 /// let summary = export_session("session-123".to_string(), ExportFormat::Summary).await?;
