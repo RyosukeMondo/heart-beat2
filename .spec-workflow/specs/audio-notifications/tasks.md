@@ -59,7 +59,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Prompt: Role: Flutter Developer | Task: Register audio asset files in pubspec.yaml flutter assets section | Restrictions: Use correct path format, verify bundling works | Success: Assets registered, accessible via asset path at runtime_
   - **Completed**: Added `assets/audio/` to flutter assets section in pubspec.yaml. Verified successful bundling by building debug APK and confirming all three audio files (too_high.mp3, too_low.mp3, phase_change.mp3) are present in the APK at assets/flutter_assets/assets/audio/
 
-- [ ] 6. Integrate audio feedback with WorkoutScreen
+- [x] 6. Integrate audio feedback with WorkoutScreen
   - File: lib/src/screens/workout_screen.dart
   - Subscribe to zone status changes from session progress stream
   - Trigger AudioFeedbackService on zone deviation (with debounce)
@@ -68,6 +68,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: lib/src/widgets/zone_feedback.dart (visual feedback integration point)_
   - _Requirements: product.md biofeedback loop_
   - _Prompt: Role: Flutter Developer | Task: Integrate AudioFeedbackService with WorkoutScreen, triggering audio on zone deviations and phase transitions | Restrictions: Debounce to avoid audio spam, coordinate with visual feedback, respect user preferences | Success: Audio plays on zone deviation, synchronized with visual feedback, not annoying during workout_
+  - **Completed**: Integrated AudioFeedbackService with WorkoutScreen. Added zone status tracking (isTooLow/isTooHigh) and phase name tracking. Audio plays on zone deviation state changes (enters too low or too high) and on phase transitions. Debouncing handled by AudioFeedbackService (3 seconds). Audio triggers synchronized with visual feedback from ZoneFeedbackWidget.
 
 - [ ] 7. Add audio settings to SettingsScreen
   - File: lib/src/screens/settings_screen.dart

@@ -7,6 +7,7 @@ import '../widgets/phase_progress.dart';
 import '../widgets/zone_feedback.dart';
 import '../widgets/session_controls.dart';
 import '../widgets/connection_banner.dart';
+import '../services/audio_feedback_service.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -44,6 +45,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   bool _isStarting = true;
   String? _errorMessage;
+
+  // Previous state tracking for audio feedback
+  String _previousPhaseName = '';
+  bool _previousIsTooLow = false;
+  bool _previousIsTooHigh = false;
 
   @override
   void initState() {
@@ -86,6 +92,29 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
           if (!mounted) return;
 
+          // Check zone status for audio feedback
+          final isInZone = await api.zoneStatusIsInZone(status: zoneStatusObj);
+          final isTooLow = await api.zoneStatusIsTooLow(status: zoneStatusObj);
+          final isTooHigh = await api.zoneStatusIsTooHigh(status: zoneStatusObj);
+
+          // Trigger audio feedback for zone deviations
+          if (!isInZone) {
+            if (isTooLow && !_previousIsTooLow) {
+              // Zone status changed to too low
+              AudioFeedbackService.instance.playZoneTooLow();
+            } else if (isTooHigh && !_previousIsTooHigh) {
+              // Zone status changed to too high
+              AudioFeedbackService.instance.playZoneTooHigh();
+            }
+          }
+
+          // Trigger audio feedback for phase transitions
+          if (_previousPhaseName.isNotEmpty && _previousPhaseName != phaseName) {
+            AudioFeedbackService.instance.playPhaseTransition();
+          }
+
+          if (!mounted) return;
+
           setState(() {
             _currentProgress = progress;
             _currentState = stateString;
@@ -98,6 +127,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             _zoneStatus = zoneStatusObj;
             _targetZone = targetZone;
             _isStarting = false;
+
+            // Update previous state for next iteration
+            _previousPhaseName = phaseName;
+            _previousIsTooLow = isTooLow;
+            _previousIsTooHigh = isTooHigh;
           });
 
           // Check if workout is complete
