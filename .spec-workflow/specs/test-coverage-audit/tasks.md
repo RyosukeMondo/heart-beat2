@@ -48,7 +48,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: QA Engineer | Task: Analyze coverage report and identify specific modules, functions, and branches below 80% coverage | Restrictions: Focus on critical business logic, deprioritize generated code, be specific about gaps | Success: Gap list created, prioritized by criticality, specific test needs identified_
   - **Completed**: Created comprehensive `coverage-gap-analysis.md` with detailed line-level analysis. Identified 3 critical modules: API layer (11.33%, 548 lines needed), Executor (44.55%, 117 lines needed), BLE Adapter (7.41%, 157 lines needed). Documented 631 total lines needed to reach 80% target. Prioritized by criticality: P1 (API/Executor/BLE), P2 (State machines at 83-85%), P3 (Domain layer at 97%). Included specific function names, line ranges, and test implementation patterns.
 
-- [ ] 5. Add tests for domain layer gaps
+- [x] 5. Add tests for domain layer gaps
   - File: rust/src/domain/*.rs test modules
   - Add unit tests for uncovered functions in domain layer
   - Focus on edge cases and error paths
@@ -57,6 +57,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: rust/src/domain/ modules, existing test patterns_
   - _Requirements: product.md coverage, structure.md domain purity_
   - _Prompt: Role: Rust Developer with testing expertise | Task: Add unit tests to domain layer modules to achieve 80%+ coverage, focusing on uncovered paths | Restrictions: Follow existing test patterns, test edge cases, maintain test quality over quantity | Success: Domain layer coverage >= 80%, edge cases covered, tests are meaningful_
+  - **Completed**: Achieved 100% coverage for domain layer (206/206 lines). Added 5 new tests covering edge cases: zero max_hr fallback in export.rs, invalid BPM zone handling, all zone types coverage, and zero duration edge cases in session_progress.rs. Domain modules: battery (100%), export (100%), filters (100%), heart_rate (100%), hrv (100%), reconnection (100%), session_history (100%), session_progress (100%), training_plan (100%).
 
 - [ ] 6. Add tests for adapter layer gaps
   - File: rust/src/adapters/*.rs test modules
