@@ -6,9 +6,14 @@ class PlanSelector extends StatefulWidget {
   /// Callback invoked when a plan is selected
   final void Function(String planName) onSelect;
 
+  /// Optional plan loader function for testing.
+  /// If not provided, uses the default Rust FFI listPlans() function.
+  final Future<List<String>> Function()? planLoader;
+
   const PlanSelector({
     super.key,
     required this.onSelect,
+    this.planLoader,
   });
 
   @override
@@ -48,7 +53,9 @@ class _PlanSelectorState extends State<PlanSelector> {
     });
 
     try {
-      final plans = await listPlans();
+      // Use injected plan loader for testing, or default Rust FFI function
+      final loader = widget.planLoader ?? listPlans;
+      final plans = await loader();
       if (!mounted) return;
 
       setState(() {
@@ -66,6 +73,7 @@ class _PlanSelectorState extends State<PlanSelector> {
   }
 
   void _selectPlan(String planName) {
+    debugPrint('PlanSelector: Plan selected: $planName');
     widget.onSelect(planName);
     Navigator.of(context).pop();
   }
@@ -208,7 +216,10 @@ class _PlanSelectorState extends State<PlanSelector> {
           ),
           title: Text(planName),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-          onTap: () => _selectPlan(planName),
+          onTap: () {
+            debugPrint('PlanSelector: ListTile tapped for: $planName');
+            _selectPlan(planName);
+          },
         );
       },
     );
