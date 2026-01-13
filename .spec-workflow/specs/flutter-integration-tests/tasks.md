@@ -20,7 +20,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Test with mock BLE or real device_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Developer | Task: Create integration test for full device connection flow from app launch to connected state | Restrictions: Handle both mock and real BLE scenarios, add proper timeouts | Success: Connection flow test passes on device | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 3. Create workout start flow test
+- [x] 3. Create workout start flow test
   - File: integration_test/workout_flow_test.dart
   - Test: Session screen -> Start Workout -> Select Plan -> Workout screen
   - This tests the exact bug we just fixed!

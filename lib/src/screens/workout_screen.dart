@@ -216,6 +216,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      key: const Key('workoutScreen'),
       appBar: AppBar(
         title: Text(widget.planName),
         backgroundColor: colorScheme.surfaceContainerHighest,
