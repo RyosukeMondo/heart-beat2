@@ -14,7 +14,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: product.md P95 < 100ms requirement_
   - _Prompt: Role: Performance Engineer specializing in real-time systems | Task: Design comprehensive latency measurement approach for HR data pipeline from BLE event to UI update | Restrictions: Instrumentation must be low-overhead, support production measurement, enable CI benchmarking | Success: Clear measurement methodology, defined measurement points, approach for calculating P95_
 
-- [ ] 2. Add timestamp to HR data structures
+- [x] 2. Add timestamp to HR data structures
   - File: rust/src/domain/heart_rate.rs
   - Add receive_timestamp field to HeartRateMeasurement
   - Capture high-precision timestamp when BLE notification received
