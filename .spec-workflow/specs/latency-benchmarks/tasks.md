@@ -34,7 +34,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: product.md latency_
   - _Prompt: Role: Systems Programmer | Task: Instrument BLE notification handler to capture high-precision receive timestamp | Restrictions: Minimal overhead, use monotonic clock, don't delay processing | Success: Timestamp captured immediately on BLE event, available for latency calculation_
 
-- [ ] 4. Add latency logging in Flutter
+- [x] 4. Add latency logging in Flutter
   - File: lib/src/screens/workout_screen.dart or lib/src/services/log_service.dart
   - Calculate and log latency when HR data received in UI
   - Use receive_timestamp from Rust vs current time
