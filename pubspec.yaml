@@ -40,6 +40,9 @@ dependencies:
   # ZIP archive creation
   archive: ^3.4.0
 
+  # Audio playback for biofeedback notifications
+  audioplayers: ^6.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

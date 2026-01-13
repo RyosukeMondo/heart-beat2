@@ -15,7 +15,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Prompt: Role: Flutter Developer specializing in audio | Task: Research and evaluate Flutter audio packages for real-time biofeedback notifications, considering latency, background playback, and Android compatibility | Restrictions: Must work reliably during workout, low latency critical, battery efficient | Success: Package selected with clear rationale, compatible with foreground service, meets latency requirements_
   - **Decision**: Selected `audioplayers` v6.5.1 for superior Android audio quality, lower latency, and simpler API suited for short sound effects playback
 
-- [ ] 2. Add audio package dependency
+- [x] 2. Add audio package dependency
   - File: pubspec.yaml
   - Add selected audio package (e.g., audioplayers or just_audio)
   - Run flutter pub get to install
@@ -24,6 +24,7 @@ Implement audio feedback for heart rate zone deviations as documented in product
   - _Leverage: pubspec.yaml existing dependencies_
   - _Requirements: tech.md Flutter dependencies_
   - _Prompt: Role: Flutter Developer | Task: Add audio package dependency to pubspec.yaml and verify installation | Restrictions: Minimize dependency footprint, ensure Android compatibility, check for conflicts | Success: Package added, flutter pub get succeeds, no dependency conflicts_
+  - **Completed**: Added audioplayers 6.5.1 with platform implementations for Android/Darwin/Linux/Windows/Web, no dependency conflicts
 
 - [ ] 3. Create AudioFeedbackService
   - File: lib/src/services/audio_feedback_service.dart
