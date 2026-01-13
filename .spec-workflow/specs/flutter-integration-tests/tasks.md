@@ -54,7 +54,7 @@ Integration tests that run on device/emulator to test full app flows.
   - _Requirements: Test with seeded session data_
   - _Prompt: Implement the task for spec flutter-integration-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Integration Test Developer | Task: Create integration test for session history browsing and detail view | Restrictions: Seed test session data before test | Success: History navigation and detail view work correctly | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 7. Add integration test CI script
+- [x] 7. Add integration test CI script
   - File: scripts/test-integration.sh
   - Create script to run integration tests on connected device
   - Support both real device and emulator
