@@ -723,3 +723,350 @@ impl BleAdapter for BtleplugAdapter {
         Ok(Some(level))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hr_service_uuid() {
+        // Verify Heart Rate Service UUID is correct (0x180D)
+        let expected = Uuid::from_u128(0x0000180D_0000_1000_8000_00805F9B34FB);
+        assert_eq!(HR_SERVICE_UUID, expected);
+    }
+
+    #[test]
+    fn test_hr_measurement_uuid() {
+        // Verify Heart Rate Measurement Characteristic UUID is correct (0x2A37)
+        let expected = Uuid::from_u128(0x00002A37_0000_1000_8000_00805F9B34FB);
+        assert_eq!(HR_MEASUREMENT_UUID, expected);
+    }
+
+    #[test]
+    fn test_battery_service_uuid() {
+        // Verify Battery Service UUID is correct (0x180F)
+        let expected = Uuid::from_u128(0x0000180F_0000_1000_8000_00805F9B34FB);
+        assert_eq!(BATTERY_SERVICE_UUID, expected);
+    }
+
+    #[test]
+    fn test_battery_level_uuid() {
+        // Verify Battery Level Characteristic UUID is correct (0x2A19)
+        let expected = Uuid::from_u128(0x00002A19_0000_1000_8000_00805F9B34FB);
+        assert_eq!(BATTERY_LEVEL_UUID, expected);
+    }
+
+    #[cfg(not(target_os = "android"))]
+    #[test]
+    fn test_ensure_jvm_attached_non_android() {
+        // On non-Android platforms, ensure_jvm_attached should be a no-op
+        let result = ensure_jvm_attached();
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_btleplug_adapter_new_error_handling() {
+        // This test documents the expected behavior when no BLE adapter is available.
+        // On systems without BLE hardware, this will return an error.
+        // Note: This test may pass on systems with BLE hardware and fail on systems without it.
+        // It's primarily for documenting the error handling path.
+
+        // Attempt to create adapter - may succeed or fail depending on hardware
+        match BtleplugAdapter::new().await {
+            Ok(adapter) => {
+                // If successful, verify the adapter structure is initialized
+                assert!(adapter.discovered_devices.lock().await.is_empty());
+                assert!(adapter.connected_peripheral.lock().await.is_none());
+            }
+            Err(e) => {
+                // If failed, verify error message is meaningful
+                let error_msg = e.to_string();
+                assert!(
+                    error_msg.contains("BLE")
+                        || error_msg.contains("adapter")
+                        || error_msg.contains("manager"),
+                    "Error message should mention BLE, adapter, or manager: {}",
+                    error_msg
+                );
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_disconnect_without_connection() {
+        // Test disconnecting when no device is connected
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let result = adapter.disconnect().await;
+        assert!(result.is_err());
+
+        if let Err(e) = result {
+            assert_eq!(e.to_string(), "No device connected");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_subscribe_hr_without_connection() {
+        // Test subscribing to HR without a connected device
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let result = adapter.subscribe_hr().await;
+        assert!(result.is_err());
+
+        if let Err(e) = result {
+            assert_eq!(e.to_string(), "No device connected");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_read_battery_without_connection() {
+        // Test reading battery without a connected device
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let result = adapter.read_battery().await;
+        assert!(result.is_err());
+
+        if let Err(e) = result {
+            assert_eq!(e.to_string(), "No device connected");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_find_peripheral_not_found() {
+        // Test finding a peripheral that doesn't exist
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let result = adapter.find_peripheral("NONEXISTENT-DEVICE-ID").await;
+        assert!(result.is_err());
+
+        if let Err(e) = result {
+            assert!(e.to_string().contains("Device not found"));
+        }
+    }
+
+    #[tokio::test]
+    async fn test_connect_invalid_device() {
+        // Test connecting to an invalid device ID
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let result = adapter.connect("INVALID-DEVICE-ID").await;
+        assert!(result.is_err());
+
+        if let Err(e) = result {
+            let error_msg = e.to_string();
+            assert!(
+                error_msg.contains("Device not found") || error_msg.contains("Failed to connect"),
+                "Error should indicate device not found or connection failure: {}",
+                error_msg
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn test_get_discovered_devices_empty() {
+        // Test getting discovered devices before scanning
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let devices = adapter.get_discovered_devices().await;
+        // Should return a valid Vec (typically empty in test environment without HR monitors)
+        // Just verify the method doesn't panic and returns a Vec
+        let _count = devices.len();
+    }
+
+    #[tokio::test]
+    async fn test_start_stop_scan_lifecycle() {
+        // Test the scan lifecycle: start -> stop
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        // Start scan
+        let start_result = adapter.start_scan().await;
+
+        // Stop scan (should work regardless of whether start succeeded)
+        let stop_result = adapter.stop_scan().await;
+
+        // At least one should succeed, or both should provide meaningful errors
+        if start_result.is_err() && stop_result.is_err() {
+            let start_err = start_result.unwrap_err().to_string();
+            let stop_err = stop_result.unwrap_err().to_string();
+
+            // Errors should be meaningful
+            assert!(
+                start_err.contains("scan")
+                    || start_err.contains("BLE")
+                    || start_err.contains("permission"),
+                "Start scan error should be meaningful: {}",
+                start_err
+            );
+            assert!(
+                stop_err.contains("scan") || stop_err.contains("BLE"),
+                "Stop scan error should be meaningful: {}",
+                stop_err
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn test_reconnect_cancellation() {
+        // Test that reconnection respects cancellation token
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let policy = ReconnectionPolicy {
+            max_attempts: 5,
+            initial_delay: std::time::Duration::from_millis(100),
+            max_delay: std::time::Duration::from_millis(1000),
+            backoff_multiplier: 2.0,
+        };
+
+        let (status_tx, _status_rx) = mpsc::channel(32);
+        let cancel_token = CancellationToken::new();
+
+        // Cancel immediately
+        cancel_token.cancel();
+
+        let result = adapter
+            .reconnect("NONEXISTENT-DEVICE", &policy, status_tx, cancel_token)
+            .await;
+
+        // Should fail with cancellation error
+        assert!(result.is_err());
+        if let Err(e) = result {
+            assert!(e.to_string().contains("cancelled"));
+        }
+    }
+
+    #[tokio::test]
+    async fn test_reconnect_max_attempts() {
+        // Test that reconnection respects max_attempts
+        let adapter = match BtleplugAdapter::new().await {
+            Ok(a) => a,
+            Err(_) => {
+                // Skip test if no BLE adapter available
+                println!("Skipping test: No BLE adapter available");
+                return;
+            }
+        };
+
+        let policy = ReconnectionPolicy {
+            max_attempts: 2,
+            initial_delay: std::time::Duration::from_millis(10), // Fast for testing
+            max_delay: std::time::Duration::from_millis(50),
+            backoff_multiplier: 1.5,
+        };
+
+        let (status_tx, mut status_rx) = mpsc::channel(32);
+        let cancel_token = CancellationToken::new();
+
+        // Spawn reconnection in background to check status updates
+        let reconnect_task = tokio::spawn({
+            let adapter_clone = adapter.clone();
+            async move {
+                adapter_clone
+                    .reconnect("NONEXISTENT-DEVICE", &policy, status_tx, cancel_token)
+                    .await
+            }
+        });
+
+        // Collect status updates
+        let mut reconnecting_count = 0;
+        let mut failed = false;
+
+        while let Ok(status) =
+            tokio::time::timeout(tokio::time::Duration::from_secs(5), status_rx.recv()).await
+        {
+            if let Some(status) = status {
+                match status {
+                    ConnectionStatus::Reconnecting {
+                        attempt,
+                        max_attempts,
+                    } => {
+                        reconnecting_count += 1;
+                        assert_eq!(max_attempts, 2);
+                        assert!(attempt <= 2);
+                    }
+                    ConnectionStatus::ReconnectFailed { .. } => {
+                        failed = true;
+                        break;
+                    }
+                    _ => {}
+                }
+            } else {
+                break;
+            }
+        }
+
+        // Wait for reconnect task to complete
+        let result = reconnect_task.await.unwrap();
+        assert!(result.is_err());
+
+        // Should have attempted reconnection
+        assert!(reconnecting_count > 0 && reconnecting_count <= 2);
+        assert!(failed);
+    }
+
+    // Helper trait to enable cloning for testing
+    impl Clone for BtleplugAdapter {
+        fn clone(&self) -> Self {
+            Self {
+                adapter: self.adapter.clone(),
+                discovered_devices: self.discovered_devices.clone(),
+                connected_peripheral: self.connected_peripheral.clone(),
+            }
+        }
+    }
+}
