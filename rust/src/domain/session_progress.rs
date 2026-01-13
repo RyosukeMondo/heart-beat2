@@ -174,4 +174,42 @@ mod tests {
         assert_ne!(SessionState::Running, SessionState::Completed);
         assert_ne!(SessionState::Paused, SessionState::Stopped);
     }
+
+    #[test]
+    fn test_session_progress_fraction_zero_duration() {
+        // Test edge case where total duration is zero
+        let progress = SessionProgress {
+            state: SessionState::Running,
+            current_phase: 0,
+            total_elapsed_secs: 0,
+            total_remaining_secs: 0,
+            zone_status: ZoneStatus::InZone,
+            current_bpm: 140,
+            phase_progress: PhaseProgress {
+                phase_index: 0,
+                phase_name: "Warmup".to_string(),
+                target_zone: Zone::Zone2,
+                elapsed_secs: 0,
+                remaining_secs: 0,
+            },
+        };
+
+        // Should return 0.0 when total duration is 0
+        assert_eq!(progress.progress_fraction(), 0.0);
+    }
+
+    #[test]
+    fn test_phase_progress_fraction_zero_duration() {
+        // Test edge case where phase duration is zero
+        let phase = PhaseProgress {
+            phase_index: 0,
+            phase_name: "Quick Phase".to_string(),
+            target_zone: Zone::Zone2,
+            elapsed_secs: 0,
+            remaining_secs: 0,
+        };
+
+        // Should return 0.0 when duration is 0
+        assert_eq!(phase.progress_fraction(), 0.0);
+    }
 }

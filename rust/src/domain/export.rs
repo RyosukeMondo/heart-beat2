@@ -328,4 +328,96 @@ mod tests {
         // Should handle division by zero gracefully
         assert!(summary.contains("(0%)"));
     }
+
+    #[test]
+    fn test_export_to_csv_zero_max_hr_fallback() {
+        let mut session = create_test_session();
+        session.summary.max_hr = 0;
+        let csv = export_to_csv(&session);
+
+        // Should use default fallback of 180 when max_hr is 0
+        assert!(csv.starts_with("timestamp,bpm,zone\n"));
+        // Should still export samples even with fallback max_hr
+        assert_eq!(csv.lines().count(), 4); // header + 3 samples
+    }
+
+    #[test]
+    fn test_export_to_csv_invalid_bpm_zone() {
+        let start = Utc::now();
+        let session = CompletedSession {
+            id: "test-invalid".to_string(),
+            plan_name: "Test".to_string(),
+            start_time: start,
+            end_time: start + chrono::Duration::seconds(60),
+            status: SessionStatus::Completed,
+            hr_samples: vec![HrSample {
+                timestamp: start,
+                bpm: 0, // Invalid BPM that will result in None zone
+            }],
+            phases_completed: 1,
+            summary: SessionSummary {
+                duration_secs: 60,
+                avg_hr: 0,
+                max_hr: 160,
+                min_hr: 0,
+                time_in_zone: [0, 0, 0, 0, 0],
+            },
+        };
+
+        let csv = export_to_csv(&session);
+
+        // Should handle None zone case
+        assert!(csv.contains("Unknown"));
+    }
+
+    #[test]
+    fn test_export_to_csv_all_zones() {
+        let start = Utc::now();
+        let session = CompletedSession {
+            id: "test-zones".to_string(),
+            plan_name: "Test All Zones".to_string(),
+            start_time: start,
+            end_time: start + chrono::Duration::seconds(300),
+            status: SessionStatus::Completed,
+            hr_samples: vec![
+                HrSample {
+                    timestamp: start,
+                    bpm: 90,
+                }, // Zone 1
+                HrSample {
+                    timestamp: start + chrono::Duration::seconds(60),
+                    bpm: 108,
+                }, // Zone 2
+                HrSample {
+                    timestamp: start + chrono::Duration::seconds(120),
+                    bpm: 126,
+                }, // Zone 3
+                HrSample {
+                    timestamp: start + chrono::Duration::seconds(180),
+                    bpm: 144,
+                }, // Zone 4
+                HrSample {
+                    timestamp: start + chrono::Duration::seconds(240),
+                    bpm: 162,
+                }, // Zone 5
+            ],
+            phases_completed: 1,
+            summary: SessionSummary {
+                duration_secs: 300,
+                avg_hr: 126,
+                max_hr: 180,
+                min_hr: 90,
+                time_in_zone: [60, 60, 60, 60, 60],
+            },
+        };
+
+        let csv = export_to_csv(&session);
+
+        // Should contain all zone types
+        assert!(csv.contains("Zone1"));
+        assert!(csv.contains("Zone2"));
+        assert!(csv.contains("Zone3"));
+        assert!(csv.contains("Zone4"));
+        assert!(csv.contains("Zone5"));
+    }
 }
