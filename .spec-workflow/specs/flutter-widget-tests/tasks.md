@@ -11,7 +11,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: Enable `flutter test` to run without device_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Test Engineer specializing in widget testing | Task: Create widget test infrastructure with mock providers, test wrappers, and helper utilities that allow testing widgets in isolation without requiring Rust FFI or device | Restrictions: Do not test actual BLE functionality, mock all Rust bridge calls, keep tests fast (<100ms each) | Success: `flutter test test/` runs successfully without device, test helpers are reusable | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 2. Create HrDisplay widget tests
+- [x] 2. Create HrDisplay widget tests
   - File: test/widgets/hr_display_test.dart
   - Test BPM rendering at various values (0, 60, 120, 200, 255)
   - Test color/styling changes based on heart rate zones
