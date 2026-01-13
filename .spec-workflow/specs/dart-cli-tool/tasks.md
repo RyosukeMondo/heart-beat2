@@ -65,7 +65,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Show current profile, allow updates_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add profile command for viewing and modifying user profile | Restrictions: Validate inputs, show current values | Success: `dart run bin/dart_cli.dart profile` shows profile | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 8. Create Dart CLI test script
+- [x] 8. Create Dart CLI test script
   - File: scripts/test-dart-cli.sh
   - Run Dart CLI commands in sequence to verify functionality
   - Test: list-plans, profile, history
