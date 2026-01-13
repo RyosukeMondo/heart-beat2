@@ -131,8 +131,8 @@ Future<void> main(List<String> arguments) async {
     // Execute actual commands
     switch (command.name) {
       case 'scan':
-        print('Scan command not yet implemented');
-        exit(1);
+        await handleScanCommand();
+        exit(0);
 
       case 'connect':
         print('Connect command not yet implemented');
@@ -226,5 +226,65 @@ void printCommandHelp(String command, String description, ArgParser? parser) {
   if (parser != null) {
     print('Options:');
     print(parser.usage);
+  }
+}
+
+/// Handle scan command - scan for BLE devices
+Future<void> handleScanCommand() async {
+  try {
+    print('Scanning for BLE devices...');
+    print('This may take a few seconds...\n');
+
+    final devices = await scanDevices();
+
+    if (devices.isEmpty) {
+      print('No devices found.');
+      print('\nMake sure:');
+      print('  - Bluetooth is enabled');
+      print('  - Your heart rate monitor is nearby and powered on');
+      print('  - The app has necessary permissions');
+      return;
+    }
+
+    print('Found ${devices.length} device(s):\n');
+
+    // Sort by signal strength (RSSI) - stronger signals first
+    devices.sort((a, b) => b.rssi.compareTo(a.rssi));
+
+    for (final device in devices) {
+      final name = device.name ?? '(unnamed)';
+      final rssi = device.rssi;
+      final signal = _formatSignalStrength(rssi);
+
+      print('  ${device.id}');
+      print('    Name:   $name');
+      print('    Signal: $signal ($rssi dBm)');
+      print('');
+    }
+
+    print('To connect to a device, use:');
+    print('  dart run bin/dart_cli.dart connect --device <device_id>');
+  } catch (e) {
+    stderr.writeln('Error scanning for devices: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Ensure Bluetooth is enabled');
+    stderr.writeln('  - Check that the app has necessary permissions');
+    stderr.writeln('  - On Linux, you may need to run with sudo or add your user to the bluetooth group');
+    rethrow;
+  }
+}
+
+/// Format signal strength for display
+String _formatSignalStrength(int rssi) {
+  if (rssi >= -50) {
+    return 'Excellent';
+  } else if (rssi >= -60) {
+    return 'Good';
+  } else if (rssi >= -70) {
+    return 'Fair';
+  } else if (rssi >= -80) {
+    return 'Weak';
+  } else {
+    return 'Very Weak';
   }
 }

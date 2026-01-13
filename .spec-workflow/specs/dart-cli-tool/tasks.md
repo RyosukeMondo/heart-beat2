@@ -11,7 +11,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Must initialize RustLib without Flutter UI_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Create CLI entry point that initializes Rust bridge and parses commands | Restrictions: Do not import Flutter UI packages, only use dart:io and bridge code | Success: `dart run bin/dart_cli.dart --help` shows available commands | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 2. Add scan command
+- [x] 2. Add scan command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart scan`
   - List discovered BLE devices
