@@ -1112,6 +1112,7 @@ mod tests {
             filter_variance: Some(1.5),
             battery_level: Some(85),
             timestamp: 0,
+            receive_timestamp_micros: None,
         };
 
         // Send HR data continuously

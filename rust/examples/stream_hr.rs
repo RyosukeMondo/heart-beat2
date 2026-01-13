@@ -103,6 +103,7 @@ async fn main() -> anyhow::Result<()> {
                                 .duration_since(std::time::UNIX_EPOCH)
                                 .unwrap()
                                 .as_millis() as u64,
+                            receive_timestamp_micros: None,
                         };
 
                         // Display the results

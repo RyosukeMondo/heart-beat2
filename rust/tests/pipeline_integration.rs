@@ -101,6 +101,7 @@ async fn test_full_pipeline_with_mock_adapter() {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_millis() as u64,
+            receive_timestamp_micros: None, // Not measuring latency in this test
         };
 
         results.push(output);

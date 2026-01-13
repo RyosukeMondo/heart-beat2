@@ -6,6 +6,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::time::Instant;
 
 /// Heart rate training zones based on percentage of max heart rate.
 ///
@@ -58,6 +59,17 @@ pub struct HeartRateMeasurement {
     /// When `false`, the BPM reading may be unreliable as the sensor is not
     /// properly positioned against the skin.
     pub sensor_contact: bool,
+
+    /// High-precision timestamp when the BLE notification was received.
+    ///
+    /// Captured using a monotonic clock (std::time::Instant) immediately upon
+    /// receiving the BLE notification. Used for end-to-end latency measurement
+    /// from BLE event to UI update. This is relative to an arbitrary epoch and
+    /// is only meaningful for calculating durations.
+    ///
+    /// Set to `None` by the parser and populated by the caller immediately
+    /// after receiving the BLE notification.
+    pub receive_timestamp: Option<Instant>,
 }
 
 impl fmt::Display for HeartRateMeasurement {
@@ -143,6 +155,20 @@ pub struct FilteredHeartRate {
     /// This is the system time when the data was processed, not the sensor
     /// measurement time.
     pub timestamp: u64,
+
+    /// Microseconds elapsed since an arbitrary epoch when BLE notification was received.
+    ///
+    /// This is a high-precision monotonic timestamp captured immediately upon
+    /// receiving the BLE notification, represented as microseconds. Used for
+    /// end-to-end latency calculation from BLE event to UI update.
+    ///
+    /// The epoch is arbitrary (based on system boot or process start), so this
+    /// value is only meaningful for computing durations, not absolute times.
+    /// UI layer can compare this against its own monotonic timestamp to calculate
+    /// latency: `Duration = UI_timestamp - receive_timestamp_micros`.
+    ///
+    /// `None` if timestamp capture was not available or not enabled.
+    pub receive_timestamp_micros: Option<u64>,
 }
 
 /// Parse a BLE Heart Rate Measurement characteristic value.
@@ -245,6 +271,7 @@ pub fn parse_heart_rate(data: &[u8]) -> anyhow::Result<HeartRateMeasurement> {
         bpm,
         rr_intervals,
         sensor_contact,
+        receive_timestamp: None, // Set by caller after parsing
     })
 }
 
@@ -268,6 +295,7 @@ mod tests {
             bpm: 72,
             rr_intervals: vec![820, 830, 815],
             sensor_contact: true,
+            receive_timestamp: None,
         };
 
         let display = measurement.to_string();
@@ -282,6 +310,7 @@ mod tests {
             bpm: 0,
             rr_intervals: vec![],
             sensor_contact: false,
+            receive_timestamp: None,
         };
 
         let display = measurement.to_string();

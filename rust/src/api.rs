@@ -662,10 +662,15 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                 let mut kalman_filter = KalmanFilter::default();
 
                 while let Some(data) = hr_receiver.recv().await {
+                    // Capture high-precision timestamp immediately upon receiving notification
+                    let receive_timestamp = std::time::Instant::now();
+
                     tracing::debug!("Received {} bytes of HR data", data.len());
 
                     match parse_heart_rate(&data) {
-                        Ok(measurement) => {
+                        Ok(mut measurement) => {
+                            // Set the receive timestamp for latency tracking
+                            measurement.receive_timestamp = Some(receive_timestamp);
                             // Apply Kalman filter to raw BPM measurement
                             // filter_if_valid rejects physiologically implausible values
                             let filtered_bpm_f64 =
@@ -705,6 +710,23 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 .map(|d| d.as_millis() as u64)
                                 .unwrap_or(0);
 
+                            // Convert receive_timestamp to microseconds for UI latency calculation
+                            let receive_timestamp_micros =
+                                measurement.receive_timestamp.map(|ts| {
+                                    // Use UNIX epoch as reference point for cross-platform compatibility
+                                    // Note: This combines monotonic (Instant) with wall-clock for UI consumption
+                                    let now_system = std::time::SystemTime::now();
+                                    let now_instant = std::time::Instant::now();
+                                    let elapsed_since_receive = now_instant.duration_since(ts);
+
+                                    // Calculate receive time in UNIX epoch microseconds
+                                    now_system
+                                        .duration_since(std::time::UNIX_EPOCH)
+                                        .map(|d| d.as_micros() as u64)
+                                        .unwrap_or(0)
+                                        .saturating_sub(elapsed_since_receive.as_micros() as u64)
+                                });
+
                             let filtered_data = FilteredHeartRate {
                                 raw_bpm: measurement.bpm,
                                 filtered_bpm,
@@ -712,6 +734,7 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 filter_variance: Some(filter_variance),
                                 battery_level: None, // TODO: Read battery periodically
                                 timestamp,
+                                receive_timestamp_micros,
                             };
 
                             let receivers = emit_hr_data(filtered_data);
@@ -946,6 +969,17 @@ pub fn hr_battery_level(data: &ApiFilteredHeartRate) -> Option<u8> {
 /// Get the timestamp in milliseconds since Unix epoch
 pub fn hr_timestamp(data: &ApiFilteredHeartRate) -> u64 {
     data.timestamp
+}
+
+/// Get the high-precision receive timestamp in microseconds since Unix epoch
+///
+/// This timestamp is captured immediately when the BLE notification is received,
+/// using a monotonic clock for accuracy. It can be used by the UI layer to
+/// calculate end-to-end latency from BLE event to UI update.
+///
+/// Returns `None` if timestamp capture was not available or not enabled.
+pub fn hr_receive_timestamp_micros(data: &ApiFilteredHeartRate) -> Option<u64> {
+    data.receive_timestamp_micros
 }
 
 /// Calculate the heart rate zone based on a maximum heart rate
@@ -2224,6 +2258,7 @@ mod tests {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_millis() as u64,
+            receive_timestamp_micros: None,
         }
     }
 

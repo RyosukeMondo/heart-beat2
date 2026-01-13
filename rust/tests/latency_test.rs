@@ -95,6 +95,7 @@ async fn test_p95_latency_under_100ms() {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_millis() as u64,
+            receive_timestamp_micros: None,
         };
 
         // End timing - full pipeline complete
@@ -212,6 +213,7 @@ async fn test_latency_under_stress() {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_millis() as u64,
+            receive_timestamp_micros: None,
         };
 
         let elapsed = start.elapsed();
