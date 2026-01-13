@@ -20,7 +20,7 @@ Fast unit tests for Flutter widgets - no device/emulator required.
   - _Requirements: Cover edge cases, zone boundaries_
   - _Prompt: Implement the task for spec flutter-widget-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Widget Test Developer | Task: Create comprehensive tests for HrDisplay widget covering BPM values 0-255, zone color changes, and edge cases | Restrictions: Use mock data only, do not depend on actual HR stream | Success: All BPM display scenarios tested, zone colors verified | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 3. Create ZoneIndicator widget tests
+- [x] 3. Create ZoneIndicator widget tests
   - File: test/widgets/zone_indicator_test.dart
   - Test all 5 HR zones render correctly
   - Test zone transitions and visual feedback
