@@ -26,7 +26,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: QA Engineer | Task: Run initial code coverage measurement and document baseline coverage by module | Restrictions: Include all test types, generate HTML report, identify modules below 80% | Success: Baseline coverage documented, gaps identified, HTML report generated_
   - **Completed**: Overall 15.46% coverage (792/5122 lines), detailed report in baseline-coverage-report.md. Key findings: Domain layer 97%, Scheduler 44.55%, API 11.33%, btleplug adapter 7.41%. Excluding generated code (frb_generated.rs) and CLI binary, testable code is at 44.5% coverage.
 
-- [ ] 3. Create tarpaulin configuration
+- [x] 3. Create tarpaulin configuration
   - File: rust/tarpaulin.toml or rust/.tarpaulin.toml
   - Configure excluded paths (generated code, test utilities)
   - Set coverage threshold at 80%
@@ -35,6 +35,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: cargo-tarpaulin documentation_
   - _Requirements: product.md 80% coverage_
   - _Prompt: Role: DevOps Engineer | Task: Create tarpaulin configuration file with appropriate exclusions and 80% threshold | Restrictions: Exclude generated code, configure for CI compatibility, enable threshold enforcement | Success: Config file created, threshold enforced, appropriate exclusions_
+  - **Completed**: Created `rust/tarpaulin.toml` with 80% fail-under threshold, excluded frb_generated.rs (2498 lines) and bin/cli.rs (845 lines), configured HTML+XML output to coverage/ directory. Testable codebase: 1779 lines (44.52% current coverage). Configuration verified working.
 
 - [ ] 4. Identify modules below 80% coverage
   - File: Coverage report analysis

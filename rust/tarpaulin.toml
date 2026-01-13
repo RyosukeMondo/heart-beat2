@@ -1,0 +1,37 @@
+# Tarpaulin Configuration for Heart Beat Project
+# This configuration enforces the 80% coverage requirement from product.md
+
+# Main coverage configuration
+[coverage]
+# Minimum coverage threshold (80% as per product.md requirement)
+# This will cause tarpaulin to exit with non-zero if coverage is below threshold
+fail-under = 80.0
+
+# Output formats for different use cases
+# XML for CI integration (Codecov, Coveralls)
+# Html for local development review
+out = ["Xml", "Html"]
+
+# Directory for coverage reports
+output-dir = "coverage/"
+
+# Exclude generated code from flutter_rust_bridge
+# This file is auto-generated and should not affect coverage metrics
+exclude-files = [
+    "src/frb_generated.rs",
+    "src/bin/cli.rs",
+]
+
+# Run all test types with all features enabled
+all-features = true
+
+# Timeout for individual tests (120 seconds)
+# Some integration tests may take longer due to async operations
+timeout = "120s"
+
+# Report-only configuration (for generating reports without running tests)
+# Use with: cargo tarpaulin --config tarpaulin.toml
+[report]
+# Same output configuration as main coverage
+out = ["Xml", "Html"]
+output-dir = "coverage/"
