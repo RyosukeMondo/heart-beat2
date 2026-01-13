@@ -104,7 +104,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Prompt: Role: DevOps Engineer | Task: Update CI workflow to run coverage measurement and enforce 80% threshold | Restrictions: Fail build if coverage below threshold, upload reports, minimize CI time | Success: CI runs coverage, enforces threshold, uploads reports_
   - **Completed**: Migrated .github/workflows/coverage.yml from cargo-llvm-cov to cargo-tarpaulin for consistency with tarpaulin.toml configuration. Coverage threshold enforcement via fail-under=80.0 in tarpaulin.toml (exits non-zero if below threshold). Integrated Codecov upload with cobertura.xml output. Added PR comment script to parse XML and display coverage percentage with threshold status. HTML reports uploaded as artifacts with 30-day retention.
 
-- [ ] 10. Update README with coverage badge
+- [x] 10. Update README with coverage badge
   - File: README.md
   - Add coverage badge showing current percentage
   - Link to coverage reports if published
@@ -113,6 +113,7 @@ Establish test coverage measurement and ensure the 80% minimum coverage requirem
   - _Leverage: README.md, Codecov or shields.io badges_
   - _Requirements: documentation spec_
   - _Prompt: Role: Technical Writer | Task: Add coverage badge to README and document coverage measurement process | Restrictions: Use dynamic badge, link to reports, keep instructions clear | Success: Badge shows current coverage, linked to reports, local instructions documented_
+  - **Completed**: Updated README.md Coverage section to use cargo-tarpaulin instead of cargo-llvm-cov. Documented tarpaulin.toml configuration usage, 80% threshold enforcement via fail-under, HTML report generation at rust/coverage/index.html, and added link to Codecov for CI-generated reports. Codecov badge already present at top of README.
 
 - [ ] 11. Verify overall coverage >= 80%
   - File: Final coverage report
