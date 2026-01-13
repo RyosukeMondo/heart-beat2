@@ -86,7 +86,7 @@ Implement latency measurement and benchmarking to validate the P95 < 100ms requi
   - _Requirements: product.md latency requirement_
   - _Prompt: Role: Technical Writer with performance expertise | Task: Document latency budget allocation and measurement methodology for the HR data pipeline | Restrictions: Be specific about targets, include debugging guidance, keep practical | Success: Clear latency budget documented, measurement instructions provided, debugging guidance included_
 
-- [ ] 9. Validate P95 < 100ms on device
+- [x] 9. Validate P95 < 100ms on device
   - File: Manual testing with instrumented build
   - Run workout session on physical device with latency logging
   - Collect latency samples over 30+ minute session
