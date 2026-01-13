@@ -152,8 +152,8 @@ Future<void> main(List<String> arguments) async {
         exit(0);
 
       case 'list-plans':
-        print('List-plans command not yet implemented');
-        exit(1);
+        await handleListPlansCommand();
+        exit(0);
 
       case 'start-workout':
         print('Start-workout command not yet implemented');
@@ -360,6 +360,40 @@ Future<void> handleConnectCommand(String deviceId) async {
       // Ignore disconnect errors during error handling
     }
 
+    rethrow;
+  }
+}
+
+/// Handle list-plans command - list available training plans
+Future<void> handleListPlansCommand() async {
+  try {
+    print('Loading training plans...\n');
+
+    final plans = await listPlans();
+
+    if (plans.isEmpty) {
+      print('No training plans found.');
+      print('\nTraining plans should be stored in:');
+      final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+      if (homeDir != null) {
+        print('  $homeDir/.heart_beat/');
+      }
+      return;
+    }
+
+    print('Available training plans (${plans.length}):\n');
+
+    for (int i = 0; i < plans.length; i++) {
+      print('  ${i + 1}. ${plans[i]}');
+    }
+
+    print('\nTo start a workout, use:');
+    print('  dart run bin/dart_cli.dart start-workout <plan_name>');
+  } catch (e) {
+    stderr.writeln('Error listing plans: $e');
+    stderr.writeln('\nTroubleshooting:');
+    stderr.writeln('  - Check that training plans exist in the data directory');
+    stderr.writeln('  - Verify file permissions');
     rethrow;
   }
 }

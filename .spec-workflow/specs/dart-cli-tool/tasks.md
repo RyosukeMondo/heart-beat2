@@ -29,7 +29,7 @@ Dart CLI that exercises the same code paths as Flutter UI for rapid testing with
   - _Requirements: Stream HR data to stdout_
   - _Prompt: Implement the task for spec dart-cli-tool, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Dart CLI Developer | Task: Add connect command that connects to device and streams HR data | Restrictions: Handle connection errors gracefully, support Ctrl+C to disconnect | Success: `dart run bin/dart_cli.dart connect <id>` streams HR values | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 4. Add list-plans command
+- [x] 4. Add list-plans command
   - File: bin/dart_cli.dart (extend)
   - Command: `dart run bin/dart_cli.dart list-plans`
   - List available training plans
