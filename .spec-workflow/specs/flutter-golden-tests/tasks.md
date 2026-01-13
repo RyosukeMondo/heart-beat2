@@ -58,7 +58,7 @@ Screenshot comparison tests for UI regression detection.
   - _Requirements: Mock all data dependencies_
   - _Prompt: Implement the task for spec flutter-golden-tests, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Flutter Golden Test Developer | Task: Create golden tests for full screen layouts (home, session, workout) | Restrictions: Mock all API calls and streams, use consistent screen size | Success: Full screen layouts captured for regression testing | After implementation: 1) Mark task as [-] in-progress before starting, 2) Use log-implementation tool to record what was created, 3) Mark task as [x] complete_
 
-- [ ] 7. Add golden test CI script
+- [x] 7. Add golden test CI script
   - File: scripts/test-golden.sh
   - Create script to run golden tests
   - Support --update flag to regenerate goldens
