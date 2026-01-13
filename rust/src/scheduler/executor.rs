@@ -1388,4 +1388,536 @@ mod tests {
             "Should return error for invalid cron expression"
         );
     }
+
+    #[tokio::test]
+    async fn test_pause_and_resume_user_initiated() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier);
+
+        let plan = TrainingPlan {
+            name: "Pause Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(2500)).await;
+
+        // Pause the session (user-initiated)
+        executor.pause_session().await.unwrap();
+
+        // Verify session is paused
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::Paused { .. }),
+                "Session should be paused"
+            );
+        }
+
+        // Verify pause reason is user-initiated
+        {
+            let reason = executor.pause_reason.lock().await;
+            assert_eq!(*reason, Some(PauseReason::UserInitiated));
+        }
+
+        sleep(Duration::from_millis(1000)).await;
+
+        // Resume the session
+        executor.resume_session().await.unwrap();
+
+        // Verify session is resumed
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::InProgress { .. }),
+                "Session should be in progress after resume"
+            );
+        }
+
+        // Verify pause reason is cleared
+        {
+            let reason = executor.pause_reason.lock().await;
+            assert_eq!(*reason, None);
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_auto_pause_on_connection_loss() {
+        use tokio::sync::broadcast;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (conn_tx, conn_rx) = broadcast::channel(100);
+
+        let mut executor = SessionExecutor::new(notifier).with_connection_status(conn_rx);
+
+        let plan = TrainingPlan {
+            name: "Connection Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Simulate connection loss
+        conn_tx.send(ConnectionStatus::Disconnected).unwrap();
+
+        // Wait for auto-pause to trigger
+        sleep(Duration::from_millis(1500)).await;
+
+        // Verify session was auto-paused
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::Paused { .. }),
+                "Session should be auto-paused on connection loss"
+            );
+        }
+
+        // Verify pause reason is connection loss
+        {
+            let reason = executor.pause_reason.lock().await;
+            assert_eq!(*reason, Some(PauseReason::ConnectionLoss));
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_auto_resume_on_reconnection() {
+        use tokio::sync::broadcast;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (conn_tx, conn_rx) = broadcast::channel(100);
+
+        let mut executor = SessionExecutor::new(notifier).with_connection_status(conn_rx);
+
+        let plan = TrainingPlan {
+            name: "Reconnection Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Simulate connection loss
+        conn_tx.send(ConnectionStatus::Disconnected).unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Verify auto-paused
+        {
+            let state = executor.session_state.lock().await;
+            assert!(matches!(state.state(), State::Paused { .. }));
+        }
+
+        // Simulate reconnection
+        conn_tx
+            .send(ConnectionStatus::Connected {
+                device_id: "AA:BB:CC:DD:EE:FF".to_string(),
+            })
+            .unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Verify auto-resumed
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::InProgress { .. }),
+                "Session should auto-resume after reconnection"
+            );
+        }
+
+        // Verify pause reason is cleared
+        {
+            let reason = executor.pause_reason.lock().await;
+            assert_eq!(*reason, None);
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_no_auto_resume_for_user_initiated_pause() {
+        use tokio::sync::broadcast;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (conn_tx, conn_rx) = broadcast::channel(100);
+
+        let mut executor = SessionExecutor::new(notifier).with_connection_status(conn_rx);
+
+        let plan = TrainingPlan {
+            name: "User Pause Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // User manually pauses
+        executor.pause_session().await.unwrap();
+        sleep(Duration::from_millis(500)).await;
+
+        // Verify paused with user-initiated reason
+        {
+            let reason = executor.pause_reason.lock().await;
+            assert_eq!(*reason, Some(PauseReason::UserInitiated));
+        }
+
+        // Simulate connection (reconnection event)
+        conn_tx
+            .send(ConnectionStatus::Connected {
+                device_id: "AA:BB:CC:DD:EE:FF".to_string(),
+            })
+            .unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Verify session is STILL paused (no auto-resume for user pause)
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::Paused { .. }),
+                "Session should remain paused for user-initiated pause"
+            );
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_session_repository_saves_completed_session() {
+        use crate::adapters::FileSessionRepository;
+        use tempfile::tempdir;
+
+        let temp_dir = tempdir().unwrap();
+        let sessions_dir = temp_dir.path().to_path_buf();
+        let repository = Arc::new(
+            FileSessionRepository::with_directory(sessions_dir)
+                .await
+                .unwrap(),
+        );
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor =
+            SessionExecutor::new(notifier).with_session_repository(repository.clone());
+
+        let plan = TrainingPlan {
+            name: "Repo Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Short Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 2,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan.clone()).await.unwrap();
+
+        // Wait for session to complete
+        sleep(Duration::from_secs(4)).await;
+
+        // Give time for async save
+        sleep(Duration::from_millis(500)).await;
+
+        // Verify session was saved to repository
+        let sessions = repository.list().await.unwrap();
+        assert_eq!(sessions.len(), 1, "Should have saved 1 session");
+        assert_eq!(sessions[0].plan_name, plan.name);
+        assert_eq!(sessions[0].status, "Completed");
+    }
+
+    #[tokio::test]
+    async fn test_session_repository_saves_stopped_session() {
+        use crate::adapters::FileSessionRepository;
+        use tempfile::tempdir;
+
+        let temp_dir = tempdir().unwrap();
+        let sessions_dir = temp_dir.path().to_path_buf();
+        let repository = Arc::new(
+            FileSessionRepository::with_directory(sessions_dir)
+                .await
+                .unwrap(),
+        );
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor =
+            SessionExecutor::new(notifier).with_session_repository(repository.clone());
+
+        let plan = TrainingPlan {
+            name: "Stop Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan.clone()).await.unwrap();
+        sleep(Duration::from_secs(2)).await;
+
+        // Stop the session
+        executor.stop_session().await.unwrap();
+        sleep(Duration::from_millis(500)).await;
+
+        // Verify session was saved with Stopped status
+        let sessions = repository.list().await.unwrap();
+        assert_eq!(sessions.len(), 1, "Should have saved 1 stopped session");
+        assert_eq!(sessions[0].plan_name, plan.name);
+        assert_eq!(sessions[0].status, "Stopped");
+    }
+
+    #[tokio::test]
+    async fn test_progress_sender_streams_updates() {
+        use tokio::sync::mpsc;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (progress_tx, mut progress_rx) = mpsc::unbounded_channel();
+
+        let mut executor = SessionExecutor::new(notifier).with_progress_sender(progress_tx);
+
+        let plan = TrainingPlan {
+            name: "Progress Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Test Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 5,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+
+        // Collect progress updates
+        let mut update_count = 0;
+        let timeout_duration = Duration::from_secs(7);
+        let start_time = Instant::now();
+
+        while start_time.elapsed() < timeout_duration {
+            match tokio::time::timeout(Duration::from_millis(500), progress_rx.recv()).await {
+                Ok(Some(progress)) => {
+                    update_count += 1;
+                    assert!(
+                        matches!(
+                            progress.state,
+                            ProgressState::Running | ProgressState::Completed
+                        ),
+                        "Progress state should be Running or Completed"
+                    );
+                }
+                Ok(None) => break, // Channel closed
+                Err(_) => {
+                    // Timeout - check if session is done
+                    let state = executor.session_state.lock().await;
+                    if matches!(state.state(), State::Completed { .. }) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        assert!(
+            update_count >= 3,
+            "Should have received at least 3 progress updates, got {}",
+            update_count
+        );
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_hr_samples_collected_during_session() {
+        use tokio::sync::broadcast;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (hr_tx, hr_rx) = broadcast::channel(100);
+        let mut executor = SessionExecutor::with_hr_stream(notifier, hr_rx);
+
+        let plan = TrainingPlan {
+            name: "HR Sample Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Test Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 3,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(500)).await;
+
+        // Send HR data
+        for i in 0..10 {
+            let hr_data = FilteredHeartRate {
+                raw_bpm: 120 + i,
+                filtered_bpm: 120 + i,
+                rmssd: Some(45.0),
+                filter_variance: Some(1.5),
+                battery_level: Some(85),
+                timestamp: 0,
+                receive_timestamp_micros: None,
+            };
+            hr_tx.send(hr_data).unwrap();
+            sleep(Duration::from_millis(100)).await;
+        }
+
+        // Verify HR samples were collected
+        {
+            let samples = executor.hr_samples.lock().await;
+            assert!(
+                samples.len() >= 5,
+                "Should have collected at least 5 HR samples, got {}",
+                samples.len()
+            );
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_reconnecting_status_triggers_pause() {
+        use tokio::sync::broadcast;
+
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let (conn_tx, conn_rx) = broadcast::channel(100);
+
+        let mut executor = SessionExecutor::new(notifier).with_connection_status(conn_rx);
+
+        let plan = TrainingPlan {
+            name: "Reconnecting Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Long Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Simulate reconnecting status
+        conn_tx
+            .send(ConnectionStatus::Reconnecting {
+                attempt: 1,
+                max_attempts: 5,
+            })
+            .unwrap();
+        sleep(Duration::from_millis(1500)).await;
+
+        // Verify session was auto-paused
+        {
+            let state = executor.session_state.lock().await;
+            assert!(
+                matches!(state.state(), State::Paused { .. }),
+                "Session should be auto-paused during reconnection"
+            );
+        }
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_get_plan_returns_current_plan() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier);
+
+        let plan = TrainingPlan {
+            name: "Get Plan Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Test Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        // No plan before starting
+        assert!(executor.get_plan().await.is_none());
+
+        executor.start_session(plan.clone()).await.unwrap();
+        sleep(Duration::from_millis(500)).await;
+
+        // Plan should be available after starting
+        let retrieved_plan = executor.get_plan().await;
+        assert!(retrieved_plan.is_some());
+        assert_eq!(retrieved_plan.unwrap().name, plan.name);
+
+        executor.stop_session().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_get_progress_returns_current_state() {
+        let notifier = Arc::new(MockNotificationAdapter::new());
+        let mut executor = SessionExecutor::new(notifier);
+
+        let plan = TrainingPlan {
+            name: "Progress Query Test".to_string(),
+            phases: vec![TrainingPhase {
+                name: "Test Phase".to_string(),
+                target_zone: Zone::Zone2,
+                duration_secs: 60,
+                transition: TransitionCondition::TimeElapsed,
+            }],
+            created_at: Utc::now(),
+            max_hr: 180,
+        };
+
+        // No progress before starting
+        assert!(executor.get_progress().await.is_none());
+
+        executor.start_session(plan).await.unwrap();
+        sleep(Duration::from_millis(2500)).await;
+
+        // Progress should be available
+        let progress = executor.get_progress().await;
+        assert!(progress.is_some());
+
+        let (phase, elapsed, duration) = progress.unwrap();
+        assert_eq!(phase, 0);
+        assert!(elapsed >= 1, "Should have at least 1 second elapsed");
+        assert_eq!(duration, 60);
+
+        executor.stop_session().await.unwrap();
+    }
 }
