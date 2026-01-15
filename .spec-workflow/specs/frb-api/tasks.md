@@ -34,7 +34,7 @@
   - Purpose: Stream HR data to Flutter reactively
   - _Leverage: domain/filters.rs, tokio::sync::broadcast_
   - _Requirements: 2_
-  - _Implementation: Uses OnceLock for thread-safe global state, broadcast channel with 100-item buffer, supports multiple subscribers with fan-out, handles backpressure by allowing lagging. Ready for FRB v2 StreamSink integration when Flutter is added._
+  - _Prompt: Role: Rust async streaming expert | Task: Create HR data streaming using OnceLock for thread-safe global state, broadcast channel with 100-item buffer, support multiple subscribers with fan-out, handle backpressure by allowing lagging | Restrictions: Must be thread-safe, handle subscriber lag gracefully | Success: HR data streams to multiple subscribers, no data loss under normal load_
 
 - [x] 1.5 Re-export API in lib.rs
   - File: `rust/src/lib.rs`
@@ -43,4 +43,4 @@
   - Purpose: Make API visible to Flutter
   - _Leverage: existing lib.rs structure_
   - _Requirements: 1_
-  - _Implementation: API functions exported in lib.rs. FRB codegen to be run when Flutter integration is ready._
+  - _Prompt: Role: Rust module organization expert | Task: Add pub mod api and pub use api::* to lib.rs, verify FRB codegen sees exported items | Restrictions: Don't break existing module structure | Success: FRB codegen runs successfully, API functions visible to Flutter_

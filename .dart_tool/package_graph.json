@@ -8,6 +8,7 @@
       "version": "1.0.0+1",
       "dependencies": [
         "archive",
+        "args",
         "audioplayers",
         "device_info_plus",
         "fl_chart",
@@ -99,6 +100,11 @@
         "test_api",
         "vector_math"
       ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
     },
     {
       "name": "audioplayers",
@@ -337,11 +343,6 @@
         "meta",
         "path"
       ]
-    },
-    {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
     },
     {
       "name": "lints",
