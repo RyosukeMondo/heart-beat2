@@ -375,26 +375,27 @@ void _openSessionDetail(ApiSessionSummaryPreview session) async {
                                 onDismissed: (direction) async {
                                   try {
                                     await deleteSession(id: data['id'] as String);
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Session deleted'),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      _loadSessions();
-                                    }
+                                    if (!mounted) return;
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Session deleted'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                    _loadSessions();
                                   } catch (e) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Failed to delete session: $e'),
-                                          backgroundColor:
-                                              Theme.of(context).colorScheme.error,
-                                        ),
-                                      );
-                                      _loadSessions();
-                                    }
+                                    if (!mounted) return;
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to delete session: $e'),
+                                        // ignore: use_build_context_synchronously
+                                        backgroundColor:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    );
+                                    _loadSessions();
                                   }
                                 },
                                 child: Card(

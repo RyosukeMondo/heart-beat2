@@ -508,7 +508,6 @@ void main() {
 
       // Manually modify SharedPreferences to simulate external change
       final prefs = await SharedPreferences.getInstance();
-      final profile2 = UserProfile(maxHr: 195);
       await prefs.setString('user_profile',
         '{"maxHr":195,"age":null,"useAgeBased":false,"customZones":null}');
 

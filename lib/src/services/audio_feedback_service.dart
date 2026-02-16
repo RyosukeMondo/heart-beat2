@@ -22,7 +22,7 @@ class AudioFeedbackService {
   final AudioPlayer _player = AudioPlayer();
 
   /// Whether audio feedback is enabled
-  bool _isEnabled = true;
+  bool isEnabled = true;
 
   /// Audio volume (0.0 to 1.0)
   double _volume = 0.7;
@@ -37,14 +37,6 @@ class AudioFeedbackService {
   static const String _zoneTooHighAsset = 'assets/audio/too_high.mp3';
   static const String _zoneTooLowAsset = 'assets/audio/too_low.mp3';
   static const String _phaseTransitionAsset = 'assets/audio/phase_change.mp3';
-
-  /// Get whether audio feedback is enabled
-  bool get isEnabled => _isEnabled;
-
-  /// Set whether audio feedback is enabled
-  set isEnabled(bool value) {
-    _isEnabled = value;
-  }
 
   /// Get current volume (0.0 to 1.0)
   double get volume => _volume;
@@ -81,7 +73,7 @@ class AudioFeedbackService {
 
   /// Check if enough time has passed since last playback (debouncing)
   bool _shouldPlayAudio() {
-    if (!_isEnabled) {
+    if (!isEnabled) {
       return false;
     }
 

@@ -120,8 +120,8 @@ void main() {
       expect(theme.useMaterial3, isTrue);
       // Verify it's based on red seed color by checking primary color has red hue
       final primary = theme.colorScheme.primary;
-      expect(primary.red, greaterThan(primary.blue));
-      expect(primary.red, greaterThan(primary.green));
+      expect((primary.r * 255.0).round(), greaterThan((primary.b * 255.0).round()));
+      expect((primary.r * 255.0).round(), greaterThan((primary.g * 255.0).round()));
     });
 
     testWidgets('goldenWrapper applies custom theme when provided', (tester) async {

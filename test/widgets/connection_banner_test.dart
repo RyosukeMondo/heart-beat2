@@ -29,10 +29,8 @@ class MockConnectionStatus implements ApiConnectionStatus {
   @override
   void dispose() {}
 
-  @override
   Pointer<Void>? shareOrMove() => null;
 
-  @override
   Pointer<Void>? tryShareOrMove() => null;
 }
 

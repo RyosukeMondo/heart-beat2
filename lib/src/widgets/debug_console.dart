@@ -145,7 +145,7 @@ class _DebugConsoleState extends State<DebugConsole> {
                   // Level filter dropdown
                   Expanded(
                     child: DropdownButtonFormField<String?>(
-                      value: _levelFilter,
+                      initialValue: _levelFilter,
                       decoration: const InputDecoration(
                         labelText: 'Level',
                         isDense: true,
@@ -292,7 +292,7 @@ class _DebugConsoleState extends State<DebugConsole> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: levelColor.withOpacity(0.2),
+                                    color: levelColor.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(4),
                                     border: Border.all(
                                       color: levelColor,

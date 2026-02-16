@@ -31,7 +31,7 @@ Future<void> main() async {
   // Initialize panic handler and logging system
   try {
     await initPanicHandler();
-    final logStream = await initLogging();
+    final logStream = initLogging();
     LogService.instance.subscribe(logStream);
   } catch (e) {
     debugPrint('Failed to initialize logging system: $e');

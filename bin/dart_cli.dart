@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
@@ -760,7 +761,6 @@ void _displayProfile(UserProfile profile) {
   // Effective max HR
   final effectiveMaxHr = profile.effectiveMaxHr;
   if (profile.useAgeBased && profile.age != null) {
-    final calculatedMaxHr = UserProfile.calculateMaxHrFromAge(profile.age!);
     print('Effective Max HR: $effectiveMaxHr BPM (calculated: 220 - ${profile.age})');
   } else {
     print('Effective Max HR: $effectiveMaxHr BPM');
@@ -794,5 +794,5 @@ void _displayProfile(UserProfile profile) {
 void _printZone(String name, int minPercent, int maxPercent, int maxHr) {
   final minBpm = (minPercent / 100 * maxHr).round();
   final maxBpm = (maxPercent / 100 * maxHr).round();
-  print('  $name: ${minPercent}%-${maxPercent}% ($minBpm-$maxBpm BPM)');
+  print('  $name: $minPercent%-$maxPercent% ($minBpm-$maxBpm BPM)');
 }

@@ -1,5 +1,3 @@
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
-
 /// Custom training zone thresholds as percentages of max heart rate.
 ///
 /// Each zone boundary represents the maximum percentage for that zone.
@@ -80,9 +78,9 @@ class CustomZones {
 class UserProfile {
   int _maxHr;
   int? _age;
-  bool _useAgeBased;
-  CustomZones? _customZones;
-  bool _audioFeedbackEnabled;
+  bool useAgeBased;
+  CustomZones? customZones;
+  bool audioFeedbackEnabled;
   double _audioVolume;
 
   /// Manual maximum heart rate in BPM
@@ -103,24 +101,6 @@ class UserProfile {
     _age = value;
   }
 
-  /// Whether to use age-based max HR instead of manual entry
-  bool get useAgeBased => _useAgeBased;
-  set useAgeBased(bool value) {
-    _useAgeBased = value;
-  }
-
-  /// Custom training zone thresholds (null = use defaults)
-  CustomZones? get customZones => _customZones;
-  set customZones(CustomZones? value) {
-    _customZones = value;
-  }
-
-  /// Whether audio feedback is enabled during workouts
-  bool get audioFeedbackEnabled => _audioFeedbackEnabled;
-  set audioFeedbackEnabled(bool value) {
-    _audioFeedbackEnabled = value;
-  }
-
   /// Audio feedback volume (0.0 to 1.0)
   double get audioVolume => _audioVolume;
   set audioVolume(double value) {
@@ -132,14 +112,14 @@ class UserProfile {
 
   /// The effective max heart rate (age-based if enabled, otherwise manual)
   int get effectiveMaxHr {
-    if (_useAgeBased && _age != null) {
+    if (useAgeBased && _age != null) {
       return calculateMaxHrFromAge(_age!);
     }
     return _maxHr;
   }
 
   /// The zone thresholds to use (custom if set, otherwise defaults)
-  CustomZones get effectiveZones => _customZones ?? CustomZones.defaults;
+  CustomZones get effectiveZones => customZones ?? CustomZones.defaults;
 
   UserProfile({
     required int maxHr,
@@ -150,9 +130,9 @@ class UserProfile {
     double audioVolume = 0.7,
   })  : _maxHr = maxHr,
         _age = age,
-        _useAgeBased = useAgeBased,
-        _customZones = customZones,
-        _audioFeedbackEnabled = audioFeedbackEnabled,
+        useAgeBased = useAgeBased,
+        customZones = customZones,
+        audioFeedbackEnabled = audioFeedbackEnabled,
         _audioVolume = audioVolume {
     // Validate in constructor
     if (maxHr < 100 || maxHr > 220) {
@@ -198,9 +178,9 @@ class UserProfile {
     return {
       'maxHr': _maxHr,
       'age': _age,
-      'useAgeBased': _useAgeBased,
-      'customZones': _customZones?.toJson(),
-      'audioFeedbackEnabled': _audioFeedbackEnabled,
+      'useAgeBased': useAgeBased,
+      'customZones': customZones?.toJson(),
+      'audioFeedbackEnabled': audioFeedbackEnabled,
       'audioVolume': _audioVolume,
     };
   }
@@ -212,17 +192,17 @@ class UserProfile {
           runtimeType == other.runtimeType &&
           _maxHr == other._maxHr &&
           _age == other._age &&
-          _useAgeBased == other._useAgeBased &&
-          _customZones == other._customZones &&
-          _audioFeedbackEnabled == other._audioFeedbackEnabled &&
+          useAgeBased == other.useAgeBased &&
+          customZones == other.customZones &&
+          audioFeedbackEnabled == other.audioFeedbackEnabled &&
           _audioVolume == other._audioVolume;
 
   @override
   int get hashCode =>
       _maxHr.hashCode ^
       _age.hashCode ^
-      _useAgeBased.hashCode ^
-      _customZones.hashCode ^
-      _audioFeedbackEnabled.hashCode ^
+      useAgeBased.hashCode ^
+      customZones.hashCode ^
+      audioFeedbackEnabled.hashCode ^
       _audioVolume.hashCode;
 }

@@ -68,7 +68,7 @@ class _SessionScreenState extends State<SessionScreen> {
       final stream = api.createHrStream();
 
       // Create the battery stream and subscribe to updates
-      final batteryStream = await api.createBatteryStream();
+      final batteryStream = api.createBatteryStream();
       _batterySubscription = batteryStream.listen((batteryLevel) {
         if (mounted) {
           setState(() {

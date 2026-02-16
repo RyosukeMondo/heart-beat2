@@ -186,7 +186,7 @@ void main() {
       );
       final decoration = container.decoration as BoxDecoration;
       final backgroundColor = decoration.color!;
-      expect(backgroundColor.alpha, equals((0.2 * 255).round()));
+      expect((backgroundColor.a * 255.0).round(), equals((0.2 * 255).round()));
     });
 
     testWidgets('zone indicator displays color bar',

@@ -122,9 +122,6 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
   /// Vertical position of the console (0.0 to 1.0).
   double _verticalPosition = 0.5;
 
-  /// Whether the user is currently dragging the console.
-  bool _isDragging = false;
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -137,7 +134,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
           child: GestureDetector(
             onTap: widget.onClose,
             child: Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
             ),
           ),
         ),
@@ -152,11 +149,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
             children: [
               // Drag handle
               GestureDetector(
-                onVerticalDragStart: (details) {
-                  setState(() {
-                    _isDragging = true;
-                  });
-                },
+                onVerticalDragStart: (details) {},
                 onVerticalDragUpdate: (details) {
                   setState(() {
                     // Update position based on drag
@@ -164,11 +157,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
                     _verticalPosition = (_verticalPosition - delta).clamp(0.2, 0.8);
                   });
                 },
-                onVerticalDragEnd: (details) {
-                  setState(() {
-                    _isDragging = false;
-                  });
-                },
+                onVerticalDragEnd: (details) {},
                 child: Container(
                   height: 32,
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,

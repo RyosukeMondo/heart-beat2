@@ -29,7 +29,6 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  Stream<api.ApiSessionProgress>? _progressStream;
   StreamSubscription<api.ApiSessionProgress>? _progressSubscription;
 
   // Current workout state
@@ -39,7 +38,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   String _currentPhaseName = '';
   int _phaseElapsed = 0;
   int _phaseRemaining = 0;
-  int _totalElapsed = 0;
   int _totalRemaining = 0;
   api.ApiZoneStatus? _zoneStatus;
   Zone? _targetZone;
@@ -125,7 +123,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             _currentPhaseName = phaseName;
             _phaseElapsed = phaseElapsed;
             _phaseRemaining = phaseRemaining;
-            _totalElapsed = totalElapsed;
             _totalRemaining = totalRemaining;
             _zoneStatus = zoneStatusObj;
             _targetZone = targetZone;
@@ -154,7 +151,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       );
 
       setState(() {
-        _progressStream = stream;
         _isStarting = false;
       });
     } catch (e) {
