@@ -207,4 +207,4 @@ jobs:
       run: flutter analyze
 
     - name: Check Dart formatting
-      run: dart format --check .
+      run: dart format --set-exit-if-changed -o none .

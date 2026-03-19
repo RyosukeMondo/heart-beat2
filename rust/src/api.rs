@@ -2328,29 +2328,42 @@ mod tests {
 
     #[tokio::test]
     async fn test_multiple_receivers_fan_out() {
-        use tokio::time::{sleep, timeout, Duration};
+        use tokio::time::{timeout, Duration};
 
-        // Create receivers first
+        // Create fresh receivers immediately before emitting so they have no
+        // stale data from other tests sharing the global broadcast channel.
         let mut rx1 = get_hr_stream_receiver();
         let mut rx2 = get_hr_stream_receiver();
         let mut rx3 = get_hr_stream_receiver();
-
-        // Drain any old data from previous tests with a longer timeout
-        while timeout(Duration::from_millis(50), rx1.recv()).await.is_ok() {}
-        while timeout(Duration::from_millis(50), rx2.recv()).await.is_ok() {}
-        while timeout(Duration::from_millis(50), rx3.recv()).await.is_ok() {}
-
-        // Small delay to ensure we don't race with other tests
-        sleep(Duration::from_millis(10)).await;
 
         // Emit data with unique BPM to identify this test's data
         let data = create_test_hr_data(155, 154);
         emit_hr_data(data);
 
-        // All receivers should get the data
-        let r1 = rx1.recv().await.expect("rx1 should receive");
-        let r2 = rx2.recv().await.expect("rx2 should receive");
-        let r3 = rx3.recv().await.expect("rx3 should receive");
+        // Helper: receive the next value, skipping any Lagged errors caused
+        // by other tests that share the global broadcast channel.
+        async fn recv_skip_lagged(
+            rx: &mut broadcast::Receiver<ApiFilteredHeartRate>,
+        ) -> ApiFilteredHeartRate {
+            loop {
+                match rx.recv().await {
+                    Ok(val) => return val,
+                    Err(broadcast::error::RecvError::Lagged(_)) => continue,
+                    Err(e) => panic!("Unexpected recv error: {:?}", e),
+                }
+            }
+        }
+
+        // All receivers should get the data (with timeout to avoid hanging)
+        let r1 = timeout(Duration::from_secs(5), recv_skip_lagged(&mut rx1))
+            .await
+            .expect("rx1 timed out");
+        let r2 = timeout(Duration::from_secs(5), recv_skip_lagged(&mut rx2))
+            .await
+            .expect("rx2 timed out");
+        let r3 = timeout(Duration::from_secs(5), recv_skip_lagged(&mut rx3))
+            .await
+            .expect("rx3 timed out");
 
         assert_eq!(r1.raw_bpm, 155);
         assert_eq!(r2.raw_bpm, 155);

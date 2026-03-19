@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -7,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// - Creating consistent golden test wrappers with fixed sizing and theming
 /// - Setting device pixel ratio for reproducible screenshots
 /// - Managing golden file location and naming conventions
+/// - Tolerant comparison for cross-environment stability
 ///
 /// Golden tests capture screenshots of widgets and compare them against
 /// baseline images to detect visual regressions. They are more fragile than
@@ -205,5 +207,56 @@ Future<void> pumpGoldenWithSize({
   await expectLater(
     find.byType(widget.runtimeType),
     matchesGoldenFile(goldenFile),
+  );
+}
+
+/// A golden file comparator that tolerates small pixel differences.
+///
+/// Cross-environment rendering (local vs CI) produces minor pixel variations
+/// in font anti-aliasing and widget decoration. This comparator allows up to
+/// [tolerance] fraction of pixels to differ (default 1.5%).
+class TolerantGoldenFileComparator extends LocalFileComparator {
+  TolerantGoldenFileComparator(super.testFile, {this.tolerance = 0.015});
+
+  /// Maximum fraction of pixels that may differ (0.0 to 1.0).
+  final double tolerance;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    if (!result.passed && result.diffPercent <= tolerance) {
+      debugPrint(
+        'Golden comparison within tolerance: '
+        '${result.diffPercent.toStringAsFixed(2)}% '
+        '(<= ${(tolerance * 100).toStringAsFixed(1)}%)',
+      );
+      return true;
+    }
+
+    if (!result.passed) {
+      final error = await generateFailureOutput(result, golden, basedir);
+      throw FlutterError(error);
+    }
+    return result.passed;
+  }
+}
+
+/// Installs [TolerantGoldenFileComparator] for the current test file.
+///
+/// Call once from `main()` before any golden tests:
+/// ```dart
+/// void main() {
+///   setupTolerantComparator();
+///   // ... golden tests
+/// }
+/// ```
+void setupTolerantComparator(String testFilePath, {double tolerance = 0.015}) {
+  goldenFileComparator = TolerantGoldenFileComparator(
+    Uri.parse(testFilePath),
+    tolerance: tolerance,
   );
 }
