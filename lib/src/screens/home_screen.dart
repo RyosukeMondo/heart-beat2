@@ -39,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Bluetooth permissions denied. Please enable them in settings.'),
+            content: Text(
+              'Bluetooth permissions denied. Please enable them in settings.',
+            ),
             duration: Duration(seconds: 3),
           ),
         );
@@ -128,7 +130,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           _error!,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onErrorContainer,
                           ),
                         ),
                       ),

@@ -33,13 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 Widget goldenWrapper(Widget child, {ThemeData? theme}) {
   return MaterialApp(
     theme: theme ?? _defaultLightTheme(),
-    home: SizedBox(
-      width: 800,
-      height: 600,
-      child: Material(
-        child: child,
-      ),
-    ),
+    home: SizedBox(width: 800, height: 600, child: Material(child: child)),
   );
 }
 
@@ -102,9 +96,7 @@ Widget goldenWrapperWithSize({
     home: SizedBox(
       width: width,
       height: height,
-      child: Material(
-        child: child,
-      ),
+      child: Material(child: child),
     ),
   );
 }
@@ -201,12 +193,14 @@ Future<void> pumpGoldenWithSize({
   required String goldenFile,
   ThemeData? theme,
 }) async {
-  await tester.pumpWidget(goldenWrapperWithSize(
-    child: widget,
-    width: width,
-    height: height,
-    theme: theme,
-  ));
+  await tester.pumpWidget(
+    goldenWrapperWithSize(
+      child: widget,
+      width: width,
+      height: height,
+      theme: theme,
+    ),
+  );
   await tester.pumpAndSettle();
   await expectLater(
     find.byType(widget.runtimeType),

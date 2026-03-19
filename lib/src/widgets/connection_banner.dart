@@ -82,10 +82,7 @@ class ConnectionBanner extends StatelessWidget {
             onPressed: () {
               // TODO: Implement manual retry when reconnect API is added
             },
-            child: Text(
-              'Retry',
-              style: TextStyle(color: Colors.red.shade900),
-            ),
+            child: Text('Retry', style: TextStyle(color: Colors.red.shade900)),
           ),
         ],
       );

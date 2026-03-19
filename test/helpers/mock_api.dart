@@ -20,10 +20,7 @@ class MockPlans {
   final List<String> plans;
   final String? error;
 
-  MockPlans({
-    this.plans = const [],
-    this.error,
-  });
+  MockPlans({this.plans = const [], this.error});
 
   /// Simulates successful plan listing.
   static MockPlans success(List<String> plans) {
@@ -41,9 +38,8 @@ class MockPlans {
   }
 
   /// Default mock with sample plans.
-  static MockPlans get defaultPlans => MockPlans(
-        plans: ['Beginner 5K', 'Marathon Training', 'HIIT Intervals'],
-      );
+  static MockPlans get defaultPlans =>
+      MockPlans(plans: ['Beginner 5K', 'Marathon Training', 'HIIT Intervals']);
 }
 
 /// Mock discovered devices for testing device scanning widgets.
@@ -54,19 +50,15 @@ class MockDevices {
     String? name,
     int rssi = -60,
   }) {
-    return DiscoveredDevice(
-      id: id,
-      name: name,
-      rssi: rssi,
-    );
+    return DiscoveredDevice(id: id, name: name, rssi: rssi);
   }
 
   /// Default mock device list.
   static List<DiscoveredDevice> get defaultDevices => [
-        device(id: 'device1', name: 'Polar H10', rssi: -55),
-        device(id: 'device2', name: 'Garmin HRM', rssi: -65),
-        device(id: 'device3', name: 'Wahoo TICKR', rssi: -70),
-      ];
+    device(id: 'device1', name: 'Polar H10', rssi: -55),
+    device(id: 'device2', name: 'Garmin HRM', rssi: -65),
+    device(id: 'device3', name: 'Wahoo TICKR', rssi: -70),
+  ];
 
   /// Empty device list (no devices found).
   static List<DiscoveredDevice> get empty => [];
@@ -101,12 +93,12 @@ class MockZone {
 
   /// Zone colors for testing visual output.
   static Map<Zone, String> get zoneColors => {
-        Zone.zone1: 'gray',
-        Zone.zone2: 'blue',
-        Zone.zone3: 'green',
-        Zone.zone4: 'yellow',
-        Zone.zone5: 'red',
-      };
+    Zone.zone1: 'gray',
+    Zone.zone2: 'blue',
+    Zone.zone3: 'green',
+    Zone.zone4: 'yellow',
+    Zone.zone5: 'red',
+  };
 }
 
 /// Mock battery levels for testing battery indicator widget.

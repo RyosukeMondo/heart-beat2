@@ -20,21 +20,14 @@ void main() {
     });
 
     test('creates profile with manual max HR', () {
-      final profile = UserProfile(
-        maxHr: 190,
-        useAgeBased: false,
-      );
+      final profile = UserProfile(maxHr: 190, useAgeBased: false);
 
       expect(profile.maxHr, 190);
       expect(profile.effectiveMaxHr, 190);
     });
 
     test('creates profile with age-based max HR', () {
-      final profile = UserProfile(
-        maxHr: 180,
-        age: 30,
-        useAgeBased: true,
-      );
+      final profile = UserProfile(maxHr: 180, age: 30, useAgeBased: true);
 
       expect(profile.age, 30);
       expect(profile.useAgeBased, true);
@@ -49,25 +42,15 @@ void main() {
     });
 
     test('uses manual max HR when age-based is disabled', () {
-      final profile = UserProfile(
-        maxHr: 185,
-        age: 30,
-        useAgeBased: false,
-      );
+      final profile = UserProfile(maxHr: 185, age: 30, useAgeBased: false);
 
       expect(profile.effectiveMaxHr, 185); // Uses manual, not age-based (190)
     });
 
     test('validates max HR bounds', () {
-      expect(
-        () => UserProfile(maxHr: 99),
-        throwsArgumentError,
-      );
+      expect(() => UserProfile(maxHr: 99), throwsArgumentError);
 
-      expect(
-        () => UserProfile(maxHr: 221),
-        throwsArgumentError,
-      );
+      expect(() => UserProfile(maxHr: 221), throwsArgumentError);
 
       // Valid boundaries should work
       expect(() => UserProfile(maxHr: 100), returnsNormally);
@@ -75,15 +58,9 @@ void main() {
     });
 
     test('validates age bounds', () {
-      expect(
-        () => UserProfile(maxHr: 180, age: 9),
-        throwsArgumentError,
-      );
+      expect(() => UserProfile(maxHr: 180, age: 9), throwsArgumentError);
 
-      expect(
-        () => UserProfile(maxHr: 180, age: 121),
-        throwsArgumentError,
-      );
+      expect(() => UserProfile(maxHr: 180, age: 121), throwsArgumentError);
 
       // Valid boundaries should work
       expect(() => UserProfile(maxHr: 180, age: 10), returnsNormally);
@@ -107,10 +84,7 @@ void main() {
         zone4Max: 85,
       );
 
-      final profile = UserProfile(
-        maxHr: 180,
-        customZones: customZones,
-      );
+      final profile = UserProfile(maxHr: 180, customZones: customZones);
 
       expect(profile.effectiveZones.zone1Max, 55);
       expect(profile.effectiveZones.zone2Max, 65);
@@ -192,12 +166,8 @@ void main() {
     test('validates zone ordering', () {
       // Valid zones should work
       expect(
-        () => CustomZones(
-          zone1Max: 60,
-          zone2Max: 70,
-          zone3Max: 80,
-          zone4Max: 90,
-        ),
+        () =>
+            CustomZones(zone1Max: 60, zone2Max: 70, zone3Max: 80, zone4Max: 90),
         returnsNormally,
       );
 
@@ -227,12 +197,8 @@ void main() {
 
       // Zone min must be greater than 0
       expect(
-        () => CustomZones(
-          zone1Max: 0,
-          zone2Max: 70,
-          zone3Max: 80,
-          zone4Max: 90,
-        ),
+        () =>
+            CustomZones(zone1Max: 0, zone2Max: 70, zone3Max: 80, zone4Max: 90),
         throwsAssertionError,
       );
     });
@@ -321,11 +287,7 @@ void main() {
 
     test('persists profile across service instances', () async {
       final service = ProfileService.instance;
-      final testProfile = UserProfile(
-        maxHr: 188,
-        age: 32,
-        useAgeBased: false,
-      );
+      final testProfile = UserProfile(maxHr: 188, age: 32, useAgeBased: false);
 
       await service.saveProfile(testProfile);
 
@@ -508,8 +470,10 @@ void main() {
 
       // Manually modify SharedPreferences to simulate external change
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_profile',
-        '{"maxHr":195,"age":null,"useAgeBased":false,"customZones":null}');
+      await prefs.setString(
+        'user_profile',
+        '{"maxHr":195,"age":null,"useAgeBased":false,"customZones":null}',
+      );
 
       // Reload should get the new value
       final reloaded = await service.reloadProfile();

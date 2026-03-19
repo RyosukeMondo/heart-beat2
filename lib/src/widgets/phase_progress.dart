@@ -42,9 +42,9 @@ class PhaseProgressWidget extends StatelessWidget {
           // Phase name prominently displayed
           Text(
             phaseName,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
 
@@ -68,14 +68,14 @@ class PhaseProgressWidget extends StatelessWidget {
               Text(
                 'Elapsed: ${_formatTime(elapsedSecs)}',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               Text(
                 'Remaining: ${_formatTime(remainingSecs)}',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -86,8 +86,8 @@ class PhaseProgressWidget extends StatelessWidget {
           Text(
             'Total: ${_formatTime(elapsedSecs + remainingSecs)}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

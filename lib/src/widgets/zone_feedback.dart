@@ -12,10 +12,7 @@ class ZoneFeedbackWidget extends StatefulWidget {
   /// The current zone status from the workout progress.
   final api.ApiZoneStatus zoneStatus;
 
-  const ZoneFeedbackWidget({
-    super.key,
-    required this.zoneStatus,
-  });
+  const ZoneFeedbackWidget({super.key, required this.zoneStatus});
 
   @override
   State<ZoneFeedbackWidget> createState() => _ZoneFeedbackWidgetState();
@@ -41,14 +38,8 @@ class _ZoneFeedbackWidgetState extends State<ZoneFeedbackWidget>
     );
 
     // Opacity animation that pulses between 0.7 and 1.0
-    _opacityAnimation = Tween<double>(
-      begin: 0.7,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+    _opacityAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
     _animationController.repeat(reverse: true);
@@ -109,10 +100,7 @@ class _ZoneFeedbackWidgetState extends State<ZoneFeedbackWidget>
     return AnimatedBuilder(
       animation: _opacityAnimation,
       builder: (context, child) {
-        return Opacity(
-          opacity: _opacityAnimation.value,
-          child: child,
-        );
+        return Opacity(opacity: _opacityAnimation.value, child: child);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 48),
@@ -131,11 +119,7 @@ class _ZoneFeedbackWidgetState extends State<ZoneFeedbackWidget>
           mainAxisSize: MainAxisSize.min,
           children: [
             // Large icon for visual emphasis
-            Icon(
-              icon,
-              size: 72,
-              color: Colors.white,
-            ),
+            Icon(icon, size: 72, color: Colors.white),
             const SizedBox(height: 12),
             // Bold, large text message
             Text(

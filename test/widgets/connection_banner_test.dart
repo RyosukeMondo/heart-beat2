@@ -131,8 +131,9 @@ void main() {
   });
 
   group('ConnectionBanner Widget Tests', () {
-    testWidgets('hidden when no connection status data available',
-        (WidgetTester tester) async {
+    testWidgets('hidden when no connection status data available', (
+      WidgetTester tester,
+    ) async {
       // Arrange - stream with no data yet
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -148,8 +149,7 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('hidden when status is connected',
-        (WidgetTester tester) async {
+    testWidgets('hidden when status is connected', (WidgetTester tester) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -172,8 +172,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('shows reconnecting banner with progress indicator',
-        (WidgetTester tester) async {
+    testWidgets('shows reconnecting banner with progress indicator', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -204,8 +205,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('shows disconnected banner with bluetooth disabled icon',
-        (WidgetTester tester) async {
+    testWidgets('shows disconnected banner with bluetooth disabled icon', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -230,8 +232,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('shows reconnect failed banner with error and retry button',
-        (WidgetTester tester) async {
+    testWidgets('shows reconnect failed banner with error and retry button', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -258,8 +261,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('reconnect failed shows unknown error when reason is null',
-        (WidgetTester tester) async {
+    testWidgets('reconnect failed shows unknown error when reason is null', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -281,8 +285,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('updates banner when connection status changes',
-        (WidgetTester tester) async {
+    testWidgets('updates banner when connection status changes', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -318,8 +323,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('widget tree structure includes StreamBuilder',
-        (WidgetTester tester) async {
+    testWidgets('widget tree structure includes StreamBuilder', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -335,8 +341,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('uses custom status stream when provided',
-        (WidgetTester tester) async {
+    testWidgets('uses custom status stream when provided', (
+      WidgetTester tester,
+    ) async {
       // Arrange - custom stream
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -351,16 +358,18 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('uses real stream when statusStream is null',
-        (WidgetTester tester) async {
+    testWidgets('uses real stream when statusStream is null', (
+      WidgetTester tester,
+    ) async {
       // Note: This test is skipped because ConnectionBanner with null statusStream
       // tries to use createConnectionStatusStream() which requires Rust FFI initialization.
       // In production, the widget works correctly when RustLib.init() has been called.
       // For testing purposes, we always provide a mock statusStream parameter.
     }, skip: true);
 
-    testWidgets('reconnecting banner shows increasing attempt count',
-        (WidgetTester tester) async {
+    testWidgets('reconnecting banner shows increasing attempt count', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -385,8 +394,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('handles rapid status changes without errors',
-        (WidgetTester tester) async {
+    testWidgets('handles rapid status changes without errors', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -413,8 +423,9 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('retry button exists in failed state',
-        (WidgetTester tester) async {
+    testWidgets('retry button exists in failed state', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final controller = StreamController<ApiConnectionStatus>();
       final widget = ConnectionBanner(statusStream: controller.stream);
@@ -439,81 +450,91 @@ void main() {
   });
 
   group('ConnectionBanner Integration Scenarios', () {
-    testWidgets('typical reconnection flow: disconnected -> reconnecting -> connected',
-        (WidgetTester tester) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
+    testWidgets(
+      'typical reconnection flow: disconnected -> reconnecting -> connected',
+      (WidgetTester tester) async {
+        // Arrange
+        final controller = StreamController<ApiConnectionStatus>();
+        final widget = ConnectionBanner(statusStream: controller.stream);
 
-      await tester.pumpWidget(testWrapper(widget));
+        await tester.pumpWidget(testWrapper(widget));
 
-      // Act - simulate typical reconnection flow
-      // 1. Device disconnects
-      controller.add(MockConnectionStatus(
-        type: ConnectionStatusType.disconnected,
-      ));
-      await tester.pump();
-
-      // 2. App attempts to reconnect
-      for (int attempt = 1; attempt <= 3; attempt++) {
-        controller.add(MockConnectionStatus(
-          type: ConnectionStatusType.reconnecting,
-          attempt: attempt,
-          maxAttempts: 5,
-        ));
+        // Act - simulate typical reconnection flow
+        // 1. Device disconnects
+        controller.add(
+          MockConnectionStatus(type: ConnectionStatusType.disconnected),
+        );
         await tester.pump();
-      }
 
-      // 3. Successfully reconnects
-      controller.add(MockConnectionStatus(
-        type: ConnectionStatusType.connected,
-      ));
-      await tester.pump();
+        // 2. App attempts to reconnect
+        for (int attempt = 1; attempt <= 3; attempt++) {
+          controller.add(
+            MockConnectionStatus(
+              type: ConnectionStatusType.reconnecting,
+              attempt: attempt,
+              maxAttempts: 5,
+            ),
+          );
+          await tester.pump();
+        }
 
-      // Assert - flow completes without errors
-      expect(find.byType(ConnectionBanner), findsOneWidget);
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('failed reconnection flow: disconnected -> reconnecting -> failed',
-        (WidgetTester tester) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - simulate failed reconnection
-      // 1. Device disconnects
-      controller.add(MockConnectionStatus(
-        type: ConnectionStatusType.disconnected,
-      ));
-      await tester.pump();
-
-      // 2. Multiple reconnect attempts
-      for (int attempt = 1; attempt <= 5; attempt++) {
-        controller.add(MockConnectionStatus(
-          type: ConnectionStatusType.reconnecting,
-          attempt: attempt,
-          maxAttempts: 5,
-        ));
+        // 3. Successfully reconnects
+        controller.add(
+          MockConnectionStatus(type: ConnectionStatusType.connected),
+        );
         await tester.pump();
-      }
 
-      // 3. All attempts fail
-      controller.add(MockConnectionStatus(
-        type: ConnectionStatusType.reconnectFailed,
-        failureReason: 'Maximum retry attempts exceeded',
-      ));
-      await tester.pump();
+        // Assert - flow completes without errors
+        expect(find.byType(ConnectionBanner), findsOneWidget);
 
-      // Assert - flow completes without errors
-      expect(find.byType(ConnectionBanner), findsOneWidget);
+        // Cleanup
+        await controller.close();
+      },
+    );
 
-      // Cleanup
-      await controller.close();
-    });
+    testWidgets(
+      'failed reconnection flow: disconnected -> reconnecting -> failed',
+      (WidgetTester tester) async {
+        // Arrange
+        final controller = StreamController<ApiConnectionStatus>();
+        final widget = ConnectionBanner(statusStream: controller.stream);
+
+        await tester.pumpWidget(testWrapper(widget));
+
+        // Act - simulate failed reconnection
+        // 1. Device disconnects
+        controller.add(
+          MockConnectionStatus(type: ConnectionStatusType.disconnected),
+        );
+        await tester.pump();
+
+        // 2. Multiple reconnect attempts
+        for (int attempt = 1; attempt <= 5; attempt++) {
+          controller.add(
+            MockConnectionStatus(
+              type: ConnectionStatusType.reconnecting,
+              attempt: attempt,
+              maxAttempts: 5,
+            ),
+          );
+          await tester.pump();
+        }
+
+        // 3. All attempts fail
+        controller.add(
+          MockConnectionStatus(
+            type: ConnectionStatusType.reconnectFailed,
+            failureReason: 'Maximum retry attempts exceeded',
+          ),
+        );
+        await tester.pump();
+
+        // Assert - flow completes without errors
+        expect(find.byType(ConnectionBanner), findsOneWidget);
+
+        // Cleanup
+        await controller.close();
+      },
+    );
   });
 }

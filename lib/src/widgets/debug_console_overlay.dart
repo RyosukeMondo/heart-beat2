@@ -8,10 +8,7 @@ class DebugConsoleOverlay extends StatefulWidget {
   /// The child widget to wrap.
   final Widget child;
 
-  const DebugConsoleOverlay({
-    super.key,
-    required this.child,
-  });
+  const DebugConsoleOverlay({super.key, required this.child});
 
   @override
   State<DebugConsoleOverlay> createState() => _DebugConsoleOverlayState();
@@ -76,9 +73,7 @@ class _DebugConsoleOverlayState extends State<DebugConsoleOverlay> {
   /// Show debug console overlay.
   void _showOverlay() {
     _overlayEntry = OverlayEntry(
-      builder: (context) => _ConsoleOverlayWidget(
-        onClose: _toggleConsole,
-      ),
+      builder: (context) => _ConsoleOverlayWidget(onClose: _toggleConsole),
     );
 
     Overlay.of(context).insert(_overlayEntry!);
@@ -110,9 +105,7 @@ class _DebugConsoleOverlayState extends State<DebugConsoleOverlay> {
 class _ConsoleOverlayWidget extends StatefulWidget {
   final VoidCallback onClose;
 
-  const _ConsoleOverlayWidget({
-    required this.onClose,
-  });
+  const _ConsoleOverlayWidget({required this.onClose});
 
   @override
   State<_ConsoleOverlayWidget> createState() => _ConsoleOverlayWidgetState();
@@ -133,9 +126,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
         Positioned.fill(
           child: GestureDetector(
             onTap: widget.onClose,
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.3),
-            ),
+            child: Container(color: Colors.black.withValues(alpha: 0.3)),
           ),
         ),
 
@@ -154,7 +145,10 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
                   setState(() {
                     // Update position based on drag
                     final delta = details.delta.dy / screenHeight;
-                    _verticalPosition = (_verticalPosition - delta).clamp(0.2, 0.8);
+                    _verticalPosition = (_verticalPosition - delta).clamp(
+                      0.2,
+                      0.8,
+                    );
                   });
                 },
                 onVerticalDragEnd: (details) {},
@@ -175,9 +169,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
               ),
 
               // Debug console
-              Expanded(
-                child: DebugConsole(onClose: widget.onClose),
-              ),
+              Expanded(child: DebugConsole(onClose: widget.onClose)),
             ],
           ),
         ),

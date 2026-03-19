@@ -29,7 +29,9 @@ void main() {
       expect(find.byKey(const Key('hrDisplay')), findsOneWidget);
     });
 
-    testWidgets('renders normal resting HR (60 BPM)', (WidgetTester tester) async {
+    testWidgets('renders normal resting HR (60 BPM)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 60);
 
@@ -44,10 +46,15 @@ void main() {
       final bpmText = tester.widget<Text>(find.text('60'));
       expect(bpmText.style?.fontSize, equals(72));
       expect(bpmText.style?.fontWeight, equals(FontWeight.bold));
-      expect(bpmText.style?.fontFeatures, contains(const FontFeature.tabularFigures()));
+      expect(
+        bpmText.style?.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
     });
 
-    testWidgets('renders moderate exercise HR (120 BPM)', (WidgetTester tester) async {
+    testWidgets('renders moderate exercise HR (120 BPM)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 120);
 
@@ -59,7 +66,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('renders high intensity HR (200 BPM)', (WidgetTester tester) async {
+    testWidgets('renders high intensity HR (200 BPM)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 200);
 
@@ -71,7 +80,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('renders maximum device value (255 BPM)', (WidgetTester tester) async {
+    testWidgets('renders maximum device value (255 BPM)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 255);
 
@@ -83,7 +94,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('displays BPM label with correct styling', (WidgetTester tester) async {
+    testWidgets('displays BPM label with correct styling', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 100);
 
@@ -96,7 +109,9 @@ void main() {
       expect(bpmLabel.style?.fontWeight, equals(FontWeight.w300));
     });
 
-    testWidgets('uses Column layout with correct properties', (WidgetTester tester) async {
+    testWidgets('uses Column layout with correct properties', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 75);
 
@@ -109,7 +124,9 @@ void main() {
       expect(column.children.length, equals(2));
     });
 
-    testWidgets('renders single digit BPM correctly', (WidgetTester tester) async {
+    testWidgets('renders single digit BPM correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 5);
 
@@ -121,7 +138,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('renders double digit BPM correctly', (WidgetTester tester) async {
+    testWidgets('renders double digit BPM correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 42);
 
@@ -133,7 +152,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('renders triple digit BPM correctly', (WidgetTester tester) async {
+    testWidgets('renders triple digit BPM correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 142);
 
@@ -145,7 +166,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('uses tabular figures font feature for consistent width', (WidgetTester tester) async {
+    testWidgets('uses tabular figures font feature for consistent width', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget1 = HrDisplay(bpm: 111);
       const widget2 = HrDisplay(bpm: 222);
@@ -158,11 +181,19 @@ void main() {
       final text2 = tester.widget<Text>(find.text('222'));
 
       // Assert - both should use tabular figures for consistent width
-      expect(text1.style?.fontFeatures, contains(const FontFeature.tabularFigures()));
-      expect(text2.style?.fontFeatures, contains(const FontFeature.tabularFigures()));
+      expect(
+        text1.style?.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
+      expect(
+        text2.style?.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
     });
 
-    testWidgets('widget tree structure is correct', (WidgetTester tester) async {
+    testWidgets('widget tree structure is correct', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 85);
 
@@ -174,19 +205,24 @@ void main() {
       expect(find.byType(HrDisplay), findsOneWidget);
 
       // Verify Column exists
-      expect(find.descendant(
-        of: find.byType(HrDisplay),
-        matching: find.byType(Column),
-      ), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(HrDisplay),
+          matching: find.byType(Column),
+        ),
+        findsOneWidget,
+      );
 
       // Verify two Text widgets inside Column
-      expect(find.descendant(
-        of: find.byType(Column),
-        matching: find.byType(Text),
-      ), findsNWidgets(2));
+      expect(
+        find.descendant(of: find.byType(Column), matching: find.byType(Text)),
+        findsNWidgets(2),
+      );
     });
 
-    testWidgets('updates correctly when BPM changes', (WidgetTester tester) async {
+    testWidgets('updates correctly when BPM changes', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const initialBpm = 60;
       const updatedBpm = 120;
@@ -204,30 +240,32 @@ void main() {
       expect(find.text('60'), findsNothing);
     });
 
-    testWidgets('renders in dark theme without errors', (WidgetTester tester) async {
+    testWidgets('renders in dark theme without errors', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 90);
 
       // Act
-      await tester.pumpWidget(testWrapperWithTheme(
-        child: widget,
-        theme: ThemeData.dark(),
-      ));
+      await tester.pumpWidget(
+        testWrapperWithTheme(child: widget, theme: ThemeData.dark()),
+      );
 
       // Assert
       expect(find.text('90'), findsOneWidget);
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('renders in light theme without errors', (WidgetTester tester) async {
+    testWidgets('renders in light theme without errors', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 90);
 
       // Act
-      await tester.pumpWidget(testWrapperWithTheme(
-        child: widget,
-        theme: ThemeData.light(),
-      ));
+      await tester.pumpWidget(
+        testWrapperWithTheme(child: widget, theme: ThemeData.light()),
+      );
 
       // Assert
       expect(find.text('90'), findsOneWidget);
@@ -246,7 +284,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('boundary value: 254 BPM (one below max)', (WidgetTester tester) async {
+    testWidgets('boundary value: 254 BPM (one below max)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 254);
 
@@ -258,7 +298,9 @@ void main() {
       expect(find.text('BPM'), findsOneWidget);
     });
 
-    testWidgets('typical zone 1 value (50-60% max HR)', (WidgetTester tester) async {
+    testWidgets('typical zone 1 value (50-60% max HR)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 110); // ~55% of 200 max
 
@@ -269,7 +311,9 @@ void main() {
       expect(find.text('110'), findsOneWidget);
     });
 
-    testWidgets('typical zone 2 value (60-70% max HR)', (WidgetTester tester) async {
+    testWidgets('typical zone 2 value (60-70% max HR)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 130); // ~65% of 200 max
 
@@ -280,7 +324,9 @@ void main() {
       expect(find.text('130'), findsOneWidget);
     });
 
-    testWidgets('typical zone 3 value (70-80% max HR)', (WidgetTester tester) async {
+    testWidgets('typical zone 3 value (70-80% max HR)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 150); // ~75% of 200 max
 
@@ -291,7 +337,9 @@ void main() {
       expect(find.text('150'), findsOneWidget);
     });
 
-    testWidgets('typical zone 4 value (80-90% max HR)', (WidgetTester tester) async {
+    testWidgets('typical zone 4 value (80-90% max HR)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 170); // ~85% of 200 max
 
@@ -302,7 +350,9 @@ void main() {
       expect(find.text('170'), findsOneWidget);
     });
 
-    testWidgets('typical zone 5 value (90-100% max HR)', (WidgetTester tester) async {
+    testWidgets('typical zone 5 value (90-100% max HR)', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       const widget = HrDisplay(bpm: 190); // ~95% of 200 max
 

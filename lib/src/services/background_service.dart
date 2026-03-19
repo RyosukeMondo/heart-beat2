@@ -89,10 +89,7 @@ class BackgroundService {
   /// Update the notification with current BPM and optional zone.
   void updateBpm(int bpm, {String? zone}) {
     final service = FlutterBackgroundService();
-    service.invoke('updateBpm', {
-      'bpm': bpm,
-      if (zone != null) 'zone': zone,
-    });
+    service.invoke('updateBpm', {'bpm': bpm, if (zone != null) 'zone': zone});
   }
 
   /// Check if the service is currently running.

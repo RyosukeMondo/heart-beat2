@@ -4,9 +4,7 @@ import 'package:heart_beat/src/widgets/plan_selector.dart';
 import '../helpers/test_helpers.dart';
 
 /// Create a bottom sheet wrapper with larger test surface to avoid overflow
-Widget bottomSheetWrapperLarge({
-  required WidgetBuilder builder,
-}) {
+Widget bottomSheetWrapperLarge({required WidgetBuilder builder}) {
   return MaterialApp(
     home: Builder(
       builder: (context) {
@@ -57,9 +55,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pump();
 
@@ -79,9 +75,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -92,7 +86,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('calls onSelect callback when plan is tapped', (WidgetTester tester) async {
+    testWidgets('calls onSelect callback when plan is tapped', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final callback = MockCallback<String>();
       final plans = ['Plan A', 'Plan B', 'Plan C'];
@@ -102,9 +98,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -118,7 +112,9 @@ void main() {
       expect(callback.callCount, equals(1));
     });
 
-    testWidgets('closes bottom sheet after plan selection', (WidgetTester tester) async {
+    testWidgets('closes bottom sheet after plan selection', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final plans = ['Quick Plan'];
       final widget = PlanSelector(
@@ -127,9 +123,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -146,29 +140,33 @@ void main() {
       expect(find.text('Select Training Plan'), findsNothing);
     });
 
-    testWidgets('renders empty state when no plans available', (WidgetTester tester) async {
+    testWidgets('renders empty state when no plans available', (
+      WidgetTester tester,
+    ) async {
       // Arrange
-      final widget = PlanSelector(
-        onSelect: (_) {},
-        planLoader: () async => [],
-      );
+      final widget = PlanSelector(onSelect: (_) {}, planLoader: () async => []);
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapperLarge(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(
+        bottomSheetWrapperLarge(builder: (context) => widget),
+      );
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
       // Assert - should show empty state
       expect(find.text('No Plans Found'), findsOneWidget);
-      expect(find.text('Training plans should be placed in:\n~/.heart-beat/plans/'), findsOneWidget);
+      expect(
+        find.text('Training plans should be placed in:\n~/.heart-beat/plans/'),
+        findsOneWidget,
+      );
       expect(find.byIcon(Icons.folder_open), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.byType(ListTile), findsNothing);
     });
 
-    testWidgets('renders error state when plan loading fails', (WidgetTester tester) async {
+    testWidgets('renders error state when plan loading fails', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final widget = PlanSelector(
         onSelect: (_) {},
@@ -178,21 +176,26 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapperLarge(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(
+        bottomSheetWrapperLarge(builder: (context) => widget),
+      );
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
       // Assert - should show error state
       expect(find.text('Failed to load plans'), findsOneWidget);
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
-      expect(find.text('Exception: Failed to load plans from filesystem'), findsOneWidget);
+      expect(
+        find.text('Exception: Failed to load plans from filesystem'),
+        findsOneWidget,
+      );
       expect(find.text('Retry'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('retry button reloads plans after error', (WidgetTester tester) async {
+    testWidgets('retry button reloads plans after error', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       int attemptCount = 0;
       final widget = PlanSelector(
@@ -207,9 +210,9 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapperLarge(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(
+        bottomSheetWrapperLarge(builder: (context) => widget),
+      );
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -227,7 +230,9 @@ void main() {
       expect(attemptCount, equals(2));
     });
 
-    testWidgets('renders title and icon correctly', (WidgetTester tester) async {
+    testWidgets('renders title and icon correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final widget = PlanSelector(
         onSelect: (_) {},
@@ -235,9 +240,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -246,7 +249,9 @@ void main() {
       expect(find.byIcon(Icons.fitness_center), findsOneWidget);
     });
 
-    testWidgets('renders ListTile with correct icons for each plan', (WidgetTester tester) async {
+    testWidgets('renders ListTile with correct icons for each plan', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final plans = ['Plan 1', 'Plan 2'];
       final widget = PlanSelector(
@@ -255,9 +260,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -277,9 +280,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -294,7 +295,9 @@ void main() {
       expect(callback.lastArg, equals('Only Plan'));
     });
 
-    testWidgets('handles many plans with scrolling', (WidgetTester tester) async {
+    testWidgets('handles many plans with scrolling', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final plans = List.generate(20, (i) => 'Plan ${i + 1}');
       final widget = PlanSelector(
@@ -303,9 +306,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -317,18 +318,22 @@ void main() {
       expect(find.byType(ListTile), findsWidgets);
     });
 
-    testWidgets('multiple selections fire callback each time', (WidgetTester tester) async {
+    testWidgets('multiple selections fire callback each time', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final callback = MockCallback<String>();
       final plans = ['Plan A', 'Plan B'];
 
       // Act & Assert - First selection
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => PlanSelector(
-          onSelect: callback.call,
-          planLoader: () async => plans,
+      await tester.pumpWidget(
+        bottomSheetWrapper(
+          builder: (context) => PlanSelector(
+            onSelect: callback.call,
+            planLoader: () async => plans,
+          ),
         ),
-      ));
+      );
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Plan A'));
@@ -347,7 +352,9 @@ void main() {
       expect(callback.lastArg, equals('Plan B'));
     });
 
-    testWidgets('plan names with special characters render correctly', (WidgetTester tester) async {
+    testWidgets('plan names with special characters render correctly', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final plans = [
         '5K-Fast-Finish',
@@ -360,9 +367,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -372,7 +377,9 @@ void main() {
       expect(find.text('Half-Marathon (Beginner)'), findsOneWidget);
     });
 
-    testWidgets('widget tree structure is correct', (WidgetTester tester) async {
+    testWidgets('widget tree structure is correct', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final widget = PlanSelector(
         onSelect: (_) {},
@@ -380,9 +387,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 
@@ -393,7 +398,9 @@ void main() {
       expect(find.byType(Divider), findsOneWidget);
     });
 
-    testWidgets('loading state shows only spinner, no plans', (WidgetTester tester) async {
+    testWidgets('loading state shows only spinner, no plans', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final widget = PlanSelector(
         onSelect: (_) {},
@@ -405,9 +412,7 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapper(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(bottomSheetWrapper(builder: (context) => widget));
       await tester.tap(find.text('Show'));
       await tester.pump(); // Pump once to show loading state
       await tester.pump(const Duration(milliseconds: 10)); // Pump a bit more
@@ -420,7 +425,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('error message displays full exception text', (WidgetTester tester) async {
+    testWidgets('error message displays full exception text', (
+      WidgetTester tester,
+    ) async {
       // Arrange
       final errorMessage = 'File not found';
       final widget = PlanSelector(
@@ -431,9 +438,9 @@ void main() {
       );
 
       // Act
-      await tester.pumpWidget(bottomSheetWrapperLarge(
-        builder: (context) => widget,
-      ));
+      await tester.pumpWidget(
+        bottomSheetWrapperLarge(builder: (context) => widget),
+      );
       await tester.tap(find.text('Show'));
       await tester.pumpAndSettle();
 

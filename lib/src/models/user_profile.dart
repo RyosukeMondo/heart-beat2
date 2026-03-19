@@ -124,16 +124,13 @@ class UserProfile {
   UserProfile({
     required int maxHr,
     int? age,
-    bool useAgeBased = false,
-    CustomZones? customZones,
-    bool audioFeedbackEnabled = true,
+    this.useAgeBased = false,
+    this.customZones,
+    this.audioFeedbackEnabled = true,
     double audioVolume = 0.7,
-  })  : _maxHr = maxHr,
-        _age = age,
-        useAgeBased = useAgeBased,
-        customZones = customZones,
-        audioFeedbackEnabled = audioFeedbackEnabled,
-        _audioVolume = audioVolume {
+  }) : _maxHr = maxHr,
+       _age = age,
+       _audioVolume = audioVolume {
     // Validate in constructor
     if (maxHr < 100 || maxHr > 220) {
       throw ArgumentError('Max heart rate must be between 100 and 220');
@@ -153,10 +150,7 @@ class UserProfile {
 
   /// Create a default profile
   factory UserProfile.defaults() {
-    return UserProfile(
-      maxHr: 180,
-      useAgeBased: false,
-    );
+    return UserProfile(maxHr: 180, useAgeBased: false);
   }
 
   /// Create UserProfile from JSON

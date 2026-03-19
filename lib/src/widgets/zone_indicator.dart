@@ -9,10 +9,7 @@ class ZoneIndicator extends StatelessWidget {
   /// The current training zone.
   final Zone zone;
 
-  const ZoneIndicator({
-    super.key,
-    required this.zone,
-  });
+  const ZoneIndicator({super.key, required this.zone});
 
   @override
   Widget build(BuildContext context) {

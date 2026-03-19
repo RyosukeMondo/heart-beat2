@@ -30,10 +30,12 @@ void main() {
 
       // Assert
       final sizedBox = tester.widget<SizedBox>(
-        find.descendant(
-          of: find.byType(MaterialApp),
-          matching: find.byType(SizedBox),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(MaterialApp),
+              matching: find.byType(SizedBox),
+            )
+            .first,
       );
       expect(sizedBox.width, equals(800));
       expect(sizedBox.height, equals(600));
@@ -44,18 +46,18 @@ void main() {
       const testWidget = Text('Test');
 
       // Act
-      await tester.pumpWidget(goldenWrapperWithSize(
-        child: testWidget,
-        width: 400,
-        height: 300,
-      ));
+      await tester.pumpWidget(
+        goldenWrapperWithSize(child: testWidget, width: 400, height: 300),
+      );
 
       // Assert
       final sizedBox = tester.widget<SizedBox>(
-        find.descendant(
-          of: find.byType(MaterialApp),
-          matching: find.byType(SizedBox),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(MaterialApp),
+              matching: find.byType(SizedBox),
+            )
+            .first,
       );
       expect(sizedBox.width, equals(400));
       expect(sizedBox.height, equals(300));
@@ -111,7 +113,9 @@ void main() {
       expect(tester.view.physicalSize, isNot(equals(const Size(800, 600))));
     });
 
-    testWidgets('defaultDarkTheme matches app.dart configuration', (tester) async {
+    testWidgets('defaultDarkTheme matches app.dart configuration', (
+      tester,
+    ) async {
       // Arrange
       final theme = defaultDarkTheme();
 
@@ -120,11 +124,19 @@ void main() {
       expect(theme.useMaterial3, isTrue);
       // Verify it's based on red seed color by checking primary color has red hue
       final primary = theme.colorScheme.primary;
-      expect((primary.r * 255.0).round(), greaterThan((primary.b * 255.0).round()));
-      expect((primary.r * 255.0).round(), greaterThan((primary.g * 255.0).round()));
+      expect(
+        (primary.r * 255.0).round(),
+        greaterThan((primary.b * 255.0).round()),
+      );
+      expect(
+        (primary.r * 255.0).round(),
+        greaterThan((primary.g * 255.0).round()),
+      );
     });
 
-    testWidgets('goldenWrapper applies custom theme when provided', (tester) async {
+    testWidgets('goldenWrapper applies custom theme when provided', (
+      tester,
+    ) async {
       // Arrange
       const testWidget = Text('Test');
       final customTheme = ThemeData(

@@ -151,9 +151,9 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           children: [
             Text(
               _planName!,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Row(
@@ -188,18 +188,14 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
-                  statusIcon,
-                  size: 16,
-                  color: statusColor,
-                ),
+                Icon(statusIcon, size: 16, color: statusColor),
                 const SizedBox(width: 8),
                 Text(
                   _status!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: statusColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: statusColor,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -219,9 +215,9 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           children: [
             Text(
               'Summary',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -268,24 +264,20 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
   }) {
     return Column(
       children: [
-        Icon(
-          icon,
-          size: 32,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 8),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -301,8 +293,8 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
             child: Text(
               'No heart rate data available',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ),
@@ -327,9 +319,9 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           children: [
             Text(
               'Heart Rate Over Time',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -342,19 +334,17 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                     horizontalInterval: 20,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withValues(alpha: 0.2),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.2),
                         strokeWidth: 1,
                       );
                     },
                     getDrawingVerticalLine: (value) {
                       return FlLine(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withValues(alpha: 0.2),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.2),
                         strokeWidth: 1,
                       );
                     },
@@ -416,10 +406,9 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: 0.2),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.2),
                       ),
                     ),
                   ],
@@ -475,15 +464,16 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           children: [
             Text(
               'Time in Heart Rate Zones',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...List.generate(5, (index) {
               final time = _timeInZone![index];
-              final percentage =
-                  (time / _durationSecs! * 100).toStringAsFixed(1);
+              final percentage = (time / _durationSecs! * 100).toStringAsFixed(
+                1,
+              );
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -499,18 +489,17 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                         ),
                         Text(
                           '${_formatDuration(time)} ($percentage%)',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     LinearProgressIndicator(
                       value: time / _durationSecs!,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         zoneColors[index],
                       ),
@@ -572,7 +561,10 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
   }
 
   Future<void> _shareFile(
-      String content, String extension, String mimeType) async {
+    String content,
+    String extension,
+    String mimeType,
+  ) async {
     try {
       // Get temporary directory
       final tempDir = await getTemporaryDirectory();
@@ -617,10 +609,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
 
   void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 
@@ -637,9 +626,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                     child: SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   )
                 : PopupMenuButton<ExportFormat>(
@@ -683,76 +670,73 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error!,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Go Back'),
-                        ),
-                      ],
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Go Back'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : _planName == null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Session not found',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
-                )
-              : _planName == null
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 64,
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Session not found',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: () => Navigator.of(context).pop(),
-                            icon: const Icon(Icons.arrow_back),
-                            label: const Text('Go Back'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildHeader(),
-                          _buildSummaryCard(),
-                          _buildHrChart(),
-                          _buildTimeInZone(),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Go Back'),
+                  ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeader(),
+                  _buildSummaryCard(),
+                  _buildHrChart(),
+                  _buildTimeInZone(),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
     );
   }
 }

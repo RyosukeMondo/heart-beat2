@@ -8,10 +8,7 @@ class HrDisplay extends StatelessWidget {
   /// The heart rate in beats per minute.
   final int bpm;
 
-  const HrDisplay({
-    super.key,
-    required this.bpm,
-  });
+  const HrDisplay({super.key, required this.bpm});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +26,7 @@ class HrDisplay extends StatelessWidget {
         ),
         const Text(
           'BPM',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w300,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300),
         ),
       ],
     );

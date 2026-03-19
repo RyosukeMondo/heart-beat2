@@ -19,10 +19,7 @@ class WorkoutScreen extends StatefulWidget {
   /// The name of the training plan to execute.
   final String planName;
 
-  const WorkoutScreen({
-    super.key,
-    required this.planName,
-  });
+  const WorkoutScreen({super.key, required this.planName});
 
   @override
   State<WorkoutScreen> createState() => _WorkoutScreenState();
@@ -82,21 +79,36 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           final state = await api.sessionProgressState(progress: progress);
           final stateString = await api.sessionStateToString(state: state);
           final bpm = await api.sessionProgressCurrentBpm(progress: progress);
-          final phaseProgress = await api.sessionProgressPhaseProgress(progress: progress);
-          final phaseName = await api.phaseProgressPhaseName(progress: phaseProgress);
-          final phaseElapsed = await api.phaseProgressElapsedSecs(progress: phaseProgress);
-          final phaseRemaining = await api.phaseProgressRemainingSecs(progress: phaseProgress);
-          final totalElapsed = await api.sessionProgressTotalElapsedSecs(progress: progress);
-          final totalRemaining = await api.sessionProgressTotalRemainingSecs(progress: progress);
-          final zoneStatusObj = await api.sessionProgressZoneStatus(progress: progress);
-          final targetZone = await api.phaseProgressTargetZone(progress: phaseProgress);
+          final phaseProgress = await api.sessionProgressPhaseProgress(
+            progress: progress,
+          );
+          final phaseName = await api.phaseProgressPhaseName(
+            progress: phaseProgress,
+          );
+          final phaseElapsed = await api.phaseProgressElapsedSecs(
+            progress: phaseProgress,
+          );
+          final phaseRemaining = await api.phaseProgressRemainingSecs(
+            progress: phaseProgress,
+          );
+          final totalRemaining = await api.sessionProgressTotalRemainingSecs(
+            progress: progress,
+          );
+          final zoneStatusObj = await api.sessionProgressZoneStatus(
+            progress: progress,
+          );
+          final targetZone = await api.phaseProgressTargetZone(
+            progress: phaseProgress,
+          );
 
           if (!mounted) return;
 
           // Check zone status for audio feedback
           final isInZone = await api.zoneStatusIsInZone(status: zoneStatusObj);
           final isTooLow = await api.zoneStatusIsTooLow(status: zoneStatusObj);
-          final isTooHigh = await api.zoneStatusIsTooHigh(status: zoneStatusObj);
+          final isTooHigh = await api.zoneStatusIsTooHigh(
+            status: zoneStatusObj,
+          );
 
           // Trigger audio feedback for zone deviations
           if (!isInZone) {
@@ -110,7 +122,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           }
 
           // Trigger audio feedback for phase transitions
-          if (_previousPhaseName.isNotEmpty && _previousPhaseName != phaseName) {
+          if (_previousPhaseName.isNotEmpty &&
+              _previousPhaseName != phaseName) {
             AudioFeedbackService.instance.playPhaseTransition();
           }
 
@@ -168,9 +181,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       await api.pauseWorkout();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pause: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pause: $e')));
     }
   }
 
@@ -179,9 +192,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       await api.resumeWorkout();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to resume: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to resume: $e')));
     }
   }
 
@@ -193,9 +206,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to stop: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to stop: $e')));
     }
   }
 
@@ -297,8 +310,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 const SizedBox(height: 32),
 
                 // Zone indicator
-                if (_targetZone != null)
-                  ZoneIndicator(zone: _targetZone!),
+                if (_targetZone != null) ZoneIndicator(zone: _targetZone!),
 
                 const SizedBox(height: 32),
 
@@ -329,8 +341,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 Text(
                   _currentState,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

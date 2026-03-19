@@ -43,7 +43,8 @@ class _SessionScreenState extends State<SessionScreen> {
     _profileService.loadProfile();
 
     // Get route arguments
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null) {
       final deviceId = args['device_id'] as String;
       _deviceName = args['device_name'] as String?;
@@ -111,7 +112,9 @@ class _SessionScreenState extends State<SessionScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Disconnect Device'),
-        content: const Text('Are you sure you want to disconnect? This will end your current session.'),
+        content: const Text(
+          'Are you sure you want to disconnect? This will end your current session.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -193,9 +196,14 @@ class _SessionScreenState extends State<SessionScreen> {
                 PlanSelector.show(
                   context,
                   onSelect: (planName) {
-                    debugPrint('SessionScreen: Plan selected callback: $planName');
+                    debugPrint(
+                      'SessionScreen: Plan selected callback: $planName',
+                    );
                     // Use rootNavigator to escape the modal bottom sheet context
-                    Navigator.of(context, rootNavigator: true).pushNamed('/workout/$planName');
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).pushNamed('/workout/$planName');
                   },
                 );
               },
@@ -249,18 +257,14 @@ class _SessionScreenState extends State<SessionScreen> {
     }
 
     if (_hrStream == null) {
-      return const Center(
-        child: Text('No HR stream available'),
-      );
+      return const Center(child: Text('No HR stream available'));
     }
 
     return StreamBuilder<api.ApiFilteredHeartRate>(
       stream: _hrStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
         if (!snapshot.hasData) {
@@ -284,7 +288,10 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
-  Widget _buildHrDisplay(api.ApiFilteredHeartRate data, ColorScheme colorScheme) {
+  Widget _buildHrDisplay(
+    api.ApiFilteredHeartRate data,
+    ColorScheme colorScheme,
+  ) {
     return FutureBuilder<Map<String, dynamic>>(
       future: _extractHrData(data),
       builder: (context, snapshot) {
@@ -335,14 +342,13 @@ class _SessionScreenState extends State<SessionScreen> {
     );
   }
 
-  Future<Map<String, dynamic>> _extractHrData(api.ApiFilteredHeartRate data) async {
+  Future<Map<String, dynamic>> _extractHrData(
+    api.ApiFilteredHeartRate data,
+  ) async {
     final bpm = await api.hrFilteredBpm(data: data);
     // Use ProfileService to calculate zone based on user's profile settings
     final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
 
-    return {
-      'bpm': bpm,
-      'zone': zone,
-    };
+    return {'bpm': bpm, 'zone': zone};
   }
 }

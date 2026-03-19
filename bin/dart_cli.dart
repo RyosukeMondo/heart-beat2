@@ -27,29 +27,59 @@ Future<void> main(List<String> arguments) async {
 
   // Add subcommands (will be implemented in subsequent tasks)
   final scanParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for scan command');
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for scan command',
+    );
   parser.addCommand('scan', scanParser);
 
   final connectParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for connect command')
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for connect command',
+    )
     ..addOption('device', abbr: 'd', help: 'Device ID to connect to');
   parser.addCommand('connect', connectParser);
 
   final listPlansParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for list-plans command');
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for list-plans command',
+    );
   parser.addCommand('list-plans', listPlansParser);
 
   final startWorkoutParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for start-workout command')
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for start-workout command',
+    )
     ..addOption('plan', abbr: 'p', help: 'Name of the training plan');
   parser.addCommand('start-workout', startWorkoutParser);
 
   final historyParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for history command');
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for history command',
+    );
   parser.addCommand('history', historyParser);
 
   final profileParser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help for profile command')
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show help for profile command',
+    )
     ..addOption('age', help: 'Set age')
     ..addOption('max-hr', help: 'Set maximum heart rate');
   parser.addCommand('profile', profileParser);
@@ -90,21 +120,33 @@ Future<void> main(List<String> arguments) async {
 
       case 'connect':
         if (commandHelp) {
-          printCommandHelp('connect', 'Connect to a BLE device and stream HR data', connectParser);
+          printCommandHelp(
+            'connect',
+            'Connect to a BLE device and stream HR data',
+            connectParser,
+          );
           exit(0);
         }
         break;
 
       case 'list-plans':
         if (commandHelp) {
-          printCommandHelp('list-plans', 'List available training plans', listPlansParser);
+          printCommandHelp(
+            'list-plans',
+            'List available training plans',
+            listPlansParser,
+          );
           exit(0);
         }
         break;
 
       case 'start-workout':
         if (commandHelp) {
-          printCommandHelp('start-workout', 'Start a workout session', startWorkoutParser);
+          printCommandHelp(
+            'start-workout',
+            'Start a workout session',
+            startWorkoutParser,
+          );
           exit(0);
         }
         break;
@@ -118,7 +160,11 @@ Future<void> main(List<String> arguments) async {
 
       case 'profile':
         if (commandHelp) {
-          printCommandHelp('profile', 'View and modify user profile', profileParser);
+          printCommandHelp(
+            'profile',
+            'View and modify user profile',
+            profileParser,
+          );
           exit(0);
         }
         break;
@@ -142,11 +188,16 @@ Future<void> main(List<String> arguments) async {
         final deviceId = command['device'] as String?;
         if (deviceId == null || command.rest.isNotEmpty) {
           // Support both --device and positional argument
-          final finalDeviceId = deviceId ?? (command.rest.isNotEmpty ? command.rest[0] : null);
+          final finalDeviceId =
+              deviceId ?? (command.rest.isNotEmpty ? command.rest[0] : null);
           if (finalDeviceId == null) {
             stderr.writeln('Error: Device ID is required');
-            stderr.writeln('Usage: dart run bin/dart_cli.dart connect <device_id>');
-            stderr.writeln('   or: dart run bin/dart_cli.dart connect --device <device_id>');
+            stderr.writeln(
+              'Usage: dart run bin/dart_cli.dart connect <device_id>',
+            );
+            stderr.writeln(
+              '   or: dart run bin/dart_cli.dart connect --device <device_id>',
+            );
             exit(1);
           }
           await handleConnectCommand(finalDeviceId);
@@ -163,11 +214,16 @@ Future<void> main(List<String> arguments) async {
         final planName = command['plan'] as String?;
         if (planName == null || command.rest.isNotEmpty) {
           // Support both --plan and positional argument
-          final finalPlanName = planName ?? (command.rest.isNotEmpty ? command.rest[0] : null);
+          final finalPlanName =
+              planName ?? (command.rest.isNotEmpty ? command.rest[0] : null);
           if (finalPlanName == null) {
             stderr.writeln('Error: Plan name is required');
-            stderr.writeln('Usage: dart run bin/dart_cli.dart start-workout <plan_name>');
-            stderr.writeln('   or: dart run bin/dart_cli.dart start-workout --plan <plan_name>');
+            stderr.writeln(
+              'Usage: dart run bin/dart_cli.dart start-workout <plan_name>',
+            );
+            stderr.writeln(
+              '   or: dart run bin/dart_cli.dart start-workout --plan <plan_name>',
+            );
             exit(1);
           }
           await handleStartWorkoutCommand(finalPlanName);
@@ -211,7 +267,8 @@ Future<void> initializeRustBridge() async {
     await initPanicHandler();
 
     // Set data directory for file storage
-    final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+    final homeDir =
+        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
     if (homeDir != null) {
       final dataDir = '$homeDir/.heart_beat';
       final dir = Directory(dataDir);
@@ -248,7 +305,9 @@ void printUsage(ArgParser parser) {
   print('  profile        View and modify user profile\n');
   print('Global options:');
   print(parser.usage);
-  print('\nRun "dart run bin/dart_cli.dart <command> --help" for more information on a command.');
+  print(
+    '\nRun "dart run bin/dart_cli.dart <command> --help" for more information on a command.',
+  );
 }
 
 /// Print command-specific help
@@ -301,7 +360,9 @@ Future<void> handleScanCommand() async {
     stderr.writeln('\nTroubleshooting:');
     stderr.writeln('  - Ensure Bluetooth is enabled');
     stderr.writeln('  - Check that the app has necessary permissions');
-    stderr.writeln('  - On Linux, you may need to run with sudo or add your user to the bluetooth group');
+    stderr.writeln(
+      '  - On Linux, you may need to run with sudo or add your user to the bluetooth group',
+    );
     rethrow;
   }
 }
@@ -359,18 +420,22 @@ Future<void> handleConnectCommand(String deviceId) async {
       final rawBpm = await hrRawBpm(data: hrData);
       final filteredBpm = await hrFilteredBpm(data: hrData);
       final now = DateTime.now();
-      final timeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+      final timeStr =
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 
-      print('$timeStr   | ${rawBpm.toString().padLeft(7)} | ${filteredBpm.toString().padLeft(12)}');
+      print(
+        '$timeStr   | ${rawBpm.toString().padLeft(7)} | ${filteredBpm.toString().padLeft(12)}',
+      );
     }
-
   } catch (e) {
     stderr.writeln('\nError connecting to device: $e');
     stderr.writeln('\nTroubleshooting:');
     stderr.writeln('  - Verify the device ID is correct (use scan command)');
     stderr.writeln('  - Ensure the device is powered on and nearby');
     stderr.writeln('  - Check that Bluetooth is enabled');
-    stderr.writeln('  - Make sure the device is not already connected to another app');
+    stderr.writeln(
+      '  - Make sure the device is not already connected to another app',
+    );
 
     // Try to disconnect cleanly
     try {
@@ -393,7 +458,8 @@ Future<void> handleListPlansCommand() async {
     if (plans.isEmpty) {
       print('No training plans found.');
       print('\nTraining plans should be stored in:');
-      final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+      final homeDir =
+          Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
       if (homeDir != null) {
         print('  $homeDir/.heart_beat/');
       }
@@ -431,7 +497,9 @@ Future<void> handleStartWorkoutCommand(String planName) async {
     final progressStream = createSessionProgressStream();
 
     print('Workout Progress:');
-    print('═══════════════════════════════════════════════════════════════════\n');
+    print(
+      '═══════════════════════════════════════════════════════════════════\n',
+    );
 
     // Set up signal handlers for pause/resume/stop
     bool shouldExit = false;
@@ -458,7 +526,9 @@ Future<void> handleStartWorkoutCommand(String planName) async {
     print('Controls:');
     print('  [p] - Pause/Resume');
     print('  [q] or Ctrl+C - Stop and save');
-    print('─────────────────────────────────────────────────────────────────\n');
+    print(
+      '─────────────────────────────────────────────────────────────────\n',
+    );
 
     // Listen to keyboard input in background
     stdin.listen((List<int> data) async {
@@ -495,12 +565,18 @@ Future<void> handleStartWorkoutCommand(String planName) async {
       if (shouldExit) break;
 
       // Get progress data
-      final phaseProgress = await sessionProgressPhaseProgress(progress: progress);
+      final phaseProgress = await sessionProgressPhaseProgress(
+        progress: progress,
+      );
       final phaseName = await phaseProgressPhaseName(progress: phaseProgress);
       final phaseIndex = await phaseProgressPhaseIndex(progress: phaseProgress);
       final targetZone = await phaseProgressTargetZone(progress: phaseProgress);
-      final elapsedSecs = await phaseProgressElapsedSecs(progress: phaseProgress);
-      final remainingSecs = await phaseProgressRemainingSecs(progress: phaseProgress);
+      final elapsedSecs = await phaseProgressElapsedSecs(
+        progress: phaseProgress,
+      );
+      final remainingSecs = await phaseProgressRemainingSecs(
+        progress: phaseProgress,
+      );
       final currentBpm = await sessionProgressCurrentBpm(progress: progress);
       final zoneStatus = await sessionProgressZoneStatus(progress: progress);
       final isInZone = await zoneStatusIsInZone(status: zoneStatus);
@@ -509,23 +585,30 @@ Future<void> handleStartWorkoutCommand(String planName) async {
       // Print phase change header
       if (lastPhase != phaseName) {
         lastPhase = phaseName;
-        print('\n╔═══════════════════════════════════════════════════════════════╗');
+        print(
+          '\n╔═══════════════════════════════════════════════════════════════╗',
+        );
         print('║  Phase ${phaseIndex + 1}: $phaseName');
         print('║  Target: ${_formatZone(targetZone)}');
-        print('╚═══════════════════════════════════════════════════════════════╝\n');
+        print(
+          '╚═══════════════════════════════════════════════════════════════╝\n',
+        );
       }
 
       // Update progress display (every second)
       updateCount++;
-      if (updateCount % 1 == 0) {  // Update every update
+      if (updateCount % 1 == 0) {
+        // Update every update
         final elapsed = _formatTime(elapsedSecs);
         final remaining = _formatTime(remainingSecs);
         final zoneIndicator = isInZone ? '✓' : '✗';
         final pauseIndicator = isPaused ? ' [PAUSED]' : '';
 
         // Clear line and print update
-        stdout.write('\r${' ' * 100}');  // Clear line
-        stdout.write('\r  $elapsed | BPM: ${currentBpm.toString().padLeft(3)} | $zoneStatusStr $zoneIndicator | Remaining: $remaining$pauseIndicator');
+        stdout.write('\r${' ' * 100}'); // Clear line
+        stdout.write(
+          '\r  $elapsed | BPM: ${currentBpm.toString().padLeft(3)} | $zoneStatusStr $zoneIndicator | Remaining: $remaining$pauseIndicator',
+        );
       }
     }
 
@@ -536,13 +619,16 @@ Future<void> handleStartWorkoutCommand(String planName) async {
       print('╚═══════════════════════════════════════╝\n');
       print('Session saved successfully.');
     }
-
   } catch (e) {
     stderr.writeln('\n\nError during workout: $e');
     stderr.writeln('\nTroubleshooting:');
-    stderr.writeln('  - Verify the plan name is correct (use list-plans command)');
+    stderr.writeln(
+      '  - Verify the plan name is correct (use list-plans command)',
+    );
     stderr.writeln('  - Ensure training plan file is valid JSON');
-    stderr.writeln('  - Check that you are connected to a heart rate monitor (use connect command first)');
+    stderr.writeln(
+      '  - Check that you are connected to a heart rate monitor (use connect command first)',
+    );
 
     // Try to stop workout cleanly
     try {
@@ -597,13 +683,19 @@ Future<void> handleHistoryCommand() async {
     }
 
     print('Workout History (${sessions.length} session(s)):\n');
-    print('═══════════════════════════════════════════════════════════════════════════════');
+    print(
+      '═══════════════════════════════════════════════════════════════════════════════',
+    );
 
     // Create list of sessions with timestamps for sorting
-    final sessionsWithTimestamps = <({ApiSessionSummaryPreview session, int timestamp})>[];
+    final sessionsWithTimestamps =
+        <({ApiSessionSummaryPreview session, int timestamp})>[];
     for (final session in sessions) {
       final startTime = await sessionPreviewStartTime(preview: session);
-      sessionsWithTimestamps.add((session: session, timestamp: startTime.toInt()));
+      sessionsWithTimestamps.add((
+        session: session,
+        timestamp: startTime.toInt(),
+      ));
     }
 
     // Sort by start time (most recent first)
@@ -637,10 +729,11 @@ Future<void> handleHistoryCommand() async {
       print('   ID:       $id');
     }
 
-    print('\n═══════════════════════════════════════════════════════════════════════════════');
+    print(
+      '\n═══════════════════════════════════════════════════════════════════════════════',
+    );
     print('\nTo view detailed session data, use:');
     print('  dart run bin/dart_cli.dart session <id>');
-
   } catch (e) {
     stderr.writeln('Error loading workout history: $e');
     stderr.writeln('\nTroubleshooting:');
@@ -654,8 +747,18 @@ Future<void> handleHistoryCommand() async {
 /// Format date for display (e.g., "Jan 13, 2026")
 String _formatDate(DateTime date) {
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
   return '${months[date.month - 1]} ${date.day}, ${date.year}';
 }
@@ -737,7 +840,6 @@ Future<void> handleProfileCommand({String? age, String? maxHr}) async {
 
     print('Profile updated successfully!\n');
     _displayProfile(updatedProfile);
-
   } catch (e) {
     stderr.writeln('Error managing profile: $e');
     stderr.writeln('\nTroubleshooting:');
@@ -751,7 +853,9 @@ Future<void> handleProfileCommand({String? age, String? maxHr}) async {
 /// Display user profile information
 void _displayProfile(UserProfile profile) {
   print('User Profile:');
-  print('═══════════════════════════════════════════════════════════════════\n');
+  print(
+    '═══════════════════════════════════════════════════════════════════\n',
+  );
 
   // Basic info
   print('Age:              ${profile.age ?? "Not set"}');
@@ -761,7 +865,9 @@ void _displayProfile(UserProfile profile) {
   // Effective max HR
   final effectiveMaxHr = profile.effectiveMaxHr;
   if (profile.useAgeBased && profile.age != null) {
-    print('Effective Max HR: $effectiveMaxHr BPM (calculated: 220 - ${profile.age})');
+    print(
+      'Effective Max HR: $effectiveMaxHr BPM (calculated: 220 - ${profile.age})',
+    );
   } else {
     print('Effective Max HR: $effectiveMaxHr BPM');
   }
@@ -773,9 +879,24 @@ void _displayProfile(UserProfile profile) {
   print('  Using ${isCustom ? "custom" : "default"} zone thresholds\n');
 
   _printZone('Zone 1 (Recovery)', 0, zones.zone1Max, effectiveMaxHr);
-  _printZone('Zone 2 (Fat Burn)', zones.zone1Max, zones.zone2Max, effectiveMaxHr);
-  _printZone('Zone 3 (Aerobic)', zones.zone2Max, zones.zone3Max, effectiveMaxHr);
-  _printZone('Zone 4 (Threshold)', zones.zone3Max, zones.zone4Max, effectiveMaxHr);
+  _printZone(
+    'Zone 2 (Fat Burn)',
+    zones.zone1Max,
+    zones.zone2Max,
+    effectiveMaxHr,
+  );
+  _printZone(
+    'Zone 3 (Aerobic)',
+    zones.zone2Max,
+    zones.zone3Max,
+    effectiveMaxHr,
+  );
+  _printZone(
+    'Zone 4 (Threshold)',
+    zones.zone3Max,
+    zones.zone4Max,
+    effectiveMaxHr,
+  );
   _printZone('Zone 5 (Max)', zones.zone4Max, 100, effectiveMaxHr);
 
   // Audio settings
@@ -783,7 +904,9 @@ void _displayProfile(UserProfile profile) {
   print('  Enabled:  ${profile.audioFeedbackEnabled ? "Yes" : "No"}');
   print('  Volume:   ${(profile.audioVolume * 100).toStringAsFixed(0)}%');
 
-  print('\n═══════════════════════════════════════════════════════════════════');
+  print(
+    '\n═══════════════════════════════════════════════════════════════════',
+  );
   print('\nTo update profile:');
   print('  dart run bin/dart_cli.dart profile --age <age>');
   print('  dart run bin/dart_cli.dart profile --max-hr <bpm>');

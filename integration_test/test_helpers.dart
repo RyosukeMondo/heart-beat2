@@ -72,9 +72,7 @@ Future<void> grantBluetoothPermissionsIfNeeded(
 /// await denyBluetoothPermissionsIfNeeded($);
 /// await expectSnackbarWithText($, 'Bluetooth permissions denied');
 /// ```
-Future<void> denyBluetoothPermissionsIfNeeded(
-  PatrolIntegrationTester $,
-) async {
+Future<void> denyBluetoothPermissionsIfNeeded(PatrolIntegrationTester $) async {
   if (await $.native.isPermissionDialogVisible()) {
     await $.native.denyPermission();
   }
@@ -281,10 +279,7 @@ Future<void> enterTextInField(
 /// ```dart
 /// await tapButtonWithText($, 'Save Settings');
 /// ```
-Future<void> tapButtonWithText(
-  PatrolIntegrationTester $,
-  String text,
-) async {
+Future<void> tapButtonWithText(PatrolIntegrationTester $, String text) async {
   await $(find.text(text)).tap();
   await $.pumpAndSettle();
 }
@@ -328,10 +323,7 @@ void expectNoWidgetWithKey(PatrolIntegrationTester $, Key key) {
 /// ```dart
 /// await wait($, const Duration(seconds: 2));
 /// ```
-Future<void> wait(
-  PatrolIntegrationTester $,
-  Duration duration,
-) async {
+Future<void> wait(PatrolIntegrationTester $, Duration duration) async {
   await Future.delayed(duration);
   await $.pumpAndSettle();
 }

@@ -28,23 +28,15 @@ class BatteryIndicator extends StatelessWidget {
     return Card(
       color: colorScheme.errorContainer,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.battery_alert,
-              color: colorScheme.onErrorContainer,
-            ),
+            Icon(Icons.battery_alert, color: colorScheme.onErrorContainer),
             const SizedBox(width: 8),
             Text(
               'Battery Low: $batteryLevel%',
-              style: TextStyle(
-                color: colorScheme.onErrorContainer,
-              ),
+              style: TextStyle(color: colorScheme.onErrorContainer),
             ),
           ],
         ),

@@ -56,9 +56,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AudioFeedbackService.instance.volume = profile.audioVolume;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading settings: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading settings: $e')));
         setState(() {
           _maxHrController.text = '180';
           _useAgeBased = false;
@@ -111,9 +111,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving settings: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving settings: $e')));
       }
     } finally {
       if (mounted) {
@@ -175,9 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: const Key('settingsScreen'),
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Form(
@@ -202,7 +200,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             controller: _ageController,
                             decoration: const InputDecoration(
                               labelText: 'Age (optional)',
-                              helperText: 'Used for age-based max HR estimation',
+                              helperText:
+                                  'Used for age-based max HR estimation',
                               suffixText: 'years',
                               border: OutlineInputBorder(),
                             ),
@@ -212,7 +211,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                             validator: _validateAge,
                             onChanged: (value) {
-                              setState(() {}); // Rebuild to update estimated max HR
+                              setState(
+                                () {},
+                              ); // Rebuild to update estimated max HR
                             },
                           ),
                           const SizedBox(height: 16),
@@ -220,9 +221,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           SwitchListTile(
                             key: const Key('useAgeBasedSwitch'),
                             title: const Text('Use age-based max HR'),
-                            subtitle: _useAgeBased && _ageController.text.isNotEmpty
-                                ? Text('Estimated max HR: ${_effectiveMaxHr ?? "--"} BPM')
-                                : const Text('Enable to use age-based calculation (220 - age)'),
+                            subtitle:
+                                _useAgeBased && _ageController.text.isNotEmpty
+                                ? Text(
+                                    'Estimated max HR: ${_effectiveMaxHr ?? "--"} BPM',
+                                  )
+                                : const Text(
+                                    'Enable to use age-based calculation (220 - age)',
+                                  ),
                             value: _useAgeBased,
                             onChanged: _ageController.text.isNotEmpty
                                 ? (value) {
@@ -266,11 +272,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               TextButton.icon(
                                 onPressed: () async {
-                                  final result = await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const ZoneEditorScreen(),
-                                    ),
-                                  );
+                                  final result = await Navigator.of(context)
+                                      .push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ZoneEditorScreen(),
+                                        ),
+                                      );
                                   // Reload profile if zones were changed
                                   if (result == true) {
                                     await _loadProfile();
@@ -471,10 +479,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             width: 16,
             height: 16,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 8),
           Expanded(child: Text(name)),

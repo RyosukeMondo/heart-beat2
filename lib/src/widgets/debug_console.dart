@@ -8,10 +8,7 @@ class DebugConsole extends StatefulWidget {
   /// Callback invoked when the close button is pressed.
   final VoidCallback onClose;
 
-  const DebugConsole({
-    super.key,
-    required this.onClose,
-  });
+  const DebugConsole({super.key, required this.onClose});
 
   @override
   State<DebugConsole> createState() => _DebugConsoleState();
@@ -113,7 +110,9 @@ class _DebugConsoleState extends State<DebugConsole> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
               child: Row(
                 children: [
@@ -149,7 +148,10 @@ class _DebugConsoleState extends State<DebugConsole> {
                       decoration: const InputDecoration(
                         labelText: 'Level',
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                       ),
                       items: [
                         const DropdownMenuItem<String?>(
@@ -194,7 +196,10 @@ class _DebugConsoleState extends State<DebugConsole> {
                       decoration: InputDecoration(
                         labelText: 'Search',
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.clear, size: 18),
@@ -253,7 +258,9 @@ class _DebugConsoleState extends State<DebugConsole> {
                   }
 
                   // Auto-scroll to bottom on new logs
-                  if (snapshot.hasData && _searchQuery.isEmpty && _levelFilter == null) {
+                  if (snapshot.hasData &&
+                      _searchQuery.isEmpty &&
+                      _levelFilter == null) {
                     _scrollToBottom();
                   }
 

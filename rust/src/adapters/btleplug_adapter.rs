@@ -934,9 +934,9 @@ mod tests {
         let stop_result = adapter.stop_scan().await;
 
         // At least one should succeed, or both should provide meaningful errors
-        if start_result.is_err() && stop_result.is_err() {
-            let start_err = start_result.unwrap_err().to_string();
-            let stop_err = stop_result.unwrap_err().to_string();
+        if let (Err(start_err), Err(stop_err)) = (start_result, stop_result) {
+            let start_err = start_err.to_string();
+            let stop_err = stop_err.to_string();
 
             // Errors should be meaningful
             assert!(

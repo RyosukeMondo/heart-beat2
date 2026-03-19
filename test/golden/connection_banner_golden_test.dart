@@ -80,10 +80,7 @@ void main() {
         actions: [
           TextButton(
             onPressed: () {},
-            child: Text(
-              'Retry',
-              style: TextStyle(color: Colors.red.shade900),
-            ),
+            child: Text('Retry', style: TextStyle(color: Colors.red.shade900)),
           ),
         ],
       );
@@ -134,8 +131,9 @@ void main() {
       tearDownGoldenTest(tester);
     });
 
-    testWidgets('renders failed state with unknown error correctly',
-        (tester) async {
+    testWidgets('renders failed state with unknown error correctly', (
+      tester,
+    ) async {
       // Arrange
       setupGoldenTest(tester);
 
@@ -153,10 +151,7 @@ void main() {
         actions: [
           TextButton(
             onPressed: () {},
-            child: Text(
-              'Retry',
-              style: TextStyle(color: Colors.red.shade900),
-            ),
+            child: Text('Retry', style: TextStyle(color: Colors.red.shade900)),
           ),
         ],
       );
@@ -175,8 +170,9 @@ void main() {
       tearDownGoldenTest(tester);
     });
 
-    testWidgets('renders reconnecting with different attempt numbers',
-        (tester) async {
+    testWidgets('renders reconnecting with different attempt numbers', (
+      tester,
+    ) async {
       // Arrange
       setupGoldenTest(tester);
 

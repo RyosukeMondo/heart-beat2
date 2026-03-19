@@ -20,10 +20,7 @@ class ShareService {
   /// Returns a [ShareResult] indicating the outcome of the share action.
   Future<ShareResult> shareText(String text, {String? subject}) async {
     try {
-      final result = await Share.share(
-        text,
-        subject: subject,
-      );
+      final result = await Share.share(text, subject: subject);
 
       if (kDebugMode) {
         debugPrint('ShareService: Text shared with status ${result.status}');
@@ -102,7 +99,9 @@ class ShareService {
         }
       }
 
-      final xFiles = paths.map((path) => XFile(path, mimeType: mimeType)).toList();
+      final xFiles = paths
+          .map((path) => XFile(path, mimeType: mimeType))
+          .toList();
       final result = await Share.shareXFiles(
         xFiles,
         text: text,
@@ -110,7 +109,9 @@ class ShareService {
       );
 
       if (kDebugMode) {
-        debugPrint('ShareService: ${paths.length} files shared with status ${result.status}');
+        debugPrint(
+          'ShareService: ${paths.length} files shared with status ${result.status}',
+        );
       }
 
       return result;

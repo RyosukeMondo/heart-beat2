@@ -18,11 +18,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// await tester.pumpWidget(testWrapper(MyWidget()));
 /// ```
 Widget testWrapper(Widget child) {
-  return MaterialApp(
-    home: Scaffold(
-      body: child,
-    ),
-  );
+  return MaterialApp(home: Scaffold(body: child));
 }
 
 /// Wraps a widget with MaterialApp and custom theme for testing.
@@ -36,15 +32,10 @@ Widget testWrapper(Widget child) {
 ///   theme: ThemeData.dark(),
 /// ));
 /// ```
-Widget testWrapperWithTheme({
-  required Widget child,
-  ThemeData? theme,
-}) {
+Widget testWrapperWithTheme({required Widget child, ThemeData? theme}) {
   return MaterialApp(
     theme: theme ?? ThemeData.light(),
-    home: Scaffold(
-      body: child,
-    ),
+    home: Scaffold(body: child),
   );
 }
 
@@ -59,9 +50,7 @@ Widget testWrapperWithTheme({
 ///   builder: (context) => MyBottomSheet(),
 /// ));
 /// ```
-Widget bottomSheetWrapper({
-  required WidgetBuilder builder,
-}) {
+Widget bottomSheetWrapper({required WidgetBuilder builder}) {
   return MaterialApp(
     home: Builder(
       builder: (context) {
@@ -69,10 +58,7 @@ Widget bottomSheetWrapper({
           body: Center(
             child: ElevatedButton(
               onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: builder,
-                );
+                showModalBottomSheet(context: context, builder: builder);
               },
               child: const Text('Show'),
             ),
@@ -91,10 +77,7 @@ Widget bottomSheetWrapper({
 /// ```dart
 /// await pumpAndSettle(tester, duration: Duration(milliseconds: 500));
 /// ```
-Future<void> pumpAndSettle(
-  WidgetTester tester, {
-  Duration? duration,
-}) async {
+Future<void> pumpAndSettle(WidgetTester tester, {Duration? duration}) async {
   await tester.pump(duration);
   await tester.pumpAndSettle();
 }
@@ -121,8 +104,11 @@ Finder findByKeyAndVerify(String key) {
 /// verifyText('Hello World');
 /// ```
 void verifyText(String text) {
-  expect(find.text(text), findsOneWidget,
-      reason: 'Text "$text" not found in widget tree');
+  expect(
+    find.text(text),
+    findsOneWidget,
+    reason: 'Text "$text" not found in widget tree',
+  );
 }
 
 /// Verifies a widget of specific type exists.
@@ -132,8 +118,11 @@ void verifyText(String text) {
 /// verifyWidgetType<CircularProgressIndicator>();
 /// ```
 void verifyWidgetType<T>() {
-  expect(find.byType(T), findsOneWidget,
-      reason: 'Widget of type ${T.toString()} not found');
+  expect(
+    find.byType(T),
+    findsOneWidget,
+    reason: 'Widget of type ${T.toString()} not found',
+  );
 }
 
 /// Verifies a widget is not present in the tree.
@@ -143,8 +132,11 @@ void verifyWidgetType<T>() {
 /// verifyNotPresent('errorMessage');
 /// ```
 void verifyNotPresent(String text) {
-  expect(find.text(text), findsNothing,
-      reason: 'Text "$text" should not be present');
+  expect(
+    find.text(text),
+    findsNothing,
+    reason: 'Text "$text" should not be present',
+  );
 }
 
 /// Taps a widget and waits for animations to complete.
@@ -165,8 +157,11 @@ Future<void> tapAndSettle(WidgetTester tester, Finder finder) async {
 /// verifyIcon(Icons.error_outline);
 /// ```
 void verifyIcon(IconData iconData) {
-  expect(find.byIcon(iconData), findsOneWidget,
-      reason: 'Icon ${iconData.toString()} not found');
+  expect(
+    find.byIcon(iconData),
+    findsOneWidget,
+    reason: 'Icon ${iconData.toString()} not found',
+  );
 }
 
 /// Mock callback tracker for testing widget callbacks.

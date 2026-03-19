@@ -79,7 +79,9 @@ class AudioFeedbackService {
 
     final now = DateTime.now();
     if (_lastPlaybackTime != null) {
-      final timeSinceLastPlay = now.difference(_lastPlaybackTime!).inMilliseconds;
+      final timeSinceLastPlay = now
+          .difference(_lastPlaybackTime!)
+          .inMilliseconds;
       if (timeSinceLastPlay < _debounceMs) {
         return false;
       }

@@ -10,11 +10,7 @@ class PlanSelector extends StatefulWidget {
   /// If not provided, uses the default Rust FFI listPlans() function.
   final Future<List<String>> Function()? planLoader;
 
-  const PlanSelector({
-    super.key,
-    required this.onSelect,
-    this.planLoader,
-  });
+  const PlanSelector({super.key, required this.onSelect, this.planLoader});
 
   @override
   State<PlanSelector> createState() => _PlanSelectorState();
@@ -109,8 +105,8 @@ class _PlanSelectorState extends State<PlanSelector> {
                   Text(
                     'Select Training Plan',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -119,9 +115,7 @@ class _PlanSelectorState extends State<PlanSelector> {
             const Divider(height: 1),
 
             // Content
-            Expanded(
-              child: _buildContent(scrollController),
-            ),
+            Expanded(child: _buildContent(scrollController)),
           ],
         );
       },
@@ -130,9 +124,7 @@ class _PlanSelectorState extends State<PlanSelector> {
 
   Widget _buildContent(ScrollController scrollController) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
@@ -156,8 +148,8 @@ class _PlanSelectorState extends State<PlanSelector> {
               Text(
                 _error!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  color: Theme.of(context).colorScheme.error,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),

@@ -24,7 +24,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapper(const ZoneIndicator(zone: Zone.zone1)));
+      await tester.pumpWidget(
+        goldenWrapper(const ZoneIndicator(zone: Zone.zone1)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -42,7 +44,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapper(const ZoneIndicator(zone: Zone.zone2)));
+      await tester.pumpWidget(
+        goldenWrapper(const ZoneIndicator(zone: Zone.zone2)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -60,7 +64,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapper(const ZoneIndicator(zone: Zone.zone3)));
+      await tester.pumpWidget(
+        goldenWrapper(const ZoneIndicator(zone: Zone.zone3)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -78,7 +84,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapper(const ZoneIndicator(zone: Zone.zone4)));
+      await tester.pumpWidget(
+        goldenWrapper(const ZoneIndicator(zone: Zone.zone4)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -96,7 +104,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapper(const ZoneIndicator(zone: Zone.zone5)));
+      await tester.pumpWidget(
+        goldenWrapper(const ZoneIndicator(zone: Zone.zone5)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -114,7 +124,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapperDark(const ZoneIndicator(zone: Zone.zone1)));
+      await tester.pumpWidget(
+        goldenWrapperDark(const ZoneIndicator(zone: Zone.zone1)),
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -132,7 +144,9 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapperDark(const ZoneIndicator(zone: Zone.zone5)));
+      await tester.pumpWidget(
+        goldenWrapperDark(const ZoneIndicator(zone: Zone.zone5)),
+      );
       await tester.pumpAndSettle();
 
       // Assert

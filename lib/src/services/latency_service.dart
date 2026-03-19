@@ -79,7 +79,9 @@ class LatencyService {
 
     try {
       // Get the receive timestamp from Rust (microseconds)
-      final receiveTimestampMicros = await hrReceiveTimestampMicros(data: hrData);
+      final receiveTimestampMicros = await hrReceiveTimestampMicros(
+        data: hrData,
+      );
 
       if (receiveTimestampMicros == null) {
         // Timestamp not available, skip this sample
@@ -93,7 +95,8 @@ class LatencyService {
       final latencyMicros = nowMicros - receiveTimestampMicros.toInt();
 
       // Only record positive latencies (sanity check)
-      if (latencyMicros > 0 && latencyMicros < 10000000) { // < 10 seconds
+      if (latencyMicros > 0 && latencyMicros < 10000000) {
+        // < 10 seconds
         _recordLatency(latencyMicros);
       }
     } catch (e) {

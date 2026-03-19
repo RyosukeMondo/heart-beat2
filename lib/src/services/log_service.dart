@@ -20,7 +20,8 @@ class LogService {
   final Queue<LogMessage> _logBuffer = Queue<LogMessage>();
 
   /// Broadcast controller for distributing logs to listeners.
-  final StreamController<LogMessage> _controller = StreamController<LogMessage>.broadcast();
+  final StreamController<LogMessage> _controller =
+      StreamController<LogMessage>.broadcast();
 
   /// Subscription to the Rust log stream.
   StreamSubscription<LogMessage>? _rustSubscription;
@@ -49,8 +50,12 @@ class LogService {
 
     // Print to debug console in debug mode
     if (kDebugMode) {
-      final timestamp = DateTime.fromMillisecondsSinceEpoch(log.timestamp.toInt());
-      debugPrint('[${timestamp.toIso8601String()}] ${log.level} ${log.target}: ${log.message}');
+      final timestamp = DateTime.fromMillisecondsSinceEpoch(
+        log.timestamp.toInt(),
+      );
+      debugPrint(
+        '[${timestamp.toIso8601String()}] ${log.level} ${log.target}: ${log.message}',
+      );
     }
 
     // Broadcast to listeners

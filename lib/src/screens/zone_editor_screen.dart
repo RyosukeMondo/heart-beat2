@@ -42,9 +42,9 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading profile: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading profile: $e')));
         setState(() {
           _isLoading = false;
         });
@@ -81,13 +81,15 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Custom zones saved successfully')),
         );
-        Navigator.of(context).pop(true); // Return true to indicate changes were saved
+        Navigator.of(
+          context,
+        ).pop(true); // Return true to indicate changes were saved
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving zones: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving zones: $e')));
       }
     } finally {
       if (mounted) {
@@ -214,7 +216,12 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
                               });
                             },
                           ),
-                          _buildZoneFinalInfo('Zone 5 (Maximum)', Colors.red, _zone4Max, 100),
+                          _buildZoneFinalInfo(
+                            'Zone 5 (Maximum)',
+                            Colors.red,
+                            _zone4Max,
+                            100,
+                          ),
                         ],
                       ),
                     ),
@@ -276,10 +283,7 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
               Container(
                 width: 16,
                 height: 16,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -308,7 +312,12 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
   }
 
   /// Build info for the final zone (no slider)
-  Widget _buildZoneFinalInfo(String name, Color color, double minValue, double maxValue) {
+  Widget _buildZoneFinalInfo(
+    String name,
+    Color color,
+    double minValue,
+    double maxValue,
+  ) {
     final maxHr = _currentProfile?.effectiveMaxHr ?? 180;
     final minBpm = (maxHr * minValue / 100).round();
     final maxBpm = (maxHr * maxValue / 100).round();
@@ -320,10 +329,7 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
           Container(
             width: 16,
             height: 16,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 8),
           Expanded(

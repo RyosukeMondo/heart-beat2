@@ -22,7 +22,8 @@ class CliProfileService {
 
   /// Get the data directory path
   String _getDataDir() {
-    final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+    final homeDir =
+        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
     if (homeDir == null) {
       throw Exception('Could not determine home directory');
     }

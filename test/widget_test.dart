@@ -17,20 +17,18 @@ import 'helpers/mock_api.dart';
 
 void main() {
   group('Widget Test Infrastructure', () {
-    testWidgets('testWrapper provides MaterialApp context',
-        (WidgetTester tester) async {
+    testWidgets('testWrapper provides MaterialApp context', (
+      WidgetTester tester,
+    ) async {
       // Verify that testWrapper provides necessary context
-      await tester.pumpWidget(
-        testWrapper(
-          const Text('Test Widget'),
-        ),
-      );
+      await tester.pumpWidget(testWrapper(const Text('Test Widget')));
 
       expect(find.text('Test Widget'), findsOneWidget);
     });
 
-    testWidgets('testWrapperWithTheme applies custom theme',
-        (WidgetTester tester) async {
+    testWidgets('testWrapperWithTheme applies custom theme', (
+      WidgetTester tester,
+    ) async {
       final darkTheme = ThemeData.dark();
 
       await tester.pumpWidget(
@@ -52,8 +50,7 @@ void main() {
       expect(find.text('Dark Mode'), findsOneWidget);
     });
 
-    testWidgets('MockCallback tracks invocations',
-        (WidgetTester tester) async {
+    testWidgets('MockCallback tracks invocations', (WidgetTester tester) async {
       final callback = MockCallback<String>();
 
       await tester.pumpWidget(
@@ -76,16 +73,14 @@ void main() {
       expect(callback.lastArg, equals('test-value'));
     });
 
-    testWidgets('MockVoidCallback tracks invocations',
-        (WidgetTester tester) async {
+    testWidgets('MockVoidCallback tracks invocations', (
+      WidgetTester tester,
+    ) async {
       final callback = MockVoidCallback();
 
       await tester.pumpWidget(
         testWrapper(
-          ElevatedButton(
-            onPressed: callback.call,
-            child: const Text('Tap Me'),
-          ),
+          ElevatedButton(onPressed: callback.call, child: const Text('Tap Me')),
         ),
       );
 

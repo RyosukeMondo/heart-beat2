@@ -35,153 +35,148 @@ void main() {
     },
   );
 
-  patrolTest(
-    'Workout execution - verify HR display shows during workout',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+  patrolTest('Workout execution - verify HR display shows during workout', (
+    $,
+  ) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Wait for workout to start
-      await waitForKey($, const Key('workoutScreen'));
+    // Wait for workout to start
+    await waitForKey($, const Key('workoutScreen'));
 
-      // Wait for workout to initialize (starting state)
-      await wait($, const Duration(seconds: 2));
+    // Wait for workout to initialize (starting state)
+    await wait($, const Duration(seconds: 2));
 
-      // Verify HR display appears (either in starting state or active workout)
-      // During starting state, we see "Starting workout..." with loading indicator
-      final startingText = find.text('Starting workout...');
-      final hasStartingText = $(startingText).exists;
+    // Verify HR display appears (either in starting state or active workout)
+    // During starting state, we see "Starting workout..." with loading indicator
+    final startingText = find.text('Starting workout...');
+    final hasStartingText = $(startingText).exists;
 
-      if (hasStartingText) {
-        // Still in starting state
-        expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
-      } else {
-        // Active workout - verify HR display and other workout elements
-        expect($(const Key('hrDisplay')), findsOneWidget);
-        expect($(const Key('zoneIndicator')), findsOneWidget);
-      }
-    },
-  );
+    if (hasStartingText) {
+      // Still in starting state
+      expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
+    } else {
+      // Active workout - verify HR display and other workout elements
+      expect($(const Key('hrDisplay')), findsOneWidget);
+      expect($(const Key('zoneIndicator')), findsOneWidget);
+    }
+  });
 
-  patrolTest(
-    'Workout execution - verify workout controls are present',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+  patrolTest('Workout execution - verify workout controls are present', (
+    $,
+  ) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
 
-      // Wait for workout to get past starting state
-      await wait($, const Duration(seconds: 3));
+    // Wait for workout to get past starting state
+    await wait($, const Duration(seconds: 3));
 
-      // Verify Pause and Stop buttons are present
-      // These appear in the SessionControls widget
-      final pauseButton = find.text('Pause');
-      final stopButton = find.text('Stop');
+    // Verify Pause and Stop buttons are present
+    // These appear in the SessionControls widget
+    final pauseButton = find.text('Pause');
+    final stopButton = find.text('Stop');
 
-      // At least one should be visible (either Pause or Resume depending on state)
-      expect(
-        $(pauseButton).exists || find.text('Resume').evaluate().isNotEmpty,
-        isTrue,
-      );
-      expect(stopButton, findsOneWidget);
-    },
-  );
+    // At least one should be visible (either Pause or Resume depending on state)
+    expect(
+      $(pauseButton).exists || find.text('Resume').evaluate().isNotEmpty,
+      isTrue,
+    );
+    expect(stopButton, findsOneWidget);
+  });
 
-  patrolTest(
-    'Workout execution - pause and resume workout',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+  patrolTest('Workout execution - pause and resume workout', ($) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Wait for workout screen and initialization
-      await waitForKey($, const Key('workoutScreen'));
-      await wait($, const Duration(seconds: 3));
+    // Wait for workout screen and initialization
+    await waitForKey($, const Key('workoutScreen'));
+    await wait($, const Duration(seconds: 3));
 
-      // Try to find and tap Pause button
-      final pauseButton = find.text('Pause');
-      if ($(pauseButton).exists) {
-        await tapButtonWithText($, 'Pause');
+    // Try to find and tap Pause button
+    final pauseButton = find.text('Pause');
+    if ($(pauseButton).exists) {
+      await tapButtonWithText($, 'Pause');
 
-        // Wait for pause to take effect
-        await wait($, const Duration(seconds: 1));
+      // Wait for pause to take effect
+      await wait($, const Duration(seconds: 1));
 
-        // Verify Resume button appears
-        expect(find.text('Resume'), findsOneWidget);
+      // Verify Resume button appears
+      expect(find.text('Resume'), findsOneWidget);
 
-        // Resume the workout
-        await tapButtonWithText($, 'Resume');
+      // Resume the workout
+      await tapButtonWithText($, 'Resume');
 
-        // Wait for resume to take effect
-        await wait($, const Duration(seconds: 1));
+      // Wait for resume to take effect
+      await wait($, const Duration(seconds: 1));
 
-        // Verify Pause button appears again
-        expect(find.text('Pause'), findsOneWidget);
-      } else {
-        // If we can't find Pause button, test passes but note it
-        // This might happen if workout initializes too slowly
-        debugPrint('Pause button not found - workout may still be starting');
-      }
-    },
-  );
+      // Verify Pause button appears again
+      expect(find.text('Pause'), findsOneWidget);
+    } else {
+      // If we can't find Pause button, test passes but note it
+      // This might happen if workout initializes too slowly
+      debugPrint('Pause button not found - workout may still be starting');
+    }
+  });
 
-  patrolTest(
-    'Workout execution - stop workout with confirmation',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+  patrolTest('Workout execution - stop workout with confirmation', ($) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
-      await wait($, const Duration(seconds: 2));
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
+    await wait($, const Duration(seconds: 2));
 
-      // Tap Stop button
-      await tapButtonWithText($, 'Stop');
+    // Tap Stop button
+    await tapButtonWithText($, 'Stop');
 
-      // Verify confirmation dialog appears
-      await waitForText($, 'Stop Workout?', timeout: const Duration(seconds: 3));
-      expect(find.text('Stop Workout?'), findsOneWidget);
-      expect(
-        find.text(
-          'Are you sure you want to stop this workout? Your progress will be saved.',
-        ),
-        findsOneWidget,
-      );
+    // Verify confirmation dialog appears
+    await waitForText($, 'Stop Workout?', timeout: const Duration(seconds: 3));
+    expect(find.text('Stop Workout?'), findsOneWidget);
+    expect(
+      find.text(
+        'Are you sure you want to stop this workout? Your progress will be saved.',
+      ),
+      findsOneWidget,
+    );
 
-      // Verify dialog has Cancel and Stop buttons
-      final dialogButtons = find.text('Stop');
-      expect(dialogButtons, findsAtLeastNWidgets(1)); // At least one Stop (could be 2: control + dialog)
-      expect(find.text('Cancel'), findsOneWidget);
+    // Verify dialog has Cancel and Stop buttons
+    final dialogButtons = find.text('Stop');
+    expect(
+      dialogButtons,
+      findsAtLeastNWidgets(1),
+    ); // At least one Stop (could be 2: control + dialog)
+    expect(find.text('Cancel'), findsOneWidget);
 
-      // Cancel the stop
-      await tapButtonWithText($, 'Cancel');
+    // Cancel the stop
+    await tapButtonWithText($, 'Cancel');
 
-      // Verify we're still on workout screen
-      await wait($, const Duration(milliseconds: 500));
-      expectScreen($, const Key('workoutScreen'));
-    },
-  );
+    // Verify we're still on workout screen
+    await wait($, const Duration(milliseconds: 500));
+    expectScreen($, const Key('workoutScreen'));
+  });
 
   patrolTest(
     'Workout execution - confirm stop workout returns to session screen',
@@ -218,157 +213,147 @@ void main() {
     },
   );
 
-  patrolTest(
-    'Workout execution - verify workout displays phase information',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+  patrolTest('Workout execution - verify workout displays phase information', (
+    $,
+  ) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
 
-      // Wait for workout to fully initialize
-      await wait($, const Duration(seconds: 3));
+    // Wait for workout to fully initialize
+    await wait($, const Duration(seconds: 3));
 
-      // Check if we're past the starting state
-      final startingText = find.text('Starting workout...');
-      if (!$(startingText).exists) {
-        // Verify phase progress information is displayed
-        // The PhaseProgressWidget should show phase name and time
-        expect($(const Key('zoneIndicator')), findsOneWidget);
+    // Check if we're past the starting state
+    final startingText = find.text('Starting workout...');
+    if (!$(startingText).exists) {
+      // Verify phase progress information is displayed
+      // The PhaseProgressWidget should show phase name and time
+      expect($(const Key('zoneIndicator')), findsOneWidget);
 
-        // Verify zone indicator is present
-        expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
+      // Verify zone indicator is present
+      expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
 
-        // Verify total time remaining is shown
-        expect(find.textContaining('Total remaining:'), findsOneWidget);
+      // Verify total time remaining is shown
+      expect(find.textContaining('Total remaining:'), findsOneWidget);
+    } else {
+      // Still starting - that's ok, just verify the starting state
+      expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
+    }
+  });
+
+  patrolTest('Workout execution - back navigation returns to session screen', (
+    $,
+  ) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
+
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
+    await wait($, const Duration(seconds: 1));
+
+    // Navigate back using back button
+    await navigateBack($);
+
+    // Verify we're back on session screen
+    await wait($, const Duration(milliseconds: 500));
+    verifySessionScreen($);
+    expectNoWidgetWithKey($, const Key('workoutScreen'));
+  });
+
+  patrolTest('Workout execution - verify AppBar shows plan name', ($) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+
+    // Get the first plan's ListTile to see its name
+    // The plan names come from the backend, so we can't hardcode them
+    // But we know the AppBar should show *some* plan name
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
+
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
+
+    // Verify AppBar exists (it contains the plan name)
+    expect(find.byType(AppBar), findsOneWidget);
+  });
+
+  patrolTest('Workout execution - multiple pause/resume cycles', ($) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
+
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
+    await wait($, const Duration(seconds: 3));
+
+    // Try multiple pause/resume cycles
+    for (int i = 0; i < 2; i++) {
+      // Pause
+      final pauseButton = find.text('Pause');
+      if ($(pauseButton).exists) {
+        await tapButtonWithText($, 'Pause');
+        await wait($, const Duration(milliseconds: 500));
+        expect(find.text('Resume'), findsOneWidget);
+
+        // Resume
+        await tapButtonWithText($, 'Resume');
+        await wait($, const Duration(milliseconds: 500));
+        expect(find.text('Pause'), findsOneWidget);
       } else {
-        // Still starting - that's ok, just verify the starting state
-        expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
+        debugPrint('Pause button not found in cycle $i');
+        break;
       }
-    },
-  );
+    }
 
-  patrolTest(
-    'Workout execution - back navigation returns to session screen',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
+    // Verify we're still on workout screen
+    expectScreen($, const Key('workoutScreen'));
+  });
 
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
-      await wait($, const Duration(seconds: 1));
+  patrolTest('Workout execution - verify workout state indicator', ($) async {
+    // Start workout
+    await performDeviceConnection($);
+    await tapStartWorkout($);
+    await waitForText($, 'Select Training Plan');
+    await $.waitUntilVisible(find.byType(ListTile));
+    await $(find.byType(ListTile).first).tap();
+    await $.pumpAndSettle();
 
-      // Navigate back using back button
-      await navigateBack($);
+    // Wait for workout screen
+    await waitForKey($, const Key('workoutScreen'));
+    await wait($, const Duration(seconds: 3));
 
-      // Verify we're back on session screen
-      await wait($, const Duration(milliseconds: 500));
-      verifySessionScreen($);
-      expectNoWidgetWithKey($, const Key('workoutScreen'));
-    },
-  );
+    // The workout screen shows the current state as text (for debugging)
+    // States can be: "Starting", "Running", "Paused", "Completed", "Stopped"
+    // We should see at least one of these states
+    final hasRunning = find.text('Running').evaluate().isNotEmpty;
+    final hasPaused = find.text('Paused').evaluate().isNotEmpty;
+    final hasStarting =
+        find.text('Starting').evaluate().isNotEmpty ||
+        find.text('Starting workout...').evaluate().isNotEmpty;
 
-  patrolTest(
-    'Workout execution - verify AppBar shows plan name',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-
-      // Get the first plan's ListTile to see its name
-      // The plan names come from the backend, so we can't hardcode them
-      // But we know the AppBar should show *some* plan name
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
-
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
-
-      // Verify AppBar exists (it contains the plan name)
-      expect(find.byType(AppBar), findsOneWidget);
-    },
-  );
-
-  patrolTest(
-    'Workout execution - multiple pause/resume cycles',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
-
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
-      await wait($, const Duration(seconds: 3));
-
-      // Try multiple pause/resume cycles
-      for (int i = 0; i < 2; i++) {
-        // Pause
-        final pauseButton = find.text('Pause');
-        if ($(pauseButton).exists) {
-          await tapButtonWithText($, 'Pause');
-          await wait($, const Duration(milliseconds: 500));
-          expect(find.text('Resume'), findsOneWidget);
-
-          // Resume
-          await tapButtonWithText($, 'Resume');
-          await wait($, const Duration(milliseconds: 500));
-          expect(find.text('Pause'), findsOneWidget);
-        } else {
-          debugPrint('Pause button not found in cycle $i');
-          break;
-        }
-      }
-
-      // Verify we're still on workout screen
-      expectScreen($, const Key('workoutScreen'));
-    },
-  );
-
-  patrolTest(
-    'Workout execution - verify workout state indicator',
-    ($) async {
-      // Start workout
-      await performDeviceConnection($);
-      await tapStartWorkout($);
-      await waitForText($, 'Select Training Plan');
-      await $.waitUntilVisible(find.byType(ListTile));
-      await $(find.byType(ListTile).first).tap();
-      await $.pumpAndSettle();
-
-      // Wait for workout screen
-      await waitForKey($, const Key('workoutScreen'));
-      await wait($, const Duration(seconds: 3));
-
-      // The workout screen shows the current state as text (for debugging)
-      // States can be: "Starting", "Running", "Paused", "Completed", "Stopped"
-      // We should see at least one of these states
-      final hasRunning = find.text('Running').evaluate().isNotEmpty;
-      final hasPaused = find.text('Paused').evaluate().isNotEmpty;
-      final hasStarting = find.text('Starting').evaluate().isNotEmpty ||
-          find.text('Starting workout...').evaluate().isNotEmpty;
-
-      expect(
-        hasRunning || hasPaused || hasStarting,
-        isTrue,
-        reason: 'Workout should show a state indicator',
-      );
-    },
-  );
+    expect(
+      hasRunning || hasPaused || hasStarting,
+      isTrue,
+      reason: 'Workout should show a state indicator',
+    );
+  });
 }

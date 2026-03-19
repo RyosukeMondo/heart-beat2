@@ -24,14 +24,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Warmup phase just started (10s elapsed, 290s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Warmup',
-          targetZone: Zone.zone1,
-          elapsedSecs: 10,
-          remainingSecs: 290,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Warmup',
+            targetZone: Zone.zone1,
+            elapsedSecs: 10,
+            remainingSecs: 290,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -49,14 +51,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Active phase halfway (600s elapsed, 600s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Work',
-          targetZone: Zone.zone4,
-          elapsedSecs: 600,
-          remainingSecs: 600,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Work',
+            targetZone: Zone.zone4,
+            elapsedSecs: 600,
+            remainingSecs: 600,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -74,14 +78,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Cooldown phase almost done (270s elapsed, 30s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Cooldown',
-          targetZone: Zone.zone1,
-          elapsedSecs: 270,
-          remainingSecs: 30,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Cooldown',
+            targetZone: Zone.zone1,
+            elapsedSecs: 270,
+            remainingSecs: 30,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -99,14 +105,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Recovery phase (180s elapsed, 120s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Recovery',
-          targetZone: Zone.zone2,
-          elapsedSecs: 180,
-          remainingSecs: 120,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Recovery',
+            targetZone: Zone.zone2,
+            elapsedSecs: 180,
+            remainingSecs: 120,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -124,14 +132,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - High intensity interval (60s elapsed, 60s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Interval',
-          targetZone: Zone.zone5,
-          elapsedSecs: 60,
-          remainingSecs: 60,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Interval',
+            targetZone: Zone.zone5,
+            elapsedSecs: 60,
+            remainingSecs: 60,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -149,14 +159,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Phase just started (0s elapsed, 300s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Warmup',
-          targetZone: Zone.zone1,
-          elapsedSecs: 0,
-          remainingSecs: 300,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Warmup',
+            targetZone: Zone.zone1,
+            elapsedSecs: 0,
+            remainingSecs: 300,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -174,14 +186,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Phase complete (300s elapsed, 0s remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Work',
-          targetZone: Zone.zone3,
-          elapsedSecs: 300,
-          remainingSecs: 0,
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Work',
+            targetZone: Zone.zone3,
+            elapsedSecs: 300,
+            remainingSecs: 0,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -199,14 +213,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act
-      await tester.pumpWidget(goldenWrapperDark(
-        const PhaseProgressWidget(
-          phaseName: 'Work',
-          targetZone: Zone.zone4,
-          elapsedSecs: 360,
-          remainingSecs: 240,
+      await tester.pumpWidget(
+        goldenWrapperDark(
+          const PhaseProgressWidget(
+            phaseName: 'Work',
+            targetZone: Zone.zone4,
+            elapsedSecs: 360,
+            remainingSecs: 240,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
@@ -224,14 +240,16 @@ void main() {
       setupGoldenTest(tester);
 
       // Act - Test time formatting with specific values (12:34 elapsed, 56:07 remaining)
-      await tester.pumpWidget(goldenWrapper(
-        const PhaseProgressWidget(
-          phaseName: 'Endurance',
-          targetZone: Zone.zone2,
-          elapsedSecs: 754, // 12:34
-          remainingSecs: 3367, // 56:07
+      await tester.pumpWidget(
+        goldenWrapper(
+          const PhaseProgressWidget(
+            phaseName: 'Endurance',
+            targetZone: Zone.zone2,
+            elapsedSecs: 754, // 12:34
+            remainingSecs: 3367, // 56:07
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Assert
