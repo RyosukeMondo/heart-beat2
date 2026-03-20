@@ -843,14 +843,92 @@ pub async fn disconnect() -> Result<()> {
 
 /// Start mock mode for testing without hardware.
 ///
-/// Activates the mock adapter which generates simulated heart rate data.
-/// Useful for UI development and testing without a physical device.
-///
-/// # Errors
-///
-/// Returns an error if mock mode activation fails.
+/// Creates a MockAdapter, connects to a simulated device, and spawns a
+/// background task that periodically emits mock HR data via the broadcast
+/// channels. Also emits connection status and battery updates.
 pub async fn start_mock_mode() -> Result<()> {
-    // TODO: Implement using MockAdapter
+    use crate::adapters::MockAdapter;
+    use crate::domain::filters::KalmanFilter;
+    use crate::domain::heart_rate::parse_heart_rate;
+
+    tracing::info!("start_mock_mode: Activating mock adapter");
+
+    let adapter = MockAdapter::new();
+
+    // Simulate scan + connect
+    adapter.start_scan().await?;
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    let devices = adapter.get_discovered_devices().await;
+    adapter.stop_scan().await?;
+
+    let device_id = devices
+        .first()
+        .map(|d| d.id.clone())
+        .unwrap_or_else(|| "mock-device-001".to_string());
+
+    adapter.connect(&device_id).await?;
+    emit_connection_status(ApiConnectionStatus::Connected {
+        device_id: device_id.clone(),
+    });
+
+    // Subscribe to HR notifications from mock adapter
+    let mut hr_rx = adapter.subscribe_hr().await?;
+    let battery_level = adapter.read_battery().await?.unwrap_or(85);
+
+    // Emit initial battery
+    emit_battery_data(ApiBatteryLevel {
+        level: Some(battery_level),
+        is_charging: false,
+        timestamp: std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64,
+    });
+
+    // Spawn HR processing loop
+    tokio::spawn(async move {
+        let mut filter = KalmanFilter::new(0.1, 2.0);
+        let mut rr_buffer: Vec<u16> = Vec::new();
+
+        while let Some(raw_data) = hr_rx.recv().await {
+            if let Ok(measurement) = parse_heart_rate(&raw_data) {
+                let filtered_bpm = filter.update(measurement.bpm as f64) as u16;
+
+                // Collect RR intervals for RMSSD
+                for &rr in &measurement.rr_intervals {
+                    rr_buffer.push(rr);
+                    if rr_buffer.len() > 20 {
+                        rr_buffer.remove(0);
+                    }
+                }
+
+                let rmssd = if rr_buffer.len() >= 5 {
+                    crate::domain::hrv::calculate_rmssd(&rr_buffer)
+                } else {
+                    None
+                };
+
+                let timestamp = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis() as u64;
+
+                emit_hr_data(ApiFilteredHeartRate {
+                    raw_bpm: measurement.bpm,
+                    filtered_bpm,
+                    rmssd,
+                    filter_variance: Some(filter.variance()),
+                    battery_level: Some(battery_level),
+                    timestamp,
+                    receive_timestamp_micros: None,
+                });
+            }
+        }
+
+        tracing::info!("start_mock_mode: Mock HR stream ended");
+    });
+
+    tracing::info!("start_mock_mode: Mock mode active, device '{}'", device_id);
     Ok(())
 }
 
@@ -877,19 +955,18 @@ pub async fn create_hr_stream(sink: StreamSink<ApiFilteredHeartRate>) -> Result<
     Ok(())
 }
 
-/// Get a receiver for streaming filtered heart rate data (internal use).
+/// Subscribe to the real-time filtered heart rate stream.
 ///
-/// Creates a broadcast receiver that can be used to subscribe to real-time
-/// filtered heart rate measurements from the filtering pipeline.
-///
-/// # Returns
-///
-/// A tokio broadcast receiver that will receive FilteredHeartRate updates.
-/// Multiple receivers can be created for fan-out streaming to multiple consumers.
-fn get_hr_stream_receiver() -> broadcast::Receiver<ApiFilteredHeartRate> {
-    // Get or create the global broadcast sender
+/// Creates a broadcast receiver for fan-out streaming to multiple consumers
+/// (Flutter, debug server, CLI, etc.).
+pub fn subscribe_hr_stream() -> broadcast::Receiver<ApiFilteredHeartRate> {
     let tx = get_or_create_hr_broadcast_sender();
     tx.subscribe()
+}
+
+// Internal alias for backward compatibility within this module
+fn get_hr_stream_receiver() -> broadcast::Receiver<ApiFilteredHeartRate> {
+    subscribe_hr_stream()
 }
 
 /// Get or create the global HR broadcast sender.
@@ -1048,19 +1125,14 @@ pub async fn create_battery_stream(sink: StreamSink<ApiBatteryLevel>) -> Result<
     Ok(())
 }
 
-/// Get a receiver for streaming battery level data (internal use).
-///
-/// Creates a broadcast receiver that can be used to subscribe to real-time
-/// battery level measurements from the connected BLE device.
-///
-/// # Returns
-///
-/// A tokio broadcast receiver that will receive BatteryLevel updates.
-/// Multiple receivers can be created for fan-out streaming to multiple consumers.
-fn get_battery_stream_receiver() -> broadcast::Receiver<ApiBatteryLevel> {
-    // Get or create the global broadcast sender
+/// Subscribe to the real-time battery level stream.
+pub fn subscribe_battery_stream() -> broadcast::Receiver<ApiBatteryLevel> {
     let tx = get_or_create_battery_broadcast_sender();
     tx.subscribe()
+}
+
+fn get_battery_stream_receiver() -> broadcast::Receiver<ApiBatteryLevel> {
+    subscribe_battery_stream()
 }
 
 /// Get or create the global battery broadcast sender.
@@ -1139,18 +1211,14 @@ pub async fn create_session_progress_stream(sink: StreamSink<ApiSessionProgress>
     Ok(())
 }
 
-/// Get a receiver for streaming session progress data (internal use).
-///
-/// Creates a broadcast receiver that can be used to subscribe to real-time
-/// session progress updates from the SessionExecutor.
-///
-/// # Returns
-///
-/// A tokio broadcast receiver that will receive SessionProgress updates.
-/// Multiple receivers can be created for fan-out streaming to multiple consumers.
-fn get_session_progress_receiver() -> broadcast::Receiver<ApiSessionProgress> {
+/// Subscribe to the real-time session progress stream.
+pub fn subscribe_session_progress_stream() -> broadcast::Receiver<ApiSessionProgress> {
     let tx = get_or_create_session_progress_broadcast_sender();
     tx.subscribe()
+}
+
+fn get_session_progress_receiver() -> broadcast::Receiver<ApiSessionProgress> {
+    subscribe_session_progress_stream()
 }
 
 /// Get or create the global session progress broadcast sender.
@@ -1245,18 +1313,14 @@ pub async fn create_connection_status_stream(sink: StreamSink<ApiConnectionStatu
     Ok(())
 }
 
-/// Get a receiver for streaming connection status data (internal use).
-///
-/// Creates a broadcast receiver that can be used to subscribe to real-time
-/// connection status updates from the BLE adapter.
-///
-/// # Returns
-///
-/// A tokio broadcast receiver that will receive ConnectionStatus updates.
-/// Multiple receivers can be created for fan-out streaming to multiple consumers.
-fn get_connection_status_receiver() -> broadcast::Receiver<ApiConnectionStatus> {
+/// Subscribe to the real-time connection status stream.
+pub fn subscribe_connection_status_stream() -> broadcast::Receiver<ApiConnectionStatus> {
     let tx = get_or_create_connection_status_broadcast_sender();
     tx.subscribe()
+}
+
+fn get_connection_status_receiver() -> broadcast::Receiver<ApiConnectionStatus> {
+    subscribe_connection_status_stream()
 }
 
 /// Get or create the global connection status broadcast sender.
@@ -2177,6 +2241,790 @@ pub fn zone_status_to_string(status: &ApiZoneStatus) -> String {
         ApiZoneStatus::TooLow => "TooLow".to_string(),
         ApiZoneStatus::TooHigh => "TooHigh".to_string(),
     }
+}
+
+// =============================================================================
+// Training Plan Builder API
+// =============================================================================
+
+/// Create a custom training plan and save it to disk.
+///
+/// # Arguments
+///
+/// * `name` - Plan name (used as filename)
+/// * `phase_names` - Name for each phase
+/// * `phase_zones` - Target zone (1-5) for each phase
+/// * `phase_durations` - Duration in seconds for each phase
+/// * `max_hr` - User's maximum heart rate
+pub async fn create_custom_plan(
+    name: String,
+    phase_names: Vec<String>,
+    phase_zones: Vec<u8>,
+    phase_durations: Vec<u32>,
+    max_hr: u16,
+) -> Result<()> {
+    use crate::domain::training_plan::{TrainingPhase, TransitionCondition};
+
+    tracing::info!("create_custom_plan: Creating plan '{}'", name);
+
+    if phase_names.len() != phase_zones.len() || phase_names.len() != phase_durations.len() {
+        return Err(anyhow!("Phase arrays must have equal length"));
+    }
+
+    let phases: Vec<TrainingPhase> = phase_names
+        .into_iter()
+        .zip(phase_zones.into_iter())
+        .zip(phase_durations.into_iter())
+        .map(|((pname, zone_num), duration)| {
+            let zone = zone_from_number(zone_num);
+            TrainingPhase {
+                name: pname,
+                target_zone: zone,
+                duration_secs: duration,
+                transition: TransitionCondition::TimeElapsed,
+            }
+        })
+        .collect();
+
+    let plan = TrainingPlan {
+        name,
+        phases,
+        created_at: chrono::Utc::now(),
+        max_hr,
+    };
+
+    plan.validate()?;
+    save_plan(&plan).await?;
+
+    tracing::info!("create_custom_plan: Plan '{}' saved", plan.name);
+    Ok(())
+}
+
+/// Delete a training plan by name.
+pub async fn delete_plan(name: String) -> Result<()> {
+    tracing::info!("delete_plan: Deleting plan '{}'", name);
+
+    let data_dir = get_data_dir()?;
+    let plan_path = data_dir.join("plans").join(format!("{}.json", name));
+
+    if !plan_path.exists() {
+        return Err(anyhow!("Plan '{}' not found", name));
+    }
+
+    tokio::fs::remove_file(&plan_path).await?;
+    tracing::info!("delete_plan: Plan '{}' deleted", name);
+    Ok(())
+}
+
+/// Get details of a training plan by name.
+///
+/// Returns parallel arrays for FRB compatibility.
+pub async fn get_plan_details(name: String) -> Result<ApiPlanDetails> {
+    let plan = load_plan(&name).await?;
+
+    let phase_names: Vec<String> = plan.phases.iter().map(|p| p.name.clone()).collect();
+    let phase_zones: Vec<u8> = plan
+        .phases
+        .iter()
+        .map(|p| zone_to_number(p.target_zone))
+        .collect();
+    let phase_durations: Vec<u32> = plan.phases.iter().map(|p| p.duration_secs).collect();
+
+    Ok(ApiPlanDetails {
+        name: plan.name,
+        phase_names,
+        phase_zones,
+        phase_durations,
+        max_hr: plan.max_hr,
+        created_at_millis: plan.created_at.timestamp_millis(),
+    })
+}
+
+/// Plan details for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiPlanDetails {
+    /// Plan name.
+    pub name: String,
+    /// Phase names.
+    pub phase_names: Vec<String>,
+    /// Target zone number (1-5) per phase.
+    pub phase_zones: Vec<u8>,
+    /// Duration in seconds per phase.
+    pub phase_durations: Vec<u32>,
+    /// Max heart rate.
+    pub max_hr: u16,
+    /// Creation timestamp in milliseconds.
+    pub created_at_millis: i64,
+}
+
+/// Convert a zone number (1-5) to a Zone enum.
+fn zone_from_number(n: u8) -> Zone {
+    match n {
+        1 => Zone::Zone1,
+        2 => Zone::Zone2,
+        3 => Zone::Zone3,
+        4 => Zone::Zone4,
+        _ => Zone::Zone5,
+    }
+}
+
+/// Convert a Zone enum to a number (1-5).
+fn zone_to_number(zone: Zone) -> u8 {
+    match zone {
+        Zone::Zone1 => 1,
+        Zone::Zone2 => 2,
+        Zone::Zone3 => 3,
+        Zone::Zone4 => 4,
+        Zone::Zone5 => 5,
+    }
+}
+
+// =============================================================================
+// Analytics API
+// =============================================================================
+
+/// Analytics summary for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiAnalyticsSummary {
+    /// Total number of completed sessions.
+    pub total_sessions: u32,
+    /// Total training duration in seconds.
+    pub total_duration_secs: u32,
+    /// Overall average heart rate.
+    pub overall_avg_hr: u16,
+    /// Overall time in each zone (5 elements).
+    pub overall_time_in_zone: Vec<u32>,
+    /// Number of weekly summaries.
+    pub weeks_count: u32,
+    /// Number of HR trend points.
+    pub hr_trend_count: u32,
+    /// Number of volume trend points.
+    pub volume_trend_count: u32,
+}
+
+/// Weekly summary for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiWeeklySummary {
+    /// Monday of the week as Unix millis.
+    pub week_start_millis: i64,
+    /// Number of sessions.
+    pub session_count: u32,
+    /// Total duration in seconds.
+    pub total_duration_secs: u32,
+    /// Average HR across the week.
+    pub avg_hr: u16,
+    /// Time in each zone.
+    pub time_in_zone: Vec<u32>,
+}
+
+/// Trend point for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiTrendPoint {
+    /// Unix timestamp in milliseconds.
+    pub timestamp_millis: i64,
+    /// Metric value.
+    pub value: f64,
+}
+
+// Analytics data is stored in an opaque holder to avoid FRB issues
+// with complex nested types.
+
+/// Opaque analytics data holder.
+pub struct ApiAnalyticsData {
+    /// Overall summary statistics.
+    pub summary: ApiAnalyticsSummary,
+    /// Weekly breakdown of training data.
+    pub weekly_summaries: Vec<ApiWeeklySummary>,
+    /// Average HR per session over time.
+    pub hr_trend: Vec<ApiTrendPoint>,
+    /// Training volume (minutes per week) over time.
+    pub volume_trend: Vec<ApiTrendPoint>,
+    /// Sessions per week over time.
+    pub consistency_trend: Vec<ApiTrendPoint>,
+}
+
+/// Get comprehensive analytics data from all completed sessions.
+pub async fn get_analytics() -> Result<ApiAnalyticsData> {
+    use crate::domain::analytics;
+
+    tracing::info!("get_analytics: Computing analytics");
+
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+
+    // Load all full sessions for time-in-zone data
+    let mut sessions = Vec::new();
+    for preview in &previews {
+        if let Some(session) = repo.get(&preview.id).await? {
+            sessions.push(session);
+        }
+    }
+
+    // Sort chronologically
+    sessions.sort_by(|a, b| a.start_time.cmp(&b.start_time));
+
+    let weekly = analytics::compute_weekly_summaries(&sessions);
+    let hr_trend = analytics::compute_hr_trend(&sessions);
+    let volume_trend = analytics::compute_volume_trend(&sessions);
+    let zone_dist = analytics::compute_zone_distribution(&sessions);
+    let consistency = analytics::compute_consistency_trend(&sessions);
+
+    // Compute overall stats
+    let total_sessions = sessions.len() as u32;
+    let total_duration: u32 = sessions.iter().map(|s| s.summary.duration_secs).sum();
+    let overall_avg_hr = if total_duration > 0 {
+        let weighted: u64 = sessions
+            .iter()
+            .map(|s| s.summary.avg_hr as u64 * s.summary.duration_secs as u64)
+            .sum();
+        (weighted / total_duration as u64) as u16
+    } else {
+        0
+    };
+
+    let api_weekly: Vec<ApiWeeklySummary> = weekly
+        .into_iter()
+        .map(|w| ApiWeeklySummary {
+            week_start_millis: w.week_start_millis,
+            session_count: w.session_count,
+            total_duration_secs: w.total_duration_secs,
+            avg_hr: w.avg_hr,
+            time_in_zone: w.time_in_zone.to_vec(),
+        })
+        .collect();
+
+    let api_hr: Vec<ApiTrendPoint> = hr_trend
+        .into_iter()
+        .map(|p| ApiTrendPoint {
+            timestamp_millis: p.timestamp_millis,
+            value: p.value,
+        })
+        .collect();
+
+    let api_volume: Vec<ApiTrendPoint> = volume_trend
+        .into_iter()
+        .map(|p| ApiTrendPoint {
+            timestamp_millis: p.timestamp_millis,
+            value: p.value,
+        })
+        .collect();
+
+    let api_consistency: Vec<ApiTrendPoint> = consistency
+        .into_iter()
+        .map(|p| ApiTrendPoint {
+            timestamp_millis: p.timestamp_millis,
+            value: p.value,
+        })
+        .collect();
+
+    let summary = ApiAnalyticsSummary {
+        total_sessions,
+        total_duration_secs: total_duration,
+        overall_avg_hr,
+        overall_time_in_zone: zone_dist.to_vec(),
+        weeks_count: api_weekly.len() as u32,
+        hr_trend_count: api_hr.len() as u32,
+        volume_trend_count: api_volume.len() as u32,
+    };
+
+    tracing::info!(
+        "get_analytics: {} sessions, {} weeks",
+        total_sessions,
+        summary.weeks_count
+    );
+
+    Ok(ApiAnalyticsData {
+        summary,
+        weekly_summaries: api_weekly,
+        hr_trend: api_hr,
+        volume_trend: api_volume,
+        consistency_trend: api_consistency,
+    })
+}
+
+// Accessor functions for ApiAnalyticsData (opaque type)
+
+/// Get the summary from analytics data.
+pub fn analytics_summary(data: &ApiAnalyticsData) -> ApiAnalyticsSummary {
+    data.summary.clone()
+}
+
+/// Get the number of weekly summaries.
+pub fn analytics_weeks_count(data: &ApiAnalyticsData) -> u32 {
+    data.weekly_summaries.len() as u32
+}
+
+/// Get a weekly summary at the given index.
+pub fn analytics_weekly_at(data: &ApiAnalyticsData, index: u32) -> Option<ApiWeeklySummary> {
+    data.weekly_summaries.get(index as usize).cloned()
+}
+
+/// Get the number of HR trend points.
+pub fn analytics_hr_trend_count(data: &ApiAnalyticsData) -> u32 {
+    data.hr_trend.len() as u32
+}
+
+/// Get an HR trend point at the given index.
+pub fn analytics_hr_trend_at(data: &ApiAnalyticsData, index: u32) -> Option<ApiTrendPoint> {
+    data.hr_trend.get(index as usize).cloned()
+}
+
+/// Get the number of volume trend points.
+pub fn analytics_volume_trend_count(data: &ApiAnalyticsData) -> u32 {
+    data.volume_trend.len() as u32
+}
+
+/// Get a volume trend point at the given index.
+pub fn analytics_volume_trend_at(data: &ApiAnalyticsData, index: u32) -> Option<ApiTrendPoint> {
+    data.volume_trend.get(index as usize).cloned()
+}
+
+/// Get the number of consistency trend points.
+pub fn analytics_consistency_count(data: &ApiAnalyticsData) -> u32 {
+    data.consistency_trend.len() as u32
+}
+
+/// Get a consistency trend point at the given index.
+pub fn analytics_consistency_at(data: &ApiAnalyticsData, index: u32) -> Option<ApiTrendPoint> {
+    data.consistency_trend.get(index as usize).cloned()
+}
+
+// =============================================================================
+// Training Load API
+// =============================================================================
+
+/// Training load metrics for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiTrainingLoadData {
+    /// Current CTL (fitness).
+    pub current_ctl: f64,
+    /// Current ATL (fatigue).
+    pub current_atl: f64,
+    /// Current TSB (form).
+    pub current_tsb: f64,
+    /// Daily CTL/ATL/TSB history.
+    pub load_history: Vec<ApiLoadPoint>,
+    /// TRIMP per session.
+    pub session_trimp: Vec<ApiTrendPoint>,
+}
+
+/// A single day's training load metrics for FFI.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiLoadPoint {
+    /// Unix timestamp in millis.
+    pub timestamp_millis: i64,
+    /// Chronic Training Load.
+    pub ctl: f64,
+    /// Acute Training Load.
+    pub atl: f64,
+    /// Training Stress Balance.
+    pub tsb: f64,
+}
+
+/// Get training load metrics (CTL/ATL/TSB) from all completed sessions.
+pub async fn get_training_load() -> Result<ApiTrainingLoadData> {
+    use crate::domain::training_load;
+
+    tracing::info!("get_training_load: Computing training load");
+
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+    let mut sessions = Vec::new();
+    for preview in &previews {
+        if let Some(session) = repo.get(&preview.id).await? {
+            sessions.push(session);
+        }
+    }
+    sessions.sort_by(|a, b| a.start_time.cmp(&b.start_time));
+
+    let daily = training_load::compute_daily_trimp(&sessions);
+    let metrics = training_load::compute_training_load(&daily);
+    let current = training_load::current_training_load(&daily);
+
+    let (ctl, atl, tsb) = match &current {
+        Some(m) => (m.ctl, m.atl, m.tsb),
+        None => (0.0, 0.0, 0.0),
+    };
+
+    let load_history: Vec<ApiLoadPoint> = metrics
+        .iter()
+        .map(|m| ApiLoadPoint {
+            timestamp_millis: m
+                .date
+                .and_hms_opt(0, 0, 0)
+                .unwrap()
+                .and_utc()
+                .timestamp_millis(),
+            ctl: m.ctl,
+            atl: m.atl,
+            tsb: m.tsb,
+        })
+        .collect();
+
+    let session_trimp: Vec<ApiTrendPoint> = sessions
+        .iter()
+        .map(|s| ApiTrendPoint {
+            timestamp_millis: s.start_time.timestamp_millis(),
+            value: training_load::compute_session_trimp(s),
+        })
+        .collect();
+
+    Ok(ApiTrainingLoadData {
+        current_ctl: ctl,
+        current_atl: atl,
+        current_tsb: tsb,
+        load_history,
+        session_trimp,
+    })
+}
+
+// =============================================================================
+// Readiness API
+// =============================================================================
+
+/// Readiness data for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiReadinessData {
+    /// Overall readiness score (0-100).
+    pub score: u8,
+    /// Readiness level: "Ready", "Moderate", or "Rest".
+    pub level: String,
+    /// HRV component score (0-100).
+    pub hrv_component: f64,
+    /// Resting HR component score (0-100).
+    pub rhr_component: f64,
+    /// Training load component score (0-100).
+    pub load_component: f64,
+    /// Human-readable recommendation.
+    pub recommendation: String,
+}
+
+/// Get readiness score based on available HRV and resting HR data.
+pub async fn get_readiness_score() -> Result<ApiReadinessData> {
+    use crate::domain::{readiness, training_load};
+
+    tracing::info!("get_readiness_score: Computing readiness");
+
+    // Get TSB from training load
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+    let mut sessions = Vec::new();
+    for preview in &previews {
+        if let Some(session) = repo.get(&preview.id).await? {
+            sessions.push(session);
+        }
+    }
+    sessions.sort_by(|a, b| a.start_time.cmp(&b.start_time));
+
+    let daily = training_load::compute_daily_trimp(&sessions);
+    let tsb = training_load::current_training_load(&daily).map(|m| m.tsb);
+
+    // For now, use empty HRV/RHR readings (these will be populated from stored data later)
+    let hrv_readings: Vec<readiness::HrvReading> = Vec::new();
+    let rhr_readings: Vec<readiness::RestingHrReading> = Vec::new();
+
+    let score = readiness::compute_readiness(&hrv_readings, &rhr_readings, tsb);
+
+    let level_str = match score.level {
+        readiness::ReadinessLevel::Ready => "Ready",
+        readiness::ReadinessLevel::Moderate => "Moderate",
+        readiness::ReadinessLevel::Rest => "Rest",
+    };
+
+    Ok(ApiReadinessData {
+        score: score.score,
+        level: level_str.to_string(),
+        hrv_component: score.hrv_component,
+        rhr_component: score.rhr_component,
+        load_component: score.load_component,
+        recommendation: score.recommendation,
+    })
+}
+
+// =============================================================================
+// Workout Library API
+// =============================================================================
+
+/// Workout template for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiWorkoutTemplate {
+    /// Unique template ID.
+    pub id: String,
+    /// Template name.
+    pub name: String,
+    /// Description of the workout.
+    pub description: String,
+    /// Sport category.
+    pub sport: String,
+    /// Difficulty level.
+    pub difficulty: String,
+    /// Estimated duration in minutes.
+    pub duration_mins: u32,
+    /// Number of phases.
+    pub phase_count: u32,
+}
+
+/// Get all available workout templates.
+pub fn get_workout_templates() -> Vec<ApiWorkoutTemplate> {
+    use crate::domain::workout_library;
+
+    workout_library::get_default_templates()
+        .into_iter()
+        .map(|t| ApiWorkoutTemplate {
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            sport: format!("{:?}", t.sport),
+            difficulty: format!("{:?}", t.difficulty),
+            duration_mins: t.estimated_duration_mins,
+            phase_count: t.phases.len() as u32,
+        })
+        .collect()
+}
+
+/// Start a workout from a template ID by converting it to a plan.
+pub async fn start_template_workout(template_id: String, max_hr: u16) -> Result<()> {
+    use crate::domain::workout_library;
+
+    let templates = workout_library::get_default_templates();
+    let template = templates
+        .into_iter()
+        .find(|t| t.id == template_id)
+        .ok_or_else(|| anyhow!("Template not found: {}", template_id))?;
+
+    let plan = template.to_plan(max_hr);
+
+    // Save the plan and start the workout
+    save_plan(&plan).await?;
+    start_workout(plan.name).await
+}
+
+// =============================================================================
+// Export Formats API
+// =============================================================================
+
+/// Export a session as TCX format.
+pub async fn export_session_tcx(session_id: String) -> Result<String> {
+    use crate::domain::export_formats;
+
+    let repo = get_session_repository().await?;
+    let session = repo
+        .get(&session_id)
+        .await?
+        .ok_or_else(|| anyhow!("Session not found: {}", session_id))?;
+
+    Ok(export_formats::export_to_tcx(&session))
+}
+
+/// Export a session as GPX format.
+pub async fn export_session_gpx(session_id: String) -> Result<String> {
+    use crate::domain::export_formats;
+
+    let repo = get_session_repository().await?;
+    let session = repo
+        .get(&session_id)
+        .await?
+        .ok_or_else(|| anyhow!("Session not found: {}", session_id))?;
+
+    Ok(export_formats::export_to_gpx(&session))
+}
+
+// =============================================================================
+// Adaptive Plan API
+// =============================================================================
+
+/// Adapted plan for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiAdaptedPlan {
+    /// Original plan name.
+    pub original_name: String,
+    /// Adjustment reason.
+    pub reason: String,
+    /// Adjustment message.
+    pub message: String,
+    /// Zone delta applied.
+    pub zone_delta: i8,
+    /// Duration factor applied.
+    pub duration_factor: f64,
+    /// Adjusted phase names.
+    pub phase_names: Vec<String>,
+    /// Adjusted phase zones (1-5).
+    pub phase_zones: Vec<u8>,
+    /// Adjusted phase durations in seconds.
+    pub phase_durations: Vec<u32>,
+}
+
+/// Get an adapted version of a plan based on current readiness.
+pub async fn get_adapted_plan(plan_name: String) -> Result<ApiAdaptedPlan> {
+    use crate::domain::{adaptive, readiness, training_load};
+
+    let plan = load_plan(&plan_name).await?;
+
+    // Compute current readiness
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+    let mut sessions = Vec::new();
+    for preview in &previews {
+        if let Some(session) = repo.get(&preview.id).await? {
+            sessions.push(session);
+        }
+    }
+    let daily = training_load::compute_daily_trimp(&sessions);
+    let tsb = training_load::current_training_load(&daily).map(|m| m.tsb);
+    let readiness_result = readiness::compute_readiness(&[], &[], tsb);
+
+    let adapted = adaptive::adapt_plan(&plan, readiness_result.score, tsb);
+
+    Ok(ApiAdaptedPlan {
+        original_name: adapted.original_name,
+        reason: format!("{:?}", adapted.adjustment.reason),
+        message: adapted.adjustment.message,
+        zone_delta: adapted.adjustment.zone_delta,
+        duration_factor: adapted.adjustment.duration_factor,
+        phase_names: adapted
+            .adjusted_phases
+            .iter()
+            .map(|p| p.name.clone())
+            .collect(),
+        phase_zones: adapted
+            .adjusted_phases
+            .iter()
+            .map(|p| zone_to_number(p.target_zone))
+            .collect(),
+        phase_durations: adapted
+            .adjusted_phases
+            .iter()
+            .map(|p| p.duration_secs)
+            .collect(),
+    })
+}
+
+// =============================================================================
+// Periodization API
+// =============================================================================
+
+/// Periodization plan data for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiPeriodizationData {
+    /// Plan name.
+    pub name: String,
+    /// Goal description.
+    pub goal: String,
+    /// Start date as ISO string.
+    pub start_date: String,
+    /// End date as ISO string.
+    pub end_date: String,
+    /// Total weeks.
+    pub total_weeks: u32,
+    /// Current block index (0-based), or -1 if not in any block.
+    pub current_block_index: i32,
+    /// Block names.
+    pub block_names: Vec<String>,
+    /// Block types as strings.
+    pub block_types: Vec<String>,
+    /// Block durations in weeks.
+    pub block_weeks: Vec<u8>,
+}
+
+/// Get the current periodization plan (if any).
+///
+/// Returns a 5K plan starting today as a default for now.
+pub fn get_periodization_plan() -> ApiPeriodizationData {
+    use crate::domain::periodization;
+    use chrono::Utc;
+
+    let today = Utc::now().date_naive();
+    let plan = periodization::create_5k_plan(today);
+
+    let current_idx = plan
+        .current_block(today)
+        .map(|(idx, _)| idx as i32)
+        .unwrap_or(-1);
+
+    ApiPeriodizationData {
+        name: plan.name.clone(),
+        goal: plan.goal.clone(),
+        start_date: plan.start_date.to_string(),
+        end_date: plan.end_date().to_string(),
+        total_weeks: plan.total_weeks(),
+        current_block_index: current_idx,
+        block_names: plan.blocks.iter().map(|b| b.name.clone()).collect(),
+        block_types: plan
+            .blocks
+            .iter()
+            .map(|b| format!("{:?}", b.block_type))
+            .collect(),
+        block_weeks: plan.blocks.iter().map(|b| b.weeks).collect(),
+    }
+}
+
+// =============================================================================
+// Resting HR API
+// =============================================================================
+
+/// Resting HR stats for the FFI boundary.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiRestingHrStats {
+    /// Current resting HR, if available.
+    pub current_bpm: Option<u16>,
+    /// 7-day average, if available.
+    pub seven_day_avg: Option<f64>,
+    /// 30-day average, if available.
+    pub thirty_day_avg: Option<f64>,
+    /// Trend direction: "Improving", "Stable", "Worsening", "Insufficient".
+    pub trend_direction: String,
+    /// Trend points for charting.
+    pub trend_points: Vec<ApiTrendPoint>,
+}
+
+/// Get resting HR statistics and trend.
+pub async fn get_resting_hr_stats() -> Result<ApiRestingHrStats> {
+    use crate::domain::resting_hr;
+
+    tracing::info!("get_resting_hr_stats: Computing resting HR stats");
+
+    // Detect resting HR from recent sessions
+    let repo = get_session_repository().await?;
+    let previews = repo.list().await?;
+    let mut measurements = Vec::new();
+
+    for preview in &previews {
+        if let Some(session) = repo.get(&preview.id).await? {
+            if let Some(rhr) = resting_hr::detect_resting_hr_from_session(&session) {
+                measurements.push(resting_hr::RestingHrMeasurement {
+                    date: session.start_time.date_naive(),
+                    bpm: rhr,
+                    source: resting_hr::MeasurementSource::Session,
+                });
+            }
+        }
+    }
+
+    measurements.sort_by_key(|m| m.date);
+
+    let stats = resting_hr::compute_resting_hr_stats(&measurements);
+    let trend = resting_hr::compute_resting_hr_trend(&measurements);
+
+    let direction_str = match stats.trend_direction {
+        resting_hr::TrendDirection::Improving => "Improving",
+        resting_hr::TrendDirection::Stable => "Stable",
+        resting_hr::TrendDirection::Worsening => "Worsening",
+        resting_hr::TrendDirection::Insufficient => "Insufficient",
+    };
+
+    Ok(ApiRestingHrStats {
+        current_bpm: stats.current,
+        seven_day_avg: stats.seven_day_avg,
+        thirty_day_avg: stats.thirty_day_avg,
+        trend_direction: direction_str.to_string(),
+        trend_points: trend
+            .into_iter()
+            .map(|p| ApiTrendPoint {
+                timestamp_millis: p.timestamp_millis,
+                value: p.value,
+            })
+            .collect(),
+    })
 }
 
 /// JNI_OnLoad - Initialize Android context and btleplug for JNI operations

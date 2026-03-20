@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -226370097;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -369424439;
 
 // Section: executor
 
@@ -46,6 +46,214 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__api__analytics_consistency_at_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+    index: impl CstDecode<u32>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_consistency_at",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            let api_index = index.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::analytics_consistency_at(
+                        &api_data, api_index,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_consistency_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_consistency_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::analytics_consistency_count(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_hr_trend_at_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+    index: impl CstDecode<u32>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_hr_trend_at",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            let api_index = index.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::analytics_hr_trend_at(
+                        &api_data, api_index,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_hr_trend_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_hr_trend_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::analytics_hr_trend_count(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_summary_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_summary",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::analytics_summary(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_volume_trend_at_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+    index: impl CstDecode<u32>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_volume_trend_at",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            let api_index = index.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::analytics_volume_trend_at(
+                        &api_data, api_index,
+                    ))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_volume_trend_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_volume_trend_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::analytics_volume_trend_count(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_weekly_at_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+    index: impl CstDecode<u32>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_weekly_at",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            let api_index = index.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::analytics_weekly_at(&api_data, api_index))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__analytics_weeks_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    data: impl CstDecode<crate::api::ApiAnalyticsData>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "analytics_weeks_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_data = data.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::analytics_weeks_count(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__connect_device_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     device_id: impl CstDecode<String>,
@@ -531,6 +739,45 @@ fn wire__crate__api__create_connection_status_stream_impl(
         },
     )
 }
+fn wire__crate__api__create_custom_plan_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    name: impl CstDecode<String>,
+    phase_names: impl CstDecode<Vec<String>>,
+    phase_zones: impl CstDecode<Vec<u8>>,
+    phase_durations: impl CstDecode<Vec<u32>>,
+    max_hr: impl CstDecode<u16>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_custom_plan",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_name = name.cst_decode();
+            let api_phase_names = phase_names.cst_decode();
+            let api_phase_zones = phase_zones.cst_decode();
+            let api_phase_durations = phase_durations.cst_decode();
+            let api_max_hr = max_hr.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::create_custom_plan(
+                            api_name,
+                            api_phase_names,
+                            api_phase_zones,
+                            api_phase_durations,
+                            api_max_hr,
+                        )
+                        .await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__create_hr_stream_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     sink: impl CstDecode<StreamSink<ApiFilteredHeartRate, flutter_rust_bridge::for_generated::DcoCodec>>,
@@ -572,6 +819,30 @@ fn wire__crate__api__create_session_progress_stream_impl(
                     (move || async move {
                         let output_ok =
                             crate::api::create_session_progress_stream(api_sink).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__delete_plan_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    name: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "delete_plan",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_name = name.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::delete_plan(api_name).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -776,6 +1047,185 @@ fn wire__crate__api__export_session_impl(
         },
     )
 }
+fn wire__crate__api__export_session_gpx_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session_id: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "export_session_gpx",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session_id = session_id.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::export_session_gpx(api_session_id).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__export_session_tcx_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    session_id: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "export_session_tcx",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_session_id = session_id.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::export_session_tcx(api_session_id).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_adapted_plan_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    plan_name: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_adapted_plan",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_plan_name = plan_name.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_adapted_plan(api_plan_name).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_analytics_impl(port_: flutter_rust_bridge::for_generated::MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_analytics",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_analytics().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_periodization_plan_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_periodization_plan",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::get_periodization_plan())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__get_plan_details_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    name: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_plan_details",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_name = name.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_plan_details(api_name).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_readiness_score_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_readiness_score",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_readiness_score().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_resting_hr_stats_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_resting_hr_stats",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_resting_hr_stats().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__get_session_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     id: impl CstDecode<String>,
@@ -796,6 +1246,47 @@ fn wire__crate__api__get_session_impl(
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_training_load_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_training_load",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok = crate::api::get_training_load().await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__get_workout_templates_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_workout_templates",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::api::get_workout_templates())?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -2826,6 +3317,33 @@ fn wire__crate__api__start_mock_mode_impl(port_: flutter_rust_bridge::for_genera
         },
     )
 }
+fn wire__crate__api__start_template_workout_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    template_id: impl CstDecode<String>,
+    max_hr: impl CstDecode<u16>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "start_template_workout",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_template_id = template_id.cst_decode();
+            let api_max_hr = max_hr.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || async move {
+                        let output_ok =
+                            crate::api::start_template_workout(api_template_id, api_max_hr).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__start_workout_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     plan_name: impl CstDecode<String>,
@@ -3074,6 +3592,12 @@ impl CstDecode<i32> for i32 {
 impl CstDecode<i64> for i64 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> i64 {
+        self
+    }
+}
+impl CstDecode<i8> for i8 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> i8 {
         self
     }
 }
@@ -3342,6 +3866,70 @@ impl SseDecode for String {
     }
 }
 
+impl SseDecode for crate::api::ApiAdaptedPlan {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_originalName = <String>::sse_decode(deserializer);
+        let mut var_reason = <String>::sse_decode(deserializer);
+        let mut var_message = <String>::sse_decode(deserializer);
+        let mut var_zoneDelta = <i8>::sse_decode(deserializer);
+        let mut var_durationFactor = <f64>::sse_decode(deserializer);
+        let mut var_phaseNames = <Vec<String>>::sse_decode(deserializer);
+        let mut var_phaseZones = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_phaseDurations = <Vec<u32>>::sse_decode(deserializer);
+        return crate::api::ApiAdaptedPlan {
+            original_name: var_originalName,
+            reason: var_reason,
+            message: var_message,
+            zone_delta: var_zoneDelta,
+            duration_factor: var_durationFactor,
+            phase_names: var_phaseNames,
+            phase_zones: var_phaseZones,
+            phase_durations: var_phaseDurations,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiAnalyticsData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_summary = <crate::api::ApiAnalyticsSummary>::sse_decode(deserializer);
+        let mut var_weeklySummaries = <Vec<crate::api::ApiWeeklySummary>>::sse_decode(deserializer);
+        let mut var_hrTrend = <Vec<crate::api::ApiTrendPoint>>::sse_decode(deserializer);
+        let mut var_volumeTrend = <Vec<crate::api::ApiTrendPoint>>::sse_decode(deserializer);
+        let mut var_consistencyTrend = <Vec<crate::api::ApiTrendPoint>>::sse_decode(deserializer);
+        return crate::api::ApiAnalyticsData {
+            summary: var_summary,
+            weekly_summaries: var_weeklySummaries,
+            hr_trend: var_hrTrend,
+            volume_trend: var_volumeTrend,
+            consistency_trend: var_consistencyTrend,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiAnalyticsSummary {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_totalSessions = <u32>::sse_decode(deserializer);
+        let mut var_totalDurationSecs = <u32>::sse_decode(deserializer);
+        let mut var_overallAvgHr = <u16>::sse_decode(deserializer);
+        let mut var_overallTimeInZone = <Vec<u32>>::sse_decode(deserializer);
+        let mut var_weeksCount = <u32>::sse_decode(deserializer);
+        let mut var_hrTrendCount = <u32>::sse_decode(deserializer);
+        let mut var_volumeTrendCount = <u32>::sse_decode(deserializer);
+        return crate::api::ApiAnalyticsSummary {
+            total_sessions: var_totalSessions,
+            total_duration_secs: var_totalDurationSecs,
+            overall_avg_hr: var_overallAvgHr,
+            overall_time_in_zone: var_overallTimeInZone,
+            weeks_count: var_weeksCount,
+            hr_trend_count: var_hrTrendCount,
+            volume_trend_count: var_volumeTrendCount,
+        };
+    }
+}
+
 impl SseDecode for crate::api::ApiBatteryLevel {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -3352,6 +3940,176 @@ impl SseDecode for crate::api::ApiBatteryLevel {
             level: var_level,
             is_charging: var_isCharging,
             timestamp: var_timestamp,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiLoadPoint {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_timestampMillis = <i64>::sse_decode(deserializer);
+        let mut var_ctl = <f64>::sse_decode(deserializer);
+        let mut var_atl = <f64>::sse_decode(deserializer);
+        let mut var_tsb = <f64>::sse_decode(deserializer);
+        return crate::api::ApiLoadPoint {
+            timestamp_millis: var_timestampMillis,
+            ctl: var_ctl,
+            atl: var_atl,
+            tsb: var_tsb,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiPeriodizationData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_name = <String>::sse_decode(deserializer);
+        let mut var_goal = <String>::sse_decode(deserializer);
+        let mut var_startDate = <String>::sse_decode(deserializer);
+        let mut var_endDate = <String>::sse_decode(deserializer);
+        let mut var_totalWeeks = <u32>::sse_decode(deserializer);
+        let mut var_currentBlockIndex = <i32>::sse_decode(deserializer);
+        let mut var_blockNames = <Vec<String>>::sse_decode(deserializer);
+        let mut var_blockTypes = <Vec<String>>::sse_decode(deserializer);
+        let mut var_blockWeeks = <Vec<u8>>::sse_decode(deserializer);
+        return crate::api::ApiPeriodizationData {
+            name: var_name,
+            goal: var_goal,
+            start_date: var_startDate,
+            end_date: var_endDate,
+            total_weeks: var_totalWeeks,
+            current_block_index: var_currentBlockIndex,
+            block_names: var_blockNames,
+            block_types: var_blockTypes,
+            block_weeks: var_blockWeeks,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiPlanDetails {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_name = <String>::sse_decode(deserializer);
+        let mut var_phaseNames = <Vec<String>>::sse_decode(deserializer);
+        let mut var_phaseZones = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_phaseDurations = <Vec<u32>>::sse_decode(deserializer);
+        let mut var_maxHr = <u16>::sse_decode(deserializer);
+        let mut var_createdAtMillis = <i64>::sse_decode(deserializer);
+        return crate::api::ApiPlanDetails {
+            name: var_name,
+            phase_names: var_phaseNames,
+            phase_zones: var_phaseZones,
+            phase_durations: var_phaseDurations,
+            max_hr: var_maxHr,
+            created_at_millis: var_createdAtMillis,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiReadinessData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_score = <u8>::sse_decode(deserializer);
+        let mut var_level = <String>::sse_decode(deserializer);
+        let mut var_hrvComponent = <f64>::sse_decode(deserializer);
+        let mut var_rhrComponent = <f64>::sse_decode(deserializer);
+        let mut var_loadComponent = <f64>::sse_decode(deserializer);
+        let mut var_recommendation = <String>::sse_decode(deserializer);
+        return crate::api::ApiReadinessData {
+            score: var_score,
+            level: var_level,
+            hrv_component: var_hrvComponent,
+            rhr_component: var_rhrComponent,
+            load_component: var_loadComponent,
+            recommendation: var_recommendation,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiRestingHrStats {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_currentBpm = <Option<u16>>::sse_decode(deserializer);
+        let mut var_sevenDayAvg = <Option<f64>>::sse_decode(deserializer);
+        let mut var_thirtyDayAvg = <Option<f64>>::sse_decode(deserializer);
+        let mut var_trendDirection = <String>::sse_decode(deserializer);
+        let mut var_trendPoints = <Vec<crate::api::ApiTrendPoint>>::sse_decode(deserializer);
+        return crate::api::ApiRestingHrStats {
+            current_bpm: var_currentBpm,
+            seven_day_avg: var_sevenDayAvg,
+            thirty_day_avg: var_thirtyDayAvg,
+            trend_direction: var_trendDirection,
+            trend_points: var_trendPoints,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiTrainingLoadData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_currentCtl = <f64>::sse_decode(deserializer);
+        let mut var_currentAtl = <f64>::sse_decode(deserializer);
+        let mut var_currentTsb = <f64>::sse_decode(deserializer);
+        let mut var_loadHistory = <Vec<crate::api::ApiLoadPoint>>::sse_decode(deserializer);
+        let mut var_sessionTrimp = <Vec<crate::api::ApiTrendPoint>>::sse_decode(deserializer);
+        return crate::api::ApiTrainingLoadData {
+            current_ctl: var_currentCtl,
+            current_atl: var_currentAtl,
+            current_tsb: var_currentTsb,
+            load_history: var_loadHistory,
+            session_trimp: var_sessionTrimp,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiTrendPoint {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_timestampMillis = <i64>::sse_decode(deserializer);
+        let mut var_value = <f64>::sse_decode(deserializer);
+        return crate::api::ApiTrendPoint {
+            timestamp_millis: var_timestampMillis,
+            value: var_value,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiWeeklySummary {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_weekStartMillis = <i64>::sse_decode(deserializer);
+        let mut var_sessionCount = <u32>::sse_decode(deserializer);
+        let mut var_totalDurationSecs = <u32>::sse_decode(deserializer);
+        let mut var_avgHr = <u16>::sse_decode(deserializer);
+        let mut var_timeInZone = <Vec<u32>>::sse_decode(deserializer);
+        return crate::api::ApiWeeklySummary {
+            week_start_millis: var_weekStartMillis,
+            session_count: var_sessionCount,
+            total_duration_secs: var_totalDurationSecs,
+            avg_hr: var_avgHr,
+            time_in_zone: var_timeInZone,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ApiWorkoutTemplate {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <String>::sse_decode(deserializer);
+        let mut var_name = <String>::sse_decode(deserializer);
+        let mut var_description = <String>::sse_decode(deserializer);
+        let mut var_sport = <String>::sse_decode(deserializer);
+        let mut var_difficulty = <String>::sse_decode(deserializer);
+        let mut var_durationMins = <u32>::sse_decode(deserializer);
+        let mut var_phaseCount = <u32>::sse_decode(deserializer);
+        return crate::api::ApiWorkoutTemplate {
+            id: var_id,
+            name: var_name,
+            description: var_description,
+            sport: var_sport,
+            difficulty: var_difficulty,
+            duration_mins: var_durationMins,
+            phase_count: var_phaseCount,
         };
     }
 }
@@ -3418,6 +4176,13 @@ impl SseDecode for i64 {
     }
 }
 
+impl SseDecode for i8 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i8().unwrap()
+    }
+}
+
 impl SseDecode for Vec<ApiSessionSummaryPreview> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -3437,6 +4202,54 @@ impl SseDecode for Vec<String> {
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
             ans_.push(<String>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::ApiLoadPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::ApiLoadPoint>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::ApiTrendPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::ApiTrendPoint>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::ApiWeeklySummary> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::ApiWeeklySummary>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::ApiWorkoutTemplate> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::ApiWorkoutTemplate>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -3518,6 +4331,28 @@ impl SseDecode for Option<ApiCompletedSession> {
     }
 }
 
+impl SseDecode for Option<crate::api::ApiTrendPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::ApiTrendPoint>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::api::ApiWeeklySummary> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::ApiWeeklySummary>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -3534,6 +4369,17 @@ impl SseDecode for Option<(i64, u16)> {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<(i64, u16)>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<u16> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<u16>::sse_decode(deserializer));
         } else {
             return None;
         }
@@ -3791,6 +4637,75 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<ApiZoneStatus>> for ApiZoneSta
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiAdaptedPlan {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.original_name.into_into_dart().into_dart(),
+            self.reason.into_into_dart().into_dart(),
+            self.message.into_into_dart().into_dart(),
+            self.zone_delta.into_into_dart().into_dart(),
+            self.duration_factor.into_into_dart().into_dart(),
+            self.phase_names.into_into_dart().into_dart(),
+            self.phase_zones.into_into_dart().into_dart(),
+            self.phase_durations.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiAdaptedPlan {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiAdaptedPlan> for crate::api::ApiAdaptedPlan {
+    fn into_into_dart(self) -> crate::api::ApiAdaptedPlan {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiAnalyticsData {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.summary.into_into_dart().into_dart(),
+            self.weekly_summaries.into_into_dart().into_dart(),
+            self.hr_trend.into_into_dart().into_dart(),
+            self.volume_trend.into_into_dart().into_dart(),
+            self.consistency_trend.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiAnalyticsData {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiAnalyticsData>
+    for crate::api::ApiAnalyticsData
+{
+    fn into_into_dart(self) -> crate::api::ApiAnalyticsData {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiAnalyticsSummary {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.total_sessions.into_into_dart().into_dart(),
+            self.total_duration_secs.into_into_dart().into_dart(),
+            self.overall_avg_hr.into_into_dart().into_dart(),
+            self.overall_time_in_zone.into_into_dart().into_dart(),
+            self.weeks_count.into_into_dart().into_dart(),
+            self.hr_trend_count.into_into_dart().into_dart(),
+            self.volume_trend_count.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ApiAnalyticsSummary
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiAnalyticsSummary>
+    for crate::api::ApiAnalyticsSummary
+{
+    fn into_into_dart(self) -> crate::api::ApiAnalyticsSummary {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::ApiBatteryLevel {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -3806,6 +4721,202 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiBatteryLevel>
     for crate::api::ApiBatteryLevel
 {
     fn into_into_dart(self) -> crate::api::ApiBatteryLevel {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiLoadPoint {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.timestamp_millis.into_into_dart().into_dart(),
+            self.ctl.into_into_dart().into_dart(),
+            self.atl.into_into_dart().into_dart(),
+            self.tsb.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiLoadPoint {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiLoadPoint> for crate::api::ApiLoadPoint {
+    fn into_into_dart(self) -> crate::api::ApiLoadPoint {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiPeriodizationData {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.name.into_into_dart().into_dart(),
+            self.goal.into_into_dart().into_dart(),
+            self.start_date.into_into_dart().into_dart(),
+            self.end_date.into_into_dart().into_dart(),
+            self.total_weeks.into_into_dart().into_dart(),
+            self.current_block_index.into_into_dart().into_dart(),
+            self.block_names.into_into_dart().into_dart(),
+            self.block_types.into_into_dart().into_dart(),
+            self.block_weeks.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ApiPeriodizationData
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiPeriodizationData>
+    for crate::api::ApiPeriodizationData
+{
+    fn into_into_dart(self) -> crate::api::ApiPeriodizationData {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiPlanDetails {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.name.into_into_dart().into_dart(),
+            self.phase_names.into_into_dart().into_dart(),
+            self.phase_zones.into_into_dart().into_dart(),
+            self.phase_durations.into_into_dart().into_dart(),
+            self.max_hr.into_into_dart().into_dart(),
+            self.created_at_millis.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiPlanDetails {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiPlanDetails> for crate::api::ApiPlanDetails {
+    fn into_into_dart(self) -> crate::api::ApiPlanDetails {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiReadinessData {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.score.into_into_dart().into_dart(),
+            self.level.into_into_dart().into_dart(),
+            self.hrv_component.into_into_dart().into_dart(),
+            self.rhr_component.into_into_dart().into_dart(),
+            self.load_component.into_into_dart().into_dart(),
+            self.recommendation.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiReadinessData {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiReadinessData>
+    for crate::api::ApiReadinessData
+{
+    fn into_into_dart(self) -> crate::api::ApiReadinessData {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiRestingHrStats {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.current_bpm.into_into_dart().into_dart(),
+            self.seven_day_avg.into_into_dart().into_dart(),
+            self.thirty_day_avg.into_into_dart().into_dart(),
+            self.trend_direction.into_into_dart().into_dart(),
+            self.trend_points.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiRestingHrStats {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiRestingHrStats>
+    for crate::api::ApiRestingHrStats
+{
+    fn into_into_dart(self) -> crate::api::ApiRestingHrStats {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiTrainingLoadData {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.current_ctl.into_into_dart().into_dart(),
+            self.current_atl.into_into_dart().into_dart(),
+            self.current_tsb.into_into_dart().into_dart(),
+            self.load_history.into_into_dart().into_dart(),
+            self.session_trimp.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ApiTrainingLoadData
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiTrainingLoadData>
+    for crate::api::ApiTrainingLoadData
+{
+    fn into_into_dart(self) -> crate::api::ApiTrainingLoadData {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiTrendPoint {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.timestamp_millis.into_into_dart().into_dart(),
+            self.value.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiTrendPoint {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiTrendPoint> for crate::api::ApiTrendPoint {
+    fn into_into_dart(self) -> crate::api::ApiTrendPoint {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiWeeklySummary {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.week_start_millis.into_into_dart().into_dart(),
+            self.session_count.into_into_dart().into_dart(),
+            self.total_duration_secs.into_into_dart().into_dart(),
+            self.avg_hr.into_into_dart().into_dart(),
+            self.time_in_zone.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::ApiWeeklySummary {}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiWeeklySummary>
+    for crate::api::ApiWeeklySummary
+{
+    fn into_into_dart(self) -> crate::api::ApiWeeklySummary {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ApiWorkoutTemplate {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.name.into_into_dart().into_dart(),
+            self.description.into_into_dart().into_dart(),
+            self.sport.into_into_dart().into_dart(),
+            self.difficulty.into_into_dart().into_dart(),
+            self.duration_mins.into_into_dart().into_dart(),
+            self.phase_count.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ApiWorkoutTemplate
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ApiWorkoutTemplate>
+    for crate::api::ApiWorkoutTemplate
+{
+    fn into_into_dart(self) -> crate::api::ApiWorkoutTemplate {
         self
     }
 }
@@ -4100,12 +5211,153 @@ impl SseEncode for String {
     }
 }
 
+impl SseEncode for crate::api::ApiAdaptedPlan {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.original_name, serializer);
+        <String>::sse_encode(self.reason, serializer);
+        <String>::sse_encode(self.message, serializer);
+        <i8>::sse_encode(self.zone_delta, serializer);
+        <f64>::sse_encode(self.duration_factor, serializer);
+        <Vec<String>>::sse_encode(self.phase_names, serializer);
+        <Vec<u8>>::sse_encode(self.phase_zones, serializer);
+        <Vec<u32>>::sse_encode(self.phase_durations, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiAnalyticsData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api::ApiAnalyticsSummary>::sse_encode(self.summary, serializer);
+        <Vec<crate::api::ApiWeeklySummary>>::sse_encode(self.weekly_summaries, serializer);
+        <Vec<crate::api::ApiTrendPoint>>::sse_encode(self.hr_trend, serializer);
+        <Vec<crate::api::ApiTrendPoint>>::sse_encode(self.volume_trend, serializer);
+        <Vec<crate::api::ApiTrendPoint>>::sse_encode(self.consistency_trend, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiAnalyticsSummary {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u32>::sse_encode(self.total_sessions, serializer);
+        <u32>::sse_encode(self.total_duration_secs, serializer);
+        <u16>::sse_encode(self.overall_avg_hr, serializer);
+        <Vec<u32>>::sse_encode(self.overall_time_in_zone, serializer);
+        <u32>::sse_encode(self.weeks_count, serializer);
+        <u32>::sse_encode(self.hr_trend_count, serializer);
+        <u32>::sse_encode(self.volume_trend_count, serializer);
+    }
+}
+
 impl SseEncode for crate::api::ApiBatteryLevel {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Option<u8>>::sse_encode(self.level, serializer);
         <bool>::sse_encode(self.is_charging, serializer);
         <u64>::sse_encode(self.timestamp, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiLoadPoint {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.timestamp_millis, serializer);
+        <f64>::sse_encode(self.ctl, serializer);
+        <f64>::sse_encode(self.atl, serializer);
+        <f64>::sse_encode(self.tsb, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiPeriodizationData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.name, serializer);
+        <String>::sse_encode(self.goal, serializer);
+        <String>::sse_encode(self.start_date, serializer);
+        <String>::sse_encode(self.end_date, serializer);
+        <u32>::sse_encode(self.total_weeks, serializer);
+        <i32>::sse_encode(self.current_block_index, serializer);
+        <Vec<String>>::sse_encode(self.block_names, serializer);
+        <Vec<String>>::sse_encode(self.block_types, serializer);
+        <Vec<u8>>::sse_encode(self.block_weeks, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiPlanDetails {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.name, serializer);
+        <Vec<String>>::sse_encode(self.phase_names, serializer);
+        <Vec<u8>>::sse_encode(self.phase_zones, serializer);
+        <Vec<u32>>::sse_encode(self.phase_durations, serializer);
+        <u16>::sse_encode(self.max_hr, serializer);
+        <i64>::sse_encode(self.created_at_millis, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiReadinessData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u8>::sse_encode(self.score, serializer);
+        <String>::sse_encode(self.level, serializer);
+        <f64>::sse_encode(self.hrv_component, serializer);
+        <f64>::sse_encode(self.rhr_component, serializer);
+        <f64>::sse_encode(self.load_component, serializer);
+        <String>::sse_encode(self.recommendation, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiRestingHrStats {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<u16>>::sse_encode(self.current_bpm, serializer);
+        <Option<f64>>::sse_encode(self.seven_day_avg, serializer);
+        <Option<f64>>::sse_encode(self.thirty_day_avg, serializer);
+        <String>::sse_encode(self.trend_direction, serializer);
+        <Vec<crate::api::ApiTrendPoint>>::sse_encode(self.trend_points, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiTrainingLoadData {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <f64>::sse_encode(self.current_ctl, serializer);
+        <f64>::sse_encode(self.current_atl, serializer);
+        <f64>::sse_encode(self.current_tsb, serializer);
+        <Vec<crate::api::ApiLoadPoint>>::sse_encode(self.load_history, serializer);
+        <Vec<crate::api::ApiTrendPoint>>::sse_encode(self.session_trimp, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiTrendPoint {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.timestamp_millis, serializer);
+        <f64>::sse_encode(self.value, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiWeeklySummary {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.week_start_millis, serializer);
+        <u32>::sse_encode(self.session_count, serializer);
+        <u32>::sse_encode(self.total_duration_secs, serializer);
+        <u16>::sse_encode(self.avg_hr, serializer);
+        <Vec<u32>>::sse_encode(self.time_in_zone, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ApiWorkoutTemplate {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.id, serializer);
+        <String>::sse_encode(self.name, serializer);
+        <String>::sse_encode(self.description, serializer);
+        <String>::sse_encode(self.sport, serializer);
+        <String>::sse_encode(self.difficulty, serializer);
+        <u32>::sse_encode(self.duration_mins, serializer);
+        <u32>::sse_encode(self.phase_count, serializer);
     }
 }
 
@@ -4170,6 +5422,13 @@ impl SseEncode for i64 {
     }
 }
 
+impl SseEncode for i8 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i8(self).unwrap();
+    }
+}
+
 impl SseEncode for Vec<ApiSessionSummaryPreview> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4186,6 +5445,46 @@ impl SseEncode for Vec<String> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <String>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::ApiLoadPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::ApiLoadPoint>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::ApiTrendPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::ApiTrendPoint>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::ApiWeeklySummary> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::ApiWeeklySummary>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::ApiWorkoutTemplate> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::ApiWorkoutTemplate>::sse_encode(item, serializer);
         }
     }
 }
@@ -4250,6 +5549,26 @@ impl SseEncode for Option<ApiCompletedSession> {
     }
 }
 
+impl SseEncode for Option<crate::api::ApiTrendPoint> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::ApiTrendPoint>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::api::ApiWeeklySummary> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::ApiWeeklySummary>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<f64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4266,6 +5585,16 @@ impl SseEncode for Option<(i64, u16)> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <(i64, u16)>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<u16> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <u16>::sse_encode(value, serializer);
         }
     }
 }
@@ -4675,6 +6004,47 @@ mod io {
             String::from_utf8(vec).unwrap()
         }
     }
+    impl CstDecode<crate::api::ApiAdaptedPlan> for wire_cst_api_adapted_plan {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAdaptedPlan {
+            crate::api::ApiAdaptedPlan {
+                original_name: self.original_name.cst_decode(),
+                reason: self.reason.cst_decode(),
+                message: self.message.cst_decode(),
+                zone_delta: self.zone_delta.cst_decode(),
+                duration_factor: self.duration_factor.cst_decode(),
+                phase_names: self.phase_names.cst_decode(),
+                phase_zones: self.phase_zones.cst_decode(),
+                phase_durations: self.phase_durations.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiAnalyticsData> for wire_cst_api_analytics_data {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAnalyticsData {
+            crate::api::ApiAnalyticsData {
+                summary: self.summary.cst_decode(),
+                weekly_summaries: self.weekly_summaries.cst_decode(),
+                hr_trend: self.hr_trend.cst_decode(),
+                volume_trend: self.volume_trend.cst_decode(),
+                consistency_trend: self.consistency_trend.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiAnalyticsSummary> for wire_cst_api_analytics_summary {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAnalyticsSummary {
+            crate::api::ApiAnalyticsSummary {
+                total_sessions: self.total_sessions.cst_decode(),
+                total_duration_secs: self.total_duration_secs.cst_decode(),
+                overall_avg_hr: self.overall_avg_hr.cst_decode(),
+                overall_time_in_zone: self.overall_time_in_zone.cst_decode(),
+                weeks_count: self.weeks_count.cst_decode(),
+                hr_trend_count: self.hr_trend_count.cst_decode(),
+                volume_trend_count: self.volume_trend_count.cst_decode(),
+            }
+        }
+    }
     impl CstDecode<crate::api::ApiBatteryLevel> for wire_cst_api_battery_level {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::ApiBatteryLevel {
@@ -4685,6 +6055,118 @@ mod io {
             }
         }
     }
+    impl CstDecode<crate::api::ApiLoadPoint> for wire_cst_api_load_point {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiLoadPoint {
+            crate::api::ApiLoadPoint {
+                timestamp_millis: self.timestamp_millis.cst_decode(),
+                ctl: self.ctl.cst_decode(),
+                atl: self.atl.cst_decode(),
+                tsb: self.tsb.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiPeriodizationData> for wire_cst_api_periodization_data {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiPeriodizationData {
+            crate::api::ApiPeriodizationData {
+                name: self.name.cst_decode(),
+                goal: self.goal.cst_decode(),
+                start_date: self.start_date.cst_decode(),
+                end_date: self.end_date.cst_decode(),
+                total_weeks: self.total_weeks.cst_decode(),
+                current_block_index: self.current_block_index.cst_decode(),
+                block_names: self.block_names.cst_decode(),
+                block_types: self.block_types.cst_decode(),
+                block_weeks: self.block_weeks.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiPlanDetails> for wire_cst_api_plan_details {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiPlanDetails {
+            crate::api::ApiPlanDetails {
+                name: self.name.cst_decode(),
+                phase_names: self.phase_names.cst_decode(),
+                phase_zones: self.phase_zones.cst_decode(),
+                phase_durations: self.phase_durations.cst_decode(),
+                max_hr: self.max_hr.cst_decode(),
+                created_at_millis: self.created_at_millis.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiReadinessData> for wire_cst_api_readiness_data {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiReadinessData {
+            crate::api::ApiReadinessData {
+                score: self.score.cst_decode(),
+                level: self.level.cst_decode(),
+                hrv_component: self.hrv_component.cst_decode(),
+                rhr_component: self.rhr_component.cst_decode(),
+                load_component: self.load_component.cst_decode(),
+                recommendation: self.recommendation.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiRestingHrStats> for wire_cst_api_resting_hr_stats {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiRestingHrStats {
+            crate::api::ApiRestingHrStats {
+                current_bpm: self.current_bpm.cst_decode(),
+                seven_day_avg: self.seven_day_avg.cst_decode(),
+                thirty_day_avg: self.thirty_day_avg.cst_decode(),
+                trend_direction: self.trend_direction.cst_decode(),
+                trend_points: self.trend_points.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiTrainingLoadData> for wire_cst_api_training_load_data {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiTrainingLoadData {
+            crate::api::ApiTrainingLoadData {
+                current_ctl: self.current_ctl.cst_decode(),
+                current_atl: self.current_atl.cst_decode(),
+                current_tsb: self.current_tsb.cst_decode(),
+                load_history: self.load_history.cst_decode(),
+                session_trimp: self.session_trimp.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiTrendPoint> for wire_cst_api_trend_point {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiTrendPoint {
+            crate::api::ApiTrendPoint {
+                timestamp_millis: self.timestamp_millis.cst_decode(),
+                value: self.value.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiWeeklySummary> for wire_cst_api_weekly_summary {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiWeeklySummary {
+            crate::api::ApiWeeklySummary {
+                week_start_millis: self.week_start_millis.cst_decode(),
+                session_count: self.session_count.cst_decode(),
+                total_duration_secs: self.total_duration_secs.cst_decode(),
+                avg_hr: self.avg_hr.cst_decode(),
+                time_in_zone: self.time_in_zone.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiWorkoutTemplate> for wire_cst_api_workout_template {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiWorkoutTemplate {
+            crate::api::ApiWorkoutTemplate {
+                id: self.id.cst_decode(),
+                name: self.name.cst_decode(),
+                description: self.description.cst_decode(),
+                sport: self.sport.cst_decode(),
+                difficulty: self.difficulty.cst_decode(),
+                duration_mins: self.duration_mins.cst_decode(),
+                phase_count: self.phase_count.cst_decode(),
+            }
+        }
+    }
     impl CstDecode<ApiCompletedSession> for *mut usize {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> ApiCompletedSession {
@@ -4692,11 +6174,32 @@ mod io {
             CstDecode::<ApiCompletedSession>::cst_decode(*wrap).into()
         }
     }
+    impl CstDecode<crate::api::ApiAnalyticsData> for *mut wire_cst_api_analytics_data {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAnalyticsData {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<crate::api::ApiAnalyticsData>::cst_decode(*wrap).into()
+        }
+    }
     impl CstDecode<crate::api::ApiBatteryLevel> for *mut wire_cst_api_battery_level {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::ApiBatteryLevel {
             let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
             CstDecode::<crate::api::ApiBatteryLevel>::cst_decode(*wrap).into()
+        }
+    }
+    impl CstDecode<crate::api::ApiTrendPoint> for *mut wire_cst_api_trend_point {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiTrendPoint {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<crate::api::ApiTrendPoint>::cst_decode(*wrap).into()
+        }
+    }
+    impl CstDecode<crate::api::ApiWeeklySummary> for *mut wire_cst_api_weekly_summary {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiWeeklySummary {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<crate::api::ApiWeeklySummary>::cst_decode(*wrap).into()
         }
     }
     impl CstDecode<f64> for *mut f64 {
@@ -4710,6 +6213,12 @@ mod io {
         fn cst_decode(self) -> (i64, u16) {
             let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
             CstDecode::<(i64, u16)>::cst_decode(*wrap).into()
+        }
+    }
+    impl CstDecode<u16> for *mut u16 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> u16 {
+            unsafe { *flutter_rust_bridge::for_generated::box_from_leak_ptr(self) }
         }
     }
     impl CstDecode<u64> for *mut u64 {
@@ -4754,6 +6263,46 @@ mod io {
             vec.into_iter().map(CstDecode::cst_decode).collect()
         }
     }
+    impl CstDecode<Vec<crate::api::ApiLoadPoint>> for *mut wire_cst_list_api_load_point {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiLoadPoint> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiTrendPoint>> for *mut wire_cst_list_api_trend_point {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiTrendPoint> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiWeeklySummary>> for *mut wire_cst_list_api_weekly_summary {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiWeeklySummary> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiWorkoutTemplate>> for *mut wire_cst_list_api_workout_template {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiWorkoutTemplate> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
     impl CstDecode<Vec<crate::domain::heart_rate::DiscoveredDevice>>
         for *mut wire_cst_list_discovered_device
     {
@@ -4766,9 +6315,27 @@ mod io {
             vec.into_iter().map(CstDecode::cst_decode).collect()
         }
     }
+    impl CstDecode<Vec<u32>> for *mut wire_cst_list_prim_u_32_loose {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<u32> {
+            unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            }
+        }
+    }
     impl CstDecode<Vec<u32>> for *mut wire_cst_list_prim_u_32_strict {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<u32> {
+            unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            }
+        }
+    }
+    impl CstDecode<Vec<u8>> for *mut wire_cst_list_prim_u_8_loose {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<u8> {
             unsafe {
                 let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
                 flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
@@ -4801,6 +6368,59 @@ mod io {
             (self.field0.cst_decode(), self.field1.cst_decode())
         }
     }
+    impl NewWithNullPtr for wire_cst_api_adapted_plan {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                original_name: core::ptr::null_mut(),
+                reason: core::ptr::null_mut(),
+                message: core::ptr::null_mut(),
+                zone_delta: Default::default(),
+                duration_factor: Default::default(),
+                phase_names: core::ptr::null_mut(),
+                phase_zones: core::ptr::null_mut(),
+                phase_durations: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_adapted_plan {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_analytics_data {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                summary: Default::default(),
+                weekly_summaries: core::ptr::null_mut(),
+                hr_trend: core::ptr::null_mut(),
+                volume_trend: core::ptr::null_mut(),
+                consistency_trend: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_analytics_data {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_analytics_summary {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                total_sessions: Default::default(),
+                total_duration_secs: Default::default(),
+                overall_avg_hr: Default::default(),
+                overall_time_in_zone: core::ptr::null_mut(),
+                weeks_count: Default::default(),
+                hr_trend_count: Default::default(),
+                volume_trend_count: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_analytics_summary {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
     impl NewWithNullPtr for wire_cst_api_battery_level {
         fn new_with_null_ptr() -> Self {
             Self {
@@ -4811,6 +6431,154 @@ mod io {
         }
     }
     impl Default for wire_cst_api_battery_level {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_load_point {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                timestamp_millis: Default::default(),
+                ctl: Default::default(),
+                atl: Default::default(),
+                tsb: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_load_point {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_periodization_data {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                name: core::ptr::null_mut(),
+                goal: core::ptr::null_mut(),
+                start_date: core::ptr::null_mut(),
+                end_date: core::ptr::null_mut(),
+                total_weeks: Default::default(),
+                current_block_index: Default::default(),
+                block_names: core::ptr::null_mut(),
+                block_types: core::ptr::null_mut(),
+                block_weeks: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_periodization_data {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_plan_details {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                name: core::ptr::null_mut(),
+                phase_names: core::ptr::null_mut(),
+                phase_zones: core::ptr::null_mut(),
+                phase_durations: core::ptr::null_mut(),
+                max_hr: Default::default(),
+                created_at_millis: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_plan_details {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_readiness_data {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                score: Default::default(),
+                level: core::ptr::null_mut(),
+                hrv_component: Default::default(),
+                rhr_component: Default::default(),
+                load_component: Default::default(),
+                recommendation: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_readiness_data {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_resting_hr_stats {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                current_bpm: core::ptr::null_mut(),
+                seven_day_avg: core::ptr::null_mut(),
+                thirty_day_avg: core::ptr::null_mut(),
+                trend_direction: core::ptr::null_mut(),
+                trend_points: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_resting_hr_stats {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_training_load_data {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                current_ctl: Default::default(),
+                current_atl: Default::default(),
+                current_tsb: Default::default(),
+                load_history: core::ptr::null_mut(),
+                session_trimp: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_training_load_data {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_trend_point {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                timestamp_millis: Default::default(),
+                value: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_trend_point {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_weekly_summary {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                week_start_millis: Default::default(),
+                session_count: Default::default(),
+                total_duration_secs: Default::default(),
+                avg_hr: Default::default(),
+                time_in_zone: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_weekly_summary {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_api_workout_template {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                id: core::ptr::null_mut(),
+                name: core::ptr::null_mut(),
+                description: core::ptr::null_mut(),
+                sport: core::ptr::null_mut(),
+                difficulty: core::ptr::null_mut(),
+                duration_mins: Default::default(),
+                phase_count: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_api_workout_template {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -4856,6 +6624,82 @@ mod io {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_consistency_at(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_consistency_at_impl(port_, data, index)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_consistency_count(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+    ) {
+        wire__crate__api__analytics_consistency_count_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_hr_trend_at(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_hr_trend_at_impl(port_, data, index)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_hr_trend_count(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+    ) {
+        wire__crate__api__analytics_hr_trend_count_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_summary(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+    ) {
+        wire__crate__api__analytics_summary_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_volume_trend_at(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_volume_trend_at_impl(port_, data, index)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_volume_trend_count(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+    ) {
+        wire__crate__api__analytics_volume_trend_count_impl(port_, data)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_weekly_at(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_weekly_at_impl(port_, data, index)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__analytics_weeks_count(
+        port_: i64,
+        data: *mut wire_cst_api_analytics_data,
+    ) {
+        wire__crate__api__analytics_weeks_count_impl(port_, data)
     }
 
     #[unsafe(no_mangle)]
@@ -4963,6 +6807,25 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_custom_plan(
+        port_: i64,
+        name: *mut wire_cst_list_prim_u_8_strict,
+        phase_names: *mut wire_cst_list_String,
+        phase_zones: *mut wire_cst_list_prim_u_8_loose,
+        phase_durations: *mut wire_cst_list_prim_u_32_loose,
+        max_hr: u16,
+    ) {
+        wire__crate__api__create_custom_plan_impl(
+            port_,
+            name,
+            phase_names,
+            phase_zones,
+            phase_durations,
+            max_hr,
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__create_hr_stream(
         port_: i64,
         sink: *mut wire_cst_list_prim_u_8_strict,
@@ -4976,6 +6839,14 @@ mod io {
         sink: *mut wire_cst_list_prim_u_8_strict,
     ) {
         wire__crate__api__create_session_progress_stream_impl(port_, sink)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__delete_plan(
+        port_: i64,
+        name: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__delete_plan_impl(port_, name)
     }
 
     #[unsafe(no_mangle)]
@@ -5044,11 +6915,73 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__export_session_gpx(
+        port_: i64,
+        session_id: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__export_session_gpx_impl(port_, session_id)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__export_session_tcx(
+        port_: i64,
+        session_id: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__export_session_tcx_impl(port_, session_id)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_adapted_plan(
+        port_: i64,
+        plan_name: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__get_adapted_plan_impl(port_, plan_name)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_analytics(port_: i64) {
+        wire__crate__api__get_analytics_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_periodization_plan(port_: i64) {
+        wire__crate__api__get_periodization_plan_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_plan_details(
+        port_: i64,
+        name: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__get_plan_details_impl(port_, name)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_readiness_score(port_: i64) {
+        wire__crate__api__get_readiness_score_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_resting_hr_stats(port_: i64) {
+        wire__crate__api__get_resting_hr_stats_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_session(
         port_: i64,
         id: *mut wire_cst_list_prim_u_8_strict,
     ) {
         wire__crate__api__get_session_impl(port_, id)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_training_load(port_: i64) {
+        wire__crate__api__get_training_load_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__get_workout_templates(port_: i64) {
+        wire__crate__api__get_workout_templates_impl(port_)
     }
 
     #[unsafe(no_mangle)]
@@ -5452,6 +7385,15 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__start_template_workout(
+        port_: i64,
+        template_id: *mut wire_cst_list_prim_u_8_strict,
+        max_hr: u16,
+    ) {
+        wire__crate__api__start_template_workout_impl(port_, template_id, max_hr)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__start_workout(
         port_: i64,
         plan_name: *mut wire_cst_list_prim_u_8_strict,
@@ -5652,10 +7594,34 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_analytics_data(
+    ) -> *mut wire_cst_api_analytics_data {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_api_analytics_data::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_battery_level(
     ) -> *mut wire_cst_api_battery_level {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_api_battery_level::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_trend_point(
+    ) -> *mut wire_cst_api_trend_point {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_api_trend_point::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_api_weekly_summary(
+    ) -> *mut wire_cst_api_weekly_summary {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_api_weekly_summary::new_with_null_ptr(),
         )
     }
 
@@ -5670,6 +7636,11 @@ mod io {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_record_i_64_u_16::new_with_null_ptr(),
         )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_box_autoadd_u_16(value: u16) -> *mut u16 {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
@@ -5701,6 +7672,62 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_api_load_point(
+        len: i32,
+    ) -> *mut wire_cst_list_api_load_point {
+        let wrap = wire_cst_list_api_load_point {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_api_load_point>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_api_trend_point(
+        len: i32,
+    ) -> *mut wire_cst_list_api_trend_point {
+        let wrap = wire_cst_list_api_trend_point {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_api_trend_point>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_api_weekly_summary(
+        len: i32,
+    ) -> *mut wire_cst_list_api_weekly_summary {
+        let wrap = wire_cst_list_api_weekly_summary {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_api_weekly_summary>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_api_workout_template(
+        len: i32,
+    ) -> *mut wire_cst_list_api_workout_template {
+        let wrap = wire_cst_list_api_workout_template {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_api_workout_template>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_list_discovered_device(
         len: i32,
     ) -> *mut wire_cst_list_discovered_device {
@@ -5715,10 +7742,32 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_prim_u_32_loose(
+        len: i32,
+    ) -> *mut wire_cst_list_prim_u_32_loose {
+        let ans = wire_cst_list_prim_u_32_loose {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(ans)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_cst_new_list_prim_u_32_strict(
         len: i32,
     ) -> *mut wire_cst_list_prim_u_32_strict {
         let ans = wire_cst_list_prim_u_32_strict {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(ans)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_cst_new_list_prim_u_8_loose(
+        len: i32,
+    ) -> *mut wire_cst_list_prim_u_8_loose {
+        let ans = wire_cst_list_prim_u_8_loose {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len),
             len,
         };
@@ -5738,10 +7787,127 @@ mod io {
 
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_api_adapted_plan {
+        original_name: *mut wire_cst_list_prim_u_8_strict,
+        reason: *mut wire_cst_list_prim_u_8_strict,
+        message: *mut wire_cst_list_prim_u_8_strict,
+        zone_delta: i8,
+        duration_factor: f64,
+        phase_names: *mut wire_cst_list_String,
+        phase_zones: *mut wire_cst_list_prim_u_8_strict,
+        phase_durations: *mut wire_cst_list_prim_u_32_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_analytics_data {
+        summary: wire_cst_api_analytics_summary,
+        weekly_summaries: *mut wire_cst_list_api_weekly_summary,
+        hr_trend: *mut wire_cst_list_api_trend_point,
+        volume_trend: *mut wire_cst_list_api_trend_point,
+        consistency_trend: *mut wire_cst_list_api_trend_point,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_analytics_summary {
+        total_sessions: u32,
+        total_duration_secs: u32,
+        overall_avg_hr: u16,
+        overall_time_in_zone: *mut wire_cst_list_prim_u_32_strict,
+        weeks_count: u32,
+        hr_trend_count: u32,
+        volume_trend_count: u32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_api_battery_level {
         level: *mut u8,
         is_charging: bool,
         timestamp: u64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_load_point {
+        timestamp_millis: i64,
+        ctl: f64,
+        atl: f64,
+        tsb: f64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_periodization_data {
+        name: *mut wire_cst_list_prim_u_8_strict,
+        goal: *mut wire_cst_list_prim_u_8_strict,
+        start_date: *mut wire_cst_list_prim_u_8_strict,
+        end_date: *mut wire_cst_list_prim_u_8_strict,
+        total_weeks: u32,
+        current_block_index: i32,
+        block_names: *mut wire_cst_list_String,
+        block_types: *mut wire_cst_list_String,
+        block_weeks: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_plan_details {
+        name: *mut wire_cst_list_prim_u_8_strict,
+        phase_names: *mut wire_cst_list_String,
+        phase_zones: *mut wire_cst_list_prim_u_8_strict,
+        phase_durations: *mut wire_cst_list_prim_u_32_strict,
+        max_hr: u16,
+        created_at_millis: i64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_readiness_data {
+        score: u8,
+        level: *mut wire_cst_list_prim_u_8_strict,
+        hrv_component: f64,
+        rhr_component: f64,
+        load_component: f64,
+        recommendation: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_resting_hr_stats {
+        current_bpm: *mut u16,
+        seven_day_avg: *mut f64,
+        thirty_day_avg: *mut f64,
+        trend_direction: *mut wire_cst_list_prim_u_8_strict,
+        trend_points: *mut wire_cst_list_api_trend_point,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_training_load_data {
+        current_ctl: f64,
+        current_atl: f64,
+        current_tsb: f64,
+        load_history: *mut wire_cst_list_api_load_point,
+        session_trimp: *mut wire_cst_list_api_trend_point,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_trend_point {
+        timestamp_millis: i64,
+        value: f64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_weekly_summary {
+        week_start_millis: i64,
+        session_count: u32,
+        total_duration_secs: u32,
+        avg_hr: u16,
+        time_in_zone: *mut wire_cst_list_prim_u_32_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_api_workout_template {
+        id: *mut wire_cst_list_prim_u_8_strict,
+        name: *mut wire_cst_list_prim_u_8_strict,
+        description: *mut wire_cst_list_prim_u_8_strict,
+        sport: *mut wire_cst_list_prim_u_8_strict,
+        difficulty: *mut wire_cst_list_prim_u_8_strict,
+        duration_mins: u32,
+        phase_count: u32,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
@@ -5765,14 +7931,50 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_list_api_load_point {
+        ptr: *mut wire_cst_api_load_point,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_api_trend_point {
+        ptr: *mut wire_cst_api_trend_point,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_api_weekly_summary {
+        ptr: *mut wire_cst_api_weekly_summary,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_api_workout_template {
+        ptr: *mut wire_cst_api_workout_template,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_list_discovered_device {
         ptr: *mut wire_cst_discovered_device,
         len: i32,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_list_prim_u_32_loose {
+        ptr: *mut u32,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_list_prim_u_32_strict {
         ptr: *mut u32,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_prim_u_8_loose {
+        ptr: *mut u8,
         len: i32,
     }
     #[repr(C)]
@@ -5890,6 +8092,80 @@ mod web {
             self
         }
     }
+    impl CstDecode<crate::api::ApiAdaptedPlan>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAdaptedPlan {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                8,
+                "Expected 8 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiAdaptedPlan {
+                original_name: self_.get(0).cst_decode(),
+                reason: self_.get(1).cst_decode(),
+                message: self_.get(2).cst_decode(),
+                zone_delta: self_.get(3).cst_decode(),
+                duration_factor: self_.get(4).cst_decode(),
+                phase_names: self_.get(5).cst_decode(),
+                phase_zones: self_.get(6).cst_decode(),
+                phase_durations: self_.get(7).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiAnalyticsData>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAnalyticsData {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                5,
+                "Expected 5 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiAnalyticsData {
+                summary: self_.get(0).cst_decode(),
+                weekly_summaries: self_.get(1).cst_decode(),
+                hr_trend: self_.get(2).cst_decode(),
+                volume_trend: self_.get(3).cst_decode(),
+                consistency_trend: self_.get(4).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiAnalyticsSummary>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiAnalyticsSummary {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                7,
+                "Expected 7 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiAnalyticsSummary {
+                total_sessions: self_.get(0).cst_decode(),
+                total_duration_secs: self_.get(1).cst_decode(),
+                overall_avg_hr: self_.get(2).cst_decode(),
+                overall_time_in_zone: self_.get(3).cst_decode(),
+                weeks_count: self_.get(4).cst_decode(),
+                hr_trend_count: self_.get(5).cst_decode(),
+                volume_trend_count: self_.get(6).cst_decode(),
+            }
+        }
+    }
     impl CstDecode<crate::api::ApiBatteryLevel>
         for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
     {
@@ -5908,6 +8184,217 @@ mod web {
                 level: self_.get(0).cst_decode(),
                 is_charging: self_.get(1).cst_decode(),
                 timestamp: self_.get(2).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiLoadPoint>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiLoadPoint {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                4,
+                "Expected 4 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiLoadPoint {
+                timestamp_millis: self_.get(0).cst_decode(),
+                ctl: self_.get(1).cst_decode(),
+                atl: self_.get(2).cst_decode(),
+                tsb: self_.get(3).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiPeriodizationData>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiPeriodizationData {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                9,
+                "Expected 9 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiPeriodizationData {
+                name: self_.get(0).cst_decode(),
+                goal: self_.get(1).cst_decode(),
+                start_date: self_.get(2).cst_decode(),
+                end_date: self_.get(3).cst_decode(),
+                total_weeks: self_.get(4).cst_decode(),
+                current_block_index: self_.get(5).cst_decode(),
+                block_names: self_.get(6).cst_decode(),
+                block_types: self_.get(7).cst_decode(),
+                block_weeks: self_.get(8).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiPlanDetails>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiPlanDetails {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                6,
+                "Expected 6 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiPlanDetails {
+                name: self_.get(0).cst_decode(),
+                phase_names: self_.get(1).cst_decode(),
+                phase_zones: self_.get(2).cst_decode(),
+                phase_durations: self_.get(3).cst_decode(),
+                max_hr: self_.get(4).cst_decode(),
+                created_at_millis: self_.get(5).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiReadinessData>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiReadinessData {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                6,
+                "Expected 6 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiReadinessData {
+                score: self_.get(0).cst_decode(),
+                level: self_.get(1).cst_decode(),
+                hrv_component: self_.get(2).cst_decode(),
+                rhr_component: self_.get(3).cst_decode(),
+                load_component: self_.get(4).cst_decode(),
+                recommendation: self_.get(5).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiRestingHrStats>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiRestingHrStats {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                5,
+                "Expected 5 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiRestingHrStats {
+                current_bpm: self_.get(0).cst_decode(),
+                seven_day_avg: self_.get(1).cst_decode(),
+                thirty_day_avg: self_.get(2).cst_decode(),
+                trend_direction: self_.get(3).cst_decode(),
+                trend_points: self_.get(4).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiTrainingLoadData>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiTrainingLoadData {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                5,
+                "Expected 5 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiTrainingLoadData {
+                current_ctl: self_.get(0).cst_decode(),
+                current_atl: self_.get(1).cst_decode(),
+                current_tsb: self_.get(2).cst_decode(),
+                load_history: self_.get(3).cst_decode(),
+                session_trimp: self_.get(4).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiTrendPoint>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiTrendPoint {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                2,
+                "Expected 2 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiTrendPoint {
+                timestamp_millis: self_.get(0).cst_decode(),
+                value: self_.get(1).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiWeeklySummary>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiWeeklySummary {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                5,
+                "Expected 5 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiWeeklySummary {
+                week_start_millis: self_.get(0).cst_decode(),
+                session_count: self_.get(1).cst_decode(),
+                total_duration_secs: self_.get(2).cst_decode(),
+                avg_hr: self_.get(3).cst_decode(),
+                time_in_zone: self_.get(4).cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::ApiWorkoutTemplate>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::ApiWorkoutTemplate {
+            let self_ = self
+                .dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap();
+            assert_eq!(
+                self_.length(),
+                7,
+                "Expected 7 elements, got {}",
+                self_.length()
+            );
+            crate::api::ApiWorkoutTemplate {
+                id: self_.get(0).cst_decode(),
+                name: self_.get(1).cst_decode(),
+                description: self_.get(2).cst_decode(),
+                sport: self_.get(3).cst_decode(),
+                difficulty: self_.get(4).cst_decode(),
+                duration_mins: self_.get(5).cst_decode(),
+                phase_count: self_.get(6).cst_decode(),
             }
         }
     }
@@ -5947,6 +8434,54 @@ mod web {
     impl CstDecode<Vec<String>> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<String> {
+            self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap()
+                .iter()
+                .map(CstDecode::cst_decode)
+                .collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiLoadPoint>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiLoadPoint> {
+            self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap()
+                .iter()
+                .map(CstDecode::cst_decode)
+                .collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiTrendPoint>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiTrendPoint> {
+            self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap()
+                .iter()
+                .map(CstDecode::cst_decode)
+                .collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiWeeklySummary>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiWeeklySummary> {
+            self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
+                .unwrap()
+                .iter()
+                .map(CstDecode::cst_decode)
+                .collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::ApiWorkoutTemplate>>
+        for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::ApiWorkoutTemplate> {
             self.dyn_into::<flutter_rust_bridge::for_generated::js_sys::Array>()
                 .unwrap()
                 .iter()
@@ -6381,6 +8916,12 @@ mod web {
             ::std::convert::TryInto::<i64>::try_into(self).unwrap() as _
         }
     }
+    impl CstDecode<i8> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> i8 {
+            self.unchecked_into_f64() as _
+        }
+    }
     impl CstDecode<Vec<u32>> for flutter_rust_bridge::for_generated::wasm_bindgen::JsValue {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<u32> {
@@ -6434,6 +8975,82 @@ mod web {
         fn cst_decode(self) -> crate::domain::heart_rate::Zone {
             (self.unchecked_into_f64() as i32).cst_decode()
         }
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_consistency_at(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_consistency_at_impl(port_, data, index)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_consistency_count(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__analytics_consistency_count_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_hr_trend_at(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_hr_trend_at_impl(port_, data, index)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_hr_trend_count(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__analytics_hr_trend_count_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_summary(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__analytics_summary_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_volume_trend_at(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_volume_trend_at_impl(port_, data, index)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_volume_trend_count(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__analytics_volume_trend_count_impl(port_, data)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_weekly_at(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        index: u32,
+    ) {
+        wire__crate__api__analytics_weekly_at_impl(port_, data, index)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__analytics_weeks_count(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        data: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__analytics_weeks_count_impl(port_, data)
     }
 
     #[wasm_bindgen]
@@ -6541,6 +9158,25 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__create_custom_plan(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        name: String,
+        phase_names: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        phase_zones: Box<[u8]>,
+        phase_durations: Box<[u32]>,
+        max_hr: u16,
+    ) {
+        wire__crate__api__create_custom_plan_impl(
+            port_,
+            name,
+            phase_names,
+            phase_zones,
+            phase_durations,
+            max_hr,
+        )
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__create_hr_stream(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         sink: String,
@@ -6554,6 +9190,14 @@ mod web {
         sink: String,
     ) {
         wire__crate__api__create_session_progress_stream_impl(port_, sink)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__delete_plan(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        name: String,
+    ) {
+        wire__crate__api__delete_plan_impl(port_, name)
     }
 
     #[wasm_bindgen]
@@ -6625,11 +9269,83 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__export_session_gpx(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session_id: String,
+    ) {
+        wire__crate__api__export_session_gpx_impl(port_, session_id)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__export_session_tcx(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        session_id: String,
+    ) {
+        wire__crate__api__export_session_tcx_impl(port_, session_id)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_adapted_plan(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        plan_name: String,
+    ) {
+        wire__crate__api__get_adapted_plan_impl(port_, plan_name)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_analytics(port_: flutter_rust_bridge::for_generated::MessagePort) {
+        wire__crate__api__get_analytics_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_periodization_plan(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__get_periodization_plan_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_plan_details(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        name: String,
+    ) {
+        wire__crate__api__get_plan_details_impl(port_, name)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_readiness_score(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__get_readiness_score_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_resting_hr_stats(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__get_resting_hr_stats_impl(port_)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__get_session(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         id: String,
     ) {
         wire__crate__api__get_session_impl(port_, id)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_training_load(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__get_training_load_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__get_workout_templates(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+    ) {
+        wire__crate__api__get_workout_templates_impl(port_)
     }
 
     #[wasm_bindgen]
@@ -7053,6 +9769,15 @@ mod web {
         port_: flutter_rust_bridge::for_generated::MessagePort,
     ) {
         wire__crate__api__start_mock_mode_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__start_template_workout(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        template_id: String,
+        max_hr: u16,
+    ) {
+        wire__crate__api__start_template_workout_impl(port_, template_id, max_hr)
     }
 
     #[wasm_bindgen]

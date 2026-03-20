@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -226370097;
+  int get rustContentHash => -369424439;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -76,6 +76,42 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  Future<ApiTrendPoint?> crateApiAnalyticsConsistencyAt({
+    required ApiAnalyticsData data,
+    required int index,
+  });
+
+  Future<int> crateApiAnalyticsConsistencyCount({
+    required ApiAnalyticsData data,
+  });
+
+  Future<ApiTrendPoint?> crateApiAnalyticsHrTrendAt({
+    required ApiAnalyticsData data,
+    required int index,
+  });
+
+  Future<int> crateApiAnalyticsHrTrendCount({required ApiAnalyticsData data});
+
+  Future<ApiAnalyticsSummary> crateApiAnalyticsSummary({
+    required ApiAnalyticsData data,
+  });
+
+  Future<ApiTrendPoint?> crateApiAnalyticsVolumeTrendAt({
+    required ApiAnalyticsData data,
+    required int index,
+  });
+
+  Future<int> crateApiAnalyticsVolumeTrendCount({
+    required ApiAnalyticsData data,
+  });
+
+  Future<ApiWeeklySummary?> crateApiAnalyticsWeeklyAt({
+    required ApiAnalyticsData data,
+    required int index,
+  });
+
+  Future<int> crateApiAnalyticsWeeksCount({required ApiAnalyticsData data});
+
   Future<void> crateApiConnectDevice({required String deviceId});
 
   Future<int?> crateApiConnectionStatusAttempt({
@@ -122,9 +158,19 @@ abstract class RustLibApi extends BaseApi {
 
   Stream<ApiConnectionStatus> crateApiCreateConnectionStatusStream();
 
+  Future<void> crateApiCreateCustomPlan({
+    required String name,
+    required List<String> phaseNames,
+    required List<int> phaseZones,
+    required List<int> phaseDurations,
+    required int maxHr,
+  });
+
   Stream<ApiFilteredHeartRate> crateApiCreateHrStream();
 
   Stream<ApiSessionProgress> crateApiCreateSessionProgressStream();
+
+  Future<void> crateApiDeletePlan({required String name});
 
   Future<void> crateApiDeleteSession({required String id});
 
@@ -151,7 +197,27 @@ abstract class RustLibApi extends BaseApi {
     required ExportFormat format,
   });
 
+  Future<String> crateApiExportSessionGpx({required String sessionId});
+
+  Future<String> crateApiExportSessionTcx({required String sessionId});
+
+  Future<ApiAdaptedPlan> crateApiGetAdaptedPlan({required String planName});
+
+  Future<ApiAnalyticsData> crateApiGetAnalytics();
+
+  Future<ApiPeriodizationData> crateApiGetPeriodizationPlan();
+
+  Future<ApiPlanDetails> crateApiGetPlanDetails({required String name});
+
+  Future<ApiReadinessData> crateApiGetReadinessScore();
+
+  Future<ApiRestingHrStats> crateApiGetRestingHrStats();
+
   Future<ApiCompletedSession?> crateApiGetSession({required String id});
+
+  Future<ApiTrainingLoadData> crateApiGetTrainingLoad();
+
+  Future<List<ApiWorkoutTemplate>> crateApiGetWorkoutTemplates();
 
   Future<int?> crateApiHrBatteryLevel({required ApiFilteredHeartRate data});
 
@@ -331,6 +397,11 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiStartMockMode();
 
+  Future<void> crateApiStartTemplateWorkout({
+    required String templateId,
+    required int maxHr,
+  });
+
   Future<void> crateApiStartWorkout({required String planName});
 
   Future<void> crateApiStopWorkout();
@@ -423,6 +494,266 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required super.generalizedFrbRustBinding,
     required super.portManager,
   });
+
+  @override
+  Future<ApiTrendPoint?> crateApiAnalyticsConsistencyAt({
+    required ApiAnalyticsData data,
+    required int index,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          var arg1 = cst_encode_u_32(index);
+          return wire.wire__crate__api__analytics_consistency_at(
+            port_,
+            arg0,
+            arg1,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_api_trend_point,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsConsistencyAtConstMeta,
+        argValues: [data, index],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsConsistencyAtConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_consistency_at",
+        argNames: ["data", "index"],
+      );
+
+  @override
+  Future<int> crateApiAnalyticsConsistencyCount({
+    required ApiAnalyticsData data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          return wire.wire__crate__api__analytics_consistency_count(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsConsistencyCountConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsConsistencyCountConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_consistency_count",
+        argNames: ["data"],
+      );
+
+  @override
+  Future<ApiTrendPoint?> crateApiAnalyticsHrTrendAt({
+    required ApiAnalyticsData data,
+    required int index,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          var arg1 = cst_encode_u_32(index);
+          return wire.wire__crate__api__analytics_hr_trend_at(
+            port_,
+            arg0,
+            arg1,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_api_trend_point,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsHrTrendAtConstMeta,
+        argValues: [data, index],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsHrTrendAtConstMeta => const TaskConstMeta(
+    debugName: "analytics_hr_trend_at",
+    argNames: ["data", "index"],
+  );
+
+  @override
+  Future<int> crateApiAnalyticsHrTrendCount({required ApiAnalyticsData data}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          return wire.wire__crate__api__analytics_hr_trend_count(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsHrTrendCountConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsHrTrendCountConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_hr_trend_count",
+        argNames: ["data"],
+      );
+
+  @override
+  Future<ApiAnalyticsSummary> crateApiAnalyticsSummary({
+    required ApiAnalyticsData data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          return wire.wire__crate__api__analytics_summary(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_analytics_summary,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsSummaryConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsSummaryConstMeta =>
+      const TaskConstMeta(debugName: "analytics_summary", argNames: ["data"]);
+
+  @override
+  Future<ApiTrendPoint?> crateApiAnalyticsVolumeTrendAt({
+    required ApiAnalyticsData data,
+    required int index,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          var arg1 = cst_encode_u_32(index);
+          return wire.wire__crate__api__analytics_volume_trend_at(
+            port_,
+            arg0,
+            arg1,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_api_trend_point,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsVolumeTrendAtConstMeta,
+        argValues: [data, index],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsVolumeTrendAtConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_volume_trend_at",
+        argNames: ["data", "index"],
+      );
+
+  @override
+  Future<int> crateApiAnalyticsVolumeTrendCount({
+    required ApiAnalyticsData data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          return wire.wire__crate__api__analytics_volume_trend_count(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsVolumeTrendCountConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsVolumeTrendCountConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_volume_trend_count",
+        argNames: ["data"],
+      );
+
+  @override
+  Future<ApiWeeklySummary?> crateApiAnalyticsWeeklyAt({
+    required ApiAnalyticsData data,
+    required int index,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          var arg1 = cst_encode_u_32(index);
+          return wire.wire__crate__api__analytics_weekly_at(port_, arg0, arg1);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_api_weekly_summary,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsWeeklyAtConstMeta,
+        argValues: [data, index],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsWeeklyAtConstMeta => const TaskConstMeta(
+    debugName: "analytics_weekly_at",
+    argNames: ["data", "index"],
+  );
+
+  @override
+  Future<int> crateApiAnalyticsWeeksCount({required ApiAnalyticsData data}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_api_analytics_data(data);
+          return wire.wire__crate__api__analytics_weeks_count(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiAnalyticsWeeksCountConstMeta,
+        argValues: [data],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAnalyticsWeeksCountConstMeta =>
+      const TaskConstMeta(
+        debugName: "analytics_weeks_count",
+        argNames: ["data"],
+      );
 
   @override
   Future<void> crateApiConnectDevice({required String deviceId}) {
@@ -838,6 +1169,47 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiCreateCustomPlan({
+    required String name,
+    required List<String> phaseNames,
+    required List<int> phaseZones,
+    required List<int> phaseDurations,
+    required int maxHr,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(name);
+          var arg1 = cst_encode_list_String(phaseNames);
+          var arg2 = cst_encode_list_prim_u_8_loose(phaseZones);
+          var arg3 = cst_encode_list_prim_u_32_loose(phaseDurations);
+          var arg4 = cst_encode_u_16(maxHr);
+          return wire.wire__crate__api__create_custom_plan(
+            port_,
+            arg0,
+            arg1,
+            arg2,
+            arg3,
+            arg4,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiCreateCustomPlanConstMeta,
+        argValues: [name, phaseNames, phaseZones, phaseDurations, maxHr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiCreateCustomPlanConstMeta => const TaskConstMeta(
+    debugName: "create_custom_plan",
+    argNames: ["name", "phaseNames", "phaseZones", "phaseDurations", "maxHr"],
+  );
+
+  @override
   Stream<ApiFilteredHeartRate> crateApiCreateHrStream() {
     final sink = RustStreamSink<ApiFilteredHeartRate>();
     unawaited(
@@ -900,6 +1272,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "create_session_progress_stream",
         argNames: ["sink"],
       );
+
+  @override
+  Future<void> crateApiDeletePlan({required String name}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(name);
+          return wire.wire__crate__api__delete_plan(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiDeletePlanConstMeta,
+        argValues: [name],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDeletePlanConstMeta =>
+      const TaskConstMeta(debugName: "delete_plan", argNames: ["name"]);
 
   @override
   Future<void> crateApiDeleteSession({required String id}) {
@@ -1131,6 +1525,184 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
+  Future<String> crateApiExportSessionGpx({required String sessionId}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(sessionId);
+          return wire.wire__crate__api__export_session_gpx(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiExportSessionGpxConstMeta,
+        argValues: [sessionId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiExportSessionGpxConstMeta => const TaskConstMeta(
+    debugName: "export_session_gpx",
+    argNames: ["sessionId"],
+  );
+
+  @override
+  Future<String> crateApiExportSessionTcx({required String sessionId}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(sessionId);
+          return wire.wire__crate__api__export_session_tcx(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiExportSessionTcxConstMeta,
+        argValues: [sessionId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiExportSessionTcxConstMeta => const TaskConstMeta(
+    debugName: "export_session_tcx",
+    argNames: ["sessionId"],
+  );
+
+  @override
+  Future<ApiAdaptedPlan> crateApiGetAdaptedPlan({required String planName}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(planName);
+          return wire.wire__crate__api__get_adapted_plan(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_adapted_plan,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetAdaptedPlanConstMeta,
+        argValues: [planName],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetAdaptedPlanConstMeta => const TaskConstMeta(
+    debugName: "get_adapted_plan",
+    argNames: ["planName"],
+  );
+
+  @override
+  Future<ApiAnalyticsData> crateApiGetAnalytics() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_analytics(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_analytics_data,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetAnalyticsConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetAnalyticsConstMeta =>
+      const TaskConstMeta(debugName: "get_analytics", argNames: []);
+
+  @override
+  Future<ApiPeriodizationData> crateApiGetPeriodizationPlan() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_periodization_plan(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_periodization_data,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiGetPeriodizationPlanConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetPeriodizationPlanConstMeta =>
+      const TaskConstMeta(debugName: "get_periodization_plan", argNames: []);
+
+  @override
+  Future<ApiPlanDetails> crateApiGetPlanDetails({required String name}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(name);
+          return wire.wire__crate__api__get_plan_details(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_plan_details,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetPlanDetailsConstMeta,
+        argValues: [name],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetPlanDetailsConstMeta =>
+      const TaskConstMeta(debugName: "get_plan_details", argNames: ["name"]);
+
+  @override
+  Future<ApiReadinessData> crateApiGetReadinessScore() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_readiness_score(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_readiness_data,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetReadinessScoreConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetReadinessScoreConstMeta =>
+      const TaskConstMeta(debugName: "get_readiness_score", argNames: []);
+
+  @override
+  Future<ApiRestingHrStats> crateApiGetRestingHrStats() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_resting_hr_stats(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_resting_hr_stats,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetRestingHrStatsConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetRestingHrStatsConstMeta =>
+      const TaskConstMeta(debugName: "get_resting_hr_stats", argNames: []);
+
+  @override
   Future<ApiCompletedSession?> crateApiGetSession({required String id}) {
     return handler.executeNormal(
       NormalTask(
@@ -1152,6 +1724,48 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiGetSessionConstMeta =>
       const TaskConstMeta(debugName: "get_session", argNames: ["id"]);
+
+  @override
+  Future<ApiTrainingLoadData> crateApiGetTrainingLoad() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_training_load(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_api_training_load_data,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiGetTrainingLoadConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetTrainingLoadConstMeta =>
+      const TaskConstMeta(debugName: "get_training_load", argNames: []);
+
+  @override
+  Future<List<ApiWorkoutTemplate>> crateApiGetWorkoutTemplates() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          return wire.wire__crate__api__get_workout_templates(port_);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_api_workout_template,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiGetWorkoutTemplatesConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiGetWorkoutTemplatesConstMeta =>
+      const TaskConstMeta(debugName: "get_workout_templates", argNames: []);
 
   @override
   Future<int?> crateApiHrBatteryLevel({required ApiFilteredHeartRate data}) {
@@ -2701,6 +3315,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "start_mock_mode", argNames: []);
 
   @override
+  Future<void> crateApiStartTemplateWorkout({
+    required String templateId,
+    required int maxHr,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(templateId);
+          var arg1 = cst_encode_u_16(maxHr);
+          return wire.wire__crate__api__start_template_workout(
+            port_,
+            arg0,
+            arg1,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiStartTemplateWorkoutConstMeta,
+        argValues: [templateId, maxHr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiStartTemplateWorkoutConstMeta =>
+      const TaskConstMeta(
+        debugName: "start_template_workout",
+        argNames: ["templateId", "maxHr"],
+      );
+
+  @override
   Future<void> crateApiStartWorkout({required String planName}) {
     return handler.executeNormal(
       NormalTask(
@@ -3194,6 +3841,56 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiAdaptedPlan dco_decode_api_adapted_plan(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    return ApiAdaptedPlan(
+      originalName: dco_decode_String(arr[0]),
+      reason: dco_decode_String(arr[1]),
+      message: dco_decode_String(arr[2]),
+      zoneDelta: dco_decode_i_8(arr[3]),
+      durationFactor: dco_decode_f_64(arr[4]),
+      phaseNames: dco_decode_list_String(arr[5]),
+      phaseZones: dco_decode_list_prim_u_8_strict(arr[6]),
+      phaseDurations: dco_decode_list_prim_u_32_strict(arr[7]),
+    );
+  }
+
+  @protected
+  ApiAnalyticsData dco_decode_api_analytics_data(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return ApiAnalyticsData(
+      summary: dco_decode_api_analytics_summary(arr[0]),
+      weeklySummaries: dco_decode_list_api_weekly_summary(arr[1]),
+      hrTrend: dco_decode_list_api_trend_point(arr[2]),
+      volumeTrend: dco_decode_list_api_trend_point(arr[3]),
+      consistencyTrend: dco_decode_list_api_trend_point(arr[4]),
+    );
+  }
+
+  @protected
+  ApiAnalyticsSummary dco_decode_api_analytics_summary(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return ApiAnalyticsSummary(
+      totalSessions: dco_decode_u_32(arr[0]),
+      totalDurationSecs: dco_decode_u_32(arr[1]),
+      overallAvgHr: dco_decode_u_16(arr[2]),
+      overallTimeInZone: dco_decode_list_prim_u_32_strict(arr[3]),
+      weeksCount: dco_decode_u_32(arr[4]),
+      hrTrendCount: dco_decode_u_32(arr[5]),
+      volumeTrendCount: dco_decode_u_32(arr[6]),
+    );
+  }
+
+  @protected
   ApiBatteryLevel dco_decode_api_battery_level(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -3203,6 +3900,145 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       level: dco_decode_opt_box_autoadd_u_8(arr[0]),
       isCharging: dco_decode_bool(arr[1]),
       timestamp: dco_decode_u_64(arr[2]),
+    );
+  }
+
+  @protected
+  ApiLoadPoint dco_decode_api_load_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return ApiLoadPoint(
+      timestampMillis: dco_decode_i_64(arr[0]),
+      ctl: dco_decode_f_64(arr[1]),
+      atl: dco_decode_f_64(arr[2]),
+      tsb: dco_decode_f_64(arr[3]),
+    );
+  }
+
+  @protected
+  ApiPeriodizationData dco_decode_api_periodization_data(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    return ApiPeriodizationData(
+      name: dco_decode_String(arr[0]),
+      goal: dco_decode_String(arr[1]),
+      startDate: dco_decode_String(arr[2]),
+      endDate: dco_decode_String(arr[3]),
+      totalWeeks: dco_decode_u_32(arr[4]),
+      currentBlockIndex: dco_decode_i_32(arr[5]),
+      blockNames: dco_decode_list_String(arr[6]),
+      blockTypes: dco_decode_list_String(arr[7]),
+      blockWeeks: dco_decode_list_prim_u_8_strict(arr[8]),
+    );
+  }
+
+  @protected
+  ApiPlanDetails dco_decode_api_plan_details(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return ApiPlanDetails(
+      name: dco_decode_String(arr[0]),
+      phaseNames: dco_decode_list_String(arr[1]),
+      phaseZones: dco_decode_list_prim_u_8_strict(arr[2]),
+      phaseDurations: dco_decode_list_prim_u_32_strict(arr[3]),
+      maxHr: dco_decode_u_16(arr[4]),
+      createdAtMillis: dco_decode_i_64(arr[5]),
+    );
+  }
+
+  @protected
+  ApiReadinessData dco_decode_api_readiness_data(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return ApiReadinessData(
+      score: dco_decode_u_8(arr[0]),
+      level: dco_decode_String(arr[1]),
+      hrvComponent: dco_decode_f_64(arr[2]),
+      rhrComponent: dco_decode_f_64(arr[3]),
+      loadComponent: dco_decode_f_64(arr[4]),
+      recommendation: dco_decode_String(arr[5]),
+    );
+  }
+
+  @protected
+  ApiRestingHrStats dco_decode_api_resting_hr_stats(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return ApiRestingHrStats(
+      currentBpm: dco_decode_opt_box_autoadd_u_16(arr[0]),
+      sevenDayAvg: dco_decode_opt_box_autoadd_f_64(arr[1]),
+      thirtyDayAvg: dco_decode_opt_box_autoadd_f_64(arr[2]),
+      trendDirection: dco_decode_String(arr[3]),
+      trendPoints: dco_decode_list_api_trend_point(arr[4]),
+    );
+  }
+
+  @protected
+  ApiTrainingLoadData dco_decode_api_training_load_data(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return ApiTrainingLoadData(
+      currentCtl: dco_decode_f_64(arr[0]),
+      currentAtl: dco_decode_f_64(arr[1]),
+      currentTsb: dco_decode_f_64(arr[2]),
+      loadHistory: dco_decode_list_api_load_point(arr[3]),
+      sessionTrimp: dco_decode_list_api_trend_point(arr[4]),
+    );
+  }
+
+  @protected
+  ApiTrendPoint dco_decode_api_trend_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ApiTrendPoint(
+      timestampMillis: dco_decode_i_64(arr[0]),
+      value: dco_decode_f_64(arr[1]),
+    );
+  }
+
+  @protected
+  ApiWeeklySummary dco_decode_api_weekly_summary(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return ApiWeeklySummary(
+      weekStartMillis: dco_decode_i_64(arr[0]),
+      sessionCount: dco_decode_u_32(arr[1]),
+      totalDurationSecs: dco_decode_u_32(arr[2]),
+      avgHr: dco_decode_u_16(arr[3]),
+      timeInZone: dco_decode_list_prim_u_32_strict(arr[4]),
+    );
+  }
+
+  @protected
+  ApiWorkoutTemplate dco_decode_api_workout_template(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return ApiWorkoutTemplate(
+      id: dco_decode_String(arr[0]),
+      name: dco_decode_String(arr[1]),
+      description: dco_decode_String(arr[2]),
+      sport: dco_decode_String(arr[3]),
+      difficulty: dco_decode_String(arr[4]),
+      durationMins: dco_decode_u_32(arr[5]),
+      phaseCount: dco_decode_u_32(arr[6]),
     );
   }
 
@@ -3224,9 +4060,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiAnalyticsData dco_decode_box_autoadd_api_analytics_data(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_api_analytics_data(raw);
+  }
+
+  @protected
   ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_api_battery_level(raw);
+  }
+
+  @protected
+  ApiTrendPoint dco_decode_box_autoadd_api_trend_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_api_trend_point(raw);
+  }
+
+  @protected
+  ApiWeeklySummary dco_decode_box_autoadd_api_weekly_summary(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_api_weekly_summary(raw);
   }
 
   @protected
@@ -3239,6 +4093,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as (PlatformInt64, int);
+  }
+
+  @protected
+  int dco_decode_box_autoadd_u_16(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
   }
 
   @protected
@@ -3297,6 +4157,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int dco_decode_i_8(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
   List<ApiSessionSummaryPreview>
   dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -3316,15 +4182,51 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<ApiLoadPoint> dco_decode_list_api_load_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_api_load_point).toList();
+  }
+
+  @protected
+  List<ApiTrendPoint> dco_decode_list_api_trend_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_api_trend_point).toList();
+  }
+
+  @protected
+  List<ApiWeeklySummary> dco_decode_list_api_weekly_summary(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_api_weekly_summary).toList();
+  }
+
+  @protected
+  List<ApiWorkoutTemplate> dco_decode_list_api_workout_template(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_api_workout_template).toList();
+  }
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_discovered_device).toList();
   }
 
   @protected
+  List<int> dco_decode_list_prim_u_32_loose(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as List<int>;
+  }
+
+  @protected
   Uint32List dco_decode_list_prim_u_32_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint32List;
+  }
+
+  @protected
+  List<int> dco_decode_list_prim_u_8_loose(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as List<int>;
   }
 
   @protected
@@ -3367,6 +4269,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiTrendPoint? dco_decode_opt_box_autoadd_api_trend_point(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_api_trend_point(raw);
+  }
+
+  @protected
+  ApiWeeklySummary? dco_decode_opt_box_autoadd_api_weekly_summary(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_api_weekly_summary(raw);
+  }
+
+  @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_f_64(raw);
@@ -3378,6 +4292,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
+  int? dco_decode_opt_box_autoadd_u_16(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_u_16(raw);
   }
 
   @protected
@@ -3790,6 +4710,69 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiAdaptedPlan sse_decode_api_adapted_plan(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_originalName = sse_decode_String(deserializer);
+    var var_reason = sse_decode_String(deserializer);
+    var var_message = sse_decode_String(deserializer);
+    var var_zoneDelta = sse_decode_i_8(deserializer);
+    var var_durationFactor = sse_decode_f_64(deserializer);
+    var var_phaseNames = sse_decode_list_String(deserializer);
+    var var_phaseZones = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_phaseDurations = sse_decode_list_prim_u_32_strict(deserializer);
+    return ApiAdaptedPlan(
+      originalName: var_originalName,
+      reason: var_reason,
+      message: var_message,
+      zoneDelta: var_zoneDelta,
+      durationFactor: var_durationFactor,
+      phaseNames: var_phaseNames,
+      phaseZones: var_phaseZones,
+      phaseDurations: var_phaseDurations,
+    );
+  }
+
+  @protected
+  ApiAnalyticsData sse_decode_api_analytics_data(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_summary = sse_decode_api_analytics_summary(deserializer);
+    var var_weeklySummaries = sse_decode_list_api_weekly_summary(deserializer);
+    var var_hrTrend = sse_decode_list_api_trend_point(deserializer);
+    var var_volumeTrend = sse_decode_list_api_trend_point(deserializer);
+    var var_consistencyTrend = sse_decode_list_api_trend_point(deserializer);
+    return ApiAnalyticsData(
+      summary: var_summary,
+      weeklySummaries: var_weeklySummaries,
+      hrTrend: var_hrTrend,
+      volumeTrend: var_volumeTrend,
+      consistencyTrend: var_consistencyTrend,
+    );
+  }
+
+  @protected
+  ApiAnalyticsSummary sse_decode_api_analytics_summary(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_totalSessions = sse_decode_u_32(deserializer);
+    var var_totalDurationSecs = sse_decode_u_32(deserializer);
+    var var_overallAvgHr = sse_decode_u_16(deserializer);
+    var var_overallTimeInZone = sse_decode_list_prim_u_32_strict(deserializer);
+    var var_weeksCount = sse_decode_u_32(deserializer);
+    var var_hrTrendCount = sse_decode_u_32(deserializer);
+    var var_volumeTrendCount = sse_decode_u_32(deserializer);
+    return ApiAnalyticsSummary(
+      totalSessions: var_totalSessions,
+      totalDurationSecs: var_totalDurationSecs,
+      overallAvgHr: var_overallAvgHr,
+      overallTimeInZone: var_overallTimeInZone,
+      weeksCount: var_weeksCount,
+      hrTrendCount: var_hrTrendCount,
+      volumeTrendCount: var_volumeTrendCount,
+    );
+  }
+
+  @protected
   ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_level = sse_decode_opt_box_autoadd_u_8(deserializer);
@@ -3799,6 +4782,175 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       level: var_level,
       isCharging: var_isCharging,
       timestamp: var_timestamp,
+    );
+  }
+
+  @protected
+  ApiLoadPoint sse_decode_api_load_point(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_timestampMillis = sse_decode_i_64(deserializer);
+    var var_ctl = sse_decode_f_64(deserializer);
+    var var_atl = sse_decode_f_64(deserializer);
+    var var_tsb = sse_decode_f_64(deserializer);
+    return ApiLoadPoint(
+      timestampMillis: var_timestampMillis,
+      ctl: var_ctl,
+      atl: var_atl,
+      tsb: var_tsb,
+    );
+  }
+
+  @protected
+  ApiPeriodizationData sse_decode_api_periodization_data(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_name = sse_decode_String(deserializer);
+    var var_goal = sse_decode_String(deserializer);
+    var var_startDate = sse_decode_String(deserializer);
+    var var_endDate = sse_decode_String(deserializer);
+    var var_totalWeeks = sse_decode_u_32(deserializer);
+    var var_currentBlockIndex = sse_decode_i_32(deserializer);
+    var var_blockNames = sse_decode_list_String(deserializer);
+    var var_blockTypes = sse_decode_list_String(deserializer);
+    var var_blockWeeks = sse_decode_list_prim_u_8_strict(deserializer);
+    return ApiPeriodizationData(
+      name: var_name,
+      goal: var_goal,
+      startDate: var_startDate,
+      endDate: var_endDate,
+      totalWeeks: var_totalWeeks,
+      currentBlockIndex: var_currentBlockIndex,
+      blockNames: var_blockNames,
+      blockTypes: var_blockTypes,
+      blockWeeks: var_blockWeeks,
+    );
+  }
+
+  @protected
+  ApiPlanDetails sse_decode_api_plan_details(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_name = sse_decode_String(deserializer);
+    var var_phaseNames = sse_decode_list_String(deserializer);
+    var var_phaseZones = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_phaseDurations = sse_decode_list_prim_u_32_strict(deserializer);
+    var var_maxHr = sse_decode_u_16(deserializer);
+    var var_createdAtMillis = sse_decode_i_64(deserializer);
+    return ApiPlanDetails(
+      name: var_name,
+      phaseNames: var_phaseNames,
+      phaseZones: var_phaseZones,
+      phaseDurations: var_phaseDurations,
+      maxHr: var_maxHr,
+      createdAtMillis: var_createdAtMillis,
+    );
+  }
+
+  @protected
+  ApiReadinessData sse_decode_api_readiness_data(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_score = sse_decode_u_8(deserializer);
+    var var_level = sse_decode_String(deserializer);
+    var var_hrvComponent = sse_decode_f_64(deserializer);
+    var var_rhrComponent = sse_decode_f_64(deserializer);
+    var var_loadComponent = sse_decode_f_64(deserializer);
+    var var_recommendation = sse_decode_String(deserializer);
+    return ApiReadinessData(
+      score: var_score,
+      level: var_level,
+      hrvComponent: var_hrvComponent,
+      rhrComponent: var_rhrComponent,
+      loadComponent: var_loadComponent,
+      recommendation: var_recommendation,
+    );
+  }
+
+  @protected
+  ApiRestingHrStats sse_decode_api_resting_hr_stats(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_currentBpm = sse_decode_opt_box_autoadd_u_16(deserializer);
+    var var_sevenDayAvg = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_thirtyDayAvg = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_trendDirection = sse_decode_String(deserializer);
+    var var_trendPoints = sse_decode_list_api_trend_point(deserializer);
+    return ApiRestingHrStats(
+      currentBpm: var_currentBpm,
+      sevenDayAvg: var_sevenDayAvg,
+      thirtyDayAvg: var_thirtyDayAvg,
+      trendDirection: var_trendDirection,
+      trendPoints: var_trendPoints,
+    );
+  }
+
+  @protected
+  ApiTrainingLoadData sse_decode_api_training_load_data(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_currentCtl = sse_decode_f_64(deserializer);
+    var var_currentAtl = sse_decode_f_64(deserializer);
+    var var_currentTsb = sse_decode_f_64(deserializer);
+    var var_loadHistory = sse_decode_list_api_load_point(deserializer);
+    var var_sessionTrimp = sse_decode_list_api_trend_point(deserializer);
+    return ApiTrainingLoadData(
+      currentCtl: var_currentCtl,
+      currentAtl: var_currentAtl,
+      currentTsb: var_currentTsb,
+      loadHistory: var_loadHistory,
+      sessionTrimp: var_sessionTrimp,
+    );
+  }
+
+  @protected
+  ApiTrendPoint sse_decode_api_trend_point(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_timestampMillis = sse_decode_i_64(deserializer);
+    var var_value = sse_decode_f_64(deserializer);
+    return ApiTrendPoint(
+      timestampMillis: var_timestampMillis,
+      value: var_value,
+    );
+  }
+
+  @protected
+  ApiWeeklySummary sse_decode_api_weekly_summary(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_weekStartMillis = sse_decode_i_64(deserializer);
+    var var_sessionCount = sse_decode_u_32(deserializer);
+    var var_totalDurationSecs = sse_decode_u_32(deserializer);
+    var var_avgHr = sse_decode_u_16(deserializer);
+    var var_timeInZone = sse_decode_list_prim_u_32_strict(deserializer);
+    return ApiWeeklySummary(
+      weekStartMillis: var_weekStartMillis,
+      sessionCount: var_sessionCount,
+      totalDurationSecs: var_totalDurationSecs,
+      avgHr: var_avgHr,
+      timeInZone: var_timeInZone,
+    );
+  }
+
+  @protected
+  ApiWorkoutTemplate sse_decode_api_workout_template(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_String(deserializer);
+    var var_name = sse_decode_String(deserializer);
+    var var_description = sse_decode_String(deserializer);
+    var var_sport = sse_decode_String(deserializer);
+    var var_difficulty = sse_decode_String(deserializer);
+    var var_durationMins = sse_decode_u_32(deserializer);
+    var var_phaseCount = sse_decode_u_32(deserializer);
+    return ApiWorkoutTemplate(
+      id: var_id,
+      name: var_name,
+      description: var_description,
+      sport: var_sport,
+      difficulty: var_difficulty,
+      durationMins: var_durationMins,
+      phaseCount: var_phaseCount,
     );
   }
 
@@ -3820,11 +4972,35 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiAnalyticsData sse_decode_box_autoadd_api_analytics_data(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_api_analytics_data(deserializer));
+  }
+
+  @protected
   ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_api_battery_level(deserializer));
+  }
+
+  @protected
+  ApiTrendPoint sse_decode_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_api_trend_point(deserializer));
+  }
+
+  @protected
+  ApiWeeklySummary sse_decode_box_autoadd_api_weekly_summary(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_api_weekly_summary(deserializer));
   }
 
   @protected
@@ -3839,6 +5015,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_record_i_64_u_16(deserializer));
+  }
+
+  @protected
+  int sse_decode_box_autoadd_u_16(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_u_16(deserializer));
   }
 
   @protected
@@ -3894,6 +5076,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int sse_decode_i_8(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt8();
+  }
+
+  @protected
   List<ApiSessionSummaryPreview>
   sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
@@ -3925,6 +5113,62 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<ApiLoadPoint> sse_decode_list_api_load_point(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ApiLoadPoint>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_api_load_point(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ApiTrendPoint> sse_decode_list_api_trend_point(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ApiTrendPoint>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_api_trend_point(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ApiWeeklySummary> sse_decode_list_api_weekly_summary(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ApiWeeklySummary>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_api_weekly_summary(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ApiWorkoutTemplate> sse_decode_list_api_workout_template(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ApiWorkoutTemplate>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_api_workout_template(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
     SseDeserializer deserializer,
   ) {
@@ -3939,10 +5183,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<int> sse_decode_list_prim_u_32_loose(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var len_ = sse_decode_i_32(deserializer);
+    return deserializer.buffer.getUint32List(len_);
+  }
+
+  @protected
   Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint32List(len_);
+  }
+
+  @protected
+  List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var len_ = sse_decode_i_32(deserializer);
+    return deserializer.buffer.getUint8List(len_);
   }
 
   @protected
@@ -3995,6 +5253,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiTrendPoint? sse_decode_opt_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_api_trend_point(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  ApiWeeklySummary? sse_decode_opt_box_autoadd_api_weekly_summary(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_api_weekly_summary(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -4013,6 +5297,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_record_i_64_u_16(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  int? sse_decode_opt_box_autoadd_u_16(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_u_16(deserializer));
     } else {
       return null;
     }
@@ -4362,6 +5657,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int cst_encode_i_32(int raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw;
+  }
+
+  @protected
+  int cst_encode_i_8(int raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw;
   }
@@ -4815,6 +6116,50 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_api_adapted_plan(
+    ApiAdaptedPlan self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.originalName, serializer);
+    sse_encode_String(self.reason, serializer);
+    sse_encode_String(self.message, serializer);
+    sse_encode_i_8(self.zoneDelta, serializer);
+    sse_encode_f_64(self.durationFactor, serializer);
+    sse_encode_list_String(self.phaseNames, serializer);
+    sse_encode_list_prim_u_8_strict(self.phaseZones, serializer);
+    sse_encode_list_prim_u_32_strict(self.phaseDurations, serializer);
+  }
+
+  @protected
+  void sse_encode_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_api_analytics_summary(self.summary, serializer);
+    sse_encode_list_api_weekly_summary(self.weeklySummaries, serializer);
+    sse_encode_list_api_trend_point(self.hrTrend, serializer);
+    sse_encode_list_api_trend_point(self.volumeTrend, serializer);
+    sse_encode_list_api_trend_point(self.consistencyTrend, serializer);
+  }
+
+  @protected
+  void sse_encode_api_analytics_summary(
+    ApiAnalyticsSummary self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.totalSessions, serializer);
+    sse_encode_u_32(self.totalDurationSecs, serializer);
+    sse_encode_u_16(self.overallAvgHr, serializer);
+    sse_encode_list_prim_u_32_strict(self.overallTimeInZone, serializer);
+    sse_encode_u_32(self.weeksCount, serializer);
+    sse_encode_u_32(self.hrTrendCount, serializer);
+    sse_encode_u_32(self.volumeTrendCount, serializer);
+  }
+
+  @protected
   void sse_encode_api_battery_level(
     ApiBatteryLevel self,
     SseSerializer serializer,
@@ -4823,6 +6168,124 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_u_8(self.level, serializer);
     sse_encode_bool(self.isCharging, serializer);
     sse_encode_u_64(self.timestamp, serializer);
+  }
+
+  @protected
+  void sse_encode_api_load_point(ApiLoadPoint self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.timestampMillis, serializer);
+    sse_encode_f_64(self.ctl, serializer);
+    sse_encode_f_64(self.atl, serializer);
+    sse_encode_f_64(self.tsb, serializer);
+  }
+
+  @protected
+  void sse_encode_api_periodization_data(
+    ApiPeriodizationData self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.name, serializer);
+    sse_encode_String(self.goal, serializer);
+    sse_encode_String(self.startDate, serializer);
+    sse_encode_String(self.endDate, serializer);
+    sse_encode_u_32(self.totalWeeks, serializer);
+    sse_encode_i_32(self.currentBlockIndex, serializer);
+    sse_encode_list_String(self.blockNames, serializer);
+    sse_encode_list_String(self.blockTypes, serializer);
+    sse_encode_list_prim_u_8_strict(self.blockWeeks, serializer);
+  }
+
+  @protected
+  void sse_encode_api_plan_details(
+    ApiPlanDetails self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.name, serializer);
+    sse_encode_list_String(self.phaseNames, serializer);
+    sse_encode_list_prim_u_8_strict(self.phaseZones, serializer);
+    sse_encode_list_prim_u_32_strict(self.phaseDurations, serializer);
+    sse_encode_u_16(self.maxHr, serializer);
+    sse_encode_i_64(self.createdAtMillis, serializer);
+  }
+
+  @protected
+  void sse_encode_api_readiness_data(
+    ApiReadinessData self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_8(self.score, serializer);
+    sse_encode_String(self.level, serializer);
+    sse_encode_f_64(self.hrvComponent, serializer);
+    sse_encode_f_64(self.rhrComponent, serializer);
+    sse_encode_f_64(self.loadComponent, serializer);
+    sse_encode_String(self.recommendation, serializer);
+  }
+
+  @protected
+  void sse_encode_api_resting_hr_stats(
+    ApiRestingHrStats self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_u_16(self.currentBpm, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.sevenDayAvg, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.thirtyDayAvg, serializer);
+    sse_encode_String(self.trendDirection, serializer);
+    sse_encode_list_api_trend_point(self.trendPoints, serializer);
+  }
+
+  @protected
+  void sse_encode_api_training_load_data(
+    ApiTrainingLoadData self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self.currentCtl, serializer);
+    sse_encode_f_64(self.currentAtl, serializer);
+    sse_encode_f_64(self.currentTsb, serializer);
+    sse_encode_list_api_load_point(self.loadHistory, serializer);
+    sse_encode_list_api_trend_point(self.sessionTrimp, serializer);
+  }
+
+  @protected
+  void sse_encode_api_trend_point(
+    ApiTrendPoint self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.timestampMillis, serializer);
+    sse_encode_f_64(self.value, serializer);
+  }
+
+  @protected
+  void sse_encode_api_weekly_summary(
+    ApiWeeklySummary self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.weekStartMillis, serializer);
+    sse_encode_u_32(self.sessionCount, serializer);
+    sse_encode_u_32(self.totalDurationSecs, serializer);
+    sse_encode_u_16(self.avgHr, serializer);
+    sse_encode_list_prim_u_32_strict(self.timeInZone, serializer);
+  }
+
+  @protected
+  void sse_encode_api_workout_template(
+    ApiWorkoutTemplate self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.id, serializer);
+    sse_encode_String(self.name, serializer);
+    sse_encode_String(self.description, serializer);
+    sse_encode_String(self.sport, serializer);
+    sse_encode_String(self.difficulty, serializer);
+    sse_encode_u_32(self.durationMins, serializer);
+    sse_encode_u_32(self.phaseCount, serializer);
   }
 
   @protected
@@ -4845,12 +6308,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_api_analytics_data(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_api_battery_level(
     ApiBatteryLevel self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_api_battery_level(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_api_trend_point(
+    ApiTrendPoint self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_api_trend_point(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_api_weekly_summary(self, serializer);
   }
 
   @protected
@@ -4866,6 +6356,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_record_i_64_u_16(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_u_16(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_16(self, serializer);
   }
 
   @protected
@@ -4922,6 +6418,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_i_8(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt8(self);
+  }
+
+  @protected
   void
   sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     List<ApiSessionSummaryPreview> self,
@@ -4947,6 +6449,54 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_api_load_point(
+    List<ApiLoadPoint> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_api_load_point(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_api_trend_point(
+    List<ApiTrendPoint> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_api_trend_point(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_api_weekly_summary(
+    List<ApiWeeklySummary> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_api_weekly_summary(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_api_workout_template(
+    List<ApiWorkoutTemplate> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_api_workout_template(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
     SseSerializer serializer,
@@ -4959,6 +6509,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_prim_u_32_loose(
+    List<int> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    serializer.buffer.putUint32List(
+      self is Uint32List ? self : Uint32List.fromList(self),
+    );
+  }
+
+  @protected
   void sse_encode_list_prim_u_32_strict(
     Uint32List self,
     SseSerializer serializer,
@@ -4966,6 +6528,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint32List(self);
+  }
+
+  @protected
+  void sse_encode_list_prim_u_8_loose(
+    List<int> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    serializer.buffer.putUint8List(
+      self is Uint8List ? self : Uint8List.fromList(self),
+    );
   }
 
   @protected
@@ -5015,6 +6589,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_api_trend_point(
+    ApiTrendPoint? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_api_trend_point(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_api_weekly_summary(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -5034,6 +6634,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_record_i_64_u_16(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_16(int? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_u_16(self, serializer);
     }
   }
 

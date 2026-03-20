@@ -9,6 +9,7 @@ import '../widgets/session_controls.dart';
 import '../widgets/connection_banner.dart';
 import '../services/audio_feedback_service.dart';
 import '../services/latency_service.dart';
+import '../services/voice_coaching_service.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -47,11 +48,15 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   bool _previousIsTooLow = false;
   bool _previousIsTooHigh = false;
 
+  // Voice coaching service singleton
+  final VoiceCoachingService _voiceCoaching = VoiceCoachingService.instance;
+
   @override
   void initState() {
     super.initState();
     // Start latency tracking when workout begins
     LatencyService.instance.start();
+    _voiceCoaching.initialize();
     _startWorkout();
   }
 
@@ -111,13 +116,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           );
 
           // Trigger audio feedback for zone deviations
+          final zoneName = targetZone.name;
           if (!isInZone) {
             if (isTooLow && !_previousIsTooLow) {
               // Zone status changed to too low
               AudioFeedbackService.instance.playZoneTooLow();
+              _voiceCoaching.announceZoneDeviation(false, zoneName);
             } else if (isTooHigh && !_previousIsTooHigh) {
               // Zone status changed to too high
               AudioFeedbackService.instance.playZoneTooHigh();
+              _voiceCoaching.announceZoneDeviation(true, zoneName);
             }
           }
 
@@ -125,6 +133,25 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           if (_previousPhaseName.isNotEmpty &&
               _previousPhaseName != phaseName) {
             AudioFeedbackService.instance.playPhaseTransition();
+            _voiceCoaching.announcePhaseComplete(_previousPhaseName);
+            final totalPhaseSecs = phaseElapsed + phaseRemaining;
+            _voiceCoaching.announcePhaseStart(
+              phaseName,
+              zoneName,
+              totalPhaseSecs,
+            );
+          }
+
+          // Countdown announcements for last 3 seconds of phase
+          if (phaseRemaining >= 1 && phaseRemaining <= 3) {
+            _voiceCoaching.announceCountdown(phaseRemaining);
+          }
+
+          // Halfway announcement
+          final totalPhaseDuration = phaseElapsed + phaseRemaining;
+          final halfPoint = totalPhaseDuration ~/ 2;
+          if (totalPhaseDuration > 0 && phaseElapsed == halfPoint) {
+            _voiceCoaching.announceHalfway(phaseName, phaseRemaining);
           }
 
           if (!mounted) return;
@@ -148,7 +175,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           });
 
           // Check if workout is complete
-          if (stateString == 'Completed' || stateString == 'Stopped') {
+          if (stateString == 'Completed') {
+            final totalElapsedMins = (_phaseElapsed + _totalRemaining) ~/ 60;
+            _voiceCoaching.announceWorkoutComplete(
+              totalElapsedMins,
+              _currentBpm,
+            );
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          } else if (stateString == 'Stopped') {
             if (mounted) {
               Navigator.of(context).pop();
             }

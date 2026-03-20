@@ -230,7 +230,43 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  ApiAdaptedPlan dco_decode_api_adapted_plan(dynamic raw);
+
+  @protected
+  ApiAnalyticsData dco_decode_api_analytics_data(dynamic raw);
+
+  @protected
+  ApiAnalyticsSummary dco_decode_api_analytics_summary(dynamic raw);
+
+  @protected
   ApiBatteryLevel dco_decode_api_battery_level(dynamic raw);
+
+  @protected
+  ApiLoadPoint dco_decode_api_load_point(dynamic raw);
+
+  @protected
+  ApiPeriodizationData dco_decode_api_periodization_data(dynamic raw);
+
+  @protected
+  ApiPlanDetails dco_decode_api_plan_details(dynamic raw);
+
+  @protected
+  ApiReadinessData dco_decode_api_readiness_data(dynamic raw);
+
+  @protected
+  ApiRestingHrStats dco_decode_api_resting_hr_stats(dynamic raw);
+
+  @protected
+  ApiTrainingLoadData dco_decode_api_training_load_data(dynamic raw);
+
+  @protected
+  ApiTrendPoint dco_decode_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary dco_decode_api_weekly_summary(dynamic raw);
+
+  @protected
+  ApiWorkoutTemplate dco_decode_api_workout_template(dynamic raw);
 
   @protected
   bool dco_decode_bool(dynamic raw);
@@ -242,13 +278,25 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiAnalyticsData dco_decode_box_autoadd_api_analytics_data(dynamic raw);
+
+  @protected
   ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
+
+  @protected
+  ApiTrendPoint dco_decode_box_autoadd_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary dco_decode_box_autoadd_api_weekly_summary(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
 
   @protected
   (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
+
+  @protected
+  int dco_decode_box_autoadd_u_16(dynamic raw);
 
   @protected
   BigInt dco_decode_box_autoadd_u_64(dynamic raw);
@@ -275,6 +323,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
+  int dco_decode_i_8(dynamic raw);
+
+  @protected
   List<ApiSessionSummaryPreview>
   dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -284,10 +335,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> dco_decode_list_String(dynamic raw);
 
   @protected
+  List<ApiLoadPoint> dco_decode_list_api_load_point(dynamic raw);
+
+  @protected
+  List<ApiTrendPoint> dco_decode_list_api_trend_point(dynamic raw);
+
+  @protected
+  List<ApiWeeklySummary> dco_decode_list_api_weekly_summary(dynamic raw);
+
+  @protected
+  List<ApiWorkoutTemplate> dco_decode_list_api_workout_template(dynamic raw);
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
 
   @protected
+  List<int> dco_decode_list_prim_u_32_loose(dynamic raw);
+
+  @protected
   Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
+
+  @protected
+  List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -305,12 +374,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiTrendPoint? dco_decode_opt_box_autoadd_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary? dco_decode_opt_box_autoadd_api_weekly_summary(dynamic raw);
+
+  @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
 
   @protected
   (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
     dynamic raw,
   );
+
+  @protected
+  int? dco_decode_opt_box_autoadd_u_16(dynamic raw);
 
   @protected
   BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
@@ -521,7 +599,53 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  ApiAdaptedPlan sse_decode_api_adapted_plan(SseDeserializer deserializer);
+
+  @protected
+  ApiAnalyticsData sse_decode_api_analytics_data(SseDeserializer deserializer);
+
+  @protected
+  ApiAnalyticsSummary sse_decode_api_analytics_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer);
+
+  @protected
+  ApiLoadPoint sse_decode_api_load_point(SseDeserializer deserializer);
+
+  @protected
+  ApiPeriodizationData sse_decode_api_periodization_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiPlanDetails sse_decode_api_plan_details(SseDeserializer deserializer);
+
+  @protected
+  ApiReadinessData sse_decode_api_readiness_data(SseDeserializer deserializer);
+
+  @protected
+  ApiRestingHrStats sse_decode_api_resting_hr_stats(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrainingLoadData sse_decode_api_training_load_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrendPoint sse_decode_api_trend_point(SseDeserializer deserializer);
+
+  @protected
+  ApiWeeklySummary sse_decode_api_weekly_summary(SseDeserializer deserializer);
+
+  @protected
+  ApiWorkoutTemplate sse_decode_api_workout_template(
+    SseDeserializer deserializer,
+  );
 
   @protected
   bool sse_decode_bool(SseDeserializer deserializer);
@@ -533,7 +657,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiAnalyticsData sse_decode_box_autoadd_api_analytics_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrendPoint sse_decode_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiWeeklySummary sse_decode_box_autoadd_api_weekly_summary(
     SseDeserializer deserializer,
   );
 
@@ -544,6 +683,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) sse_decode_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  int sse_decode_box_autoadd_u_16(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
@@ -570,6 +712,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
+  int sse_decode_i_8(SseDeserializer deserializer);
+
+  @protected
   List<ApiSessionSummaryPreview>
   sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
@@ -579,12 +724,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
+  List<ApiLoadPoint> sse_decode_list_api_load_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiTrendPoint> sse_decode_list_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiWeeklySummary> sse_decode_list_api_weekly_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiWorkoutTemplate> sse_decode_list_api_workout_template(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
     SseDeserializer deserializer,
   );
 
   @protected
+  List<int> sse_decode_list_prim_u_32_loose(SseDeserializer deserializer);
+
+  @protected
   Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
+
+  @protected
+  List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -602,12 +773,25 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiTrendPoint? sse_decode_opt_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiWeeklySummary? sse_decode_opt_box_autoadd_api_weekly_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
   (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  int? sse_decode_opt_box_autoadd_u_16(SseDeserializer deserializer);
 
   @protected
   BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
@@ -733,12 +917,165 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_api_adapted_plan(ApiAdaptedPlan raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_String(raw.originalName),
+      cst_encode_String(raw.reason),
+      cst_encode_String(raw.message),
+      cst_encode_i_8(raw.zoneDelta),
+      cst_encode_f_64(raw.durationFactor),
+      cst_encode_list_String(raw.phaseNames),
+      cst_encode_list_prim_u_8_strict(raw.phaseZones),
+      cst_encode_list_prim_u_32_strict(raw.phaseDurations),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_analytics_data(ApiAnalyticsData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_api_analytics_summary(raw.summary),
+      cst_encode_list_api_weekly_summary(raw.weeklySummaries),
+      cst_encode_list_api_trend_point(raw.hrTrend),
+      cst_encode_list_api_trend_point(raw.volumeTrend),
+      cst_encode_list_api_trend_point(raw.consistencyTrend),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_analytics_summary(ApiAnalyticsSummary raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_u_32(raw.totalSessions),
+      cst_encode_u_32(raw.totalDurationSecs),
+      cst_encode_u_16(raw.overallAvgHr),
+      cst_encode_list_prim_u_32_strict(raw.overallTimeInZone),
+      cst_encode_u_32(raw.weeksCount),
+      cst_encode_u_32(raw.hrTrendCount),
+      cst_encode_u_32(raw.volumeTrendCount),
+    ].jsify()!;
+  }
+
+  @protected
   JSAny cst_encode_api_battery_level(ApiBatteryLevel raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return [
       cst_encode_opt_box_autoadd_u_8(raw.level),
       cst_encode_bool(raw.isCharging),
       cst_encode_u_64(raw.timestamp),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_load_point(ApiLoadPoint raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_i_64(raw.timestampMillis),
+      cst_encode_f_64(raw.ctl),
+      cst_encode_f_64(raw.atl),
+      cst_encode_f_64(raw.tsb),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_periodization_data(ApiPeriodizationData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_String(raw.name),
+      cst_encode_String(raw.goal),
+      cst_encode_String(raw.startDate),
+      cst_encode_String(raw.endDate),
+      cst_encode_u_32(raw.totalWeeks),
+      cst_encode_i_32(raw.currentBlockIndex),
+      cst_encode_list_String(raw.blockNames),
+      cst_encode_list_String(raw.blockTypes),
+      cst_encode_list_prim_u_8_strict(raw.blockWeeks),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_plan_details(ApiPlanDetails raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_String(raw.name),
+      cst_encode_list_String(raw.phaseNames),
+      cst_encode_list_prim_u_8_strict(raw.phaseZones),
+      cst_encode_list_prim_u_32_strict(raw.phaseDurations),
+      cst_encode_u_16(raw.maxHr),
+      cst_encode_i_64(raw.createdAtMillis),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_readiness_data(ApiReadinessData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_u_8(raw.score),
+      cst_encode_String(raw.level),
+      cst_encode_f_64(raw.hrvComponent),
+      cst_encode_f_64(raw.rhrComponent),
+      cst_encode_f_64(raw.loadComponent),
+      cst_encode_String(raw.recommendation),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_resting_hr_stats(ApiRestingHrStats raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_opt_box_autoadd_u_16(raw.currentBpm),
+      cst_encode_opt_box_autoadd_f_64(raw.sevenDayAvg),
+      cst_encode_opt_box_autoadd_f_64(raw.thirtyDayAvg),
+      cst_encode_String(raw.trendDirection),
+      cst_encode_list_api_trend_point(raw.trendPoints),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_training_load_data(ApiTrainingLoadData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_f_64(raw.currentCtl),
+      cst_encode_f_64(raw.currentAtl),
+      cst_encode_f_64(raw.currentTsb),
+      cst_encode_list_api_load_point(raw.loadHistory),
+      cst_encode_list_api_trend_point(raw.sessionTrimp),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_trend_point(ApiTrendPoint raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_i_64(raw.timestampMillis),
+      cst_encode_f_64(raw.value),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_weekly_summary(ApiWeeklySummary raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_i_64(raw.weekStartMillis),
+      cst_encode_u_32(raw.sessionCount),
+      cst_encode_u_32(raw.totalDurationSecs),
+      cst_encode_u_16(raw.avgHr),
+      cst_encode_list_prim_u_32_strict(raw.timeInZone),
+    ].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_api_workout_template(ApiWorkoutTemplate raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [
+      cst_encode_String(raw.id),
+      cst_encode_String(raw.name),
+      cst_encode_String(raw.description),
+      cst_encode_String(raw.sport),
+      cst_encode_String(raw.difficulty),
+      cst_encode_u_32(raw.durationMins),
+      cst_encode_u_32(raw.phaseCount),
     ].jsify()!;
   }
 
@@ -754,9 +1091,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_box_autoadd_api_analytics_data(ApiAnalyticsData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_api_analytics_data(raw);
+  }
+
+  @protected
   JSAny cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_api_battery_level(raw);
+  }
+
+  @protected
+  JSAny cst_encode_box_autoadd_api_trend_point(ApiTrendPoint raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_api_trend_point(raw);
+  }
+
+  @protected
+  JSAny cst_encode_box_autoadd_api_weekly_summary(ApiWeeklySummary raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_api_weekly_summary(raw);
   }
 
   @protected
@@ -769,6 +1124,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   JSAny cst_encode_box_autoadd_record_i_64_u_16((PlatformInt64, int) raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_record_i_64_u_16(raw);
+  }
+
+  @protected
+  int cst_encode_box_autoadd_u_16(int raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_u_16(raw);
   }
 
   @protected
@@ -820,13 +1181,49 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_list_api_load_point(List<ApiLoadPoint> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_api_load_point).toList().jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_api_trend_point(List<ApiTrendPoint> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_api_trend_point).toList().jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_api_weekly_summary(List<ApiWeeklySummary> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_api_weekly_summary).toList().jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_api_workout_template(List<ApiWorkoutTemplate> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_api_workout_template).toList().jsify()!;
+  }
+
+  @protected
   JSAny cst_encode_list_discovered_device(List<DiscoveredDevice> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.map(cst_encode_discovered_device).toList().jsify()!;
   }
 
   @protected
+  JSAny cst_encode_list_prim_u_32_loose(List<int> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.jsify()!;
+  }
+
+  @protected
   JSAny cst_encode_list_prim_u_32_strict(Uint32List raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_prim_u_8_loose(List<int> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.jsify()!;
   }
@@ -868,6 +1265,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny? cst_encode_opt_box_autoadd_api_trend_point(ApiTrendPoint? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_api_trend_point(raw);
+  }
+
+  @protected
+  JSAny? cst_encode_opt_box_autoadd_api_weekly_summary(ApiWeeklySummary? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_api_weekly_summary(raw);
+  }
+
+  @protected
   double? cst_encode_opt_box_autoadd_f_64(double? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? null : cst_encode_box_autoadd_f_64(raw);
@@ -879,6 +1288,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? null : cst_encode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
+  int? cst_encode_opt_box_autoadd_u_16(int? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? null : cst_encode_box_autoadd_u_16(raw);
   }
 
   @protected
@@ -1069,6 +1484,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int cst_encode_i_32(int raw);
+
+  @protected
+  int cst_encode_i_8(int raw);
 
   @protected
   int cst_encode_u_16(int raw);
@@ -1296,8 +1714,74 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_api_adapted_plan(
+    ApiAdaptedPlan self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_analytics_summary(
+    ApiAnalyticsSummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_api_battery_level(
     ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_load_point(ApiLoadPoint self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_api_periodization_data(
+    ApiPeriodizationData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_plan_details(
+    ApiPlanDetails self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_readiness_data(
+    ApiReadinessData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_resting_hr_stats(
+    ApiRestingHrStats self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_training_load_data(
+    ApiTrainingLoadData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_trend_point(ApiTrendPoint self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_api_weekly_summary(
+    ApiWeeklySummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_workout_template(
+    ApiWorkoutTemplate self,
     SseSerializer serializer,
   );
 
@@ -1312,8 +1796,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_api_battery_level(
     ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_api_trend_point(
+    ApiTrendPoint self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary self,
     SseSerializer serializer,
   );
 
@@ -1325,6 +1827,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int) self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_box_autoadd_u_16(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
@@ -1354,6 +1859,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_8(int self, SseSerializer serializer);
+
+  @protected
   void
   sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     List<ApiSessionSummaryPreview> self,
@@ -1364,8 +1872,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_api_load_point(
+    List<ApiLoadPoint> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_trend_point(
+    List<ApiTrendPoint> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_weekly_summary(
+    List<ApiWeeklySummary> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_workout_template(
+    List<ApiWorkoutTemplate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_prim_u_32_loose(
+    List<int> self,
     SseSerializer serializer,
   );
 
@@ -1374,6 +1912,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint32List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(
@@ -1395,6 +1936,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_api_trend_point(
+    ApiTrendPoint? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
 
   @protected
@@ -1402,6 +1955,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int)? self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_16(int? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
@@ -1441,6 +1997,58 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
 class RustLibWire implements BaseWire {
   RustLibWire.fromExternalLibrary(ExternalLibrary lib);
+
+  void wire__crate__api__analytics_consistency_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  ) =>
+      wasmModule.wire__crate__api__analytics_consistency_at(port_, data, index);
+
+  void wire__crate__api__analytics_consistency_count(
+    NativePortType port_,
+    JSAny data,
+  ) => wasmModule.wire__crate__api__analytics_consistency_count(port_, data);
+
+  void wire__crate__api__analytics_hr_trend_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  ) => wasmModule.wire__crate__api__analytics_hr_trend_at(port_, data, index);
+
+  void wire__crate__api__analytics_hr_trend_count(
+    NativePortType port_,
+    JSAny data,
+  ) => wasmModule.wire__crate__api__analytics_hr_trend_count(port_, data);
+
+  void wire__crate__api__analytics_summary(NativePortType port_, JSAny data) =>
+      wasmModule.wire__crate__api__analytics_summary(port_, data);
+
+  void wire__crate__api__analytics_volume_trend_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  ) => wasmModule.wire__crate__api__analytics_volume_trend_at(
+    port_,
+    data,
+    index,
+  );
+
+  void wire__crate__api__analytics_volume_trend_count(
+    NativePortType port_,
+    JSAny data,
+  ) => wasmModule.wire__crate__api__analytics_volume_trend_count(port_, data);
+
+  void wire__crate__api__analytics_weekly_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  ) => wasmModule.wire__crate__api__analytics_weekly_at(port_, data, index);
+
+  void wire__crate__api__analytics_weeks_count(
+    NativePortType port_,
+    JSAny data,
+  ) => wasmModule.wire__crate__api__analytics_weeks_count(port_, data);
 
   void wire__crate__api__connect_device(
     NativePortType port_,
@@ -1529,6 +2137,22 @@ class RustLibWire implements BaseWire {
   ) =>
       wasmModule.wire__crate__api__create_connection_status_stream(port_, sink);
 
+  void wire__crate__api__create_custom_plan(
+    NativePortType port_,
+    String name,
+    JSAny phase_names,
+    JSAny phase_zones,
+    JSAny phase_durations,
+    int max_hr,
+  ) => wasmModule.wire__crate__api__create_custom_plan(
+    port_,
+    name,
+    phase_names,
+    phase_zones,
+    phase_durations,
+    max_hr,
+  );
+
   void wire__crate__api__create_hr_stream(NativePortType port_, String sink) =>
       wasmModule.wire__crate__api__create_hr_stream(port_, sink);
 
@@ -1536,6 +2160,9 @@ class RustLibWire implements BaseWire {
     NativePortType port_,
     String sink,
   ) => wasmModule.wire__crate__api__create_session_progress_stream(port_, sink);
+
+  void wire__crate__api__delete_plan(NativePortType port_, String name) =>
+      wasmModule.wire__crate__api__delete_plan(port_, name);
 
   void wire__crate__api__delete_session(NativePortType port_, String id) =>
       wasmModule.wire__crate__api__delete_session(port_, id);
@@ -1573,8 +2200,44 @@ class RustLibWire implements BaseWire {
     int format,
   ) => wasmModule.wire__crate__api__export_session(port_, id, format);
 
+  void wire__crate__api__export_session_gpx(
+    NativePortType port_,
+    String session_id,
+  ) => wasmModule.wire__crate__api__export_session_gpx(port_, session_id);
+
+  void wire__crate__api__export_session_tcx(
+    NativePortType port_,
+    String session_id,
+  ) => wasmModule.wire__crate__api__export_session_tcx(port_, session_id);
+
+  void wire__crate__api__get_adapted_plan(
+    NativePortType port_,
+    String plan_name,
+  ) => wasmModule.wire__crate__api__get_adapted_plan(port_, plan_name);
+
+  void wire__crate__api__get_analytics(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_analytics(port_);
+
+  void wire__crate__api__get_periodization_plan(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_periodization_plan(port_);
+
+  void wire__crate__api__get_plan_details(NativePortType port_, String name) =>
+      wasmModule.wire__crate__api__get_plan_details(port_, name);
+
+  void wire__crate__api__get_readiness_score(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_readiness_score(port_);
+
+  void wire__crate__api__get_resting_hr_stats(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_resting_hr_stats(port_);
+
   void wire__crate__api__get_session(NativePortType port_, String id) =>
       wasmModule.wire__crate__api__get_session(port_, id);
+
+  void wire__crate__api__get_training_load(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_training_load(port_);
+
+  void wire__crate__api__get_workout_templates(NativePortType port_) =>
+      wasmModule.wire__crate__api__get_workout_templates(port_);
 
   void wire__crate__api__hr_battery_level(NativePortType port_, int data) =>
       wasmModule.wire__crate__api__hr_battery_level(port_, data);
@@ -1837,6 +2500,16 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__start_mock_mode(NativePortType port_) =>
       wasmModule.wire__crate__api__start_mock_mode(port_);
 
+  void wire__crate__api__start_template_workout(
+    NativePortType port_,
+    String template_id,
+    int max_hr,
+  ) => wasmModule.wire__crate__api__start_template_workout(
+    port_,
+    template_id,
+    max_hr,
+  );
+
   void wire__crate__api__start_workout(
     NativePortType port_,
     String plan_name,
@@ -2000,6 +2673,55 @@ external RustLibWasmModule get wasmModule;
 @JS()
 @anonymous
 extension type RustLibWasmModule._(JSObject _) implements JSObject {
+  external void wire__crate__api__analytics_consistency_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  );
+
+  external void wire__crate__api__analytics_consistency_count(
+    NativePortType port_,
+    JSAny data,
+  );
+
+  external void wire__crate__api__analytics_hr_trend_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  );
+
+  external void wire__crate__api__analytics_hr_trend_count(
+    NativePortType port_,
+    JSAny data,
+  );
+
+  external void wire__crate__api__analytics_summary(
+    NativePortType port_,
+    JSAny data,
+  );
+
+  external void wire__crate__api__analytics_volume_trend_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  );
+
+  external void wire__crate__api__analytics_volume_trend_count(
+    NativePortType port_,
+    JSAny data,
+  );
+
+  external void wire__crate__api__analytics_weekly_at(
+    NativePortType port_,
+    JSAny data,
+    int index,
+  );
+
+  external void wire__crate__api__analytics_weeks_count(
+    NativePortType port_,
+    JSAny data,
+  );
+
   external void wire__crate__api__connect_device(
     NativePortType port_,
     String device_id,
@@ -2065,6 +2787,15 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     String sink,
   );
 
+  external void wire__crate__api__create_custom_plan(
+    NativePortType port_,
+    String name,
+    JSAny phase_names,
+    JSAny phase_zones,
+    JSAny phase_durations,
+    int max_hr,
+  );
+
   external void wire__crate__api__create_hr_stream(
     NativePortType port_,
     String sink,
@@ -2073,6 +2804,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__create_session_progress_stream(
     NativePortType port_,
     String sink,
+  );
+
+  external void wire__crate__api__delete_plan(
+    NativePortType port_,
+    String name,
   );
 
   external void wire__crate__api__delete_session(
@@ -2113,7 +2849,39 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     int format,
   );
 
+  external void wire__crate__api__export_session_gpx(
+    NativePortType port_,
+    String session_id,
+  );
+
+  external void wire__crate__api__export_session_tcx(
+    NativePortType port_,
+    String session_id,
+  );
+
+  external void wire__crate__api__get_adapted_plan(
+    NativePortType port_,
+    String plan_name,
+  );
+
+  external void wire__crate__api__get_analytics(NativePortType port_);
+
+  external void wire__crate__api__get_periodization_plan(NativePortType port_);
+
+  external void wire__crate__api__get_plan_details(
+    NativePortType port_,
+    String name,
+  );
+
+  external void wire__crate__api__get_readiness_score(NativePortType port_);
+
+  external void wire__crate__api__get_resting_hr_stats(NativePortType port_);
+
   external void wire__crate__api__get_session(NativePortType port_, String id);
+
+  external void wire__crate__api__get_training_load(NativePortType port_);
+
+  external void wire__crate__api__get_workout_templates(NativePortType port_);
 
   external void wire__crate__api__hr_battery_level(
     NativePortType port_,
@@ -2352,6 +3120,12 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void wire__crate__api__start_mock_mode(NativePortType port_);
+
+  external void wire__crate__api__start_template_workout(
+    NativePortType port_,
+    String template_id,
+    int max_hr,
+  );
 
   external void wire__crate__api__start_workout(
     NativePortType port_,

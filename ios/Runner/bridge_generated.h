@@ -14,10 +14,71 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 // EXTRA END
 typedef struct _Dart_Handle* Dart_Handle;
 
+typedef struct wire_cst_list_prim_u_32_strict {
+  uint32_t *ptr;
+  int32_t len;
+} wire_cst_list_prim_u_32_strict;
+
+typedef struct wire_cst_api_analytics_summary {
+  uint32_t total_sessions;
+  uint32_t total_duration_secs;
+  uint16_t overall_avg_hr;
+  struct wire_cst_list_prim_u_32_strict *overall_time_in_zone;
+  uint32_t weeks_count;
+  uint32_t hr_trend_count;
+  uint32_t volume_trend_count;
+} wire_cst_api_analytics_summary;
+
+typedef struct wire_cst_api_weekly_summary {
+  int64_t week_start_millis;
+  uint32_t session_count;
+  uint32_t total_duration_secs;
+  uint16_t avg_hr;
+  struct wire_cst_list_prim_u_32_strict *time_in_zone;
+} wire_cst_api_weekly_summary;
+
+typedef struct wire_cst_list_api_weekly_summary {
+  struct wire_cst_api_weekly_summary *ptr;
+  int32_t len;
+} wire_cst_list_api_weekly_summary;
+
+typedef struct wire_cst_api_trend_point {
+  int64_t timestamp_millis;
+  double value;
+} wire_cst_api_trend_point;
+
+typedef struct wire_cst_list_api_trend_point {
+  struct wire_cst_api_trend_point *ptr;
+  int32_t len;
+} wire_cst_list_api_trend_point;
+
+typedef struct wire_cst_api_analytics_data {
+  struct wire_cst_api_analytics_summary summary;
+  struct wire_cst_list_api_weekly_summary *weekly_summaries;
+  struct wire_cst_list_api_trend_point *hr_trend;
+  struct wire_cst_list_api_trend_point *volume_trend;
+  struct wire_cst_list_api_trend_point *consistency_trend;
+} wire_cst_api_analytics_data;
+
 typedef struct wire_cst_list_prim_u_8_strict {
   uint8_t *ptr;
   int32_t len;
 } wire_cst_list_prim_u_8_strict;
+
+typedef struct wire_cst_list_String {
+  struct wire_cst_list_prim_u_8_strict **ptr;
+  int32_t len;
+} wire_cst_list_String;
+
+typedef struct wire_cst_list_prim_u_8_loose {
+  uint8_t *ptr;
+  int32_t len;
+} wire_cst_list_prim_u_8_loose;
+
+typedef struct wire_cst_list_prim_u_32_loose {
+  uint32_t *ptr;
+  int32_t len;
+} wire_cst_list_prim_u_32_loose;
 
 typedef struct wire_cst_api_battery_level {
   uint8_t *level;
@@ -35,10 +96,32 @@ typedef struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_genera
   int32_t len;
 } wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview;
 
-typedef struct wire_cst_list_String {
-  struct wire_cst_list_prim_u_8_strict **ptr;
+typedef struct wire_cst_api_load_point {
+  int64_t timestamp_millis;
+  double ctl;
+  double atl;
+  double tsb;
+} wire_cst_api_load_point;
+
+typedef struct wire_cst_list_api_load_point {
+  struct wire_cst_api_load_point *ptr;
   int32_t len;
-} wire_cst_list_String;
+} wire_cst_list_api_load_point;
+
+typedef struct wire_cst_api_workout_template {
+  struct wire_cst_list_prim_u_8_strict *id;
+  struct wire_cst_list_prim_u_8_strict *name;
+  struct wire_cst_list_prim_u_8_strict *description;
+  struct wire_cst_list_prim_u_8_strict *sport;
+  struct wire_cst_list_prim_u_8_strict *difficulty;
+  uint32_t duration_mins;
+  uint32_t phase_count;
+} wire_cst_api_workout_template;
+
+typedef struct wire_cst_list_api_workout_template {
+  struct wire_cst_api_workout_template *ptr;
+  int32_t len;
+} wire_cst_list_api_workout_template;
 
 typedef struct wire_cst_discovered_device {
   struct wire_cst_list_prim_u_8_strict *id;
@@ -51,10 +134,62 @@ typedef struct wire_cst_list_discovered_device {
   int32_t len;
 } wire_cst_list_discovered_device;
 
-typedef struct wire_cst_list_prim_u_32_strict {
-  uint32_t *ptr;
-  int32_t len;
-} wire_cst_list_prim_u_32_strict;
+typedef struct wire_cst_api_adapted_plan {
+  struct wire_cst_list_prim_u_8_strict *original_name;
+  struct wire_cst_list_prim_u_8_strict *reason;
+  struct wire_cst_list_prim_u_8_strict *message;
+  int8_t zone_delta;
+  double duration_factor;
+  struct wire_cst_list_String *phase_names;
+  struct wire_cst_list_prim_u_8_strict *phase_zones;
+  struct wire_cst_list_prim_u_32_strict *phase_durations;
+} wire_cst_api_adapted_plan;
+
+typedef struct wire_cst_api_periodization_data {
+  struct wire_cst_list_prim_u_8_strict *name;
+  struct wire_cst_list_prim_u_8_strict *goal;
+  struct wire_cst_list_prim_u_8_strict *start_date;
+  struct wire_cst_list_prim_u_8_strict *end_date;
+  uint32_t total_weeks;
+  int32_t current_block_index;
+  struct wire_cst_list_String *block_names;
+  struct wire_cst_list_String *block_types;
+  struct wire_cst_list_prim_u_8_strict *block_weeks;
+} wire_cst_api_periodization_data;
+
+typedef struct wire_cst_api_plan_details {
+  struct wire_cst_list_prim_u_8_strict *name;
+  struct wire_cst_list_String *phase_names;
+  struct wire_cst_list_prim_u_8_strict *phase_zones;
+  struct wire_cst_list_prim_u_32_strict *phase_durations;
+  uint16_t max_hr;
+  int64_t created_at_millis;
+} wire_cst_api_plan_details;
+
+typedef struct wire_cst_api_readiness_data {
+  uint8_t score;
+  struct wire_cst_list_prim_u_8_strict *level;
+  double hrv_component;
+  double rhr_component;
+  double load_component;
+  struct wire_cst_list_prim_u_8_strict *recommendation;
+} wire_cst_api_readiness_data;
+
+typedef struct wire_cst_api_resting_hr_stats {
+  uint16_t *current_bpm;
+  double *seven_day_avg;
+  double *thirty_day_avg;
+  struct wire_cst_list_prim_u_8_strict *trend_direction;
+  struct wire_cst_list_api_trend_point *trend_points;
+} wire_cst_api_resting_hr_stats;
+
+typedef struct wire_cst_api_training_load_data {
+  double current_ctl;
+  double current_atl;
+  double current_tsb;
+  struct wire_cst_list_api_load_point *load_history;
+  struct wire_cst_list_api_trend_point *session_trimp;
+} wire_cst_api_training_load_data;
 
 typedef struct wire_cst_log_message {
   struct wire_cst_list_prim_u_8_strict *level;
@@ -62,6 +197,37 @@ typedef struct wire_cst_log_message {
   uint64_t timestamp;
   struct wire_cst_list_prim_u_8_strict *message;
 } wire_cst_log_message;
+
+void frbgen_heart_beat_wire__crate__api__analytics_consistency_at(int64_t port_,
+                                                                  struct wire_cst_api_analytics_data *data,
+                                                                  uint32_t index);
+
+void frbgen_heart_beat_wire__crate__api__analytics_consistency_count(int64_t port_,
+                                                                     struct wire_cst_api_analytics_data *data);
+
+void frbgen_heart_beat_wire__crate__api__analytics_hr_trend_at(int64_t port_,
+                                                               struct wire_cst_api_analytics_data *data,
+                                                               uint32_t index);
+
+void frbgen_heart_beat_wire__crate__api__analytics_hr_trend_count(int64_t port_,
+                                                                  struct wire_cst_api_analytics_data *data);
+
+void frbgen_heart_beat_wire__crate__api__analytics_summary(int64_t port_,
+                                                           struct wire_cst_api_analytics_data *data);
+
+void frbgen_heart_beat_wire__crate__api__analytics_volume_trend_at(int64_t port_,
+                                                                   struct wire_cst_api_analytics_data *data,
+                                                                   uint32_t index);
+
+void frbgen_heart_beat_wire__crate__api__analytics_volume_trend_count(int64_t port_,
+                                                                      struct wire_cst_api_analytics_data *data);
+
+void frbgen_heart_beat_wire__crate__api__analytics_weekly_at(int64_t port_,
+                                                             struct wire_cst_api_analytics_data *data,
+                                                             uint32_t index);
+
+void frbgen_heart_beat_wire__crate__api__analytics_weeks_count(int64_t port_,
+                                                               struct wire_cst_api_analytics_data *data);
 
 void frbgen_heart_beat_wire__crate__api__connect_device(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *device_id);
@@ -101,11 +267,21 @@ void frbgen_heart_beat_wire__crate__api__create_battery_stream(int64_t port_,
 void frbgen_heart_beat_wire__crate__api__create_connection_status_stream(int64_t port_,
                                                                          struct wire_cst_list_prim_u_8_strict *sink);
 
+void frbgen_heart_beat_wire__crate__api__create_custom_plan(int64_t port_,
+                                                            struct wire_cst_list_prim_u_8_strict *name,
+                                                            struct wire_cst_list_String *phase_names,
+                                                            struct wire_cst_list_prim_u_8_loose *phase_zones,
+                                                            struct wire_cst_list_prim_u_32_loose *phase_durations,
+                                                            uint16_t max_hr);
+
 void frbgen_heart_beat_wire__crate__api__create_hr_stream(int64_t port_,
                                                           struct wire_cst_list_prim_u_8_strict *sink);
 
 void frbgen_heart_beat_wire__crate__api__create_session_progress_stream(int64_t port_,
                                                                         struct wire_cst_list_prim_u_8_strict *sink);
+
+void frbgen_heart_beat_wire__crate__api__delete_plan(int64_t port_,
+                                                     struct wire_cst_list_prim_u_8_strict *name);
 
 void frbgen_heart_beat_wire__crate__api__delete_session(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *id);
@@ -129,8 +305,32 @@ void frbgen_heart_beat_wire__crate__api__export_session(int64_t port_,
                                                         struct wire_cst_list_prim_u_8_strict *id,
                                                         int32_t format);
 
+void frbgen_heart_beat_wire__crate__api__export_session_gpx(int64_t port_,
+                                                            struct wire_cst_list_prim_u_8_strict *session_id);
+
+void frbgen_heart_beat_wire__crate__api__export_session_tcx(int64_t port_,
+                                                            struct wire_cst_list_prim_u_8_strict *session_id);
+
+void frbgen_heart_beat_wire__crate__api__get_adapted_plan(int64_t port_,
+                                                          struct wire_cst_list_prim_u_8_strict *plan_name);
+
+void frbgen_heart_beat_wire__crate__api__get_analytics(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__get_periodization_plan(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__get_plan_details(int64_t port_,
+                                                          struct wire_cst_list_prim_u_8_strict *name);
+
+void frbgen_heart_beat_wire__crate__api__get_readiness_score(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__get_resting_hr_stats(int64_t port_);
+
 void frbgen_heart_beat_wire__crate__api__get_session(int64_t port_,
                                                      struct wire_cst_list_prim_u_8_strict *id);
+
+void frbgen_heart_beat_wire__crate__api__get_training_load(int64_t port_);
+
+void frbgen_heart_beat_wire__crate__api__get_workout_templates(int64_t port_);
 
 void frbgen_heart_beat_wire__crate__api__hr_battery_level(int64_t port_, uintptr_t data);
 
@@ -262,6 +462,10 @@ void frbgen_heart_beat_wire__crate__api__set_data_dir(int64_t port_,
 
 void frbgen_heart_beat_wire__crate__api__start_mock_mode(int64_t port_);
 
+void frbgen_heart_beat_wire__crate__api__start_template_workout(int64_t port_,
+                                                                struct wire_cst_list_prim_u_8_strict *template_id,
+                                                                uint16_t max_hr);
+
 void frbgen_heart_beat_wire__crate__api__start_workout(int64_t port_,
                                                        struct wire_cst_list_prim_u_8_strict *plan_name);
 
@@ -309,11 +513,19 @@ void frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_b
 
 uintptr_t *frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(uintptr_t value);
 
+struct wire_cst_api_analytics_data *frbgen_heart_beat_cst_new_box_autoadd_api_analytics_data(void);
+
 struct wire_cst_api_battery_level *frbgen_heart_beat_cst_new_box_autoadd_api_battery_level(void);
+
+struct wire_cst_api_trend_point *frbgen_heart_beat_cst_new_box_autoadd_api_trend_point(void);
+
+struct wire_cst_api_weekly_summary *frbgen_heart_beat_cst_new_box_autoadd_api_weekly_summary(void);
 
 double *frbgen_heart_beat_cst_new_box_autoadd_f_64(double value);
 
 struct wire_cst_record_i_64_u_16 *frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16(void);
+
+uint16_t *frbgen_heart_beat_cst_new_box_autoadd_u_16(uint16_t value);
 
 uint64_t *frbgen_heart_beat_cst_new_box_autoadd_u_64(uint64_t value);
 
@@ -323,9 +535,21 @@ struct wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustA
 
 struct wire_cst_list_String *frbgen_heart_beat_cst_new_list_String(int32_t len);
 
+struct wire_cst_list_api_load_point *frbgen_heart_beat_cst_new_list_api_load_point(int32_t len);
+
+struct wire_cst_list_api_trend_point *frbgen_heart_beat_cst_new_list_api_trend_point(int32_t len);
+
+struct wire_cst_list_api_weekly_summary *frbgen_heart_beat_cst_new_list_api_weekly_summary(int32_t len);
+
+struct wire_cst_list_api_workout_template *frbgen_heart_beat_cst_new_list_api_workout_template(int32_t len);
+
 struct wire_cst_list_discovered_device *frbgen_heart_beat_cst_new_list_discovered_device(int32_t len);
 
+struct wire_cst_list_prim_u_32_loose *frbgen_heart_beat_cst_new_list_prim_u_32_loose(int32_t len);
+
 struct wire_cst_list_prim_u_32_strict *frbgen_heart_beat_cst_new_list_prim_u_32_strict(int32_t len);
+
+struct wire_cst_list_prim_u_8_loose *frbgen_heart_beat_cst_new_list_prim_u_8_loose(int32_t len);
 
 struct wire_cst_list_prim_u_8_strict *frbgen_heart_beat_cst_new_list_prim_u_8_strict(int32_t len);
 
@@ -339,15 +563,25 @@ jint JNI_OnLoad(JavaVM vm, void *_res);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_analytics_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_battery_level);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_trend_point);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_api_weekly_summary);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_f_64);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_record_i_64_u_16);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_16);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_64);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_box_autoadd_u_8);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_String);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_api_load_point);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_api_trend_point);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_api_weekly_summary);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_api_workout_template);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_discovered_device);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_32_loose);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_32_strict);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_8_loose);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_cst_new_list_prim_u_8_strict);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiConnectionStatus);
@@ -365,6 +599,15 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionState);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiZoneStatus);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_consistency_at);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_consistency_count);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_hr_trend_at);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_hr_trend_count);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_summary);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_volume_trend_at);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_volume_trend_count);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_weekly_at);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__analytics_weeks_count);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connect_device);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_attempt);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_device_id);
@@ -378,8 +621,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__connection_status_to_string);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_battery_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_connection_status_stream);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_custom_plan);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_hr_stream);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__create_session_progress_stream);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__delete_plan);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__delete_session);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__disconnect);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__dummy_battery_level_for_codegen);
@@ -389,7 +634,17 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_hr_data);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__emit_session_progress);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__export_session);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__export_session_gpx);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__export_session_tcx);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_adapted_plan);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_analytics);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_periodization_plan);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_plan_details);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_readiness_score);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_resting_hr_stats);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_session);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_training_load);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__get_workout_templates);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_battery_level);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filter_variance);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__hr_filtered_bpm);
@@ -445,6 +700,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__session_summary_time_in_zone);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__set_data_dir);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_mock_mode);
+    dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_template_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__start_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__stop_workout);
     dummy_var ^= ((int64_t) (void*) frbgen_heart_beat_wire__crate__api__zone_status_is_in_zone);

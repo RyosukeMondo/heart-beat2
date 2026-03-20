@@ -228,7 +228,43 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  ApiAdaptedPlan dco_decode_api_adapted_plan(dynamic raw);
+
+  @protected
+  ApiAnalyticsData dco_decode_api_analytics_data(dynamic raw);
+
+  @protected
+  ApiAnalyticsSummary dco_decode_api_analytics_summary(dynamic raw);
+
+  @protected
   ApiBatteryLevel dco_decode_api_battery_level(dynamic raw);
+
+  @protected
+  ApiLoadPoint dco_decode_api_load_point(dynamic raw);
+
+  @protected
+  ApiPeriodizationData dco_decode_api_periodization_data(dynamic raw);
+
+  @protected
+  ApiPlanDetails dco_decode_api_plan_details(dynamic raw);
+
+  @protected
+  ApiReadinessData dco_decode_api_readiness_data(dynamic raw);
+
+  @protected
+  ApiRestingHrStats dco_decode_api_resting_hr_stats(dynamic raw);
+
+  @protected
+  ApiTrainingLoadData dco_decode_api_training_load_data(dynamic raw);
+
+  @protected
+  ApiTrendPoint dco_decode_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary dco_decode_api_weekly_summary(dynamic raw);
+
+  @protected
+  ApiWorkoutTemplate dco_decode_api_workout_template(dynamic raw);
 
   @protected
   bool dco_decode_bool(dynamic raw);
@@ -240,13 +276,25 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiAnalyticsData dco_decode_box_autoadd_api_analytics_data(dynamic raw);
+
+  @protected
   ApiBatteryLevel dco_decode_box_autoadd_api_battery_level(dynamic raw);
+
+  @protected
+  ApiTrendPoint dco_decode_box_autoadd_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary dco_decode_box_autoadd_api_weekly_summary(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
 
   @protected
   (PlatformInt64, int) dco_decode_box_autoadd_record_i_64_u_16(dynamic raw);
+
+  @protected
+  int dco_decode_box_autoadd_u_16(dynamic raw);
 
   @protected
   BigInt dco_decode_box_autoadd_u_64(dynamic raw);
@@ -273,6 +321,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
+  int dco_decode_i_8(dynamic raw);
+
+  @protected
   List<ApiSessionSummaryPreview>
   dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     dynamic raw,
@@ -282,10 +333,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> dco_decode_list_String(dynamic raw);
 
   @protected
+  List<ApiLoadPoint> dco_decode_list_api_load_point(dynamic raw);
+
+  @protected
+  List<ApiTrendPoint> dco_decode_list_api_trend_point(dynamic raw);
+
+  @protected
+  List<ApiWeeklySummary> dco_decode_list_api_weekly_summary(dynamic raw);
+
+  @protected
+  List<ApiWorkoutTemplate> dco_decode_list_api_workout_template(dynamic raw);
+
+  @protected
   List<DiscoveredDevice> dco_decode_list_discovered_device(dynamic raw);
 
   @protected
+  List<int> dco_decode_list_prim_u_32_loose(dynamic raw);
+
+  @protected
   Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
+
+  @protected
+  List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -303,12 +372,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiTrendPoint? dco_decode_opt_box_autoadd_api_trend_point(dynamic raw);
+
+  @protected
+  ApiWeeklySummary? dco_decode_opt_box_autoadd_api_weekly_summary(dynamic raw);
+
+  @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
 
   @protected
   (PlatformInt64, int)? dco_decode_opt_box_autoadd_record_i_64_u_16(
     dynamic raw,
   );
+
+  @protected
+  int? dco_decode_opt_box_autoadd_u_16(dynamic raw);
 
   @protected
   BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
@@ -519,7 +597,53 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  ApiAdaptedPlan sse_decode_api_adapted_plan(SseDeserializer deserializer);
+
+  @protected
+  ApiAnalyticsData sse_decode_api_analytics_data(SseDeserializer deserializer);
+
+  @protected
+  ApiAnalyticsSummary sse_decode_api_analytics_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_api_battery_level(SseDeserializer deserializer);
+
+  @protected
+  ApiLoadPoint sse_decode_api_load_point(SseDeserializer deserializer);
+
+  @protected
+  ApiPeriodizationData sse_decode_api_periodization_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiPlanDetails sse_decode_api_plan_details(SseDeserializer deserializer);
+
+  @protected
+  ApiReadinessData sse_decode_api_readiness_data(SseDeserializer deserializer);
+
+  @protected
+  ApiRestingHrStats sse_decode_api_resting_hr_stats(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrainingLoadData sse_decode_api_training_load_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrendPoint sse_decode_api_trend_point(SseDeserializer deserializer);
+
+  @protected
+  ApiWeeklySummary sse_decode_api_weekly_summary(SseDeserializer deserializer);
+
+  @protected
+  ApiWorkoutTemplate sse_decode_api_workout_template(
+    SseDeserializer deserializer,
+  );
 
   @protected
   bool sse_decode_bool(SseDeserializer deserializer);
@@ -531,7 +655,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiAnalyticsData sse_decode_box_autoadd_api_analytics_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiBatteryLevel sse_decode_box_autoadd_api_battery_level(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiTrendPoint sse_decode_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiWeeklySummary sse_decode_box_autoadd_api_weekly_summary(
     SseDeserializer deserializer,
   );
 
@@ -542,6 +681,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) sse_decode_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  int sse_decode_box_autoadd_u_16(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
@@ -568,6 +710,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
+  int sse_decode_i_8(SseDeserializer deserializer);
+
+  @protected
   List<ApiSessionSummaryPreview>
   sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     SseDeserializer deserializer,
@@ -577,12 +722,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
+  List<ApiLoadPoint> sse_decode_list_api_load_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiTrendPoint> sse_decode_list_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiWeeklySummary> sse_decode_list_api_weekly_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ApiWorkoutTemplate> sse_decode_list_api_workout_template(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<DiscoveredDevice> sse_decode_list_discovered_device(
     SseDeserializer deserializer,
   );
 
   @protected
+  List<int> sse_decode_list_prim_u_32_loose(SseDeserializer deserializer);
+
+  @protected
   Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
+
+  @protected
+  List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -600,12 +771,25 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiTrendPoint? sse_decode_opt_box_autoadd_api_trend_point(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiWeeklySummary? sse_decode_opt_box_autoadd_api_weekly_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
 
   @protected
   (PlatformInt64, int)? sse_decode_opt_box_autoadd_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  int? sse_decode_opt_box_autoadd_u_16(SseDeserializer deserializer);
 
   @protected
   BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
@@ -749,11 +933,39 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_api_analytics_data>
+  cst_encode_box_autoadd_api_analytics_data(ApiAnalyticsData raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_api_analytics_data();
+    cst_api_fill_to_wire_api_analytics_data(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_cst_api_battery_level>
   cst_encode_box_autoadd_api_battery_level(ApiBatteryLevel raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     final ptr = wire.cst_new_box_autoadd_api_battery_level();
     cst_api_fill_to_wire_api_battery_level(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_api_trend_point> cst_encode_box_autoadd_api_trend_point(
+    ApiTrendPoint raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_api_trend_point();
+    cst_api_fill_to_wire_api_trend_point(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_api_weekly_summary>
+  cst_encode_box_autoadd_api_weekly_summary(ApiWeeklySummary raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_api_weekly_summary();
+    cst_api_fill_to_wire_api_weekly_summary(raw, ptr.ref);
     return ptr;
   }
 
@@ -770,6 +982,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     final ptr = wire.cst_new_box_autoadd_record_i_64_u_16();
     cst_api_fill_to_wire_record_i_64_u_16(raw, ptr.ref);
     return ptr;
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint16> cst_encode_box_autoadd_u_16(int raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire.cst_new_box_autoadd_u_16(cst_encode_u_16(raw));
   }
 
   @protected
@@ -822,6 +1040,52 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_list_api_load_point> cst_encode_list_api_load_point(
+    List<ApiLoadPoint> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_api_load_point(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_api_load_point(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_api_trend_point> cst_encode_list_api_trend_point(
+    List<ApiTrendPoint> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_api_trend_point(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_api_trend_point(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_api_weekly_summary>
+  cst_encode_list_api_weekly_summary(List<ApiWeeklySummary> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_api_weekly_summary(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_api_weekly_summary(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_api_workout_template>
+  cst_encode_list_api_workout_template(List<ApiWorkoutTemplate> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_api_workout_template(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_api_workout_template(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_cst_list_discovered_device>
   cst_encode_list_discovered_device(List<DiscoveredDevice> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -833,11 +1097,31 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_list_prim_u_32_loose> cst_encode_list_prim_u_32_loose(
+    List<int> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_prim_u_32_loose(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_cst_list_prim_u_32_strict> cst_encode_list_prim_u_32_strict(
     Uint32List raw,
   ) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     final ans = wire.cst_new_list_prim_u_32_strict(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_prim_u_8_loose> cst_encode_list_prim_u_8_loose(
+    List<int> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_prim_u_8_loose(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
@@ -874,6 +1158,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_api_trend_point>
+  cst_encode_opt_box_autoadd_api_trend_point(ApiTrendPoint? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_api_trend_point(raw);
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_api_weekly_summary>
+  cst_encode_opt_box_autoadd_api_weekly_summary(ApiWeeklySummary? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_api_weekly_summary(raw);
+  }
+
+  @protected
   ffi.Pointer<ffi.Double> cst_encode_opt_box_autoadd_f_64(double? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw == null ? ffi.nullptr : cst_encode_box_autoadd_f_64(raw);
@@ -886,6 +1188,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     return raw == null
         ? ffi.nullptr
         : cst_encode_box_autoadd_record_i_64_u_16(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint16> cst_encode_opt_box_autoadd_u_16(int? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? ffi.nullptr : cst_encode_box_autoadd_u_16(raw);
   }
 
   @protected
@@ -913,6 +1221,55 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_api_adapted_plan(
+    ApiAdaptedPlan apiObj,
+    wire_cst_api_adapted_plan wireObj,
+  ) {
+    wireObj.original_name = cst_encode_String(apiObj.originalName);
+    wireObj.reason = cst_encode_String(apiObj.reason);
+    wireObj.message = cst_encode_String(apiObj.message);
+    wireObj.zone_delta = cst_encode_i_8(apiObj.zoneDelta);
+    wireObj.duration_factor = cst_encode_f_64(apiObj.durationFactor);
+    wireObj.phase_names = cst_encode_list_String(apiObj.phaseNames);
+    wireObj.phase_zones = cst_encode_list_prim_u_8_strict(apiObj.phaseZones);
+    wireObj.phase_durations = cst_encode_list_prim_u_32_strict(
+      apiObj.phaseDurations,
+    );
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_analytics_data(
+    ApiAnalyticsData apiObj,
+    wire_cst_api_analytics_data wireObj,
+  ) {
+    cst_api_fill_to_wire_api_analytics_summary(apiObj.summary, wireObj.summary);
+    wireObj.weekly_summaries = cst_encode_list_api_weekly_summary(
+      apiObj.weeklySummaries,
+    );
+    wireObj.hr_trend = cst_encode_list_api_trend_point(apiObj.hrTrend);
+    wireObj.volume_trend = cst_encode_list_api_trend_point(apiObj.volumeTrend);
+    wireObj.consistency_trend = cst_encode_list_api_trend_point(
+      apiObj.consistencyTrend,
+    );
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_analytics_summary(
+    ApiAnalyticsSummary apiObj,
+    wire_cst_api_analytics_summary wireObj,
+  ) {
+    wireObj.total_sessions = cst_encode_u_32(apiObj.totalSessions);
+    wireObj.total_duration_secs = cst_encode_u_32(apiObj.totalDurationSecs);
+    wireObj.overall_avg_hr = cst_encode_u_16(apiObj.overallAvgHr);
+    wireObj.overall_time_in_zone = cst_encode_list_prim_u_32_strict(
+      apiObj.overallTimeInZone,
+    );
+    wireObj.weeks_count = cst_encode_u_32(apiObj.weeksCount);
+    wireObj.hr_trend_count = cst_encode_u_32(apiObj.hrTrendCount);
+    wireObj.volume_trend_count = cst_encode_u_32(apiObj.volumeTrendCount);
+  }
+
+  @protected
   void cst_api_fill_to_wire_api_battery_level(
     ApiBatteryLevel apiObj,
     wire_cst_api_battery_level wireObj,
@@ -923,11 +1280,153 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_api_load_point(
+    ApiLoadPoint apiObj,
+    wire_cst_api_load_point wireObj,
+  ) {
+    wireObj.timestamp_millis = cst_encode_i_64(apiObj.timestampMillis);
+    wireObj.ctl = cst_encode_f_64(apiObj.ctl);
+    wireObj.atl = cst_encode_f_64(apiObj.atl);
+    wireObj.tsb = cst_encode_f_64(apiObj.tsb);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_periodization_data(
+    ApiPeriodizationData apiObj,
+    wire_cst_api_periodization_data wireObj,
+  ) {
+    wireObj.name = cst_encode_String(apiObj.name);
+    wireObj.goal = cst_encode_String(apiObj.goal);
+    wireObj.start_date = cst_encode_String(apiObj.startDate);
+    wireObj.end_date = cst_encode_String(apiObj.endDate);
+    wireObj.total_weeks = cst_encode_u_32(apiObj.totalWeeks);
+    wireObj.current_block_index = cst_encode_i_32(apiObj.currentBlockIndex);
+    wireObj.block_names = cst_encode_list_String(apiObj.blockNames);
+    wireObj.block_types = cst_encode_list_String(apiObj.blockTypes);
+    wireObj.block_weeks = cst_encode_list_prim_u_8_strict(apiObj.blockWeeks);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_plan_details(
+    ApiPlanDetails apiObj,
+    wire_cst_api_plan_details wireObj,
+  ) {
+    wireObj.name = cst_encode_String(apiObj.name);
+    wireObj.phase_names = cst_encode_list_String(apiObj.phaseNames);
+    wireObj.phase_zones = cst_encode_list_prim_u_8_strict(apiObj.phaseZones);
+    wireObj.phase_durations = cst_encode_list_prim_u_32_strict(
+      apiObj.phaseDurations,
+    );
+    wireObj.max_hr = cst_encode_u_16(apiObj.maxHr);
+    wireObj.created_at_millis = cst_encode_i_64(apiObj.createdAtMillis);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_readiness_data(
+    ApiReadinessData apiObj,
+    wire_cst_api_readiness_data wireObj,
+  ) {
+    wireObj.score = cst_encode_u_8(apiObj.score);
+    wireObj.level = cst_encode_String(apiObj.level);
+    wireObj.hrv_component = cst_encode_f_64(apiObj.hrvComponent);
+    wireObj.rhr_component = cst_encode_f_64(apiObj.rhrComponent);
+    wireObj.load_component = cst_encode_f_64(apiObj.loadComponent);
+    wireObj.recommendation = cst_encode_String(apiObj.recommendation);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_resting_hr_stats(
+    ApiRestingHrStats apiObj,
+    wire_cst_api_resting_hr_stats wireObj,
+  ) {
+    wireObj.current_bpm = cst_encode_opt_box_autoadd_u_16(apiObj.currentBpm);
+    wireObj.seven_day_avg = cst_encode_opt_box_autoadd_f_64(apiObj.sevenDayAvg);
+    wireObj.thirty_day_avg = cst_encode_opt_box_autoadd_f_64(
+      apiObj.thirtyDayAvg,
+    );
+    wireObj.trend_direction = cst_encode_String(apiObj.trendDirection);
+    wireObj.trend_points = cst_encode_list_api_trend_point(apiObj.trendPoints);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_training_load_data(
+    ApiTrainingLoadData apiObj,
+    wire_cst_api_training_load_data wireObj,
+  ) {
+    wireObj.current_ctl = cst_encode_f_64(apiObj.currentCtl);
+    wireObj.current_atl = cst_encode_f_64(apiObj.currentAtl);
+    wireObj.current_tsb = cst_encode_f_64(apiObj.currentTsb);
+    wireObj.load_history = cst_encode_list_api_load_point(apiObj.loadHistory);
+    wireObj.session_trimp = cst_encode_list_api_trend_point(
+      apiObj.sessionTrimp,
+    );
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_trend_point(
+    ApiTrendPoint apiObj,
+    wire_cst_api_trend_point wireObj,
+  ) {
+    wireObj.timestamp_millis = cst_encode_i_64(apiObj.timestampMillis);
+    wireObj.value = cst_encode_f_64(apiObj.value);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_weekly_summary(
+    ApiWeeklySummary apiObj,
+    wire_cst_api_weekly_summary wireObj,
+  ) {
+    wireObj.week_start_millis = cst_encode_i_64(apiObj.weekStartMillis);
+    wireObj.session_count = cst_encode_u_32(apiObj.sessionCount);
+    wireObj.total_duration_secs = cst_encode_u_32(apiObj.totalDurationSecs);
+    wireObj.avg_hr = cst_encode_u_16(apiObj.avgHr);
+    wireObj.time_in_zone = cst_encode_list_prim_u_32_strict(apiObj.timeInZone);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_api_workout_template(
+    ApiWorkoutTemplate apiObj,
+    wire_cst_api_workout_template wireObj,
+  ) {
+    wireObj.id = cst_encode_String(apiObj.id);
+    wireObj.name = cst_encode_String(apiObj.name);
+    wireObj.description = cst_encode_String(apiObj.description);
+    wireObj.sport = cst_encode_String(apiObj.sport);
+    wireObj.difficulty = cst_encode_String(apiObj.difficulty);
+    wireObj.duration_mins = cst_encode_u_32(apiObj.durationMins);
+    wireObj.phase_count = cst_encode_u_32(apiObj.phaseCount);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_box_autoadd_api_analytics_data(
+    ApiAnalyticsData apiObj,
+    ffi.Pointer<wire_cst_api_analytics_data> wireObj,
+  ) {
+    cst_api_fill_to_wire_api_analytics_data(apiObj, wireObj.ref);
+  }
+
+  @protected
   void cst_api_fill_to_wire_box_autoadd_api_battery_level(
     ApiBatteryLevel apiObj,
     ffi.Pointer<wire_cst_api_battery_level> wireObj,
   ) {
     cst_api_fill_to_wire_api_battery_level(apiObj, wireObj.ref);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_box_autoadd_api_trend_point(
+    ApiTrendPoint apiObj,
+    ffi.Pointer<wire_cst_api_trend_point> wireObj,
+  ) {
+    cst_api_fill_to_wire_api_trend_point(apiObj, wireObj.ref);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary apiObj,
+    ffi.Pointer<wire_cst_api_weekly_summary> wireObj,
+  ) {
+    cst_api_fill_to_wire_api_weekly_summary(apiObj, wireObj.ref);
   }
 
   @protected
@@ -1126,6 +1625,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int cst_encode_i_32(int raw);
+
+  @protected
+  int cst_encode_i_8(int raw);
 
   @protected
   int cst_encode_u_16(int raw);
@@ -1353,8 +1855,74 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_api_adapted_plan(
+    ApiAdaptedPlan self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_analytics_summary(
+    ApiAnalyticsSummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_api_battery_level(
     ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_load_point(ApiLoadPoint self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_api_periodization_data(
+    ApiPeriodizationData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_plan_details(
+    ApiPlanDetails self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_readiness_data(
+    ApiReadinessData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_resting_hr_stats(
+    ApiRestingHrStats self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_training_load_data(
+    ApiTrainingLoadData self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_trend_point(ApiTrendPoint self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_api_weekly_summary(
+    ApiWeeklySummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_api_workout_template(
+    ApiWorkoutTemplate self,
     SseSerializer serializer,
   );
 
@@ -1369,8 +1937,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_api_analytics_data(
+    ApiAnalyticsData self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_api_battery_level(
     ApiBatteryLevel self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_api_trend_point(
+    ApiTrendPoint self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary self,
     SseSerializer serializer,
   );
 
@@ -1382,6 +1968,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int) self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_box_autoadd_u_16(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
@@ -1411,6 +2000,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_8(int self, SseSerializer serializer);
+
+  @protected
   void
   sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview(
     List<ApiSessionSummaryPreview> self,
@@ -1421,8 +2013,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_api_load_point(
+    List<ApiLoadPoint> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_trend_point(
+    List<ApiTrendPoint> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_weekly_summary(
+    List<ApiWeeklySummary> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_api_workout_template(
+    List<ApiWorkoutTemplate> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_discovered_device(
     List<DiscoveredDevice> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_prim_u_32_loose(
+    List<int> self,
     SseSerializer serializer,
   );
 
@@ -1431,6 +2053,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint32List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(
@@ -1452,6 +2077,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_api_trend_point(
+    ApiTrendPoint? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_api_weekly_summary(
+    ApiWeeklySummary? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
 
   @protected
@@ -1459,6 +2096,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     (PlatformInt64, int)? self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_opt_box_autoadd_u_16(int? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
@@ -1530,6 +2170,197 @@ class RustLibWire implements BaseWire {
       );
   late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
       .asFunction<void Function(DartPostCObjectFnType)>();
+
+  void wire__crate__api__analytics_consistency_at(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+    int index,
+  ) {
+    return _wire__crate__api__analytics_consistency_at(port_, data, index);
+  }
+
+  late final _wire__crate__api__analytics_consistency_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_api_analytics_data>,
+            ffi.Uint32,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_consistency_at');
+  late final _wire__crate__api__analytics_consistency_at =
+      _wire__crate__api__analytics_consistency_atPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>, int)
+          >();
+
+  void wire__crate__api__analytics_consistency_count(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+  ) {
+    return _wire__crate__api__analytics_consistency_count(port_, data);
+  }
+
+  late final _wire__crate__api__analytics_consistency_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_analytics_data>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_consistency_count');
+  late final _wire__crate__api__analytics_consistency_count =
+      _wire__crate__api__analytics_consistency_countPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
+          >();
+
+  void wire__crate__api__analytics_hr_trend_at(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+    int index,
+  ) {
+    return _wire__crate__api__analytics_hr_trend_at(port_, data, index);
+  }
+
+  late final _wire__crate__api__analytics_hr_trend_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_api_analytics_data>,
+            ffi.Uint32,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_hr_trend_at');
+  late final _wire__crate__api__analytics_hr_trend_at =
+      _wire__crate__api__analytics_hr_trend_atPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>, int)
+          >();
+
+  void wire__crate__api__analytics_hr_trend_count(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+  ) {
+    return _wire__crate__api__analytics_hr_trend_count(port_, data);
+  }
+
+  late final _wire__crate__api__analytics_hr_trend_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_analytics_data>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_hr_trend_count');
+  late final _wire__crate__api__analytics_hr_trend_count =
+      _wire__crate__api__analytics_hr_trend_countPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
+          >();
+
+  void wire__crate__api__analytics_summary(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+  ) {
+    return _wire__crate__api__analytics_summary(port_, data);
+  }
+
+  late final _wire__crate__api__analytics_summaryPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_analytics_data>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_summary');
+  late final _wire__crate__api__analytics_summary =
+      _wire__crate__api__analytics_summaryPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
+          >();
+
+  void wire__crate__api__analytics_volume_trend_at(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+    int index,
+  ) {
+    return _wire__crate__api__analytics_volume_trend_at(port_, data, index);
+  }
+
+  late final _wire__crate__api__analytics_volume_trend_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_api_analytics_data>,
+            ffi.Uint32,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_volume_trend_at');
+  late final _wire__crate__api__analytics_volume_trend_at =
+      _wire__crate__api__analytics_volume_trend_atPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>, int)
+          >();
+
+  void wire__crate__api__analytics_volume_trend_count(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+  ) {
+    return _wire__crate__api__analytics_volume_trend_count(port_, data);
+  }
+
+  late final _wire__crate__api__analytics_volume_trend_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_analytics_data>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_volume_trend_count');
+  late final _wire__crate__api__analytics_volume_trend_count =
+      _wire__crate__api__analytics_volume_trend_countPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
+          >();
+
+  void wire__crate__api__analytics_weekly_at(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+    int index,
+  ) {
+    return _wire__crate__api__analytics_weekly_at(port_, data, index);
+  }
+
+  late final _wire__crate__api__analytics_weekly_atPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_api_analytics_data>,
+            ffi.Uint32,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_weekly_at');
+  late final _wire__crate__api__analytics_weekly_at =
+      _wire__crate__api__analytics_weekly_atPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>, int)
+          >();
+
+  void wire__crate__api__analytics_weeks_count(
+    int port_,
+    ffi.Pointer<wire_cst_api_analytics_data> data,
+  ) {
+    return _wire__crate__api__analytics_weeks_count(port_, data);
+  }
+
+  late final _wire__crate__api__analytics_weeks_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_api_analytics_data>)
+        >
+      >('frbgen_heart_beat_wire__crate__api__analytics_weeks_count');
+  late final _wire__crate__api__analytics_weeks_count =
+      _wire__crate__api__analytics_weeks_countPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
+          >();
 
   void wire__crate__api__connect_device(
     int port_,
@@ -1735,6 +2566,50 @@ class RustLibWire implements BaseWire {
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
 
+  void wire__crate__api__create_custom_plan(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> name,
+    ffi.Pointer<wire_cst_list_String> phase_names,
+    ffi.Pointer<wire_cst_list_prim_u_8_loose> phase_zones,
+    ffi.Pointer<wire_cst_list_prim_u_32_loose> phase_durations,
+    int max_hr,
+  ) {
+    return _wire__crate__api__create_custom_plan(
+      port_,
+      name,
+      phase_names,
+      phase_zones,
+      phase_durations,
+      max_hr,
+    );
+  }
+
+  late final _wire__crate__api__create_custom_planPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_list_String>,
+            ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+            ffi.Pointer<wire_cst_list_prim_u_32_loose>,
+            ffi.Uint16,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__create_custom_plan');
+  late final _wire__crate__api__create_custom_plan =
+      _wire__crate__api__create_custom_planPtr
+          .asFunction<
+            void Function(
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_list_String>,
+              ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+              ffi.Pointer<wire_cst_list_prim_u_32_loose>,
+              int,
+            )
+          >();
+
   void wire__crate__api__create_hr_stream(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> sink,
@@ -1778,6 +2653,27 @@ class RustLibWire implements BaseWire {
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
+
+  void wire__crate__api__delete_plan(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> name,
+  ) {
+    return _wire__crate__api__delete_plan(port_, name);
+  }
+
+  late final _wire__crate__api__delete_planPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__delete_plan');
+  late final _wire__crate__api__delete_plan = _wire__crate__api__delete_planPtr
+      .asFunction<
+        void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+      >();
 
   void wire__crate__api__delete_session(
     int port_,
@@ -1914,6 +2810,141 @@ class RustLibWire implements BaseWire {
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>, int)
           >();
 
+  void wire__crate__api__export_session_gpx(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> session_id,
+  ) {
+    return _wire__crate__api__export_session_gpx(port_, session_id);
+  }
+
+  late final _wire__crate__api__export_session_gpxPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__export_session_gpx');
+  late final _wire__crate__api__export_session_gpx =
+      _wire__crate__api__export_session_gpxPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__export_session_tcx(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> session_id,
+  ) {
+    return _wire__crate__api__export_session_tcx(port_, session_id);
+  }
+
+  late final _wire__crate__api__export_session_tcxPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__export_session_tcx');
+  late final _wire__crate__api__export_session_tcx =
+      _wire__crate__api__export_session_tcxPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__get_adapted_plan(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> plan_name,
+  ) {
+    return _wire__crate__api__get_adapted_plan(port_, plan_name);
+  }
+
+  late final _wire__crate__api__get_adapted_planPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__get_adapted_plan');
+  late final _wire__crate__api__get_adapted_plan =
+      _wire__crate__api__get_adapted_planPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__get_analytics(int port_) {
+    return _wire__crate__api__get_analytics(port_);
+  }
+
+  late final _wire__crate__api__get_analyticsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_analytics',
+      );
+  late final _wire__crate__api__get_analytics =
+      _wire__crate__api__get_analyticsPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__get_periodization_plan(int port_) {
+    return _wire__crate__api__get_periodization_plan(port_);
+  }
+
+  late final _wire__crate__api__get_periodization_planPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_periodization_plan',
+      );
+  late final _wire__crate__api__get_periodization_plan =
+      _wire__crate__api__get_periodization_planPtr
+          .asFunction<void Function(int)>();
+
+  void wire__crate__api__get_plan_details(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> name,
+  ) {
+    return _wire__crate__api__get_plan_details(port_, name);
+  }
+
+  late final _wire__crate__api__get_plan_detailsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__get_plan_details');
+  late final _wire__crate__api__get_plan_details =
+      _wire__crate__api__get_plan_detailsPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__get_readiness_score(int port_) {
+    return _wire__crate__api__get_readiness_score(port_);
+  }
+
+  late final _wire__crate__api__get_readiness_scorePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_readiness_score',
+      );
+  late final _wire__crate__api__get_readiness_score =
+      _wire__crate__api__get_readiness_scorePtr
+          .asFunction<void Function(int)>();
+
+  void wire__crate__api__get_resting_hr_stats(int port_) {
+    return _wire__crate__api__get_resting_hr_stats(port_);
+  }
+
+  late final _wire__crate__api__get_resting_hr_statsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_resting_hr_stats',
+      );
+  late final _wire__crate__api__get_resting_hr_stats =
+      _wire__crate__api__get_resting_hr_statsPtr
+          .asFunction<void Function(int)>();
+
   void wire__crate__api__get_session(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> id,
@@ -1934,6 +2965,29 @@ class RustLibWire implements BaseWire {
       .asFunction<
         void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
       >();
+
+  void wire__crate__api__get_training_load(int port_) {
+    return _wire__crate__api__get_training_load(port_);
+  }
+
+  late final _wire__crate__api__get_training_loadPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_training_load',
+      );
+  late final _wire__crate__api__get_training_load =
+      _wire__crate__api__get_training_loadPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__get_workout_templates(int port_) {
+    return _wire__crate__api__get_workout_templates(port_);
+  }
+
+  late final _wire__crate__api__get_workout_templatesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__get_workout_templates',
+      );
+  late final _wire__crate__api__get_workout_templates =
+      _wire__crate__api__get_workout_templatesPtr
+          .asFunction<void Function(int)>();
 
   void wire__crate__api__hr_battery_level(int port_, int data) {
     return _wire__crate__api__hr_battery_level(port_, data);
@@ -2630,6 +3684,34 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__start_mock_mode =
       _wire__crate__api__start_mock_modePtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__start_template_workout(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> template_id,
+    int max_hr,
+  ) {
+    return _wire__crate__api__start_template_workout(
+      port_,
+      template_id,
+      max_hr,
+    );
+  }
+
+  late final _wire__crate__api__start_template_workoutPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Uint16,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__start_template_workout');
+  late final _wire__crate__api__start_template_workout =
+      _wire__crate__api__start_template_workoutPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>, int)
+          >();
+
   void wire__crate__api__start_workout(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> plan_name,
@@ -3002,6 +4084,19 @@ class RustLibWire implements BaseWire {
       _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr
           .asFunction<ffi.Pointer<ffi.UintPtr> Function(int)>();
 
+  ffi.Pointer<wire_cst_api_analytics_data>
+  cst_new_box_autoadd_api_analytics_data() {
+    return _cst_new_box_autoadd_api_analytics_data();
+  }
+
+  late final _cst_new_box_autoadd_api_analytics_dataPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_api_analytics_data> Function()>
+      >('frbgen_heart_beat_cst_new_box_autoadd_api_analytics_data');
+  late final _cst_new_box_autoadd_api_analytics_data =
+      _cst_new_box_autoadd_api_analytics_dataPtr
+          .asFunction<ffi.Pointer<wire_cst_api_analytics_data> Function()>();
+
   ffi.Pointer<wire_cst_api_battery_level>
   cst_new_box_autoadd_api_battery_level() {
     return _cst_new_box_autoadd_api_battery_level();
@@ -3014,6 +4109,31 @@ class RustLibWire implements BaseWire {
   late final _cst_new_box_autoadd_api_battery_level =
       _cst_new_box_autoadd_api_battery_levelPtr
           .asFunction<ffi.Pointer<wire_cst_api_battery_level> Function()>();
+
+  ffi.Pointer<wire_cst_api_trend_point> cst_new_box_autoadd_api_trend_point() {
+    return _cst_new_box_autoadd_api_trend_point();
+  }
+
+  late final _cst_new_box_autoadd_api_trend_pointPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_api_trend_point> Function()>
+      >('frbgen_heart_beat_cst_new_box_autoadd_api_trend_point');
+  late final _cst_new_box_autoadd_api_trend_point =
+      _cst_new_box_autoadd_api_trend_pointPtr
+          .asFunction<ffi.Pointer<wire_cst_api_trend_point> Function()>();
+
+  ffi.Pointer<wire_cst_api_weekly_summary>
+  cst_new_box_autoadd_api_weekly_summary() {
+    return _cst_new_box_autoadd_api_weekly_summary();
+  }
+
+  late final _cst_new_box_autoadd_api_weekly_summaryPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_api_weekly_summary> Function()>
+      >('frbgen_heart_beat_cst_new_box_autoadd_api_weekly_summary');
+  late final _cst_new_box_autoadd_api_weekly_summary =
+      _cst_new_box_autoadd_api_weekly_summaryPtr
+          .asFunction<ffi.Pointer<wire_cst_api_weekly_summary> Function()>();
 
   ffi.Pointer<ffi.Double> cst_new_box_autoadd_f_64(double value) {
     return _cst_new_box_autoadd_f_64(value);
@@ -3038,6 +4158,17 @@ class RustLibWire implements BaseWire {
   late final _cst_new_box_autoadd_record_i_64_u_16 =
       _cst_new_box_autoadd_record_i_64_u_16Ptr
           .asFunction<ffi.Pointer<wire_cst_record_i_64_u_16> Function()>();
+
+  ffi.Pointer<ffi.Uint16> cst_new_box_autoadd_u_16(int value) {
+    return _cst_new_box_autoadd_u_16(value);
+  }
+
+  late final _cst_new_box_autoadd_u_16Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint16> Function(ffi.Uint16)>>(
+        'frbgen_heart_beat_cst_new_box_autoadd_u_16',
+      );
+  late final _cst_new_box_autoadd_u_16 = _cst_new_box_autoadd_u_16Ptr
+      .asFunction<ffi.Pointer<ffi.Uint16> Function(int)>();
 
   ffi.Pointer<ffi.Uint64> cst_new_box_autoadd_u_64(int value) {
     return _cst_new_box_autoadd_u_64(value);
@@ -3105,6 +4236,71 @@ class RustLibWire implements BaseWire {
   late final _cst_new_list_String = _cst_new_list_StringPtr
       .asFunction<ffi.Pointer<wire_cst_list_String> Function(int)>();
 
+  ffi.Pointer<wire_cst_list_api_load_point> cst_new_list_api_load_point(
+    int len,
+  ) {
+    return _cst_new_list_api_load_point(len);
+  }
+
+  late final _cst_new_list_api_load_pointPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_api_load_point> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_api_load_point');
+  late final _cst_new_list_api_load_point = _cst_new_list_api_load_pointPtr
+      .asFunction<ffi.Pointer<wire_cst_list_api_load_point> Function(int)>();
+
+  ffi.Pointer<wire_cst_list_api_trend_point> cst_new_list_api_trend_point(
+    int len,
+  ) {
+    return _cst_new_list_api_trend_point(len);
+  }
+
+  late final _cst_new_list_api_trend_pointPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_api_trend_point> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_api_trend_point');
+  late final _cst_new_list_api_trend_point = _cst_new_list_api_trend_pointPtr
+      .asFunction<ffi.Pointer<wire_cst_list_api_trend_point> Function(int)>();
+
+  ffi.Pointer<wire_cst_list_api_weekly_summary> cst_new_list_api_weekly_summary(
+    int len,
+  ) {
+    return _cst_new_list_api_weekly_summary(len);
+  }
+
+  late final _cst_new_list_api_weekly_summaryPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_api_weekly_summary> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_api_weekly_summary');
+  late final _cst_new_list_api_weekly_summary =
+      _cst_new_list_api_weekly_summaryPtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_api_weekly_summary> Function(int)
+          >();
+
+  ffi.Pointer<wire_cst_list_api_workout_template>
+  cst_new_list_api_workout_template(int len) {
+    return _cst_new_list_api_workout_template(len);
+  }
+
+  late final _cst_new_list_api_workout_templatePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_api_workout_template> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_api_workout_template');
+  late final _cst_new_list_api_workout_template =
+      _cst_new_list_api_workout_templatePtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_api_workout_template> Function(int)
+          >();
+
   ffi.Pointer<wire_cst_list_discovered_device> cst_new_list_discovered_device(
     int len,
   ) {
@@ -3123,6 +4319,21 @@ class RustLibWire implements BaseWire {
             ffi.Pointer<wire_cst_list_discovered_device> Function(int)
           >();
 
+  ffi.Pointer<wire_cst_list_prim_u_32_loose> cst_new_list_prim_u_32_loose(
+    int len,
+  ) {
+    return _cst_new_list_prim_u_32_loose(len);
+  }
+
+  late final _cst_new_list_prim_u_32_loosePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_prim_u_32_loose> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_prim_u_32_loose');
+  late final _cst_new_list_prim_u_32_loose = _cst_new_list_prim_u_32_loosePtr
+      .asFunction<ffi.Pointer<wire_cst_list_prim_u_32_loose> Function(int)>();
+
   ffi.Pointer<wire_cst_list_prim_u_32_strict> cst_new_list_prim_u_32_strict(
     int len,
   ) {
@@ -3137,6 +4348,21 @@ class RustLibWire implements BaseWire {
       >('frbgen_heart_beat_cst_new_list_prim_u_32_strict');
   late final _cst_new_list_prim_u_32_strict = _cst_new_list_prim_u_32_strictPtr
       .asFunction<ffi.Pointer<wire_cst_list_prim_u_32_strict> Function(int)>();
+
+  ffi.Pointer<wire_cst_list_prim_u_8_loose> cst_new_list_prim_u_8_loose(
+    int len,
+  ) {
+    return _cst_new_list_prim_u_8_loose(len);
+  }
+
+  late final _cst_new_list_prim_u_8_loosePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_prim_u_8_loose> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_prim_u_8_loose');
+  late final _cst_new_list_prim_u_8_loose = _cst_new_list_prim_u_8_loosePtr
+      .asFunction<ffi.Pointer<wire_cst_list_prim_u_8_loose> Function(int)>();
 
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_new_list_prim_u_8_strict(
     int len,
@@ -3185,8 +4411,108 @@ typedef DartDartPostCObjectFnTypeFunction =
 typedef DartPort = ffi.Int64;
 typedef DartDartPort = int;
 
+final class wire_cst_list_prim_u_32_strict extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint32> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_api_analytics_summary extends ffi.Struct {
+  @ffi.Uint32()
+  external int total_sessions;
+
+  @ffi.Uint32()
+  external int total_duration_secs;
+
+  @ffi.Uint16()
+  external int overall_avg_hr;
+
+  external ffi.Pointer<wire_cst_list_prim_u_32_strict> overall_time_in_zone;
+
+  @ffi.Uint32()
+  external int weeks_count;
+
+  @ffi.Uint32()
+  external int hr_trend_count;
+
+  @ffi.Uint32()
+  external int volume_trend_count;
+}
+
+final class wire_cst_api_weekly_summary extends ffi.Struct {
+  @ffi.Int64()
+  external int week_start_millis;
+
+  @ffi.Uint32()
+  external int session_count;
+
+  @ffi.Uint32()
+  external int total_duration_secs;
+
+  @ffi.Uint16()
+  external int avg_hr;
+
+  external ffi.Pointer<wire_cst_list_prim_u_32_strict> time_in_zone;
+}
+
+final class wire_cst_list_api_weekly_summary extends ffi.Struct {
+  external ffi.Pointer<wire_cst_api_weekly_summary> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_api_trend_point extends ffi.Struct {
+  @ffi.Int64()
+  external int timestamp_millis;
+
+  @ffi.Double()
+  external double value;
+}
+
+final class wire_cst_list_api_trend_point extends ffi.Struct {
+  external ffi.Pointer<wire_cst_api_trend_point> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_api_analytics_data extends ffi.Struct {
+  external wire_cst_api_analytics_summary summary;
+
+  external ffi.Pointer<wire_cst_list_api_weekly_summary> weekly_summaries;
+
+  external ffi.Pointer<wire_cst_list_api_trend_point> hr_trend;
+
+  external ffi.Pointer<wire_cst_list_api_trend_point> volume_trend;
+
+  external ffi.Pointer<wire_cst_list_api_trend_point> consistency_trend;
+}
+
 final class wire_cst_list_prim_u_8_strict extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_String extends ffi.Struct {
+  external ffi.Pointer<ffi.Pointer<wire_cst_list_prim_u_8_strict>> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_prim_u_8_loose extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_prim_u_32_loose extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint32> ptr;
 
   @ffi.Int32()
   external int len;
@@ -3218,8 +4544,47 @@ final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generated
   external int len;
 }
 
-final class wire_cst_list_String extends ffi.Struct {
-  external ffi.Pointer<ffi.Pointer<wire_cst_list_prim_u_8_strict>> ptr;
+final class wire_cst_api_load_point extends ffi.Struct {
+  @ffi.Int64()
+  external int timestamp_millis;
+
+  @ffi.Double()
+  external double ctl;
+
+  @ffi.Double()
+  external double atl;
+
+  @ffi.Double()
+  external double tsb;
+}
+
+final class wire_cst_list_api_load_point extends ffi.Struct {
+  external ffi.Pointer<wire_cst_api_load_point> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_api_workout_template extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> id;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> name;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> description;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> sport;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> difficulty;
+
+  @ffi.Uint32()
+  external int duration_mins;
+
+  @ffi.Uint32()
+  external int phase_count;
+}
+
+final class wire_cst_list_api_workout_template extends ffi.Struct {
+  external ffi.Pointer<wire_cst_api_workout_template> ptr;
 
   @ffi.Int32()
   external int len;
@@ -3241,11 +4606,107 @@ final class wire_cst_list_discovered_device extends ffi.Struct {
   external int len;
 }
 
-final class wire_cst_list_prim_u_32_strict extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint32> ptr;
+final class wire_cst_api_adapted_plan extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> original_name;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> reason;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> message;
+
+  @ffi.Int8()
+  external int zone_delta;
+
+  @ffi.Double()
+  external double duration_factor;
+
+  external ffi.Pointer<wire_cst_list_String> phase_names;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> phase_zones;
+
+  external ffi.Pointer<wire_cst_list_prim_u_32_strict> phase_durations;
+}
+
+final class wire_cst_api_periodization_data extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> name;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> goal;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> start_date;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> end_date;
+
+  @ffi.Uint32()
+  external int total_weeks;
 
   @ffi.Int32()
-  external int len;
+  external int current_block_index;
+
+  external ffi.Pointer<wire_cst_list_String> block_names;
+
+  external ffi.Pointer<wire_cst_list_String> block_types;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> block_weeks;
+}
+
+final class wire_cst_api_plan_details extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> name;
+
+  external ffi.Pointer<wire_cst_list_String> phase_names;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> phase_zones;
+
+  external ffi.Pointer<wire_cst_list_prim_u_32_strict> phase_durations;
+
+  @ffi.Uint16()
+  external int max_hr;
+
+  @ffi.Int64()
+  external int created_at_millis;
+}
+
+final class wire_cst_api_readiness_data extends ffi.Struct {
+  @ffi.Uint8()
+  external int score;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> level;
+
+  @ffi.Double()
+  external double hrv_component;
+
+  @ffi.Double()
+  external double rhr_component;
+
+  @ffi.Double()
+  external double load_component;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> recommendation;
+}
+
+final class wire_cst_api_resting_hr_stats extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint16> current_bpm;
+
+  external ffi.Pointer<ffi.Double> seven_day_avg;
+
+  external ffi.Pointer<ffi.Double> thirty_day_avg;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> trend_direction;
+
+  external ffi.Pointer<wire_cst_list_api_trend_point> trend_points;
+}
+
+final class wire_cst_api_training_load_data extends ffi.Struct {
+  @ffi.Double()
+  external double current_ctl;
+
+  @ffi.Double()
+  external double current_atl;
+
+  @ffi.Double()
+  external double current_tsb;
+
+  external ffi.Pointer<wire_cst_list_api_load_point> load_history;
+
+  external ffi.Pointer<wire_cst_list_api_trend_point> session_trimp;
 }
 
 final class wire_cst_log_message extends ffi.Struct {

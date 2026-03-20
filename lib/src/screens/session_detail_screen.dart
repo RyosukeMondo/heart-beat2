@@ -515,7 +515,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     );
   }
 
-  Future<void> _handleExport(ExportFormat format) async {
+  Future<void> _handleExportAction(String action) async {
     if (_sessionId == null) {
       _showErrorSnackBar('Session ID not available');
       return;
@@ -526,21 +526,40 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     });
 
     try {
-      // Call the Rust API to generate export content
-      final content = await exportSession(id: _sessionId!, format: format);
-
-      if (!mounted) return;
-
-      // Handle based on format
-      switch (format) {
-        case ExportFormat.csv:
+      switch (action) {
+        case 'csv':
+          final content = await exportSession(
+            id: _sessionId!,
+            format: ExportFormat.csv,
+          );
+          if (!mounted) return;
           await _shareFile(content, 'csv', 'text/csv');
           break;
-        case ExportFormat.json:
+        case 'json':
+          final content = await exportSession(
+            id: _sessionId!,
+            format: ExportFormat.json,
+          );
+          if (!mounted) return;
           await _shareFile(content, 'json', 'application/json');
           break;
-        case ExportFormat.summary:
+        case 'summary':
+          final content = await exportSession(
+            id: _sessionId!,
+            format: ExportFormat.summary,
+          );
+          if (!mounted) return;
           await _shareText(content);
+          break;
+        case 'tcx':
+          final content = await exportSessionTcx(sessionId: _sessionId!);
+          if (!mounted) return;
+          await _shareFile(content, 'tcx', 'application/xml');
+          break;
+        case 'gpx':
+          final content = await exportSessionGpx(sessionId: _sessionId!);
+          if (!mounted) return;
+          await _shareFile(content, 'gpx', 'application/xml');
           break;
       }
 
@@ -629,12 +648,12 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   )
-                : PopupMenuButton<ExportFormat>(
+                : PopupMenuButton<String>(
                     icon: const Icon(Icons.more_vert),
-                    onSelected: _handleExport,
+                    onSelected: _handleExportAction,
                     itemBuilder: (context) => [
                       const PopupMenuItem(
-                        value: ExportFormat.csv,
+                        value: 'csv',
                         child: Row(
                           children: [
                             Icon(Icons.table_chart),
@@ -644,7 +663,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                         ),
                       ),
                       const PopupMenuItem(
-                        value: ExportFormat.json,
+                        value: 'json',
                         child: Row(
                           children: [
                             Icon(Icons.code),
@@ -654,7 +673,27 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                         ),
                       ),
                       const PopupMenuItem(
-                        value: ExportFormat.summary,
+                        value: 'tcx',
+                        child: Row(
+                          children: [
+                            Icon(Icons.directions_run),
+                            SizedBox(width: 8),
+                            Text('Export as TCX'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'gpx',
+                        child: Row(
+                          children: [
+                            Icon(Icons.map),
+                            SizedBox(width: 8),
+                            Text('Export as GPX'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'summary',
                         child: Row(
                           children: [
                             Icon(Icons.share),

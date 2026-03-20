@@ -7,10 +7,10 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`
+// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`, `zone_from_number`, `zone_to_number`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ConnectionState`, `FlutterLogWriter`, `StubNotificationPort`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `make_writer`, `write`
 
 /// Initialize the panic handler for FFI safety.
 ///
@@ -873,6 +873,137 @@ Future<bool> zoneStatusIsTooHigh({required ApiZoneStatus status}) =>
 Future<String> zoneStatusToString({required ApiZoneStatus status}) =>
     RustLib.instance.api.crateApiZoneStatusToString(status: status);
 
+/// Create a custom training plan and save it to disk.
+///
+/// # Arguments
+///
+/// * `name` - Plan name (used as filename)
+/// * `phase_names` - Name for each phase
+/// * `phase_zones` - Target zone (1-5) for each phase
+/// * `phase_durations` - Duration in seconds for each phase
+/// * `max_hr` - User's maximum heart rate
+Future<void> createCustomPlan({
+  required String name,
+  required List<String> phaseNames,
+  required List<int> phaseZones,
+  required List<int> phaseDurations,
+  required int maxHr,
+}) => RustLib.instance.api.crateApiCreateCustomPlan(
+  name: name,
+  phaseNames: phaseNames,
+  phaseZones: phaseZones,
+  phaseDurations: phaseDurations,
+  maxHr: maxHr,
+);
+
+/// Delete a training plan by name.
+Future<void> deletePlan({required String name}) =>
+    RustLib.instance.api.crateApiDeletePlan(name: name);
+
+/// Get details of a training plan by name.
+///
+/// Returns parallel arrays for FRB compatibility.
+Future<ApiPlanDetails> getPlanDetails({required String name}) =>
+    RustLib.instance.api.crateApiGetPlanDetails(name: name);
+
+/// Get comprehensive analytics data from all completed sessions.
+Future<ApiAnalyticsData> getAnalytics() =>
+    RustLib.instance.api.crateApiGetAnalytics();
+
+/// Get the summary from analytics data.
+Future<ApiAnalyticsSummary> analyticsSummary({
+  required ApiAnalyticsData data,
+}) => RustLib.instance.api.crateApiAnalyticsSummary(data: data);
+
+/// Get the number of weekly summaries.
+Future<int> analyticsWeeksCount({required ApiAnalyticsData data}) =>
+    RustLib.instance.api.crateApiAnalyticsWeeksCount(data: data);
+
+/// Get a weekly summary at the given index.
+Future<ApiWeeklySummary?> analyticsWeeklyAt({
+  required ApiAnalyticsData data,
+  required int index,
+}) => RustLib.instance.api.crateApiAnalyticsWeeklyAt(data: data, index: index);
+
+/// Get the number of HR trend points.
+Future<int> analyticsHrTrendCount({required ApiAnalyticsData data}) =>
+    RustLib.instance.api.crateApiAnalyticsHrTrendCount(data: data);
+
+/// Get an HR trend point at the given index.
+Future<ApiTrendPoint?> analyticsHrTrendAt({
+  required ApiAnalyticsData data,
+  required int index,
+}) => RustLib.instance.api.crateApiAnalyticsHrTrendAt(data: data, index: index);
+
+/// Get the number of volume trend points.
+Future<int> analyticsVolumeTrendCount({required ApiAnalyticsData data}) =>
+    RustLib.instance.api.crateApiAnalyticsVolumeTrendCount(data: data);
+
+/// Get a volume trend point at the given index.
+Future<ApiTrendPoint?> analyticsVolumeTrendAt({
+  required ApiAnalyticsData data,
+  required int index,
+}) => RustLib.instance.api.crateApiAnalyticsVolumeTrendAt(
+  data: data,
+  index: index,
+);
+
+/// Get the number of consistency trend points.
+Future<int> analyticsConsistencyCount({required ApiAnalyticsData data}) =>
+    RustLib.instance.api.crateApiAnalyticsConsistencyCount(data: data);
+
+/// Get a consistency trend point at the given index.
+Future<ApiTrendPoint?> analyticsConsistencyAt({
+  required ApiAnalyticsData data,
+  required int index,
+}) => RustLib.instance.api.crateApiAnalyticsConsistencyAt(
+  data: data,
+  index: index,
+);
+
+/// Get training load metrics (CTL/ATL/TSB) from all completed sessions.
+Future<ApiTrainingLoadData> getTrainingLoad() =>
+    RustLib.instance.api.crateApiGetTrainingLoad();
+
+/// Get readiness score based on available HRV and resting HR data.
+Future<ApiReadinessData> getReadinessScore() =>
+    RustLib.instance.api.crateApiGetReadinessScore();
+
+/// Get all available workout templates.
+Future<List<ApiWorkoutTemplate>> getWorkoutTemplates() =>
+    RustLib.instance.api.crateApiGetWorkoutTemplates();
+
+/// Start a workout from a template ID by converting it to a plan.
+Future<void> startTemplateWorkout({
+  required String templateId,
+  required int maxHr,
+}) => RustLib.instance.api.crateApiStartTemplateWorkout(
+  templateId: templateId,
+  maxHr: maxHr,
+);
+
+/// Export a session as TCX format.
+Future<String> exportSessionTcx({required String sessionId}) =>
+    RustLib.instance.api.crateApiExportSessionTcx(sessionId: sessionId);
+
+/// Export a session as GPX format.
+Future<String> exportSessionGpx({required String sessionId}) =>
+    RustLib.instance.api.crateApiExportSessionGpx(sessionId: sessionId);
+
+/// Get an adapted version of a plan based on current readiness.
+Future<ApiAdaptedPlan> getAdaptedPlan({required String planName}) =>
+    RustLib.instance.api.crateApiGetAdaptedPlan(planName: planName);
+
+/// Get the current periodization plan (if any).
+///
+/// Returns a 5K plan starting today as a default for now.
+Future<ApiPeriodizationData> getPeriodizationPlan() =>
+    RustLib.instance.api.crateApiGetPeriodizationPlan();
+
+/// Get resting HR statistics and trend.
+Future<ApiRestingHrStats> getRestingHrStats() =>
+    RustLib.instance.api.crateApiGetRestingHrStats();
+
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiCompletedSession>>
 abstract class ApiCompletedSession implements RustOpaqueInterface {}
 
@@ -896,6 +1027,171 @@ abstract class ApiSessionSummaryPreview implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiZoneStatus>>
 abstract class ApiZoneStatus implements RustOpaqueInterface {}
+
+/// Adapted plan for the FFI boundary.
+class ApiAdaptedPlan {
+  /// Original plan name.
+  final String originalName;
+
+  /// Adjustment reason.
+  final String reason;
+
+  /// Adjustment message.
+  final String message;
+
+  /// Zone delta applied.
+  final int zoneDelta;
+
+  /// Duration factor applied.
+  final double durationFactor;
+
+  /// Adjusted phase names.
+  final List<String> phaseNames;
+
+  /// Adjusted phase zones (1-5).
+  final Uint8List phaseZones;
+
+  /// Adjusted phase durations in seconds.
+  final Uint32List phaseDurations;
+
+  const ApiAdaptedPlan({
+    required this.originalName,
+    required this.reason,
+    required this.message,
+    required this.zoneDelta,
+    required this.durationFactor,
+    required this.phaseNames,
+    required this.phaseZones,
+    required this.phaseDurations,
+  });
+
+  @override
+  int get hashCode =>
+      originalName.hashCode ^
+      reason.hashCode ^
+      message.hashCode ^
+      zoneDelta.hashCode ^
+      durationFactor.hashCode ^
+      phaseNames.hashCode ^
+      phaseZones.hashCode ^
+      phaseDurations.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiAdaptedPlan &&
+          runtimeType == other.runtimeType &&
+          originalName == other.originalName &&
+          reason == other.reason &&
+          message == other.message &&
+          zoneDelta == other.zoneDelta &&
+          durationFactor == other.durationFactor &&
+          phaseNames == other.phaseNames &&
+          phaseZones == other.phaseZones &&
+          phaseDurations == other.phaseDurations;
+}
+
+/// Opaque analytics data holder.
+class ApiAnalyticsData {
+  /// Overall summary statistics.
+  final ApiAnalyticsSummary summary;
+
+  /// Weekly breakdown of training data.
+  final List<ApiWeeklySummary> weeklySummaries;
+
+  /// Average HR per session over time.
+  final List<ApiTrendPoint> hrTrend;
+
+  /// Training volume (minutes per week) over time.
+  final List<ApiTrendPoint> volumeTrend;
+
+  /// Sessions per week over time.
+  final List<ApiTrendPoint> consistencyTrend;
+
+  const ApiAnalyticsData({
+    required this.summary,
+    required this.weeklySummaries,
+    required this.hrTrend,
+    required this.volumeTrend,
+    required this.consistencyTrend,
+  });
+
+  @override
+  int get hashCode =>
+      summary.hashCode ^
+      weeklySummaries.hashCode ^
+      hrTrend.hashCode ^
+      volumeTrend.hashCode ^
+      consistencyTrend.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiAnalyticsData &&
+          runtimeType == other.runtimeType &&
+          summary == other.summary &&
+          weeklySummaries == other.weeklySummaries &&
+          hrTrend == other.hrTrend &&
+          volumeTrend == other.volumeTrend &&
+          consistencyTrend == other.consistencyTrend;
+}
+
+/// Analytics summary for the FFI boundary.
+class ApiAnalyticsSummary {
+  /// Total number of completed sessions.
+  final int totalSessions;
+
+  /// Total training duration in seconds.
+  final int totalDurationSecs;
+
+  /// Overall average heart rate.
+  final int overallAvgHr;
+
+  /// Overall time in each zone (5 elements).
+  final Uint32List overallTimeInZone;
+
+  /// Number of weekly summaries.
+  final int weeksCount;
+
+  /// Number of HR trend points.
+  final int hrTrendCount;
+
+  /// Number of volume trend points.
+  final int volumeTrendCount;
+
+  const ApiAnalyticsSummary({
+    required this.totalSessions,
+    required this.totalDurationSecs,
+    required this.overallAvgHr,
+    required this.overallTimeInZone,
+    required this.weeksCount,
+    required this.hrTrendCount,
+    required this.volumeTrendCount,
+  });
+
+  @override
+  int get hashCode =>
+      totalSessions.hashCode ^
+      totalDurationSecs.hashCode ^
+      overallAvgHr.hashCode ^
+      overallTimeInZone.hashCode ^
+      weeksCount.hashCode ^
+      hrTrendCount.hashCode ^
+      volumeTrendCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiAnalyticsSummary &&
+          runtimeType == other.runtimeType &&
+          totalSessions == other.totalSessions &&
+          totalDurationSecs == other.totalDurationSecs &&
+          overallAvgHr == other.overallAvgHr &&
+          overallTimeInZone == other.overallTimeInZone &&
+          weeksCount == other.weeksCount &&
+          hrTrendCount == other.hrTrendCount &&
+          volumeTrendCount == other.volumeTrendCount;
+}
 
 /// Battery level data for FFI boundary (FRB-compatible).
 ///
@@ -928,6 +1224,427 @@ class ApiBatteryLevel {
           level == other.level &&
           isCharging == other.isCharging &&
           timestamp == other.timestamp;
+}
+
+/// A single day's training load metrics for FFI.
+class ApiLoadPoint {
+  /// Unix timestamp in millis.
+  final PlatformInt64 timestampMillis;
+
+  /// Chronic Training Load.
+  final double ctl;
+
+  /// Acute Training Load.
+  final double atl;
+
+  /// Training Stress Balance.
+  final double tsb;
+
+  const ApiLoadPoint({
+    required this.timestampMillis,
+    required this.ctl,
+    required this.atl,
+    required this.tsb,
+  });
+
+  @override
+  int get hashCode =>
+      timestampMillis.hashCode ^ ctl.hashCode ^ atl.hashCode ^ tsb.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiLoadPoint &&
+          runtimeType == other.runtimeType &&
+          timestampMillis == other.timestampMillis &&
+          ctl == other.ctl &&
+          atl == other.atl &&
+          tsb == other.tsb;
+}
+
+/// Periodization plan data for the FFI boundary.
+class ApiPeriodizationData {
+  /// Plan name.
+  final String name;
+
+  /// Goal description.
+  final String goal;
+
+  /// Start date as ISO string.
+  final String startDate;
+
+  /// End date as ISO string.
+  final String endDate;
+
+  /// Total weeks.
+  final int totalWeeks;
+
+  /// Current block index (0-based), or -1 if not in any block.
+  final int currentBlockIndex;
+
+  /// Block names.
+  final List<String> blockNames;
+
+  /// Block types as strings.
+  final List<String> blockTypes;
+
+  /// Block durations in weeks.
+  final Uint8List blockWeeks;
+
+  const ApiPeriodizationData({
+    required this.name,
+    required this.goal,
+    required this.startDate,
+    required this.endDate,
+    required this.totalWeeks,
+    required this.currentBlockIndex,
+    required this.blockNames,
+    required this.blockTypes,
+    required this.blockWeeks,
+  });
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      goal.hashCode ^
+      startDate.hashCode ^
+      endDate.hashCode ^
+      totalWeeks.hashCode ^
+      currentBlockIndex.hashCode ^
+      blockNames.hashCode ^
+      blockTypes.hashCode ^
+      blockWeeks.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiPeriodizationData &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          goal == other.goal &&
+          startDate == other.startDate &&
+          endDate == other.endDate &&
+          totalWeeks == other.totalWeeks &&
+          currentBlockIndex == other.currentBlockIndex &&
+          blockNames == other.blockNames &&
+          blockTypes == other.blockTypes &&
+          blockWeeks == other.blockWeeks;
+}
+
+/// Plan details for the FFI boundary.
+class ApiPlanDetails {
+  /// Plan name.
+  final String name;
+
+  /// Phase names.
+  final List<String> phaseNames;
+
+  /// Target zone number (1-5) per phase.
+  final Uint8List phaseZones;
+
+  /// Duration in seconds per phase.
+  final Uint32List phaseDurations;
+
+  /// Max heart rate.
+  final int maxHr;
+
+  /// Creation timestamp in milliseconds.
+  final PlatformInt64 createdAtMillis;
+
+  const ApiPlanDetails({
+    required this.name,
+    required this.phaseNames,
+    required this.phaseZones,
+    required this.phaseDurations,
+    required this.maxHr,
+    required this.createdAtMillis,
+  });
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      phaseNames.hashCode ^
+      phaseZones.hashCode ^
+      phaseDurations.hashCode ^
+      maxHr.hashCode ^
+      createdAtMillis.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiPlanDetails &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          phaseNames == other.phaseNames &&
+          phaseZones == other.phaseZones &&
+          phaseDurations == other.phaseDurations &&
+          maxHr == other.maxHr &&
+          createdAtMillis == other.createdAtMillis;
+}
+
+/// Readiness data for the FFI boundary.
+class ApiReadinessData {
+  /// Overall readiness score (0-100).
+  final int score;
+
+  /// Readiness level: "Ready", "Moderate", or "Rest".
+  final String level;
+
+  /// HRV component score (0-100).
+  final double hrvComponent;
+
+  /// Resting HR component score (0-100).
+  final double rhrComponent;
+
+  /// Training load component score (0-100).
+  final double loadComponent;
+
+  /// Human-readable recommendation.
+  final String recommendation;
+
+  const ApiReadinessData({
+    required this.score,
+    required this.level,
+    required this.hrvComponent,
+    required this.rhrComponent,
+    required this.loadComponent,
+    required this.recommendation,
+  });
+
+  @override
+  int get hashCode =>
+      score.hashCode ^
+      level.hashCode ^
+      hrvComponent.hashCode ^
+      rhrComponent.hashCode ^
+      loadComponent.hashCode ^
+      recommendation.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiReadinessData &&
+          runtimeType == other.runtimeType &&
+          score == other.score &&
+          level == other.level &&
+          hrvComponent == other.hrvComponent &&
+          rhrComponent == other.rhrComponent &&
+          loadComponent == other.loadComponent &&
+          recommendation == other.recommendation;
+}
+
+/// Resting HR stats for the FFI boundary.
+class ApiRestingHrStats {
+  /// Current resting HR, if available.
+  final int? currentBpm;
+
+  /// 7-day average, if available.
+  final double? sevenDayAvg;
+
+  /// 30-day average, if available.
+  final double? thirtyDayAvg;
+
+  /// Trend direction: "Improving", "Stable", "Worsening", "Insufficient".
+  final String trendDirection;
+
+  /// Trend points for charting.
+  final List<ApiTrendPoint> trendPoints;
+
+  const ApiRestingHrStats({
+    this.currentBpm,
+    this.sevenDayAvg,
+    this.thirtyDayAvg,
+    required this.trendDirection,
+    required this.trendPoints,
+  });
+
+  @override
+  int get hashCode =>
+      currentBpm.hashCode ^
+      sevenDayAvg.hashCode ^
+      thirtyDayAvg.hashCode ^
+      trendDirection.hashCode ^
+      trendPoints.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiRestingHrStats &&
+          runtimeType == other.runtimeType &&
+          currentBpm == other.currentBpm &&
+          sevenDayAvg == other.sevenDayAvg &&
+          thirtyDayAvg == other.thirtyDayAvg &&
+          trendDirection == other.trendDirection &&
+          trendPoints == other.trendPoints;
+}
+
+/// Training load metrics for the FFI boundary.
+class ApiTrainingLoadData {
+  /// Current CTL (fitness).
+  final double currentCtl;
+
+  /// Current ATL (fatigue).
+  final double currentAtl;
+
+  /// Current TSB (form).
+  final double currentTsb;
+
+  /// Daily CTL/ATL/TSB history.
+  final List<ApiLoadPoint> loadHistory;
+
+  /// TRIMP per session.
+  final List<ApiTrendPoint> sessionTrimp;
+
+  const ApiTrainingLoadData({
+    required this.currentCtl,
+    required this.currentAtl,
+    required this.currentTsb,
+    required this.loadHistory,
+    required this.sessionTrimp,
+  });
+
+  @override
+  int get hashCode =>
+      currentCtl.hashCode ^
+      currentAtl.hashCode ^
+      currentTsb.hashCode ^
+      loadHistory.hashCode ^
+      sessionTrimp.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiTrainingLoadData &&
+          runtimeType == other.runtimeType &&
+          currentCtl == other.currentCtl &&
+          currentAtl == other.currentAtl &&
+          currentTsb == other.currentTsb &&
+          loadHistory == other.loadHistory &&
+          sessionTrimp == other.sessionTrimp;
+}
+
+/// Trend point for the FFI boundary.
+class ApiTrendPoint {
+  /// Unix timestamp in milliseconds.
+  final PlatformInt64 timestampMillis;
+
+  /// Metric value.
+  final double value;
+
+  const ApiTrendPoint({required this.timestampMillis, required this.value});
+
+  @override
+  int get hashCode => timestampMillis.hashCode ^ value.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiTrendPoint &&
+          runtimeType == other.runtimeType &&
+          timestampMillis == other.timestampMillis &&
+          value == other.value;
+}
+
+/// Weekly summary for the FFI boundary.
+class ApiWeeklySummary {
+  /// Monday of the week as Unix millis.
+  final PlatformInt64 weekStartMillis;
+
+  /// Number of sessions.
+  final int sessionCount;
+
+  /// Total duration in seconds.
+  final int totalDurationSecs;
+
+  /// Average HR across the week.
+  final int avgHr;
+
+  /// Time in each zone.
+  final Uint32List timeInZone;
+
+  const ApiWeeklySummary({
+    required this.weekStartMillis,
+    required this.sessionCount,
+    required this.totalDurationSecs,
+    required this.avgHr,
+    required this.timeInZone,
+  });
+
+  @override
+  int get hashCode =>
+      weekStartMillis.hashCode ^
+      sessionCount.hashCode ^
+      totalDurationSecs.hashCode ^
+      avgHr.hashCode ^
+      timeInZone.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiWeeklySummary &&
+          runtimeType == other.runtimeType &&
+          weekStartMillis == other.weekStartMillis &&
+          sessionCount == other.sessionCount &&
+          totalDurationSecs == other.totalDurationSecs &&
+          avgHr == other.avgHr &&
+          timeInZone == other.timeInZone;
+}
+
+/// Workout template for the FFI boundary.
+class ApiWorkoutTemplate {
+  /// Unique template ID.
+  final String id;
+
+  /// Template name.
+  final String name;
+
+  /// Description of the workout.
+  final String description;
+
+  /// Sport category.
+  final String sport;
+
+  /// Difficulty level.
+  final String difficulty;
+
+  /// Estimated duration in minutes.
+  final int durationMins;
+
+  /// Number of phases.
+  final int phaseCount;
+
+  const ApiWorkoutTemplate({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.sport,
+    required this.difficulty,
+    required this.durationMins,
+    required this.phaseCount,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      name.hashCode ^
+      description.hashCode ^
+      sport.hashCode ^
+      difficulty.hashCode ^
+      durationMins.hashCode ^
+      phaseCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiWorkoutTemplate &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          description == other.description &&
+          sport == other.sport &&
+          difficulty == other.difficulty &&
+          durationMins == other.durationMins &&
+          phaseCount == other.phaseCount;
 }
 
 /// Format for exporting session data.

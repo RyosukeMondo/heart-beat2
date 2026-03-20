@@ -193,27 +193,53 @@ class _PlanSelectorState extends State<PlanSelector> {
       );
     }
 
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: _plans!.length,
-      itemBuilder: (context, index) {
-        final planName = _plans![index];
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(
-              Icons.directions_run,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            controller: scrollController,
+            itemCount: _plans!.length,
+            itemBuilder: (context, index) {
+              final planName = _plans![index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
+                  child: Icon(
+                    Icons.directions_run,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                title: Text(planName),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  debugPrint('PlanSelector: ListTile tapped for: $planName');
+                  _selectPlan(planName);
+                },
+              );
+            },
+          ),
+        ),
+        const Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).pushNamed('/plan-builder');
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Create New Plan'),
             ),
           ),
-          title: Text(planName),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-          onTap: () {
-            debugPrint('PlanSelector: ListTile tapped for: $planName');
-            _selectPlan(planName);
-          },
-        );
-      },
+        ),
+      ],
     );
   }
 }

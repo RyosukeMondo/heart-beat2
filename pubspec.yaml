@@ -43,6 +43,9 @@ dependencies:
   # Audio playback for biofeedback notifications
   audioplayers: ^6.5.1
 
+  # Text-to-speech for voice coaching
+  flutter_tts: ^4.2.0
+
   # CLI argument parsing
   args: ^2.5.0
 

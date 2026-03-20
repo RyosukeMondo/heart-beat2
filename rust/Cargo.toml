@@ -10,6 +10,10 @@ crate-type = ["lib", "cdylib", "staticlib"]
 name = "cli"
 path = "src/bin/cli.rs"
 
+[[bin]]
+name = "debug-server"
+path = "src/bin/debug_server.rs"
+
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 tokio-util = "0.7"
@@ -35,6 +39,10 @@ crossterm = "0.27"
 dialoguer = "0.11"
 indicatif = "0.17"
 dirs = "5"
+axum = { version = "0.7", features = ["ws"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing-appender = "0.2"
+parking_lot = "0.12"
 
 [dependencies.serde_json]
 version = "1"

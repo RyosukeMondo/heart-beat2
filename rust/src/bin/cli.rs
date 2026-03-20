@@ -54,6 +54,18 @@ enum Commands {
         #[command(subcommand)]
         command: PlanCmd,
     },
+
+    /// View analytics and metrics
+    Analytics {
+        #[command(subcommand)]
+        command: AnalyticsCmd,
+    },
+
+    /// Export session data
+    Export {
+        #[command(subcommand)]
+        command: ExportCmd,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -164,6 +176,34 @@ enum PlanCmd {
     Create,
 }
 
+#[derive(Subcommand, Debug)]
+enum AnalyticsCmd {
+    /// Print overall analytics summary
+    Summary,
+
+    /// Print CTL/ATL/TSB training load metrics
+    TrainingLoad,
+
+    /// Print readiness score
+    Readiness,
+
+    /// Print resting HR statistics
+    RestingHr,
+}
+
+#[derive(Subcommand, Debug)]
+enum ExportCmd {
+    /// Export a session to a file
+    Session {
+        /// Session ID
+        id: String,
+
+        /// Export format
+        #[arg(long, default_value = "csv")]
+        format: String,
+    },
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
@@ -250,6 +290,25 @@ async fn main() -> anyhow::Result<()> {
             }
             PlanCmd::Create => {
                 handle_plan_create()?;
+            }
+        },
+        Commands::Analytics { command } => match command {
+            AnalyticsCmd::Summary => {
+                handle_analytics_summary().await?;
+            }
+            AnalyticsCmd::TrainingLoad => {
+                handle_analytics_training_load().await?;
+            }
+            AnalyticsCmd::Readiness => {
+                handle_analytics_readiness().await?;
+            }
+            AnalyticsCmd::RestingHr => {
+                handle_analytics_resting_hr().await?;
+            }
+        },
+        Commands::Export { command } => match command {
+            ExportCmd::Session { id, format } => {
+                handle_export_session(&id, &format).await?;
             }
         },
     }
@@ -2028,6 +2087,270 @@ fn handle_plan_create() -> anyhow::Result<()> {
         plan_path.display()
     );
 
+    Ok(())
+}
+
+// =============================================================================
+// Analytics handlers
+// =============================================================================
+
+async fn handle_analytics_summary() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Cell, Color, ContentArrangement, Table};
+
+    // Initialize data dir for the library
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("No home directory"))?;
+    let data_dir = home.join(".heart-beat");
+    heart_beat::api::set_data_dir(data_dir.to_string_lossy().to_string())?;
+
+    let data = heart_beat::api::get_analytics().await?;
+    let summary = heart_beat::api::analytics_summary(&data);
+
+    println!("{}", "Analytics Summary".cyan().bold());
+    println!("{}", "═".repeat(50));
+
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    table.add_row(vec![
+        Cell::new("Total Sessions").fg(Color::Cyan),
+        Cell::new(summary.total_sessions),
+    ]);
+
+    let hours = summary.total_duration_secs / 3600;
+    let mins = (summary.total_duration_secs % 3600) / 60;
+    table.add_row(vec![
+        Cell::new("Total Duration").fg(Color::Cyan),
+        Cell::new(format!("{}h {}m", hours, mins)),
+    ]);
+
+    table.add_row(vec![
+        Cell::new("Average HR").fg(Color::Cyan),
+        Cell::new(format!("{} bpm", summary.overall_avg_hr)),
+    ]);
+
+    table.add_row(vec![
+        Cell::new("Weekly Summaries").fg(Color::Cyan),
+        Cell::new(summary.weeks_count),
+    ]);
+
+    if summary.overall_time_in_zone.len() == 5 {
+        let zones = &summary.overall_time_in_zone;
+        table.add_row(vec![
+            Cell::new("Time in Zone 1-5").fg(Color::Cyan),
+            Cell::new(format!(
+                "{}m / {}m / {}m / {}m / {}m",
+                zones[0] / 60,
+                zones[1] / 60,
+                zones[2] / 60,
+                zones[3] / 60,
+                zones[4] / 60
+            )),
+        ]);
+    }
+
+    println!("{table}");
+    Ok(())
+}
+
+async fn handle_analytics_training_load() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Cell, Color, ContentArrangement, Table};
+
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("No home directory"))?;
+    let data_dir = home.join(".heart-beat");
+    heart_beat::api::set_data_dir(data_dir.to_string_lossy().to_string())?;
+
+    let load = heart_beat::api::get_training_load().await?;
+
+    println!("{}", "Training Load (CTL/ATL/TSB)".cyan().bold());
+    println!("{}", "═".repeat(50));
+
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    table.add_row(vec![
+        Cell::new("CTL (Fitness)").fg(Color::Green),
+        Cell::new(format!("{:.1}", load.current_ctl)),
+    ]);
+    table.add_row(vec![
+        Cell::new("ATL (Fatigue)").fg(Color::Red),
+        Cell::new(format!("{:.1}", load.current_atl)),
+    ]);
+
+    let tsb_color = if load.current_tsb > 0.0 {
+        Color::Green
+    } else {
+        Color::Red
+    };
+    table.add_row(vec![
+        Cell::new("TSB (Form)").fg(tsb_color),
+        Cell::new(format!("{:.1}", load.current_tsb)),
+    ]);
+    table.add_row(vec![
+        Cell::new("History Days").fg(Color::Cyan),
+        Cell::new(load.load_history.len()),
+    ]);
+    table.add_row(vec![
+        Cell::new("Sessions with TRIMP").fg(Color::Cyan),
+        Cell::new(load.session_trimp.len()),
+    ]);
+
+    println!("{table}");
+    Ok(())
+}
+
+async fn handle_analytics_readiness() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Cell, Color, ContentArrangement, Table};
+
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("No home directory"))?;
+    let data_dir = home.join(".heart-beat");
+    heart_beat::api::set_data_dir(data_dir.to_string_lossy().to_string())?;
+
+    let readiness = heart_beat::api::get_readiness_score().await?;
+
+    println!("{}", "Readiness Score".cyan().bold());
+    println!("{}", "═".repeat(50));
+
+    let level_color = match readiness.level.as_str() {
+        "Ready" => Color::Green,
+        "Moderate" => Color::Yellow,
+        _ => Color::Red,
+    };
+
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    table.add_row(vec![
+        Cell::new("Score").fg(Color::Cyan),
+        Cell::new(format!("{}/100", readiness.score)).fg(level_color),
+    ]);
+    table.add_row(vec![
+        Cell::new("Level").fg(Color::Cyan),
+        Cell::new(&readiness.level).fg(level_color),
+    ]);
+    table.add_row(vec![
+        Cell::new("HRV Component").fg(Color::Cyan),
+        Cell::new(format!("{:.1}", readiness.hrv_component)),
+    ]);
+    table.add_row(vec![
+        Cell::new("RHR Component").fg(Color::Cyan),
+        Cell::new(format!("{:.1}", readiness.rhr_component)),
+    ]);
+    table.add_row(vec![
+        Cell::new("Load Component").fg(Color::Cyan),
+        Cell::new(format!("{:.1}", readiness.load_component)),
+    ]);
+    table.add_row(vec![
+        Cell::new("Recommendation").fg(Color::Cyan),
+        Cell::new(&readiness.recommendation),
+    ]);
+
+    println!("{table}");
+    Ok(())
+}
+
+async fn handle_analytics_resting_hr() -> anyhow::Result<()> {
+    use colored::Colorize;
+    use comfy_table::{presets::UTF8_FULL, Cell, Color, ContentArrangement, Table};
+
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("No home directory"))?;
+    let data_dir = home.join(".heart-beat");
+    heart_beat::api::set_data_dir(data_dir.to_string_lossy().to_string())?;
+
+    let stats = heart_beat::api::get_resting_hr_stats().await?;
+
+    println!("{}", "Resting Heart Rate".cyan().bold());
+    println!("{}", "═".repeat(50));
+
+    let mut table = Table::new();
+    table
+        .load_preset(UTF8_FULL)
+        .set_content_arrangement(ContentArrangement::Dynamic);
+
+    table.add_row(vec![
+        Cell::new("Current RHR").fg(Color::Cyan),
+        Cell::new(match stats.current_bpm {
+            Some(bpm) => format!("{} bpm", bpm),
+            None => "N/A".to_string(),
+        }),
+    ]);
+    table.add_row(vec![
+        Cell::new("7-Day Average").fg(Color::Cyan),
+        Cell::new(match stats.seven_day_avg {
+            Some(avg) => format!("{:.1} bpm", avg),
+            None => "N/A".to_string(),
+        }),
+    ]);
+    table.add_row(vec![
+        Cell::new("30-Day Average").fg(Color::Cyan),
+        Cell::new(match stats.thirty_day_avg {
+            Some(avg) => format!("{:.1} bpm", avg),
+            None => "N/A".to_string(),
+        }),
+    ]);
+
+    let trend_color = match stats.trend_direction.as_str() {
+        "Improving" => Color::Green,
+        "Stable" => Color::Yellow,
+        "Worsening" => Color::Red,
+        _ => Color::White,
+    };
+    table.add_row(vec![
+        Cell::new("Trend").fg(Color::Cyan),
+        Cell::new(&stats.trend_direction).fg(trend_color),
+    ]);
+    table.add_row(vec![
+        Cell::new("Trend Points").fg(Color::Cyan),
+        Cell::new(stats.trend_points.len()),
+    ]);
+
+    println!("{table}");
+    Ok(())
+}
+
+// =============================================================================
+// Export handler
+// =============================================================================
+
+async fn handle_export_session(id: &str, format: &str) -> anyhow::Result<()> {
+    use colored::Colorize;
+
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("No home directory"))?;
+    let data_dir = home.join(".heart-beat");
+    heart_beat::api::set_data_dir(data_dir.to_string_lossy().to_string())?;
+
+    let output = match format {
+        "json" => {
+            heart_beat::api::export_session(id.to_string(), heart_beat::api::ExportFormat::Json)
+                .await?
+        }
+        "summary" => {
+            heart_beat::api::export_session(id.to_string(), heart_beat::api::ExportFormat::Summary)
+                .await?
+        }
+        "tcx" => heart_beat::api::export_session_tcx(id.to_string()).await?,
+        "gpx" => heart_beat::api::export_session_gpx(id.to_string()).await?,
+        _ => {
+            heart_beat::api::export_session(id.to_string(), heart_beat::api::ExportFormat::Csv)
+                .await?
+        }
+    };
+
+    println!(
+        "{} Exported session {} as {}",
+        "✓".green().bold(),
+        id,
+        format
+    );
+    println!("{}", output);
     Ok(())
 }
 
