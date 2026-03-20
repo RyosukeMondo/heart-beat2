@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+._*
 .atom/
 .build/
 .buildlog/
@@ -27,14 +28,17 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
+.packages
+.metadata
 .pub-cache/
 .pub/
 /build/
 /coverage/
-
 # Flutter Rust Bridge generated files
 *.frb.dart
+ios/Runner/bridge_generated.h
 
 # Android local properties (contains paths that vary by installation location)
 android/local.properties
@@ -55,3 +59,31 @@ app.*.map.json
 
 # Android native libraries (built locally)
 android/app/src/main/jniLibs/
+
+# Python virtual environment
+scripts/.venv/
+
+# Rust coverage reports
+rust/coverage/
+
+# Spec workflow (generated artifacts)
+.spec-workflow/
+
+# Generated plugin registrants
+ios/Runner/GeneratedPluginRegistrant.*
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+linux/flutter/generated_plugin_registrant.*
+linux/flutter/generated_plugins.cmake
+
+# iOS/Flutter generated
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+
+# Rust build artifacts
+rust/target/
+
+# Android build artifacts
+android/app/libs/
+
+# Temporary test data
+test_plan.json
