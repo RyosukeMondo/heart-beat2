@@ -73,6 +73,8 @@ class _ZoneEditorScreenState extends State<ZoneEditorScreen> {
         age: _currentProfile!.age,
         useAgeBased: _currentProfile!.useAgeBased,
         customZones: customZones,
+        audioFeedbackEnabled: _currentProfile!.audioFeedbackEnabled,
+        audioVolume: _currentProfile!.audioVolume,
       );
 
       await ProfileService.instance.saveProfile(updatedProfile);
