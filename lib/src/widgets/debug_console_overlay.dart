@@ -112,13 +112,13 @@ class _ConsoleOverlayWidget extends StatefulWidget {
 }
 
 class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
-  /// Vertical position of the console (0.0 to 1.0).
-  double _verticalPosition = 0.5;
+  /// Console height as a fraction of screen height (0.2 to 0.8).
+  double _heightFraction = 0.5;
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final consoleHeight = screenHeight * 0.5;
+    final consoleHeight = screenHeight * _heightFraction;
 
     return Stack(
       children: [
@@ -130,7 +130,7 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
           ),
         ),
 
-        // Console positioned at bottom half
+        // Console positioned at bottom, resizable via drag
         Positioned(
           left: 0,
           right: 0,
@@ -138,20 +138,14 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
           height: consoleHeight,
           child: Column(
             children: [
-              // Drag handle
+              // Drag handle to resize console
               GestureDetector(
-                onVerticalDragStart: (details) {},
                 onVerticalDragUpdate: (details) {
                   setState(() {
-                    // Update position based on drag
                     final delta = details.delta.dy / screenHeight;
-                    _verticalPosition = (_verticalPosition - delta).clamp(
-                      0.2,
-                      0.8,
-                    );
+                    _heightFraction = (_heightFraction - delta).clamp(0.2, 0.8);
                   });
                 },
-                onVerticalDragEnd: (details) {},
                 child: Container(
                   height: 32,
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
