@@ -225,24 +225,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ? [
                 IconButton(
                   icon: const Icon(Icons.select_all),
-                  onPressed: () {
-                    setState(() {
-                      if (_selectedSessionIds.length == _sessions.length) {
-                        // Deselect all
+                  onPressed: () async {
+                    if (_selectedSessionIds.length == _sessions.length) {
+                      // Deselect all
+                      setState(() {
                         _selectedSessionIds.clear();
-                      } else {
-                        // Select all
-                        for (final session in _sessions) {
-                          sessionPreviewId(preview: session).then((id) {
-                            if (mounted) {
-                              setState(() {
-                                _selectedSessionIds.add(id);
-                              });
-                            }
-                          });
-                        }
-                      }
-                    });
+                      });
+                    } else {
+                      // Select all: resolve all IDs before updating state
+                      final ids = await Future.wait(
+                        _sessions.map(
+                          (session) => sessionPreviewId(preview: session),
+                        ),
+                      );
+                      if (!mounted) return;
+                      setState(() {
+                        _selectedSessionIds.addAll(ids);
+                      });
+                    }
                   },
                 ),
               ]
