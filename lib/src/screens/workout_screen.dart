@@ -357,12 +357,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 const SizedBox(height: 32),
 
                 // Phase progress widget
-                PhaseProgressWidget(
-                  phaseName: _currentPhaseName,
-                  targetZone: _targetZone!,
-                  elapsedSecs: _phaseElapsed,
-                  remainingSecs: _phaseRemaining,
-                ),
+                if (_targetZone != null)
+                  PhaseProgressWidget(
+                    phaseName: _currentPhaseName,
+                    targetZone: _targetZone!,
+                    elapsedSecs: _phaseElapsed,
+                    remainingSecs: _phaseRemaining,
+                  ),
 
                 const SizedBox(height: 16),
 
