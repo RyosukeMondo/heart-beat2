@@ -21,6 +21,7 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends State<SessionScreen> {
   Stream<api.ApiFilteredHeartRate>? _hrStream;
+  StreamSubscription<api.ApiFilteredHeartRate>? _hrSubscription;
   StreamSubscription<api.ApiBatteryLevel>? _batterySubscription;
   int? _batteryLevel;
   String? _deviceName;
@@ -30,6 +31,8 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _isServiceRunning = false;
   final ProfileService _profileService = ProfileService.instance;
   bool _hasInitialized = false;
+  int? _currentBpm;
+  Zone? _currentZone;
 
   @override
   void didChangeDependencies() {
@@ -65,8 +68,25 @@ class _SessionScreenState extends State<SessionScreen> {
       // Start latency tracking
       LatencyService.instance.start();
 
-      // Create the HR stream
+      // Create the HR stream and subscribe to extract BPM/zone
       final stream = api.createHrStream();
+      _hrStream = stream;
+      _hrSubscription = stream.listen((hrData) async {
+        if (!mounted) return;
+        // Record latency sample when HR data arrives in UI
+        LatencyService.instance.recordSample(hrData);
+        final bpm = await api.hrFilteredBpm(data: hrData);
+        final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
+        if (!mounted) return;
+        // Update background service notification
+        if (_isServiceRunning) {
+          _backgroundService.updateBpm(bpm, zone: zone.name);
+        }
+        setState(() {
+          _currentBpm = bpm;
+          _currentZone = zone;
+        });
+      });
 
       // Create the battery stream and subscribe to updates
       final batteryStream = api.createBatteryStream();
@@ -84,7 +104,6 @@ class _SessionScreenState extends State<SessionScreen> {
       if (!mounted) return;
 
       setState(() {
-        _hrStream = stream;
         _isConnecting = false;
       });
     } catch (e) {
@@ -162,11 +181,11 @@ class _SessionScreenState extends State<SessionScreen> {
     if (_isServiceRunning) {
       _backgroundService.stopService();
     }
-    // Clean up battery subscription
+    // Clean up subscriptions
+    _hrSubscription?.cancel();
     _batterySubscription?.cancel();
     // Stop latency tracking
     LatencyService.instance.stop();
-    // Stream will be automatically cleaned up
     super.dispose();
   }
 
@@ -256,99 +275,51 @@ class _SessionScreenState extends State<SessionScreen> {
       );
     }
 
-    if (_hrStream == null) {
-      return const Center(child: Text('No HR stream available'));
+    if (_hrStream == null || _currentBpm == null || _currentZone == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Waiting for heart rate data...'),
+          ],
+        ),
+      );
     }
 
-    return StreamBuilder<api.ApiFilteredHeartRate>(
-      stream: _hrStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
+    final bpm = _currentBpm!;
+    final zone = _currentZone!;
 
-        if (!snapshot.hasData) {
-          return const Center(
+    return Column(
+      children: [
+        // Connection status banner
+        const ConnectionBanner(),
+
+        // Main content
+        Expanded(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Waiting for heart rate data...'),
+                // BPM Display
+                HrDisplay(bpm: bpm),
+
+                const SizedBox(height: 32),
+
+                // Zone Indicator
+                ZoneIndicator(zone: zone),
+
+                const SizedBox(height: 32),
+
+                // Battery Indicator
+                if (_batteryLevel != null)
+                  BatteryIndicator(batteryLevel: _batteryLevel!),
               ],
             ),
-          );
-        }
-
-        // Record latency sample when HR data arrives in UI
-        LatencyService.instance.recordSample(snapshot.data!);
-
-        return _buildHrDisplay(snapshot.data!, colorScheme);
-      },
+          ),
+        ),
+      ],
     );
-  }
-
-  Widget _buildHrDisplay(
-    api.ApiFilteredHeartRate data,
-    ColorScheme colorScheme,
-  ) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _extractHrData(data),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final hrData = snapshot.data!;
-        final bpm = hrData['bpm'] as int;
-        final zone = hrData['zone'] as Zone;
-
-        // Update background service notification with current BPM and zone
-        if (_isServiceRunning) {
-          _backgroundService.updateBpm(bpm, zone: zone.name);
-        }
-
-        return Column(
-          children: [
-            // Connection status banner
-            const ConnectionBanner(),
-
-            // Main content
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // BPM Display
-                    HrDisplay(bpm: bpm),
-
-                    const SizedBox(height: 32),
-
-                    // Zone Indicator
-                    ZoneIndicator(zone: zone),
-
-                    const SizedBox(height: 32),
-
-                    // Battery Indicator
-                    if (_batteryLevel != null)
-                      BatteryIndicator(batteryLevel: _batteryLevel!),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<Map<String, dynamic>> _extractHrData(
-    api.ApiFilteredHeartRate data,
-  ) async {
-    final bpm = await api.hrFilteredBpm(data: data);
-    // Use ProfileService to calculate zone based on user's profile settings
-    final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
-
-    return {'bpm': bpm, 'zone': zone};
   }
 }
