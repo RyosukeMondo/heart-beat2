@@ -30,12 +30,23 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
   bool _isLoading = true;
   String? _error;
   bool _isExporting = false;
+  bool _hasInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+
     final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args == null) {
+      setState(() {
+        _error = 'No session ID provided';
+        _isLoading = false;
+      });
+      return;
+    }
     final sessionId = args['session_id'] as String;
     _sessionId = sessionId;
     _loadSession(sessionId);
