@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
@@ -23,6 +24,17 @@ Future<void> main() async {
         ? ExternalLibrary.process(iKnowHowToUseIt: true)
         : null,
   );
+
+  // Start the embedded debug HTTP/WS server on port 8888 (debug builds only).
+  // The server is reachable from the Mac via `iproxy 8888 8888`.
+  if (kDebugMode) {
+    try {
+      await startDebugServer(port: 8888);
+      debugPrint('[heart_beat] Debug server listening on http://localhost:8888');
+    } catch (e) {
+      debugPrint('[heart_beat] Failed to start debug server: $e');
+    }
+  }
 
   // Set data directory for file storage (required on Android)
   try {
