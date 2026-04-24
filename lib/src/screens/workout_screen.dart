@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import '../bridge/api_generated.dart/api.dart' as api;
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../controllers/workout_controller.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/phase_progress.dart';
 import '../widgets/zone_feedback.dart';
 import '../widgets/session_controls.dart';
 import '../widgets/connection_banner.dart';
-import '../services/audio_feedback_service.dart';
-import '../services/latency_service.dart';
-import '../services/voice_coaching_service.dart';
 import 'dart:async';
 
 /// Workout execution screen that displays real-time workout progress.
@@ -27,232 +23,36 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  StreamSubscription<api.ApiSessionProgress>? _progressSubscription;
+  late final WorkoutController _controller;
+  StreamSubscription<WorkoutState>? _stateSubscription;
 
-  // Current workout state
-  api.ApiSessionProgress? _currentProgress;
-  String _currentState = '';
-  int _currentBpm = 0;
-  String _currentPhaseName = '';
-  int _phaseElapsed = 0;
-  int _phaseRemaining = 0;
-  int _totalRemaining = 0;
-  api.ApiZoneStatus? _zoneStatus;
-  Zone? _targetZone;
-
-  bool _isStarting = true;
-  String? _errorMessage;
-
-  // Previous state tracking for audio feedback
-  String _previousPhaseName = '';
-  bool _previousIsTooLow = false;
-  bool _previousIsTooHigh = false;
-
-  // Voice coaching service singleton
-  final VoiceCoachingService _voiceCoaching = VoiceCoachingService.instance;
+  WorkoutState _state = const WorkoutState();
 
   @override
   void initState() {
     super.initState();
-    // Start latency tracking when workout begins
-    LatencyService.instance.start();
-    _voiceCoaching.initialize();
-    _startWorkout();
-  }
-
-  Future<void> _startWorkout() async {
-    try {
-      setState(() {
-        _isStarting = true;
-        _errorMessage = null;
-      });
-
-      // Start the workout
-      await api.startWorkout(planName: widget.planName);
-
-      // Create the progress stream
-      final stream = api.createSessionProgressStream();
-
-      if (!mounted) return;
-
-      // Subscribe to progress updates
-      _progressSubscription = stream.listen(
-        (progress) async {
-          if (!mounted) return;
-
-          // Extract all the values we need
-          final state = await api.sessionProgressState(progress: progress);
-          final stateString = await api.sessionStateToString(state: state);
-          final bpm = await api.sessionProgressCurrentBpm(progress: progress);
-          final phaseProgress = await api.sessionProgressPhaseProgress(
-            progress: progress,
-          );
-          final phaseName = await api.phaseProgressPhaseName(
-            progress: phaseProgress,
-          );
-          final phaseElapsed = await api.phaseProgressElapsedSecs(
-            progress: phaseProgress,
-          );
-          final phaseRemaining = await api.phaseProgressRemainingSecs(
-            progress: phaseProgress,
-          );
-          final totalRemaining = await api.sessionProgressTotalRemainingSecs(
-            progress: progress,
-          );
-          final zoneStatusObj = await api.sessionProgressZoneStatus(
-            progress: progress,
-          );
-          final targetZone = await api.phaseProgressTargetZone(
-            progress: phaseProgress,
-          );
-
-          if (!mounted) return;
-
-          // Check zone status for audio feedback
-          final isInZone = await api.zoneStatusIsInZone(status: zoneStatusObj);
-          final isTooLow = await api.zoneStatusIsTooLow(status: zoneStatusObj);
-          final isTooHigh = await api.zoneStatusIsTooHigh(
-            status: zoneStatusObj,
-          );
-
-          // Trigger audio feedback for zone deviations
-          final zoneName = targetZone.name;
-          if (!isInZone) {
-            if (isTooLow && !_previousIsTooLow) {
-              // Zone status changed to too low
-              AudioFeedbackService.instance.playZoneTooLow();
-              _voiceCoaching.announceZoneDeviation(false, zoneName);
-            } else if (isTooHigh && !_previousIsTooHigh) {
-              // Zone status changed to too high
-              AudioFeedbackService.instance.playZoneTooHigh();
-              _voiceCoaching.announceZoneDeviation(true, zoneName);
-            }
-          }
-
-          // Trigger audio feedback for phase transitions
-          if (_previousPhaseName.isNotEmpty &&
-              _previousPhaseName != phaseName) {
-            AudioFeedbackService.instance.playPhaseTransition();
-            _voiceCoaching.announcePhaseComplete(_previousPhaseName);
-            final totalPhaseSecs = phaseElapsed + phaseRemaining;
-            _voiceCoaching.announcePhaseStart(
-              phaseName,
-              zoneName,
-              totalPhaseSecs,
-            );
-          }
-
-          // Countdown announcements for last 3 seconds of phase
-          if (phaseRemaining >= 1 && phaseRemaining <= 3) {
-            _voiceCoaching.announceCountdown(phaseRemaining);
-          }
-
-          // Halfway announcement
-          final totalPhaseDuration = phaseElapsed + phaseRemaining;
-          final halfPoint = totalPhaseDuration ~/ 2;
-          if (totalPhaseDuration > 0 && phaseElapsed == halfPoint) {
-            _voiceCoaching.announceHalfway(phaseName, phaseRemaining);
-          }
-
-          if (!mounted) return;
-
-          setState(() {
-            _currentProgress = progress;
-            _currentState = stateString;
-            _currentBpm = bpm;
-            _currentPhaseName = phaseName;
-            _phaseElapsed = phaseElapsed;
-            _phaseRemaining = phaseRemaining;
-            _totalRemaining = totalRemaining;
-            _zoneStatus = zoneStatusObj;
-            _targetZone = targetZone;
-            _isStarting = false;
-
-            // Update previous state for next iteration
-            _previousPhaseName = phaseName;
-            _previousIsTooLow = isTooLow;
-            _previousIsTooHigh = isTooHigh;
-          });
-
-          // Check if workout is complete
-          if (stateString == 'Completed') {
-            final totalElapsedMins = (_phaseElapsed + _totalRemaining) ~/ 60;
-            _voiceCoaching.announceWorkoutComplete(
-              totalElapsedMins,
-              _currentBpm,
-            );
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
-          } else if (stateString == 'Stopped') {
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
-          }
-        },
-        onError: (error) {
-          if (!mounted) return;
-          setState(() {
-            _errorMessage = 'Stream error: $error';
-            _isStarting = false;
-          });
-        },
-      );
-
-      setState(() {
-        _isStarting = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _isStarting = false;
-        _errorMessage = 'Failed to start workout: $e';
-      });
-    }
-  }
-
-  Future<void> _pauseWorkout() async {
-    try {
-      await api.pauseWorkout();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to pause: $e')));
-    }
-  }
-
-  Future<void> _resumeWorkout() async {
-    try {
-      await api.resumeWorkout();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to resume: $e')));
-    }
-  }
-
-  Future<void> _stopWorkout() async {
-    try {
-      await api.stopWorkout();
+    _controller = WorkoutController();
+    _controller.onWorkoutEnded = _onWorkoutEnded;
+    _stateSubscription = _controller.stateStream.listen((state) {
       if (mounted) {
-        Navigator.of(context).pop();
+        setState(() {
+          _state = state;
+        });
       }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to stop: $e')));
+    });
+    _controller.startWorkout(widget.planName);
+  }
+
+  void _onWorkoutEnded() {
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 
   @override
   void dispose() {
-    _progressSubscription?.cancel();
-    // Stop latency tracking when workout screen is disposed
-    LatencyService.instance.stop();
+    _stateSubscription?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -271,7 +71,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   Widget _buildBody(ColorScheme colorScheme) {
-    if (_isStarting) {
+    if (_state.isStarting) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -284,7 +84,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       );
     }
 
-    if (_errorMessage != null) {
+    if (_state.error != null) {
       return Center(
         child: Card(
           margin: const EdgeInsets.all(16),
@@ -301,7 +101,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _errorMessage!,
+                  _state.error!,
                   style: TextStyle(color: colorScheme.onErrorContainer),
                   textAlign: TextAlign.center,
                 ),
@@ -312,7 +112,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       );
     }
 
-    if (_currentProgress == null) {
+    if (_state.progress == null) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -341,41 +141,41 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Heart rate display
-                HrDisplay(bpm: _currentBpm),
+                HrDisplay(bpm: _state.bpm),
 
                 const SizedBox(height: 32),
 
                 // Zone indicator
-                if (_targetZone != null) ZoneIndicator(zone: _targetZone!),
+                if (_state.targetZone != null) ZoneIndicator(zone: _state.targetZone!),
 
                 const SizedBox(height: 32),
 
                 // Zone feedback
-                if (_zoneStatus != null)
-                  ZoneFeedbackWidget(zoneStatus: _zoneStatus!),
+                if (_state.zoneStatus != null)
+                  ZoneFeedbackWidget(zoneStatus: _state.zoneStatus!),
 
                 const SizedBox(height: 32),
 
                 // Phase progress widget
                 PhaseProgressWidget(
-                  phaseName: _currentPhaseName,
-                  targetZone: _targetZone!,
-                  elapsedSecs: _phaseElapsed,
-                  remainingSecs: _phaseRemaining,
+                  phaseName: _state.phaseName,
+                  targetZone: _state.targetZone!,
+                  elapsedSecs: _state.phaseElapsed,
+                  remainingSecs: _state.phaseRemaining,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Total time remaining
                 Text(
-                  'Total remaining: ${_formatTime(_totalRemaining)}',
+                  'Total remaining: ${_formatTime(_state.totalRemaining)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
 
                 // State indicator (for debugging)
                 const SizedBox(height: 8),
                 Text(
-                  _currentState,
+                  _state.state,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -387,10 +187,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
         // Control buttons
         SessionControls(
-          currentState: _currentState,
-          onPause: _pauseWorkout,
-          onResume: _resumeWorkout,
-          onStop: _stopWorkout,
+          currentState: _state.state,
+          onPause: _controller.pauseWorkout,
+          onResume: _controller.resumeWorkout,
+          onStop: _controller.stopWorkout,
         ),
       ],
     );
