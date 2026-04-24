@@ -34,12 +34,16 @@ mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be
 
 pub mod adapters;
 pub mod api;
+pub mod coaching;
 pub mod debug_http;
 pub mod domain;
 pub mod logging;
 pub mod ports;
 pub mod scheduler;
 pub mod state;
+
+// Re-export coaching types
+pub use coaching::{Cue, CueContext, CuePriority, InactivityRule, OverworkRule, Rule, RuleEngine, TargetZoneRule};
 
 // Re-export commonly used types from each module
 pub use api::{
