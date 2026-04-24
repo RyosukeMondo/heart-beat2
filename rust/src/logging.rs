@@ -66,18 +66,32 @@ pub fn emit_log(msg: LogMessage) {
 
 /// Get recent log entries from the ring buffer.
 ///
-/// Optionally filter by minimum level and limit the number of entries returned.
-pub fn get_recent_logs(level_filter: Option<&str>, limit: usize) -> Vec<LogMessage> {
+/// Optionally filter by minimum level and source, and limit the number of entries returned.
+pub fn get_recent_logs(
+    level_filter: Option<&str>,
+    source_filter: Option<&str>,
+    limit: usize,
+) -> Vec<LogMessage> {
     let ring = get_ring_buffer();
     let buf = ring.read();
     let iter = buf.iter().rev();
 
     let filtered: Vec<LogMessage> = if let Some(min_level) = level_filter {
         let min_ord = level_ordinal(min_level);
-        iter.filter(|m| level_ordinal(&m.level) >= min_ord)
-            .take(limit)
-            .cloned()
-            .collect()
+        iter.filter(|m| {
+            level_ordinal(&m.level) >= min_ord
+                && source_filter.map_or(true, |s| m.target.to_lowercase().contains(&s.to_lowercase()))
+        })
+        .take(limit)
+        .cloned()
+        .collect()
+    } else if source_filter.is_some() {
+        iter.filter(|m| {
+            source_filter.map_or(true, |s| m.target.to_lowercase().contains(&s.to_lowercase()))
+        })
+        .take(limit)
+        .cloned()
+        .collect()
     } else {
         iter.take(limit).cloned().collect()
     };

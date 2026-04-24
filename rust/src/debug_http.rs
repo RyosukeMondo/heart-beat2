@@ -375,12 +375,13 @@ async fn debug_health() -> Json<ApiOk<HealthResponse>> {
 #[derive(Deserialize)]
 pub struct LogsQuery {
     pub level: Option<String>,
+    pub source: Option<String>,
     pub limit: Option<usize>,
 }
 
 async fn debug_logs(Query(q): Query<LogsQuery>) -> ApiResult<Vec<api::LogMessage>> {
     let limit = q.limit.unwrap_or(100).min(1000);
-    let logs = logging::get_recent_logs(q.level.as_deref(), limit);
+    let logs = logging::get_recent_logs(q.level.as_deref(), q.source.as_deref(), limit);
     Ok(ok_json(logs))
 }
 
@@ -472,11 +473,54 @@ async fn ws_logs(ws: WebSocketUpgrade) -> impl IntoResponse {
 }
 
 async fn handle_ws_logs(mut socket: WebSocket) {
+    // Read optional filter config from first message
+    let (level_filter, source_filter) = match socket.recv().await {
+        Some(Ok(Message::Text(text))) => {
+            if let Ok(config) = serde_json::from_str::<WsLogConfig>(&text) {
+                (config.level, config.source)
+            } else {
+                (None, None)
+            }
+        }
+        _ => (None, None),
+    };
+
     let mut rx = logging::subscribe_log_stream();
     while let Ok(msg) = rx.recv().await {
+        // Filter by level if specified
+        if let Some(ref min_level) = level_filter {
+            let min_ord = level_ordinal(min_level);
+            if level_ordinal(&msg.level) < min_ord {
+                continue;
+            }
+        }
+        // Filter by source if specified
+        if let Some(ref source) = source_filter {
+            if !msg.target.to_lowercase().contains(&source.to_lowercase()) {
+                continue;
+            }
+        }
+
         let json = serde_json::to_string(&msg).unwrap_or_default();
         if socket.send(Message::Text(json)).await.is_err() {
             break;
         }
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct WsLogConfig {
+    level: Option<String>,
+    source: Option<String>,
+}
+
+fn level_ordinal(level: &str) -> u8 {
+    match level.to_uppercase().as_str() {
+        "TRACE" => 0,
+        "DEBUG" => 1,
+        "INFO" => 2,
+        "WARN" | "WARNING" => 3,
+        "ERROR" => 4,
+        _ => 2,
     }
 }
