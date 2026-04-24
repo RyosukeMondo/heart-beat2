@@ -1,4 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart'
+    show ExternalLibrary;
 import 'package:heart_beat/src/app.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
@@ -10,8 +14,15 @@ Future<void> main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Flutter Rust Bridge
-  await RustLib.init();
+  // Initialize Flutter Rust Bridge.
+  // iOS/macOS link libheart_beat.a statically via -force_load, so symbols live
+  // in the main executable — resolve them via ExternalLibrary.process rather
+  // than the default loader, which would try to dlopen a non-existent framework.
+  await RustLib.init(
+    externalLibrary: (Platform.isIOS || Platform.isMacOS)
+        ? ExternalLibrary.process(iKnowHowToUseIt: true)
+        : null,
+  );
 
   // Set data directory for file storage (required on Android)
   try {

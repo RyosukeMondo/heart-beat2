@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../bridge/api_generated.dart/api.dart';
@@ -50,14 +52,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      // Request Bluetooth permissions
-      final bluetoothScan = await Permission.bluetoothScan.request();
-      final bluetoothConnect = await Permission.bluetoothConnect.request();
-      final location = await Permission.locationWhenInUse.request();
+      // Request Bluetooth permissions.
+      // iOS: requesting Permission.bluetooth instantiates CBCentralManager,
+      // which is what actually triggers the system popup using the
+      // NSBluetoothAlwaysUsageDescription string in Info.plist. The
+      // bluetoothScan/bluetoothConnect/location permissions are Android-only.
+      final bool granted;
+      if (Platform.isIOS) {
+        final bluetooth = await Permission.bluetooth.request();
+        granted = bluetooth.isGranted;
+      } else {
+        final bluetoothScan = await Permission.bluetoothScan.request();
+        final bluetoothConnect = await Permission.bluetoothConnect.request();
+        final location = await Permission.locationWhenInUse.request();
+        granted =
+            bluetoothScan.isGranted &&
+            bluetoothConnect.isGranted &&
+            location.isGranted;
+      }
 
-      if (!bluetoothScan.isGranted ||
-          !bluetoothConnect.isGranted ||
-          !location.isGranted) {
+      if (!granted) {
         if (!mounted) return;
         setState(() {
           _error = 'Bluetooth permissions are required';
