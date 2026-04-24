@@ -51,6 +51,9 @@ class LogService {
   /// Rolling file writer for native Android logs.
   _NativeAndroidLogWriter? _nativeAndroidLogWriter;
 
+  /// Rolling file writer for Rust logs (written from Dart via RustLogWriter).
+  _RustLogWriter? _rustLogWriter;
+
   /// MethodChannel for native iOS log bridge.
   static const MethodChannel _nativeIosChannel =
       MethodChannel('heart_beat/native_log');
@@ -80,7 +83,11 @@ class LogService {
       _dartLogWriter = _DartLogWriter(logDir.path);
       _nativeIosLogWriter = _NativeIosLogWriter(logDir.path);
       _nativeAndroidLogWriter = _NativeAndroidLogWriter(logDir.path);
+      _rustLogWriter = _RustLogWriter(logDir.path);
       await _dartLogWriter!.sweepOldFiles();
+      await _nativeIosLogWriter!.sweepOldFiles();
+      await _nativeAndroidLogWriter!.sweepOldFiles();
+      await _rustLogWriter!.sweepOldFiles();
 
       _installDebugPrintHook();
       _installErrorHooks();
@@ -127,6 +134,14 @@ class LogService {
       debugPrint(
         '[${timestamp.toIso8601String()}] ${log.level} ${log.target}: ${log.message}',
       );
+    }
+
+    // Write to appropriate rolling file based on source
+    final now = DateTime.now();
+    if (log.target == 'dart') {
+      _dartLogWriter?.append(now, log.level, log.target, log.message);
+    } else {
+      _rustLogWriter?.append(now, log.level, log.target, log.message);
     }
 
     // Broadcast to listeners
@@ -229,6 +244,9 @@ class LogService {
   /// Flush pending writes to disk.
   Future<void> flush() async {
     await _dartLogWriter?.flush();
+    await _nativeIosLogWriter?.flush();
+    await _nativeAndroidLogWriter?.flush();
+    await _rustLogWriter?.flush();
   }
 
   /// Dispose of resources.
@@ -237,6 +255,9 @@ class LogService {
     _rustSubscription?.cancel();
     _controller.close();
     _dartLogWriter?.close();
+    _nativeIosLogWriter?.close();
+    _nativeAndroidLogWriter?.close();
+    _rustLogWriter?.close();
   }
 }
 
@@ -321,6 +342,34 @@ class _NativeIosLogWriter {
       // Best-effort — never throw from log writer
     }
   }
+
+  /// Delete log files older than [LogService._retentionDays] days.
+  Future<void> sweepOldFiles() async {
+    try {
+      final dir = Directory(_logDirPath);
+      if (!await dir.exists()) return;
+
+      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
+      await for (final entity in dir.list()) {
+        if (entity is File) {
+          final name = entity.path.split('/').last;
+          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
+          final stat = await entity.stat();
+          if (stat.modified.isBefore(cutoff)) {
+            await entity.delete();
+          }
+        }
+      }
+    } catch (_) {
+      // Best-effort cleanup
+    }
+  }
+
+  /// Flush is a no-op since writeAsStringSync is synchronous.
+  Future<void> flush() async {}
+
+  /// Close is a no-op for writeAsStringSync approach.
+  Future<void> close() async {}
 }
 
 /// Rolling file writer for native Android log entries.
@@ -346,6 +395,89 @@ class _NativeAndroidLogWriter {
       file.writeAsStringSync(line, mode: FileMode.append);
     } catch (_) {
       // Best-effort — never throw from log writer
+    }
+  }
+
+  /// Delete log files older than [LogService._retentionDays] days.
+  Future<void> sweepOldFiles() async {
+    try {
+      final dir = Directory(_logDirPath);
+      if (!await dir.exists()) return;
+
+      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
+      await for (final entity in dir.list()) {
+        if (entity is File) {
+          final name = entity.path.split('/').last;
+          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
+          final stat = await entity.stat();
+          if (stat.modified.isBefore(cutoff)) {
+            await entity.delete();
+          }
+        }
+      }
+    } catch (_) {
+      // Best-effort cleanup
+    }
+  }
+
+  /// Flush is a no-op since writeAsStringSync is synchronous.
+  Future<void> flush() async {}
+
+  /// Close is a no-op for writeAsStringSync approach.
+  Future<void> close() async {}
+}
+
+/// Rolling file writer for Rust log entries forwarded from FlutterLogWriter.
+class _RustLogWriter {
+  _RustLogWriter(this._logDirPath);
+
+  final String _logDirPath;
+
+  static const String _prefix = 'heart-beat-rust';
+
+  String _filenameFor(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Append a Rust log entry to today's file.
+  void append(DateTime now, String level, String target, String message) {
+    final dateStr = _filenameFor(now);
+    final path = '$_logDirPath/$_prefix.$dateStr.log';
+    final line = '${now.toIso8601String()} $level $target: $message\n';
+
+    try {
+      final file = File(path);
+      file.writeAsStringSync(line, mode: FileMode.append);
+    } catch (_) {
+      // Best-effort — never throw from log writer
+    }
+  }
+
+  /// Flush is a no-op since writeAsStringSync is synchronous.
+  Future<void> flush() async {}
+
+  /// Close is a no-op for writeAsStringSync approach.
+  Future<void> close() async {}
+
+  /// Delete log files older than [LogService._retentionDays] days.
+  Future<void> sweepOldFiles() async {
+    try {
+      final dir = Directory(_logDirPath);
+      if (!await dir.exists()) return;
+
+      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
+      await for (final entity in dir.list()) {
+        if (entity is File) {
+          final name = entity.path.split('/').last;
+          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
+          final stat = await entity.stat();
+          if (stat.modified.isBefore(cutoff)) {
+            await entity.delete();
+          }
+        }
+      }
+    } catch (_) {
+      // Best-effort cleanup
     }
   }
 }
