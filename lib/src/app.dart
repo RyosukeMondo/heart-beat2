@@ -13,6 +13,7 @@ import 'package:heart_beat/src/screens/calendar_screen.dart';
 import 'package:heart_beat/src/screens/workout_library_screen.dart';
 import 'package:heart_beat/src/widgets/debug_console_overlay.dart';
 import 'package:heart_beat/src/screens/diagnosis_screen.dart';
+import 'package:heart_beat/src/screens/coaching_screen.dart';
 
 /// Main application widget
 class MyApp extends StatelessWidget {
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
           '/calendar': (context) => const CalendarScreen(),
           '/workout-library': (context) => const WorkoutLibraryScreen(),
           '/diagnosis': (context) => const DiagnosisScreen(),
+          '/coaching': (context) => const CoachingScreen(),
         },
         onGenerateRoute: (settings) {
           // Handle /workout/:planName route
