@@ -803,6 +803,95 @@ adb pull /data/misc/bluetooth/logs/btsnoop_hci.log .
 ./scripts/adb-ble-debug.sh disable
 ```
 
+### Streaming iOS Device Logs Over USB
+
+Stream live logs from an iOS device connected via USB using the embedded debug server.
+
+**Prerequisites:**
+
+```bash
+# Install dependencies (macOS)
+brew install libimobiledevice jq websocat
+
+# Or use wscat as a WebSocket client (npm fallback)
+npm install -g wscat
+```
+
+**Basic usage:**
+
+```bash
+# Start the iproxy tunnel (Mac → device via USB)
+./scripts/ios-debug-server.sh start
+
+# In a new terminal, stream live logs
+./scripts/ios-logs.sh --follow
+
+# Or fetch recent logs as JSON
+./scripts/ios-logs.sh --source=rust --level=error
+```
+
+**What these scripts do:**
+
+- `ios-debug-server.sh start` — runs `iproxy 8888:8888` in the background, forwarding
+  Mac `localhost:8888` → iOS device `localhost:8888`.
+- `ios-logs.sh --follow` — opens a WebSocket connection to the embedded debug server
+  and streams colorized log lines in real time.
+
+**Filter flags:**
+
+| Flag | Values | Example |
+|------|--------|---------|
+| `--source` | `rust`, `dart`, `native-ios`, `native-android`, `all` | `--source=rust` |
+| `--level` | `trace`, `debug`, `info`, `warn`, `error` | `--level=error` |
+| `--limit` | 1–1000 | `--limit=50` |
+| `--follow` | (none) | `--follow` |
+
+**Stopping:**
+
+```bash
+# Stop the log stream: Ctrl+C
+# Stop the tunnel:
+./scripts/ios-debug-server.sh stop
+```
+
+**Troubleshooting:**
+
+*`iproxy not found`:*
+```bash
+brew install libimobiledevice
+```
+
+*`iproxy already running` error:*
+```bash
+./scripts/ios-debug-server.sh stop
+./scripts/ios-debug-server.sh start
+```
+
+*`iproxy tunnel is not running` from `ios-logs.sh`:*
+```bash
+./scripts/ios-debug-server.sh start
+# Wait a moment, then retry
+./scripts/ios-logs.sh --follow
+```
+
+*`websocat or wscat not found`:*
+```bash
+brew install websocat
+# OR
+npm install -g wscat
+```
+
+*Multiple iOS devices:*
+Use `--udid=<UDID>` on both scripts. Find UDID with:
+```bash
+idevice_id -l
+```
+
+**Requirements:**
+- iOS device connected via USB and trusted
+- iOS app built with embedded debug server (Phase 2)
+- App running in debug mode on device
+
 ### 5. Common Debugging Workflows
 
 **BLE connection not working:**

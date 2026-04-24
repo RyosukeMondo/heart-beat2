@@ -17,6 +17,7 @@ Quick reference for developers working on the Heart Beat project. For complete s
 | BLE Debug | `./scripts/adb-ble-debug.sh enable\|disable\|status` | HCI snoop logging |
 | Run Tests | `cargo test` | Run all Rust tests |
 | Run Tests (CLI) | `cargo test --bin cli` | CLI-specific tests |
+| iOS USB debug logs | `./scripts/ios-debug-server.sh start && ./scripts/ios-logs.sh --follow` | Requires libimobiledevice + iOS device |
 
 ### Debug Log Levels
 
