@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:permission_handler/permission_handler.dart';
 import '../bridge/api_generated.dart/api.dart';
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
@@ -159,6 +160,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, '/settings');
             },
           ),
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.bug_report),
+              tooltip: 'Diagnosis',
+              onPressed: () {
+                Navigator.pushNamed(context, '/diagnosis');
+              },
+            ),
         ],
       ),
       body: Column(
