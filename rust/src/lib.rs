@@ -42,8 +42,10 @@ pub mod ports;
 pub mod scheduler;
 pub mod state;
 
-// Re-export coaching types
-pub use coaching::{Cue, CueContext, CuePriority, InactivityRule, OverworkRule, Rule, RuleEngine, TargetZoneRule};
+// Re-export coaching types (internally - Cue is NOT exposed through FFI)
+// Only RuleEngine and ApiCue are used across the FFI boundary.
+pub use coaching::{RuleEngine, InactivityRule, OverworkRule, TargetZoneRule};
+pub use api::{ApiCue, emit_cue};
 
 // Re-export commonly used types from each module
 pub use api::{

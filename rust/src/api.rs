@@ -5,6 +5,7 @@
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::adapters::file_session_repository::FileSessionRepository;
+use crate::coaching::{CueContext, CueCadence, DoNotDisturbWindow, RuleEngine, TargetZoneRule, InactivityRule, OverworkRule, Cue as CoachingCue};
 use crate::domain::filters::KalmanFilter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::domain::training_plan::TrainingPlan;
@@ -17,6 +18,7 @@ use crate::state::{ConnectionEvent, ConnectionStateMachine};
 use axum;
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
+use flutter_rust_bridge::frb;
 use std::io::Write;
 use std::panic;
 use std::sync::{Arc, Mutex, OnceLock};
@@ -27,6 +29,9 @@ use tracing_subscriber::{
     fmt::{format::FmtSpan, MakeWriter},
     EnvFilter,
 };
+
+// Re-export for FRB-generated code
+pub use broadcast::Receiver;
 
 #[cfg(target_os = "android")]
 use log::LevelFilter;
@@ -91,6 +96,51 @@ static SESSION_PROGRESS_CHANNEL_CAPACITY: usize = 100;
 // Global state for connection status streaming
 static CONNECTION_STATUS_CHANNEL_CAPACITY: usize = 10;
 
+// Global state for coaching cue streaming
+static COACHING_CUE_CHANNEL_CAPACITY: usize = 20;
+
+// Coaching cue for the FFI boundary (FRB-compatible).
+//
+// This is a copy of coaching::Cue adapted for the FFI boundary using u64
+// timestamps instead of DateTime<Utc> for FRB compatibility.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct ApiCue {
+    /// Unique identifier for this cue instance.
+    pub id: String,
+    /// Which rule triggered this cue (0=TargetZone, 1=Inactivity, 2=Overwork).
+    pub source: u8,
+    /// Short machine-readable label, e.g. `"raise_hr"`.
+    pub label: String,
+    /// Human-readable message for the user.
+    pub message: String,
+    /// Priority (0=Low, 1=Normal, 2=High, 3=Critical).
+    pub priority: u8,
+    /// Unix timestamp in milliseconds when this cue was generated.
+    pub generated_at_millis: u64,
+}
+
+impl From<crate::coaching::Cue> for ApiCue {
+    fn from(cue: crate::coaching::Cue) -> Self {
+        ApiCue {
+            id: cue.id.to_string(),
+            source: match cue.source {
+                crate::coaching::CueSource::TargetZone => 0,
+                crate::coaching::CueSource::Inactivity => 1,
+                crate::coaching::CueSource::Overwork => 2,
+            },
+            label: cue.label,
+            message: cue.message,
+            priority: match cue.priority {
+                crate::coaching::CuePriority::Low => 0,
+                crate::coaching::CuePriority::Normal => 1,
+                crate::coaching::CuePriority::High => 2,
+                crate::coaching::CuePriority::Critical => 3,
+            },
+            generated_at_millis: cue.generated_at.timestamp_millis() as u64,
+        }
+    }
+}
+
 /// Log message that can be sent to Flutter for debugging.
 ///
 /// This struct represents a single log entry with level, target module,
@@ -133,6 +183,9 @@ struct ConnectionState {
 
 // Global connection state storage
 static CONNECTION_STATE: OnceLock<tokio::sync::Mutex<Option<ConnectionState>>> = OnceLock::new();
+
+// Global coaching rule engine (lives for the lifetime of the app session)
+static COACHING_ENGINE: OnceLock<tokio::sync::Mutex<RuleEngine>> = OnceLock::new();
 
 /// Stub notification port for battery monitoring.
 /// This is a temporary implementation until full notification system is wired up.
@@ -310,6 +363,31 @@ pub fn init_platform() -> Result<()> {
     // On Android, btleplug is initialized in JNI_OnLoad where the correct
     // classloader is available. This function is now a no-op on Android.
     // On other platforms (Linux, macOS, Windows, iOS), no initialization is needed.
+    Ok(())
+}
+
+/// Initialize the coaching rule engine.
+///
+/// This sets up the rule engine with default rules (target zone, inactivity,
+/// overwork) and starts it evaluating HR samples as they arrive via the
+/// `emit_hr_data` path in `connect_device` and `start_mock_mode`.
+///
+/// # Examples
+///
+/// ```dart
+/// await initCoachingEngine();
+/// ```
+pub fn init_coaching_engine() -> Result<()> {
+    let engine = RuleEngine::new()
+        .with_rule(TargetZoneRule::new(120, 150))
+        .with_rule(InactivityRule::new(60, 180.0))
+        .with_rule(OverworkRule::new(160, 600.0))
+        .with_cadence_secs(120); // 2 min between repeated cues
+
+    COACHING_ENGINE
+        .get_or_init(|| tokio::sync::Mutex::new(engine));
+
+    tracing::info!("Coaching engine initialized");
     Ok(())
 }
 
@@ -832,8 +910,34 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 stale: false,
                             };
 
-                            let receivers = emit_hr_data(filtered_data);
+                            let receivers = emit_hr_data(filtered_data.clone());
                             tracing::debug!("Emitted HR data to {} receivers", receivers);
+
+                            // Evaluate coaching rules on this HR sample
+                            let ctx = CueContext {
+                                sample: crate::domain::HrSample {
+                                    timestamp: chrono::DateTime::from_timestamp(
+                                        filtered_data.timestamp as i64 / 1000,
+                                        0,
+                                    )
+                                    .unwrap_or_else(chrono::Utc::now),
+                                    bpm: filtered_data.filtered_bpm,
+                                },
+                                rolling_avg_bpm: filtered_data.filtered_bpm as f64,
+                                zone_violation_secs: 0.0, // TODO: track over time
+                                overwork_secs: 0.0,       // TODO: track over time
+                                inactivity_secs: 0.0,     // TODO: track over time
+                                is_stale: filtered_data.stale,
+                                dnd_active: false, // TODO: compute from DND window
+                                dnd_window: DoNotDisturbWindow::default(),
+                            };
+
+                            if let Some(engine) = COACHING_ENGINE.get() {
+                                let mut engine_guard = engine.lock().await;
+                                if let Some(cue) = engine_guard.evaluate(&ctx) {
+                                    emit_cue(cue);
+                                }
+                            }
                         }
                         Err(e) => {
                             tracing::error!("Failed to parse HR data: {}", e);
@@ -1052,9 +1156,7 @@ pub async fn create_hr_stream(sink: StreamSink<ApiFilteredHeartRate>) -> Result<
 }
 
 /// Subscribe to the real-time filtered heart rate stream.
-///
-/// Creates a broadcast receiver for fan-out streaming to multiple consumers
-/// (Flutter, debug server, CLI, etc.).
+#[frb(ignore)]
 pub fn subscribe_hr_stream() -> broadcast::Receiver<ApiFilteredHeartRate> {
     let tx = get_or_create_hr_broadcast_sender();
     tx.subscribe()
@@ -1308,6 +1410,7 @@ pub async fn create_session_progress_stream(sink: StreamSink<ApiSessionProgress>
 }
 
 /// Subscribe to the real-time session progress stream.
+#[frb(ignore)]
 pub fn subscribe_session_progress_stream() -> broadcast::Receiver<ApiSessionProgress> {
     let tx = get_or_create_session_progress_broadcast_sender();
     tx.subscribe()
@@ -1410,6 +1513,7 @@ pub async fn create_connection_status_stream(sink: StreamSink<ApiConnectionStatu
 }
 
 /// Subscribe to the real-time connection status stream.
+#[frb(ignore)]
 pub fn subscribe_connection_status_stream() -> broadcast::Receiver<ApiConnectionStatus> {
     let tx = get_or_create_connection_status_broadcast_sender();
     tx.subscribe()
@@ -1464,6 +1568,44 @@ fn get_or_create_connection_status_broadcast_sender() -> broadcast::Sender<ApiCo
 pub fn emit_connection_status(status: ApiConnectionStatus) -> usize {
     let tx = get_or_create_connection_status_broadcast_sender();
     tx.send(status).unwrap_or_default()
+}
+
+/// Subscribe to the coaching cue stream.
+fn subscribe_coaching_cue_stream() -> broadcast::Receiver<ApiCue> {
+    let tx = get_or_create_coaching_cue_broadcast_sender();
+    tx.subscribe()
+}
+
+/// Get or create the global coaching cue broadcast sender.
+fn get_or_create_coaching_cue_broadcast_sender() -> broadcast::Sender<ApiCue> {
+    use std::sync::OnceLock;
+    static CUE_TX: OnceLock<broadcast::Sender<ApiCue>> = OnceLock::new();
+
+    CUE_TX
+        .get_or_init(|| {
+            let (tx, _rx) = broadcast::channel(COACHING_CUE_CHANNEL_CAPACITY);
+            tx
+        })
+        .clone()
+}
+
+/// Emit a coaching cue to all stream subscribers.
+///
+/// Called by the coaching rule engine when a cue should be delivered to the user.
+pub fn emit_coaching_cue(cue: ApiCue) -> usize {
+    let tx = get_or_create_coaching_cue_broadcast_sender();
+    tx.send(cue).unwrap_or_default()
+}
+
+/// Create a stream for receiving coaching cues.
+pub async fn create_coaching_cue_stream(sink: StreamSink<ApiCue>) -> Result<()> {
+    let mut rx = subscribe_coaching_cue_stream();
+    tokio::spawn(async move {
+        while let Ok(data) = rx.recv().await {
+            sink.add(data).ok();
+        }
+    });
+    Ok(())
 }
 
 /// Check if the connection status is Disconnected.
@@ -1541,6 +1683,12 @@ pub fn connection_status_to_string(status: &ApiConnectionStatus) -> String {
             format!("Connection failed: {}", reason)
         }
     }
+}
+
+/// Emit a coaching cue from the rule engine to all subscribers.
+#[frb(ignore)]
+pub fn emit_cue(cue: crate::coaching::Cue) -> usize {
+    emit_coaching_cue(ApiCue::from(cue))
 }
 
 // Global session repository

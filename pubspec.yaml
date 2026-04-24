@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
 
   # FFI bridge to Rust
-  flutter_rust_bridge: ^2.0.0
+  flutter_rust_bridge: 2.12.0
 
   # Background service for Android
   flutter_background_service: ^5.0.0
@@ -46,6 +46,9 @@ dependencies:
   # Text-to-speech for voice coaching
   flutter_tts: ^4.2.0
 
+  # Local notifications for coaching cues
+  flutter_local_notifications: ^18.0.0
+
   # CLI argument parsing
   args: ^2.5.0
 
@@ -67,6 +70,9 @@ dev_dependencies:
   # FFI bindings generator
   ffigen: ^14.0.0
 
+  # App icon generator
+  flutter_launcher_icons: ^0.14.1
+
 flutter:
   uses-material-design: true
 
@@ -74,3 +80,17 @@ flutter:
   assets:
     - assets/
     - assets/audio/
+    - assets/icon/
+
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: true

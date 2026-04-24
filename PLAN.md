@@ -62,9 +62,9 @@ file; the per-file tasks are finer-grained.
 - [x] 4.3 CLAUDE.md quickref entry + `brew install libimobiledevice` doc
 
 ### Phase 5 — Long-session coaching
-- [ ] 5.1 iOS background modes (`bluetooth-central`) + Android foreground service for BLE
-- [ ] 5.2 Robust reconnect loop in Rust (survive drops, throttle retries, battery-aware)
-- [ ] 5.3 Rule engine (target zone, inactivity timer, cue cadence, do-not-disturb window)
+- [x] 5.1 iOS background modes (`bluetooth-central`) + Android foreground service for BLE
+- [x] 5.2 Robust reconnect loop in Rust (survive drops, throttle retries, battery-aware)
+- [x] 5.3 Rule engine (target zone, inactivity timer, cue cadence, do-not-disturb window)
 - [ ] 5.4 Coaching cue FFI stream + delivery surfaces (in-app toast, local notification, optional TTS)
 - [ ] 5.5 Coaching screen UI (current cue, live HR vs target band, countdown)
 - [ ] 5.6 All-day soak test (8h+ on-device) — no disconnect regressions, battery <20% drain

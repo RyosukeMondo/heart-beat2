@@ -4,28 +4,17 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 /// A coaching directive — the output of the rule engine.
-///
-/// Each cue has a type, priority, and message. The delivery layer decides
-/// how to surface each cue (toast, notification, TTS, etc.) based on priority
-/// and the current do-not-disturb state.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Cue {
-    /// Unique identifier for this cue instance.
     pub id: uuid::Uuid,
-    /// Which rule triggered this cue.
     pub source: CueSource,
-    /// Short machine-readable label, e.g. `"raise_hr"`.
     pub label: String,
-    /// Human-readable message for the user.
     pub message: String,
-    /// Relative urgency — affects delivery path.
     pub priority: CuePriority,
-    /// When this cue was generated.
     pub generated_at: DateTime<Utc>,
 }
 
 impl Cue {
-    /// Create a new cue with a generated UUID and current timestamp.
     pub fn new(source: CueSource, label: impl Into<String>, message: impl Into<String>, priority: CuePriority) -> Self {
         Self {
             id: uuid::Uuid::new_v4(),
@@ -38,27 +27,18 @@ impl Cue {
     }
 }
 
-/// Priority level for a cue — used by the delivery layer to decide presentation.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Serialize, Deserialize)]
 pub enum CuePriority {
-    /// Low importance — informational display only.
     Low = 0,
-    /// Normal importance — toast / banner.
     Normal = 1,
-    /// High importance — local notification even when backgrounded.
     High = 2,
-    /// Critical — notification + optional TTS.
     Critical = 3,
 }
 
-/// Which rule emitted this cue.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CueSource {
-    /// [`TargetZoneRule`]
     TargetZone,
-    /// [`InactivityRule`]
     Inactivity,
-    /// [`OverworkRule`]
     Overwork,
 }
 

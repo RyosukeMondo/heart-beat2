@@ -8,6 +8,7 @@ import 'package:heart_beat/src/app.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
 import 'package:heart_beat/src/services/background_service.dart';
+import 'package:heart_beat/src/services/coaching_cue_service.dart';
 import 'package:heart_beat/src/services/log_service.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -77,6 +78,26 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('Failed to initialize background service: $e');
     // Continue anyway - background service only needed for Android/iOS
+  }
+
+  // Initialize coaching cue service (FFI stream + delivery surfaces)
+  try {
+    await CoachingCueService.instance.initialize();
+    await CoachingCueService.instance.initializeTts();
+    // Initialize coaching engine in Rust before connecting
+    await initCoachingEngine();
+    // Subscribe to coaching cue stream from Rust rule engine
+    CoachingCueService.instance.createCueStream().listen(
+      (cue) => CoachingCueService.instance.onCue(cue),
+      onError: (e) => debugPrint('[CoachingCueService] stream error: $e'),
+      cancelOnError: false,
+    );
+    if (kDebugMode) {
+      debugPrint('[heart_beat] CoachingCueService stream subscribed');
+    }
+  } catch (e) {
+    debugPrint('Failed to initialize coaching cue service: $e');
+    // Continue anyway - coaching is non-critical
   }
 
   // Run the app
