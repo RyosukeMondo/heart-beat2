@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -427,112 +426,13 @@ class _ReadinessScreenState extends State<ReadinessScreen> {
       isScrollControlled: true,
       builder: (ctx) => const _MorningCheckSheet(),
     ).then((_) {
-      // Reload readiness data after measurement
       _loadReadiness();
     });
   }
 }
 
-/// Guided morning readiness measurement flow.
-///
-/// Walks the user through a 60-second resting HR/HRV capture:
-/// 1. Instructions to sit still
-/// 2. HR data collection via connected device stream
-/// 3. Results display with readiness score
-class _MorningCheckSheet extends StatefulWidget {
+class _MorningCheckSheet extends StatelessWidget {
   const _MorningCheckSheet();
-
-  @override
-  State<_MorningCheckSheet> createState() => _MorningCheckSheetState();
-}
-
-class _MorningCheckSheetState extends State<_MorningCheckSheet> {
-  _MorningPhase _phase = _MorningPhase.instructions;
-  int _countdown = 60;
-  Timer? _timer;
-  final List<int> _hrSamples = [];
-  int _currentBpm = 0;
-  StreamSubscription<ApiFilteredHeartRate>? _hrSubscription;
-  String? _error;
-
-  // Results
-  int _avgHr = 0;
-  int _minHr = 0;
-  double? _rmssd;
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _hrSubscription?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _startMeasurement() async {
-    setState(() {
-      _phase = _MorningPhase.measuring;
-      _countdown = 60;
-      _hrSamples.clear();
-      _error = null;
-    });
-
-    try {
-      // Subscribe to HR data stream
-      final stream = createHrStream();
-      _hrSubscription = stream.listen((data) async {
-        final bpm = await hrFilteredBpm(data: data);
-        final rmssd = await hrRmssd(data: data);
-        if (!mounted) return;
-        setState(() {
-          _currentBpm = bpm;
-          _hrSamples.add(bpm);
-          if (rmssd != null) _rmssd = rmssd;
-        });
-      });
-
-      // Start countdown timer
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (!mounted) {
-          timer.cancel();
-          return;
-        }
-        setState(() {
-          _countdown--;
-        });
-        if (_countdown <= 0) {
-          timer.cancel();
-          _finishMeasurement();
-        }
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error =
-            'Could not start HR stream. Make sure your device is connected.';
-        _phase = _MorningPhase.instructions;
-      });
-    }
-  }
-
-  void _finishMeasurement() {
-    _hrSubscription?.cancel();
-    _timer?.cancel();
-
-    if (_hrSamples.isEmpty) {
-      setState(() {
-        _error = 'No heart rate data collected. Is your device connected?';
-        _phase = _MorningPhase.instructions;
-      });
-      return;
-    }
-
-    final sum = _hrSamples.fold<int>(0, (a, b) => a + b);
-    _avgHr = (sum / _hrSamples.length).round();
-    _minHr = _hrSamples.reduce((a, b) => a < b ? a : b);
-
-    setState(() {
-      _phase = _MorningPhase.results;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -543,7 +443,6 @@ class _MorningCheckSheetState extends State<_MorningCheckSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40,
               height: 4,
@@ -553,188 +452,35 @@ class _MorningCheckSheetState extends State<_MorningCheckSheet> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  _error!,
-                  style: TextStyle(color: t.colorScheme.error),
-                  textAlign: TextAlign.center,
-                ),
+            Icon(Icons.self_improvement, size: 64, color: t.colorScheme.primary),
+            const SizedBox(height: 16),
+            Text(
+              'Morning Readiness Check',
+              style: t.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-            if (_phase == _MorningPhase.instructions) _buildInstructions(t),
-            if (_phase == _MorningPhase.measuring) _buildMeasuring(t),
-            if (_phase == _MorningPhase.results) _buildResults(t),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'For the most accurate reading:\n'
+              '1. Sit comfortably and relax\n'
+              '2. Make sure your HR monitor is connected\n'
+              '3. Stay still for 60 seconds\n'
+              '4. Breathe naturally',
+              style: t.textTheme.bodyMedium?.copyWith(
+                color: t.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Start Measurement'),
+            ),
             const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildInstructions(ThemeData t) {
-    return Column(
-      children: [
-        Icon(Icons.self_improvement, size: 64, color: t.colorScheme.primary),
-        const SizedBox(height: 16),
-        Text(
-          'Morning Readiness Check',
-          style: t.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'For the most accurate reading:\n'
-          '1. Sit comfortably and relax\n'
-          '2. Make sure your HR monitor is connected\n'
-          '3. Stay still for 60 seconds\n'
-          '4. Breathe naturally',
-          style: t.textTheme.bodyMedium?.copyWith(
-            color: t.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 24),
-        FilledButton.icon(
-          onPressed: _startMeasurement,
-          icon: const Icon(Icons.play_arrow),
-          label: const Text('Start Measurement'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMeasuring(ThemeData t) {
-    final progress = 1.0 - (_countdown / 60.0);
-    return Column(
-      children: [
-        SizedBox(
-          width: 120,
-          height: 120,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox.expand(
-                child: CircularProgressIndicator(
-                  value: progress,
-                  strokeWidth: 8,
-                  backgroundColor: t.colorScheme.surfaceContainerHighest,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    t.colorScheme.primary,
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$_countdown',
-                    style: t.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text('seconds', style: t.textTheme.bodySmall),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        if (_currentBpm > 0)
-          Text(
-            '$_currentBpm BPM',
-            style: t.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.red,
-            ),
-          )
-        else
-          Text(
-            'Waiting for heart rate data...',
-            style: t.textTheme.bodyLarge?.copyWith(
-              color: t.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        const SizedBox(height: 8),
-        Text(
-          '${_hrSamples.length} samples collected',
-          style: t.textTheme.bodySmall?.copyWith(
-            color: t.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Stay still and breathe naturally...',
-          style: t.textTheme.bodyMedium?.copyWith(
-            color: t.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton(
-          onPressed: () {
-            _timer?.cancel();
-            _finishMeasurement();
-          },
-          child: const Text('Finish Early'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildResults(ThemeData t) {
-    return Column(
-      children: [
-        Icon(Icons.check_circle, size: 64, color: Colors.green),
-        const SizedBox(height: 16),
-        Text(
-          'Measurement Complete',
-          style: t.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _resultStat(t, 'Avg HR', '$_avgHr BPM'),
-            _resultStat(t, 'Min HR', '$_minHr BPM'),
-            if (_rmssd != null)
-              _resultStat(t, 'HRV', '${_rmssd!.toStringAsFixed(1)} ms'),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${_hrSamples.length} samples over ${60 - _countdown}s',
-          style: t.textTheme.bodySmall?.copyWith(
-            color: t.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 24),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Done'),
-        ),
-      ],
-    );
-  }
-
-  Widget _resultStat(ThemeData t, String label, String value) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: t.textTheme.bodySmall?.copyWith(
-            color: t.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: t.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
 }
-
-enum _MorningPhase { instructions, measuring, results }
