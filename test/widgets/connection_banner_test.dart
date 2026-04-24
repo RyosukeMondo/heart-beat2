@@ -10,6 +10,10 @@ import '../helpers/test_helpers.dart';
 ///
 /// Since ApiConnectionStatus is an opaque Rust type, we create a mock
 /// that can be used in tests without requiring Rust FFI.
+///
+/// Note: The FFI functions (connectionStatusIsReconnecting, etc.) call into
+/// Rust and do not use the Dart mock's properties. This mock is only useful
+/// for testing widget tree structure and build behavior, not actual rendering.
 class MockConnectionStatus implements ApiConnectionStatus {
   final ConnectionStatusType type;
   final int? attempt;
@@ -42,94 +46,17 @@ enum ConnectionStatusType {
   reconnectFailed,
 }
 
-/// Helper function to check if mock status is reconnecting.
-Future<bool> mockConnectionStatusIsReconnecting({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.type == ConnectionStatusType.reconnecting;
-  }
-  return false;
-}
-
-/// Helper function to get reconnection attempt from mock status.
-Future<int> mockConnectionStatusAttempt({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.attempt ?? 0;
-  }
-  return 0;
-}
-
-/// Helper function to get max reconnection attempts from mock status.
-Future<int> mockConnectionStatusMaxAttempts({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.maxAttempts ?? 3;
-  }
-  return 3;
-}
-
-/// Helper function to check if mock status is reconnect failed.
-Future<bool> mockConnectionStatusIsReconnectFailed({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.type == ConnectionStatusType.reconnectFailed;
-  }
-  return false;
-}
-
-/// Helper function to get failure reason from mock status.
-Future<String?> mockConnectionStatusFailureReason({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.failureReason;
-  }
-  return null;
-}
-
-/// Helper function to check if mock status is disconnected.
-Future<bool> mockConnectionStatusIsDisconnected({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.type == ConnectionStatusType.disconnected;
-  }
-  return false;
-}
-
-/// Helper function to check if mock status is connected.
-Future<bool> mockConnectionStatusIsConnected({
-  required ApiConnectionStatus status,
-}) async {
-  if (status is MockConnectionStatus) {
-    return status.type == ConnectionStatusType.connected;
-  }
-  return false;
-}
-
 /// Widget tests for ConnectionBanner component.
 ///
 /// Tests connection status banner display including:
-/// - Reconnecting state with progress indicator and attempt count
-/// - Disconnected state with appropriate icon and message
-/// - ReconnectFailed state with error message and retry button
-/// - Connected/Connecting states (banner hidden)
-/// - Color and styling for different states
+/// - StreamBuilder structure
+/// - Widget tree composition
+/// - Build behavior with various stream states
 ///
-/// These tests verify correct rendering without requiring Rust FFI or BLE device.
+/// Note: Full rendering tests for different connection states require
+/// Rust FFI mocking which is not available in unit tests. Visual
+/// rendering is covered by golden tests instead.
 void main() {
-  // Mock the Rust FFI functions used by ConnectionBanner
-  setUp(() {
-    // Note: In a real scenario, we would need to properly mock the Rust FFI functions.
-    // For now, we'll work around this limitation by testing the banner's response to
-    // mock connection status changes through the statusStream parameter.
-  });
-
   group('ConnectionBanner Widget Tests', () {
     testWidgets('hidden when no connection status data available', (
       WidgetTester tester,
@@ -144,180 +71,6 @@ void main() {
       // Assert - should render nothing (SizedBox.shrink)
       expect(find.byType(MaterialBanner), findsNothing);
       expect(find.byType(ConnectionBanner), findsOneWidget);
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('hidden when status is connected', (WidgetTester tester) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit connected status
-      final connectedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.connected,
-      );
-      controller.add(connectedStatus);
-      await tester.pump();
-
-      // Note: The widget uses real FFI functions which we can't mock easily.
-      // In a production test environment, we would need to properly mock
-      // connectionStatusIsReconnecting, connectionStatusIsReconnectFailed, etc.
-      // For now, this test documents the expected behavior.
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('shows reconnecting banner with progress indicator', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit reconnecting status
-      final reconnectingStatus = MockConnectionStatus(
-        type: ConnectionStatusType.reconnecting,
-        attempt: 2,
-        maxAttempts: 5,
-      );
-      controller.add(reconnectingStatus);
-      await tester.pump();
-
-      // Note: Since we can't easily mock the Rust FFI functions in this test,
-      // the actual banner rendering depends on the real FFI implementation.
-      // This test documents the expected behavior when proper mocking is in place.
-
-      // Expected behavior (when FFI mocking is available):
-      // - MaterialBanner should be visible
-      // - Should show "Reconnecting... (attempt 2/5)"
-      // - Should show CircularProgressIndicator
-      // - Background should be orange.shade100
-      // - Text should be orange.shade900
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('shows disconnected banner with bluetooth disabled icon', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit disconnected status
-      final disconnectedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.disconnected,
-      );
-      controller.add(disconnectedStatus);
-      await tester.pump();
-
-      // Expected behavior (when FFI mocking is available):
-      // - MaterialBanner should be visible
-      // - Should show "Device disconnected"
-      // - Should show Icons.bluetooth_disabled icon
-      // - Background should be grey.shade200
-      // - Text should be grey.shade900
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('shows reconnect failed banner with error and retry button', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit reconnect failed status
-      final failedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.reconnectFailed,
-        failureReason: 'Device out of range',
-      );
-      controller.add(failedStatus);
-      await tester.pump();
-
-      // Expected behavior (when FFI mocking is available):
-      // - MaterialBanner should be visible
-      // - Should show "Connection lost: Device out of range"
-      // - Should show Icons.warning icon
-      // - Should show "Retry" button
-      // - Background should be red.shade100
-      // - Text should be red.shade900
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('reconnect failed shows unknown error when reason is null', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit reconnect failed status without reason
-      final failedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.reconnectFailed,
-        failureReason: null,
-      );
-      controller.add(failedStatus);
-      await tester.pump();
-
-      // Expected behavior (when FFI mocking is available):
-      // - Should show "Connection lost: Unknown error"
-
-      // Cleanup
-      await controller.close();
-    });
-
-    testWidgets('updates banner when connection status changes', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit multiple status changes
-      final disconnectedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.disconnected,
-      );
-      controller.add(disconnectedStatus);
-      await tester.pump();
-
-      final reconnectingStatus = MockConnectionStatus(
-        type: ConnectionStatusType.reconnecting,
-        attempt: 1,
-        maxAttempts: 3,
-      );
-      controller.add(reconnectingStatus);
-      await tester.pump();
-
-      final connectedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.connected,
-      );
-      controller.add(connectedStatus);
-      await tester.pump();
-
-      // Expected behavior (when FFI mocking is available):
-      // - Banner should update as statuses change
-      // - Should hide when connected status is received
 
       // Cleanup
       await controller.close();
@@ -358,42 +111,6 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('uses real stream when statusStream is null', (
-      WidgetTester tester,
-    ) async {
-      // Note: This test is skipped because ConnectionBanner with null statusStream
-      // tries to use createConnectionStatusStream() which requires Rust FFI initialization.
-      // In production, the widget works correctly when RustLib.init() has been called.
-      // For testing purposes, we always provide a mock statusStream parameter.
-    }, skip: true);
-
-    testWidgets('reconnecting banner shows increasing attempt count', (
-      WidgetTester tester,
-    ) async {
-      // Arrange
-      final controller = StreamController<ApiConnectionStatus>();
-      final widget = ConnectionBanner(statusStream: controller.stream);
-
-      await tester.pumpWidget(testWrapper(widget));
-
-      // Act - emit multiple reconnecting statuses with increasing attempts
-      for (int attempt = 1; attempt <= 3; attempt++) {
-        final status = MockConnectionStatus(
-          type: ConnectionStatusType.reconnecting,
-          attempt: attempt,
-          maxAttempts: 3,
-        );
-        controller.add(status);
-        await tester.pump();
-
-        // Expected behavior (when FFI mocking is available):
-        // - Should show "Reconnecting... (attempt $attempt/3)"
-      }
-
-      // Cleanup
-      await controller.close();
-    });
-
     testWidgets('handles rapid status changes without errors', (
       WidgetTester tester,
     ) async {
@@ -423,7 +140,7 @@ void main() {
       await controller.close();
     });
 
-    testWidgets('retry button exists in failed state', (
+    testWidgets('disposed correctly when stream completes', (
       WidgetTester tester,
     ) async {
       // Arrange
@@ -432,21 +149,21 @@ void main() {
 
       await tester.pumpWidget(testWrapper(widget));
 
-      // Act
-      final failedStatus = MockConnectionStatus(
-        type: ConnectionStatusType.reconnectFailed,
-        failureReason: 'Timeout',
-      );
-      controller.add(failedStatus);
-      await tester.pump();
-
-      // Expected behavior (when FFI mocking is available):
-      // - TextButton with "Retry" text should be visible
-      // - Button should have red.shade900 text color
-
-      // Cleanup
+      // Act - complete the stream
       await controller.close();
+
+      // Assert - widget should still exist in tree (StatelessWidget)
+      expect(find.byType(ConnectionBanner), findsOneWidget);
     });
+
+    testWidgets('uses real stream when statusStream is null', (
+      WidgetTester tester,
+    ) async {
+      // Note: This test is skipped because ConnectionBanner with null statusStream
+      // tries to use createConnectionStatusStream() which requires Rust FFI initialization.
+      // In production, the widget works correctly when RustLib.init() has been called.
+      // For testing purposes, we always provide a mock statusStream parameter.
+    }, skip: true);
   });
 
   group('ConnectionBanner Integration Scenarios', () {
@@ -530,6 +247,32 @@ void main() {
         await tester.pump();
 
         // Assert - flow completes without errors
+        expect(find.byType(ConnectionBanner), findsOneWidget);
+
+        // Cleanup
+        await controller.close();
+      },
+    );
+
+    testWidgets(
+      'handles stream errors gracefully',
+      (WidgetTester tester) async {
+        // Arrange
+        final controller = StreamController<ApiConnectionStatus>();
+        final widget = ConnectionBanner(statusStream: controller.stream);
+
+        await tester.pumpWidget(testWrapper(widget));
+
+        // Act - add data then error
+        controller.add(
+          MockConnectionStatus(type: ConnectionStatusType.connected),
+        );
+        await tester.pump();
+
+        controller.addError(Exception('Stream error'));
+        await tester.pump();
+
+        // Assert - widget should still be present
         expect(find.byType(ConnectionBanner), findsOneWidget);
 
         // Cleanup
