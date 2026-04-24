@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:path_provider/path_provider.dart';
 import '../bridge/api_generated.dart/api.dart';
 import '../services/share_service.dart';
+import '../widgets/session_export_menu.dart';
 
 /// Detail screen showing comprehensive information about a completed training session
 class SessionDetailScreen extends StatefulWidget {
@@ -639,71 +640,11 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
         title: const Text('Session Details'),
         actions: [
           if (!_isLoading && _error == null && _planName != null)
-            _isExporting
-                ? const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: _handleExportAction,
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'csv',
-                        child: Row(
-                          children: [
-                            Icon(Icons.table_chart),
-                            SizedBox(width: 8),
-                            Text('Export as CSV'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'json',
-                        child: Row(
-                          children: [
-                            Icon(Icons.code),
-                            SizedBox(width: 8),
-                            Text('Export as JSON'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'tcx',
-                        child: Row(
-                          children: [
-                            Icon(Icons.directions_run),
-                            SizedBox(width: 8),
-                            Text('Export as TCX'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'gpx',
-                        child: Row(
-                          children: [
-                            Icon(Icons.map),
-                            SizedBox(width: 8),
-                            Text('Export as GPX'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'summary',
-                        child: Row(
-                          children: [
-                            Icon(Icons.share),
-                            SizedBox(width: 8),
-                            Text('Share Summary'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+            SessionExportMenu(
+              sessionId: _sessionId!,
+              isExporting: _isExporting,
+              onExport: _handleExportAction,
+            ),
         ],
       ),
       body: _isLoading
