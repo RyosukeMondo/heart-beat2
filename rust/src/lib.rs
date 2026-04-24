@@ -34,6 +34,7 @@ mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be
 
 pub mod adapters;
 pub mod api;
+pub mod debug_http;
 pub mod domain;
 pub mod logging;
 pub mod ports;
