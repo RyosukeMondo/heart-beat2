@@ -169,6 +169,17 @@ pub struct FilteredHeartRate {
     ///
     /// `None` if timestamp capture was not available or not enabled.
     pub receive_timestamp_micros: Option<u64>,
+
+    /// Whether this measurement is stale due to connection loss.
+    ///
+    /// When `true`, the HR data may be outdated because the BLE connection
+    /// was lost and reconnection is in progress. Downstream consumers (like
+    /// the rule engine) should not act on stale data but may display it
+    /// with a "reconnecting" indicator.
+    ///
+    /// Defaults to `false` (data is fresh).
+    #[serde(default)]
+    pub stale: bool,
 }
 
 /// Parse a BLE Heart Rate Measurement characteristic value.

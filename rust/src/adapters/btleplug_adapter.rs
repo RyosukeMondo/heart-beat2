@@ -346,18 +346,24 @@ impl BtleplugAdapter {
         status_tx: mpsc::Sender<ConnectionStatus>,
         cancel_token: CancellationToken,
     ) -> Result<()> {
+        let unlimited = policy.is_unlimited();
         tracing::info!(
-            "Starting reconnection to device {} with policy: max_attempts={}",
+            "Starting reconnection to device {} with policy: max_attempts={} ({})",
             device_id,
-            policy.max_attempts
+            policy.max_attempts,
+            if unlimited { "unlimited" } else { "limited" }
         );
 
-        for attempt in 1..=policy.max_attempts {
+        let mut attempt: u8 = 0;
+
+        loop {
             // Check if cancellation was requested
             if cancel_token.is_cancelled() {
                 tracing::info!("Reconnection cancelled");
                 return Err(anyhow!("Reconnection cancelled"));
             }
+
+            attempt += 1;
 
             // Emit reconnecting status
             let status = ConnectionStatus::Reconnecting {
@@ -369,12 +375,20 @@ impl BtleplugAdapter {
                 tracing::warn!("Failed to send reconnecting status: {}", e);
             }
 
-            tracing::info!(
-                "Reconnection attempt {}/{} for device {}",
-                attempt,
-                policy.max_attempts,
-                device_id
-            );
+            if unlimited {
+                tracing::info!(
+                    "Reconnection attempt {} (unlimited) for device {}",
+                    attempt,
+                    device_id
+                );
+            } else {
+                tracing::info!(
+                    "Reconnection attempt {}/{} for device {}",
+                    attempt,
+                    policy.max_attempts,
+                    device_id
+                );
+            }
 
             // Calculate and apply delay before attempting connection
             let delay = policy.calculate_delay(attempt);
@@ -393,9 +407,8 @@ impl BtleplugAdapter {
             match self.connect(device_id).await {
                 Ok(()) => {
                     tracing::info!(
-                        "Reconnection successful on attempt {}/{}",
-                        attempt,
-                        policy.max_attempts
+                        "Reconnection successful on attempt {}",
+                        attempt
                     );
 
                     // Emit connected status
@@ -411,14 +424,14 @@ impl BtleplugAdapter {
                 }
                 Err(e) => {
                     tracing::warn!(
-                        "Reconnection attempt {}/{} failed: {}",
+                        "Reconnection attempt {} failed: {}",
                         attempt,
-                        policy.max_attempts,
                         e
                     );
 
-                    // If this was the last attempt, emit failure status
-                    if attempt >= policy.max_attempts {
+                    // For unlimited attempts, we never give up due to max attempts
+                    // For limited attempts, check if we've exhausted retries
+                    if !unlimited && attempt >= policy.max_attempts {
                         let status = ConnectionStatus::ReconnectFailed {
                             reason: format!("Failed after {} attempts: {}", policy.max_attempts, e),
                         };
@@ -433,15 +446,10 @@ impl BtleplugAdapter {
                             e
                         ));
                     }
+                    // For unlimited, we continue looping (with exponential backoff capping)
                 }
             }
         }
-
-        // This shouldn't be reached due to the if statement above, but just in case
-        Err(anyhow!(
-            "Reconnection failed after {} attempts",
-            policy.max_attempts
-        ))
     }
 }
 
@@ -969,8 +977,9 @@ mod tests {
         let policy = ReconnectionPolicy {
             max_attempts: 5,
             initial_delay: std::time::Duration::from_millis(100),
-            max_delay: std::time::Duration::from_millis(1000),
             backoff_multiplier: 2.0,
+            max_delay: std::time::Duration::from_millis(1000),
+            jitter_factor: 0.0,
         };
 
         let (status_tx, _status_rx) = mpsc::channel(32);
@@ -1005,8 +1014,9 @@ mod tests {
         let policy = ReconnectionPolicy {
             max_attempts: 2,
             initial_delay: std::time::Duration::from_millis(10), // Fast for testing
-            max_delay: std::time::Duration::from_millis(50),
             backoff_multiplier: 1.5,
+            max_delay: std::time::Duration::from_millis(50),
+            jitter_factor: 0.0,
         };
 
         let (status_tx, mut status_rx) = mpsc::channel(32);

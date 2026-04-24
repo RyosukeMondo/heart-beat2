@@ -1113,6 +1113,7 @@ mod tests {
             battery_level: Some(85),
             timestamp: 0,
             receive_timestamp_micros: None,
+            stale: false,
         };
 
         // Send HR data continuously
@@ -1792,6 +1793,7 @@ mod tests {
                 battery_level: Some(85),
                 timestamp: 0,
                 receive_timestamp_micros: None,
+                stale: false,
             };
             hr_tx.send(hr_data).unwrap();
             sleep(Duration::from_millis(100)).await;

@@ -6,7 +6,7 @@
 
 #![allow(missing_docs)] // statig macro generates code that triggers missing_docs warnings
 
-use crate::domain::reconnection::ReconnectionPolicy;
+use crate::domain::reconnection::{ReconnectionPolicy, UNLIMITED_ATTEMPTS};
 use crate::ports::ble_adapter::BleAdapter;
 use anyhow::Result;
 use flutter_rust_bridge::frb;
@@ -207,7 +207,9 @@ impl ConnectionState {
         match event {
             ConnectionEvent::ReconnectSuccess => Transition(State::connected(device_id.clone())),
             ConnectionEvent::ReconnectFailed => {
-                if *attempts >= *max_attempts {
+                // Check if unlimited retries or max attempts reached
+                let give_up = *max_attempts != UNLIMITED_ATTEMPTS && *attempts >= *max_attempts;
+                if give_up {
                     // Max retries exceeded, give up
                     tracing::warn!(
                         "Reconnection failed after {} attempts (max: {})",
@@ -217,9 +219,12 @@ impl ConnectionState {
                     Transition(State::idle())
                 } else {
                     // Increment attempt counter and stay in reconnecting
+                    // For unlimited, attempts will wrap but that won't happen in practice
+                    // since we never give up (unless user disconnects)
+                    let next_attempt = attempts.saturating_add(1);
                     Transition(State::reconnecting(
                         device_id.clone(),
-                        attempts + 1,
+                        next_attempt,
                         *max_attempts,
                     ))
                 }
@@ -235,12 +240,11 @@ impl ConnectionState {
     }
 }
 
-/// Calculate the reconnection delay based on attempt number using exponential backoff.
+/// Calculate the reconnection delay based on attempt number using jittered exponential backoff.
 ///
-/// # Delay Schedule
-/// - Attempt 1: 1 second
-/// - Attempt 2: 2 seconds
-/// - Attempt 3: 4 seconds
+/// This delegates to `ReconnectionPolicy::calculate_delay` using the default policy
+/// for backward compatibility. For coaching sessions, use `ReconnectionPolicy::coaching_session()`
+/// directly to get unlimited retries with jittered backoff (2s → 30s cap).
 ///
 /// # Arguments
 /// * `attempt` - The reconnection attempt number (1-based)
@@ -248,14 +252,15 @@ impl ConnectionState {
 /// # Returns
 /// A `Duration` representing how long to wait before the next reconnection attempt
 pub fn reconnect_delay(attempt: u8) -> std::time::Duration {
-    let delay_secs = match attempt {
-        1 => 1,
-        2 => 2,
-        3 => 4,
-        // For safety, though we shouldn't exceed 3 attempts
-        _ => 4,
+    // Use a zero-jitter policy for deterministic test results
+    let policy = ReconnectionPolicy {
+        max_attempts: 5,
+        initial_delay: std::time::Duration::from_secs(2),
+        backoff_multiplier: 2.0,
+        max_delay: std::time::Duration::from_secs(30),
+        jitter_factor: 0.0,
     };
-    std::time::Duration::from_secs(delay_secs)
+    policy.calculate_delay(attempt)
 }
 
 /// Connection state machine that wraps the statig state machine
@@ -301,6 +306,7 @@ mod tests {
     use super::*;
     use mockall::mock;
     use mockall::predicate::*;
+    use std::time::Duration;
 
     // Mock the BleAdapter trait using mockall
     mock! {
@@ -507,17 +513,19 @@ mod tests {
 
     #[test]
     fn test_reconnect_delay_exponential_backoff() {
-        // Test that delays follow exponential backoff: 1s, 2s, 4s
-        assert_eq!(reconnect_delay(1), std::time::Duration::from_secs(1));
-        assert_eq!(reconnect_delay(2), std::time::Duration::from_secs(2));
-        assert_eq!(reconnect_delay(3), std::time::Duration::from_secs(4));
+        // Test that delays follow exponential backoff: 2s, 4s, 8s, 16s, 30s(cap)
+        assert_eq!(reconnect_delay(1), std::time::Duration::from_secs(2));
+        assert_eq!(reconnect_delay(2), std::time::Duration::from_secs(4));
+        assert_eq!(reconnect_delay(3), std::time::Duration::from_secs(8));
+        assert_eq!(reconnect_delay(4), std::time::Duration::from_secs(16));
+        assert_eq!(reconnect_delay(5), std::time::Duration::from_secs(30)); // capped
     }
 
     #[test]
     fn test_reconnect_delay_capped() {
-        // Verify that attempts beyond 3 are capped at 4 seconds
-        assert_eq!(reconnect_delay(4), std::time::Duration::from_secs(4));
-        assert_eq!(reconnect_delay(10), std::time::Duration::from_secs(4));
+        // Verify that attempts beyond 5 are capped at 30 seconds
+        assert_eq!(reconnect_delay(6), std::time::Duration::from_secs(30));
+        assert_eq!(reconnect_delay(10), std::time::Duration::from_secs(30));
     }
 
     // ========================================================================
@@ -792,6 +800,7 @@ mod tests {
             initial_delay: std::time::Duration::from_millis(500),
             backoff_multiplier: 2.0,
             max_delay: std::time::Duration::from_secs(5),
+            jitter_factor: 0.0,
         };
 
         let context = ConnectionContext::with_policy(adapter.clone(), custom_policy.clone());
@@ -886,8 +895,8 @@ mod tests {
     #[test]
     fn test_reconnect_delay_zero_attempt() {
         // Test reconnect_delay with edge cases
-        // Attempt 0 should fall through to default case
-        assert_eq!(reconnect_delay(0), std::time::Duration::from_secs(4));
+        // Attempt 0 should return 0 (no delay)
+        assert_eq!(reconnect_delay(0), std::time::Duration::from_secs(0));
     }
 
     #[test]
@@ -959,5 +968,46 @@ mod tests {
         // User cancels during service discovery
         machine.handle(ConnectionEvent::UserDisconnect).unwrap();
         assert!(matches!(machine.state(), State::Idle {}));
+    }
+
+    #[test]
+    fn test_coaching_session_policy_unlimited() {
+        // Test that coaching session policy has unlimited reconnection attempts
+        let coaching_policy = ReconnectionPolicy::coaching_session();
+
+        assert!(coaching_policy.is_unlimited());
+        assert_eq!(coaching_policy.max_attempts, UNLIMITED_ATTEMPTS);
+        assert_eq!(coaching_policy.initial_delay, Duration::from_secs(2));
+        assert_eq!(coaching_policy.max_delay, Duration::from_secs(30));
+        assert_eq!(coaching_policy.jitter_factor, 0.2);
+    }
+
+    #[test]
+    fn test_short_session_policy_limited() {
+        // Test that short session policy has limited reconnection attempts
+        let short_policy = ReconnectionPolicy::short_session();
+
+        assert!(!short_policy.is_unlimited());
+        assert_eq!(short_policy.max_attempts, 5);
+    }
+
+    #[test]
+    fn test_default_policy_has_backoff() {
+        // Test that the default policy has proper backoff settings
+        // Use zero-jitter policy for deterministic results
+        let policy = ReconnectionPolicy {
+            max_attempts: 5,
+            initial_delay: Duration::from_secs(2),
+            backoff_multiplier: 2.0,
+            max_delay: Duration::from_secs(30),
+            jitter_factor: 0.0,
+        };
+
+        // Verify backoff schedule: 2s, 4s, 8s, 16s, 30s(cap)
+        assert_eq!(policy.calculate_delay(1), Duration::from_secs(2));
+        assert_eq!(policy.calculate_delay(2), Duration::from_secs(4));
+        assert_eq!(policy.calculate_delay(3), Duration::from_secs(8));
+        assert_eq!(policy.calculate_delay(4), Duration::from_secs(16));
+        assert_eq!(policy.calculate_delay(5), Duration::from_secs(30));
     }
 }

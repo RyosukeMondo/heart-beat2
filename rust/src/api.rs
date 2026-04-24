@@ -829,6 +829,7 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 battery_level: None, // TODO: Read battery periodically
                                 timestamp,
                                 receive_timestamp_micros,
+                                stale: false,
                             };
 
                             let receivers = emit_hr_data(filtered_data);
@@ -1015,6 +1016,7 @@ pub async fn start_mock_mode() -> Result<()> {
                     battery_level: Some(battery_level),
                     timestamp,
                     receive_timestamp_micros: None,
+                    stale: false,
                 });
             }
         }
@@ -3201,6 +3203,7 @@ mod tests {
                 .unwrap()
                 .as_millis() as u64,
             receive_timestamp_micros: None,
+            stale: false,
         }
     }
 
