@@ -5,6 +5,12 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 /// Implements Android Foreground Service to keep app alive when screen locked.
 @pragma('vm:entry-point')
 class BackgroundService {
+  BackgroundService._();
+
+  static final BackgroundService _instance = BackgroundService._();
+
+  static BackgroundService get instance => _instance;
+
   static const String _channelId = 'heart_beat_channel';
   static const int _notificationId = 888;
 

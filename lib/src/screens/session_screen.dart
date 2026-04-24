@@ -26,7 +26,6 @@ class _SessionScreenState extends State<SessionScreen> {
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
-  final BackgroundService _backgroundService = BackgroundService();
   bool _isServiceRunning = false;
   final ProfileService _profileService = ProfileService.instance;
   bool _hasInitialized = false;
@@ -98,7 +97,7 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _startBackgroundService() async {
-    final started = await _backgroundService.startService();
+    final started = await BackgroundService.instance.startService();
     if (started && mounted) {
       setState(() {
         _isServiceRunning = true;
@@ -136,7 +135,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
       // Stop background service
       if (_isServiceRunning) {
-        await _backgroundService.stopService();
+        await BackgroundService.instance.stopService();
       }
 
       // Navigate back to home
@@ -160,7 +159,7 @@ class _SessionScreenState extends State<SessionScreen> {
   void dispose() {
     // Stop background service when leaving session
     if (_isServiceRunning) {
-      _backgroundService.stopService();
+      BackgroundService.instance.stopService();
     }
     // Clean up battery subscription
     _batterySubscription?.cancel();
@@ -305,7 +304,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
         // Update background service notification with current BPM and zone
         if (_isServiceRunning) {
-          _backgroundService.updateBpm(bpm, zone: zone.name);
+          BackgroundService.instance.updateBpm(bpm, zone: zone.name);
         }
 
         return Column(
