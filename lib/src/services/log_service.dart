@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:io' show Directory, File, FileMode;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import '../bridge/api_generated.dart/api.dart';
 
@@ -44,6 +45,13 @@ class LogService {
   /// Rolling file writer for Dart logs.
   _DartLogWriter? _dartLogWriter;
 
+  /// Rolling file writer for native iOS logs.
+  _NativeIosLogWriter? _nativeIosLogWriter;
+
+  /// MethodChannel for native iOS log bridge.
+  static const MethodChannel _nativeIosChannel =
+      MethodChannel('heart_beat/native_log');
+
   /// Whether the service has been initialized.
   bool _initialized = false;
 
@@ -63,10 +71,12 @@ class LogService {
     try {
       final logDir = await _getLogDirectory();
       _dartLogWriter = _DartLogWriter(logDir.path);
+      _nativeIosLogWriter = _NativeIosLogWriter(logDir.path);
       await _dartLogWriter!.sweepOldFiles();
 
       _installDebugPrintHook();
       _installErrorHooks();
+      _installNativeIosLogBridge();
     } catch (e) {
       debugPrint('LogService initialization failed: $e');
     }
@@ -172,6 +182,19 @@ class LogService {
     _log('ERROR', 'dart', message);
   }
 
+  /// Install the MethodChannel handler for native iOS log bridge.
+  void _installNativeIosLogBridge() {
+    _nativeIosChannel.setMethodCallHandler((call) async {
+      if (call.method == 'onNativeLog') {
+        final line = call.arguments as String?;
+        if (line != null && line.isNotEmpty) {
+          _nativeIosLogWriter?.append(line);
+        }
+      }
+      return null;
+    });
+  }
+
   /// Get a broadcast stream of log messages.
   /// New listeners will not receive historical logs.
   Stream<LogMessage> get stream => _controller.stream;
@@ -200,7 +223,6 @@ class LogService {
 }
 
 /// Rolling file writer for Dart log entries.
-/// Uses a separate file per day with append mode for crash-safety.
 class _DartLogWriter {
   _DartLogWriter(this._logDirPath);
 
@@ -252,6 +274,33 @@ class _DartLogWriter {
       }
     } catch (_) {
       // Best-effort cleanup
+    }
+  }
+}
+
+/// Rolling file writer for native iOS log entries.
+class _NativeIosLogWriter {
+  _NativeIosLogWriter(this._logDirPath);
+
+  final String _logDirPath;
+
+  static const String _prefix = 'heart-beat-native-ios';
+
+  String _filenameFor(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Append a log line from native iOS.
+  void append(String line) {
+    final now = DateTime.now();
+    final dateStr = _filenameFor(now);
+    final path = '$_logDirPath/$_prefix.$dateStr.log';
+
+    try {
+      final file = File(path);
+      file.writeAsStringSync(line, mode: FileMode.append);
+    } catch (_) {
+      // Best-effort — never throw from log writer
     }
   }
 }
