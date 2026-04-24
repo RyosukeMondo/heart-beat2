@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
 import 'package:heart_beat/src/services/log_service.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Diagnosis screen — a debug/dev surface showing live device state,
 /// log viewer, and operations panel.
@@ -206,8 +208,139 @@ class _DiagnosisBodyState extends State<_DiagnosisBody> {
             },
           ),
         ),
+
+        const Divider(height: 1),
+
+        _OperationsPanel(
+          onScan: _handleScan,
+          onConnectLast: _handleConnectLast,
+          onDisconnect: _handleDisconnect,
+          onToggleMock: _handleToggleMock,
+          onExport: _handleExport,
+          onClearCache: _handleClearCache,
+        ),
       ],
     );
+  }
+
+  Future<void> _handleScan() async {
+    try {
+      final devices = await scanDevices();
+      if (!mounted) return;
+      _showDevicePicker(devices);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Scan failed: $e')),
+      );
+    }
+  }
+
+  void _showDevicePicker(List<DiscoveredDevice> devices) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView.builder(
+        itemCount: devices.length,
+        itemBuilder: (context, index) {
+          final device = devices[index];
+          return ListTile(
+            leading: const Icon(Icons.bluetooth),
+            title: Text(device.name ?? 'Unknown'),
+            subtitle: Text(device.id),
+            onTap: () async {
+              final sheetContext = context;
+              Navigator.pop(sheetContext);
+              try {
+                await connectDevice(deviceId: device.id);
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(sheetContext).showSnackBar(
+                  SnackBar(content: Text('Connect failed: $e')),
+                );
+              }
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _handleConnectLast() async {
+    try {
+      await connectDevice(deviceId: 'last-connected');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Connect last failed: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleDisconnect() async {
+    try {
+      await disconnect();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Disconnect failed: $e')),
+      );
+    }
+  }
+
+  bool _mockActive = false;
+
+  Future<void> _handleToggleMock() async {
+    try {
+      if (_mockActive) {
+        await disconnect();
+      } else {
+        await startMockMode();
+      }
+      setState(() => _mockActive = !_mockActive);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Mock mode failed: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleExport() async {
+    try {
+      final sessions = await listSessions();
+      if (sessions.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No sessions to export')),
+        );
+        return;
+      }
+      final lastSession = sessions.first;
+      final id = await sessionPreviewId(preview: lastSession);
+      final exported = await exportSession(id: id, format: ExportFormat.json);
+      await Share.share(exported, subject: 'Heart Beat session export');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Export failed: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleClearCache() async {
+    try {
+      LogService.instance.clear();
+      await seedDefaultPlans();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cache cleared')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Clear cache failed: $e')),
+      );
+    }
   }
 }
 
@@ -712,4 +845,92 @@ class _CardData {
 
   double get reconnectProgress =>
       maxAttempts > 0 ? attempt / maxAttempts : 0;
+}
+
+class _OperationsPanel extends StatelessWidget {
+  final VoidCallback onScan;
+  final VoidCallback onConnectLast;
+  final VoidCallback onDisconnect;
+  final VoidCallback onToggleMock;
+  final VoidCallback onExport;
+  final VoidCallback onClearCache;
+
+  const _OperationsPanel({
+    required this.onScan,
+    required this.onConnectLast,
+    required this.onDisconnect,
+    required this.onToggleMock,
+    required this.onExport,
+    required this.onClearCache,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          _OpButton(
+            icon: Icons.bluetooth_searching,
+            label: 'Scan',
+            onPressed: onScan,
+          ),
+          _OpButton(
+            icon: Icons.history,
+            label: 'Connect Last',
+            onPressed: onConnectLast,
+          ),
+          _OpButton(
+            icon: Icons.bluetooth_disabled,
+            label: 'Disconnect',
+            onPressed: onDisconnect,
+          ),
+          _OpButton(
+            icon: Icons.science,
+            label: 'Mock',
+            onPressed: onToggleMock,
+          ),
+          _OpButton(
+            icon: Icons.ios_share,
+            label: 'Export',
+            onPressed: onExport,
+          ),
+          _OpButton(
+            icon: Icons.delete_sweep,
+            label: 'Clear Cache',
+            onPressed: onClearCache,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _OpButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.tonal(
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 6),
+          Text(label),
+        ],
+      ),
+    );
+  }
 }
