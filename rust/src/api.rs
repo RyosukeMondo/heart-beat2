@@ -9,6 +9,7 @@ use crate::domain::filters::KalmanFilter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::domain::training_plan::TrainingPlan;
 use crate::frb_generated::StreamSink;
+use crate::logging::{emit_log, subscribe_log_stream};
 use crate::ports::{BleAdapter, NotificationPort, SessionRepository};
 use crate::scheduler::executor::SessionExecutor;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
@@ -174,46 +175,39 @@ impl Write for FlutterLogWriter {
 
         // Parse the log message
         // Format: "2024-01-11T12:34:56.789Z  INFO heart_beat::api: Message here"
-        if let Some(sink_mutex) = LOG_SINK.get() {
-            if let Ok(sink_opt) = sink_mutex.lock() {
-                if let Some(sink) = sink_opt.as_ref() {
-                    // Simple parsing - extract level and message
-                    let parts: Vec<&str> = log_str.splitn(2, ' ').collect();
-                    if parts.len() >= 2 {
-                        let level_and_rest = parts[1];
-                        let level_parts: Vec<&str> = level_and_rest.splitn(2, ' ').collect();
+        let parts: Vec<&str> = log_str.splitn(2, ' ').collect();
+        if parts.len() >= 2 {
+            let level_and_rest = parts[1];
+            let level_parts: Vec<&str> = level_and_rest.splitn(2, ' ').collect();
 
-                        if level_parts.len() >= 2 {
-                            let level = level_parts[0].trim().to_string();
-                            let rest = level_parts[1];
+            if level_parts.len() >= 2 {
+                let level = level_parts[0].trim().to_string();
+                let rest = level_parts[1];
 
-                            let target_and_msg: Vec<&str> = rest.splitn(2, ':').collect();
-                            let (target, message) = if target_and_msg.len() >= 2 {
-                                (
-                                    target_and_msg[0].trim().to_string(),
-                                    target_and_msg[1].trim().to_string(),
-                                )
-                            } else {
-                                ("unknown".to_string(), rest.trim().to_string())
-                            };
+                let target_and_msg: Vec<&str> = rest.splitn(2, ':').collect();
+                let (target, message) = if target_and_msg.len() >= 2 {
+                    (
+                        target_and_msg[0].trim().to_string(),
+                        target_and_msg[1].trim().to_string(),
+                    )
+                } else {
+                    ("unknown".to_string(), rest.trim().to_string())
+                };
 
-                            let timestamp = std::time::SystemTime::now()
-                                .duration_since(std::time::UNIX_EPOCH)
-                                .unwrap()
-                                .as_millis() as u64;
+                let timestamp = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis() as u64;
 
-                            let log_msg = LogMessage {
-                                level,
-                                target,
-                                timestamp,
-                                message,
-                            };
+                let log_msg = LogMessage {
+                    level,
+                    target,
+                    timestamp,
+                    message,
+                };
 
-                            // Send to Flutter (ignore errors if sink is closed)
-                            let _ = sink.add(log_msg);
-                        }
-                    }
-                }
+                // Emit to shared broadcast + ring buffer (Phase 2 will subscribe)
+                emit_log(log_msg);
             }
         }
 
@@ -400,6 +394,21 @@ pub fn init_logging(sink: StreamSink<LogMessage>) -> Result<()> {
     // Set the global subscriber
     tracing::subscriber::set_global_default(subscriber)
         .map_err(|e| anyhow!("Failed to set global tracing subscriber: {}", e))?;
+
+    // Spawn a task to forward broadcast channel logs to Flutter sink
+    // This ensures Flutter receives logs through the same fanout as Phase 2's debug server
+    let mut rx = subscribe_log_stream();
+    tokio::spawn(async move {
+        while let Ok(msg) = rx.recv().await {
+            if let Some(sink_mutex) = LOG_SINK.get() {
+                if let Ok(sink_opt) = sink_mutex.lock() {
+                    if let Some(sink) = sink_opt.as_ref() {
+                        let _ = sink.add(msg);
+                    }
+                }
+            }
+        }
+    });
 
     Ok(())
 }
