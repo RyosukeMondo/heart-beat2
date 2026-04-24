@@ -48,8 +48,15 @@ class LogService {
   /// Rolling file writer for native iOS logs.
   _NativeIosLogWriter? _nativeIosLogWriter;
 
+  /// Rolling file writer for native Android logs.
+  _NativeAndroidLogWriter? _nativeAndroidLogWriter;
+
   /// MethodChannel for native iOS log bridge.
   static const MethodChannel _nativeIosChannel =
+      MethodChannel('heart_beat/native_log');
+
+  /// MethodChannel for native Android log bridge (shared channel).
+  static const MethodChannel _nativeAndroidChannel =
       MethodChannel('heart_beat/native_log');
 
   /// Whether the service has been initialized.
@@ -72,6 +79,7 @@ class LogService {
       final logDir = await _getLogDirectory();
       _dartLogWriter = _DartLogWriter(logDir.path);
       _nativeIosLogWriter = _NativeIosLogWriter(logDir.path);
+      _nativeAndroidLogWriter = _NativeAndroidLogWriter(logDir.path);
       await _dartLogWriter!.sweepOldFiles();
 
       _installDebugPrintHook();
@@ -193,6 +201,16 @@ class LogService {
       }
       return null;
     });
+
+    _nativeAndroidChannel.setMethodCallHandler((call) async {
+      if (call.method == 'onNativeLog') {
+        final line = call.arguments as String?;
+        if (line != null && line.isNotEmpty) {
+          _nativeAndroidLogWriter?.append(line);
+        }
+      }
+      return null;
+    });
   }
 
   /// Get a broadcast stream of log messages.
@@ -291,6 +309,33 @@ class _NativeIosLogWriter {
   }
 
   /// Append a log line from native iOS.
+  void append(String line) {
+    final now = DateTime.now();
+    final dateStr = _filenameFor(now);
+    final path = '$_logDirPath/$_prefix.$dateStr.log';
+
+    try {
+      final file = File(path);
+      file.writeAsStringSync(line, mode: FileMode.append);
+    } catch (_) {
+      // Best-effort — never throw from log writer
+    }
+  }
+}
+
+/// Rolling file writer for native Android log entries.
+class _NativeAndroidLogWriter {
+  _NativeAndroidLogWriter(this._logDirPath);
+
+  final String _logDirPath;
+
+  static const String _prefix = 'heart-beat-native-android';
+
+  String _filenameFor(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Append a log line from native Android.
   void append(String line) {
     final now = DateTime.now();
     final dateStr = _filenameFor(now);
