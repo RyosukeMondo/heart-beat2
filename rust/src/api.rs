@@ -9,10 +9,12 @@ use crate::domain::filters::KalmanFilter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::domain::training_plan::TrainingPlan;
 use crate::frb_generated::StreamSink;
+use crate::debug_http;
 use crate::logging::{emit_log, subscribe_log_stream};
 use crate::ports::{BleAdapter, NotificationPort, SessionRepository};
 use crate::scheduler::executor::SessionExecutor;
 use crate::state::{ConnectionEvent, ConnectionStateMachine};
+use axum;
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use std::io::Write;
@@ -458,6 +460,89 @@ pub fn set_data_dir(path: String) -> Result<()> {
         .replace(path_buf);
 
     tracing::info!("Data directory set to: {}", path);
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// Debug HTTP server
+// ---------------------------------------------------------------------------
+
+/// Handle for the background debug HTTP server task.
+static DEBUG_SERVER_HANDLE: OnceLock<tokio::task::JoinHandle<()>> = OnceLock::new();
+
+/// Start the debug HTTP server on the given port.
+///
+/// In debug builds this spawns an axum server on `0.0.0.0:<port>` serving the
+/// debug REST API and WebSocket endpoints. In release builds this is a no-op.
+///
+/// The server is idempotent — calling this multiple times has no additional
+/// effect if a server is already running. On port binding failure, logs a
+/// warning and returns `Ok` without blocking app startup.
+///
+/// # Arguments
+///
+/// * `port` - The TCP port to listen on (default 8888)
+///
+/// # Example
+///
+/// ```dart
+/// if (kDebugMode) {
+///   await startDebugServer(port: 8888);
+/// }
+/// ```
+#[cfg(debug_assertions)]
+pub fn start_debug_server(port: u16) -> Result<()> {
+    // Idempotent — skip if already started
+    if DEBUG_SERVER_HANDLE.get().is_some() {
+        tracing::debug!("Debug server already running, skipping start");
+        return Ok(());
+    }
+
+    // Initialize START_TIME so /debug/health can report uptime
+    debug_http::START_TIME.get_or_init(|| std::time::Instant::now());
+
+    let router = debug_http::build_router();
+    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], port));
+
+    // Bind the TCP listener upfront so we can log the bound address
+    let listener = match std::net::TcpListener::bind(addr) {
+        Ok(l) => l,
+        Err(e) => {
+            tracing::warn!("Debug server port {} already in use ({}), skipping", port, e);
+            return Ok(());
+        }
+    };
+
+    tracing::info!("Debug HTTP server starting on http://{}", addr);
+
+    let handle = tokio::spawn(async move {
+        // Set up server-side logging to file for this process
+        let log_dir = get_data_dir()
+            .map(|d| d.join("logs"))
+            .ok();
+        if let Some(ref dir) = log_dir {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        let _ = crate::logging::init_server_logging(log_dir.as_deref(), false);
+
+        let tokio_listener = tokio::net::TcpListener::from_std(listener).ok();
+        if let Some(l) = tokio_listener {
+            axum::serve(l, router).await.ok();
+        }
+        tracing::debug!("Debug HTTP server shut down");
+    });
+
+    DEBUG_SERVER_HANDLE
+        .set(handle)
+        .map_err(|_| anyhow!("Debug server already started"))?;
+
+    tracing::info!("Debug HTTP server started on http://{}", addr);
+    Ok(())
+}
+
+/// Start the debug HTTP server — release stub.
+#[cfg(not(debug_assertions))]
+pub fn start_debug_server(_port: u16) -> Result<()> {
     Ok(())
 }
 
