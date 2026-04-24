@@ -47,19 +47,19 @@ file; the per-file tasks are finer-grained.
 - [x] 2.1 Extract `build_router()` from `bin/debug_server.rs` into library module
 - [x] 2.2 `api::start_debug_server(port)` spawned on tokio, idempotent, debug-gated
 - [x] 2.3 Dart `main()` calls `startDebugServer(8888)` in `kDebugMode` on iOS/Android
-- [ ] 2.4 Mac → device round-trip verified: `iproxy 8888 8888` + `curl /debug/logs`
-- [ ] 2.5 Source/level filters (`?source=rust&level=info`) on `/debug/logs` + `/ws/logs`
+- [x] 2.4 Mac → device round-trip verified: `iproxy 8888 8888` + `curl /debug/logs`
+- [x] 2.5 Source/level filters (`?source=rust&level=info`) on `/debug/logs` + `/ws/logs`
 
 ### Phase 3 — Diagnosis GUI
-- [ ] 3.1 `/diagnosis` route + skeleton layout
-- [ ] 3.2 Live log viewer (filter by source/level, color-coded, auto-scroll toggle)
-- [ ] 3.3 Connection status card (device, connected/scanning, RSSI if available)
-- [ ] 3.4 Operations panel (scan / connect last / disconnect / mock / export / clear cache)
+- [x] 3.1 `/diagnosis` route + skeleton layout
+- [x] 3.2 Live log viewer (filter by source/level, color-coded, auto-scroll toggle)
+- [x] 3.3 Connection status card (device, connected/scanning, RSSI if available)
+- [x] 3.4 Operations panel (scan / connect last / disconnect / mock / export / clear cache)
 
 ### Phase 4 — Developer workflow
-- [ ] 4.1 `scripts/ios-debug-server.sh` (iproxy wrapper: start/stop/status)
-- [ ] 4.2 `scripts/ios-logs.sh` (REST fetch + WS follow, filters)
-- [ ] 4.3 CLAUDE.md quickref entry + `brew install libimobiledevice` doc
+- [x] 4.1 `scripts/ios-debug-server.sh` (iproxy wrapper: start/stop/status)
+- [x] 4.2 `scripts/ios-logs.sh` (REST fetch + WS follow, filters)
+- [x] 4.3 CLAUDE.md quickref entry + `brew install libimobiledevice` doc
 
 ### Phase 5 — Long-session coaching
 - [ ] 5.1 iOS background modes (`bluetooth-central`) + Android foreground service for BLE
