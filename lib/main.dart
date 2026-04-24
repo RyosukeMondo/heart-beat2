@@ -44,6 +44,8 @@ Future<void> main() async {
     await initPanicHandler();
     final logStream = initLogging();
     LogService.instance.subscribe(logStream);
+    // Initialize Dart-side log capture (debugPrint hook, rolling file writer, error handlers)
+    await LogService.instance.initialize();
   } catch (e) {
     debugPrint('Failed to initialize logging system: $e');
     // Continue anyway - app can function without logging
