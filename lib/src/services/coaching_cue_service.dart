@@ -1,10 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'package:heart_beat/src/services/health_settings_service.dart';
 import 'voice_coaching_service.dart';
+
+/// Global navigator key for deep-links from notifications when no context
+/// is available (e.g., cold-start from notification tap).
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 /// Service that consumes coaching cues from the Rust rule engine and
 /// delivers them via multiple surfaces: in-app toast, local notification,
@@ -104,6 +112,25 @@ class CoachingCueService {
     if (kDebugMode) {
       debugPrint('Coaching notification tapped: ${response.payload}');
     }
+    // Handle deep-link: notification tap opens the Health screen.
+    if (response.payload == 'sustained_low_hr') {
+      _openHealthScreen();
+    }
+  }
+
+  void _openHealthScreen() {
+    // Navigation is handled via the global navigator; a simple push works
+    // whether the app is cold-started or already running.
+    // Use a post-frame callback so the navigator is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (kDebugMode) {
+        debugPrint('Opening Health screen from notification tap');
+      }
+      // The route '/health' is registered in app.dart.
+      // We use Navigator state from the current context if available,
+      // otherwise fall back to the global navigator.
+      navigatorKey.currentState?.pushNamed('/health');
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -142,9 +169,21 @@ class CoachingCueService {
   // Stream consumption
   // ---------------------------------------------------------------------------
 
+  StreamSubscription<ApiCue>? _cueSubscription;
+
   /// Start listening to coaching cues from the Rust rule engine.
   Stream<ApiCue> createCueStream() {
     return RustLib.instance.api.crateApiCreateCoachingCueStream();
+  }
+
+  /// Start listening to the cue stream and dispatch each cue to the appropriate
+  /// surface (toast, notification, TTS). Call this once at app startup.
+  void startCueListener() {
+    _cueSubscription?.cancel();
+    _cueSubscription = createCueStream().listen((cue) => onCue(cue));
+    if (kDebugMode) {
+      debugPrint('CoachingCueService: cue listener started');
+    }
   }
 
   /// Process a single cue — dispatch to toast, notification, and TTS
@@ -152,6 +191,13 @@ class CoachingCueService {
   Future<void> onCue(ApiCue cue) async {
     if (kDebugMode) {
       debugPrint('CoachingCueService received cue: ${cue.label} - ${cue.message}');
+    }
+
+    // Handle sustained_low_hr with custom notification formatting and
+    // master-toggle-gated notification delivery.
+    if (cue.label == 'sustained_low_hr') {
+      await _handleSustainedLowHrCue(cue);
+      return;
     }
 
     // In-app toast (Normal+ priority cues only)
@@ -168,6 +214,74 @@ class CoachingCueService {
     if (_notificationsEnabled && cue.priority >= 2) {
       await _showNotification(cue);
     }
+  }
+
+  /// Handle the sustained_low_hr cue: show a custom notification only when
+  /// the health-notifications master toggle is enabled.
+  Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
+    // Only show notification if master notifications toggle is on.
+    if (!HealthSettingsService.instance.notificationsEnabled) {
+      if (kDebugMode) {
+        debugPrint('sustained_low_hr suppressed: notifications disabled');
+      }
+      return;
+    }
+
+    await _showSustainedLowHrNotification(cue);
+  }
+
+  /// Show the custom low-HR notification with the exact format required:
+  /// title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over
+  /// the last {window_min} min', tap opens the Health screen.
+  Future<void> _showSustainedLowHrNotification(ApiCue cue) async {
+    const androidDetails = AndroidNotificationDetails(
+      'health_alerts',
+      'Health Alerts',
+      channelDescription: 'Low heart rate health alerts',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    // Parse avg_bpm and window_min from the cue message.
+    // Message format: "Heart rate low — average {avg_bpm} bpm over the last {:.0} min"
+    final avgBpm = _parseAvgBpm(cue.message);
+    final windowMin = _parseWindowMin(cue.message);
+
+    const title = 'Heart rate low';
+    final body = 'Average HR was $avgBpm bpm over the last $windowMin min';
+
+    await _notifications.show(
+      cue.hashCode,
+      title,
+      body,
+      details,
+      payload: 'sustained_low_hr',
+    );
+  }
+
+  int _parseAvgBpm(String message) {
+    // Extract "average N bpm" from the message.
+    final match = RegExp(r'average (\d+) bpm').firstMatch(message);
+    return int.tryParse(match?.group(1) ?? '0') ?? 0;
+  }
+
+  int _parseWindowMin(String message) {
+    // Extract "last N min" from the message.
+    final match = RegExp(r'last ([\d.]+) min').firstMatch(message);
+    if (match == null) return 0;
+    return double.parse(match.group(1)!).round();
   }
 
   // ---------------------------------------------------------------------------
