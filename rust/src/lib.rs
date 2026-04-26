@@ -37,10 +37,15 @@ pub mod api;
 pub mod coaching;
 pub mod debug_http;
 pub mod domain;
+pub mod hr_store;
 pub mod logging;
 pub mod ports;
 pub mod scheduler;
 pub mod state;
+
+/// cbindgen:ignore
+#[cfg(target_os = "android")]
+mod jni_loader;
 
 // Re-export coaching types (internally - Cue is NOT exposed through FFI)
 // Only RuleEngine and ApiCue are used across the FFI boundary.
