@@ -82,6 +82,25 @@ Future<void> initPlatform() => RustLib.instance.api.crateApiInitPlatform();
 Future<void> initCoachingEngine() =>
     RustLib.instance.api.crateApiInitCoachingEngine();
 
+/// Update the LowHrRule with the user's health settings.
+///
+/// Called from Dart whenever the user changes threshold, sustained window,
+/// quiet hours, or notification preferences in HealthSettingsScreen.
+/// The rule is updated immediately so the next tick (≤30s) uses new values.
+Future<void> updateHealthSettings({
+  required int thresholdBpm,
+  required BigInt sustainedSecs,
+  required int quietStartHour,
+  required int quietEndHour,
+  required bool notificationsEnabled,
+}) => RustLib.instance.api.crateApiUpdateHealthSettings(
+  thresholdBpm: thresholdBpm,
+  sustainedSecs: sustainedSecs,
+  quietStartHour: quietStartHour,
+  quietEndHour: quietEndHour,
+  notificationsEnabled: notificationsEnabled,
+);
+
 /// Initialize logging and forward Rust tracing logs to Flutter.
 ///
 /// This function sets up a tracing subscriber that captures all Rust log messages

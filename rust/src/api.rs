@@ -5,7 +5,7 @@
 
 use crate::adapters::btleplug_adapter::BtleplugAdapter;
 use crate::adapters::file_session_repository::FileSessionRepository;
-use crate::coaching::{CueContext, CueCadence, DoNotDisturbWindow, RuleEngine, TargetZoneRule, InactivityRule, OverworkRule, Cue as CoachingCue};
+use crate::coaching::{CueContext, DoNotDisturbWindow, LowHrRule, RuleEngine, TargetZoneRule, InactivityRule, OverworkRule};
 use crate::domain::filters::KalmanFilter;
 use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHeartRate};
 use crate::domain::training_plan::TrainingPlan;
@@ -131,6 +131,7 @@ impl From<crate::coaching::Cue> for ApiCue {
                 crate::coaching::CueSource::TargetZone => 0,
                 crate::coaching::CueSource::Inactivity => 1,
                 crate::coaching::CueSource::Overwork => 2,
+                crate::coaching::CueSource::SustainedLowHr => 3,
             },
             label: cue.label,
             message: cue.message,
@@ -192,7 +193,12 @@ static CONNECTION_STATE: OnceLock<tokio::sync::Mutex<Option<ConnectionState>>> =
 static COACHING_ENGINE: OnceLock<tokio::sync::Mutex<RuleEngine>> = OnceLock::new();
 
 // Global HR store for persisting heart rate samples to JSONL
-static HR_STORE: OnceLock<tokio::sync::Mutex<Option<HrStore>>> = OnceLock::new();
+static HR_STORE: OnceLock<tokio::sync::Mutex<Option<Arc<HrStore>>>> = OnceLock::new();
+
+// Global LowHrRule for sustained low-HR alerting.
+// Updated via update_health_settings() whenever the user changes settings.
+// Uses std::sync::Mutex so update_health_settings (sync fn) can lock without .await.
+static LOW_HR_RULE: OnceLock<std::sync::Mutex<LowHrRule>> = OnceLock::new();
 
 /// Stub notification port for battery monitoring.
 /// This is a temporary implementation until full notification system is wired up.
@@ -394,7 +400,63 @@ pub fn init_coaching_engine() -> Result<()> {
     COACHING_ENGINE
         .get_or_init(|| tokio::sync::Mutex::new(engine));
 
-    tracing::info!("Coaching engine initialized");
+    // Initialize LowHrRule with defaults; actual settings come from Dart via update_health_settings.
+    let hr_store = HrStore::default();
+    let low_hr_rule = LowHrRule::new(70, 600) // threshold=70, sustained=10min
+        .with_hysteresis_bpm(5)
+        .with_hysteresis_recovery_secs(300)
+        .with_hr_store(hr_store);
+
+    LOW_HR_RULE
+        .get_or_init(|| std::sync::Mutex::new(low_hr_rule));
+
+    tracing::info!("Coaching engine and LowHrRule initialized");
+    Ok(())
+}
+
+/// Update the LowHrRule with the user's health settings.
+///
+/// Called from Dart whenever the user changes threshold, sustained window,
+/// quiet hours, or notification preferences in HealthSettingsScreen.
+/// The rule is updated immediately so the next tick (≤30s) uses new values.
+pub fn update_health_settings(
+    threshold_bpm: u16,
+    sustained_secs: u64,
+    quiet_start_hour: u8,
+    quiet_end_hour: u8,
+    notifications_enabled: bool,
+) -> Result<()> {
+    let rule = LOW_HR_RULE
+        .get()
+        .ok_or_else(|| anyhow!("LowHrRule not initialized - call init_coaching_engine first"))?;
+
+    let mut guard = rule.lock().map_err(|e| anyhow!("Failed to lock LOW_HR_RULE: {}", e))?;
+    guard.update_config(
+        threshold_bpm,
+        sustained_secs,
+        DoNotDisturbWindow {
+            start_hour: quiet_start_hour,
+            end_hour: quiet_end_hour,
+            tz_offset_secs: 0,
+        },
+    );
+
+    tracing::info!(
+        "Health settings updated: threshold={} bpm, sustained={}s, quiet={}:{:02}-{}:{:02}, notifications={}",
+        threshold_bpm,
+        sustained_secs,
+        quiet_start_hour,
+        0,
+        quiet_end_hour,
+        0,
+        notifications_enabled
+    );
+
+    // NOTE: notifications_enabled is consumed on the Dart side in
+    // coaching_cue_service.dart when deciding whether to show the notification.
+    // The Rust rule still evaluates (for UI banner state) even when notifications
+    // are disabled — that's intentional so the Health screen banner stays accurate.
+
     Ok(())
 }
 
@@ -954,6 +1016,15 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 let mut engine_guard = engine.lock().await;
                                 if let Some(cue) = engine_guard.evaluate(&ctx) {
                                     emit_cue(cue);
+                                }
+                            }
+
+                            // Also evaluate the LowHrRule (sustained low-HR alerting).
+                            if let Some(rule) = LOW_HR_RULE.get() {
+                                if let Ok(mut guard) = rule.lock() {
+                                    if let Some(cue) = guard.evaluate_mut(&ctx) {
+                                        emit_cue(cue);
+                                    }
                                 }
                             }
 
@@ -1747,20 +1818,21 @@ async fn get_session_repository() -> Result<Arc<FileSessionRepository>> {
 }
 
 /// Get or create the global HR store instance for persisting samples to JSONL.
-async fn get_hr_store() -> Result<HrStore> {
+async fn get_hr_store() -> Result<Arc<HrStore>> {
     let mutex = HR_STORE.get_or_init(|| tokio::sync::Mutex::new(None));
     let mut guard = mutex.lock().await;
 
     if let Some(ref store) = *guard {
-        return Ok(store.clone());
+        return Ok(Arc::clone(store));
     }
 
     // Create new HR store with the correct data directory
     let data_dir = get_data_dir()?;
     tracing::info!("Creating HrStore at {:?}", data_dir);
     let store = HrStore::new(data_dir).await?;
-    *guard = Some(store.clone());
-    Ok(store)
+    let arc_store = Arc::new(store);
+    *guard = Some(Arc::clone(&arc_store));
+    Ok(arc_store)
 }
 
 /// Returns all HR samples with timestamps in [start_ms, end_ms] across all daily files.

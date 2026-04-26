@@ -2856,6 +2856,22 @@ class RustLibWire implements BaseWire {
   void wire__crate__api__subscribe_battery_stream(NativePortType port_) =>
       wasmModule.wire__crate__api__subscribe_battery_stream(port_);
 
+  void wire__crate__api__update_health_settings(
+    NativePortType port_,
+    int threshold_bpm,
+    JSAny sustained_secs,
+    int quiet_start_hour,
+    int quiet_end_hour,
+    bool notifications_enabled,
+  ) => wasmModule.wire__crate__api__update_health_settings(
+    port_,
+    threshold_bpm,
+    sustained_secs,
+    quiet_start_hour,
+    quiet_end_hour,
+    notifications_enabled,
+  );
+
   void wire__crate__api__zone_status_is_in_zone(
     NativePortType port_,
     int status,
@@ -3536,6 +3552,15 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void wire__crate__api__subscribe_battery_stream(
     NativePortType port_,
+  );
+
+  external void wire__crate__api__update_health_settings(
+    NativePortType port_,
+    int threshold_bpm,
+    JSAny sustained_secs,
+    int quiet_start_hour,
+    int quiet_end_hour,
+    bool notifications_enabled,
   );
 
   external void wire__crate__api__zone_status_is_in_zone(

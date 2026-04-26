@@ -249,6 +249,15 @@ impl LowHrRule {
         self
     }
 
+    /// Update the threshold, sustained window, and quiet hours at runtime.
+    ///
+    /// Called from the API layer when the user changes health settings in the UI.
+    pub fn update_config(&mut self, threshold_bpm: u16, sustained_secs: u64, quiet_hours: DoNotDisturbWindow) {
+        self.threshold_bpm = threshold_bpm;
+        self.sustained_secs = sustained_secs;
+        self.quiet_hours = quiet_hours;
+    }
+
     fn local_hour(&self, ctx: &CueContext) -> u8 {
         use chrono::Timelike;
         let local = ctx.sample.timestamp.with_timezone(&chrono::Local);

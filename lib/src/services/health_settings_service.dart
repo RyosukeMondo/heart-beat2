@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+export 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show updateHealthSettings;
 
 /// Service for persisted health-monitoring settings.
 ///
@@ -108,9 +110,24 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_prefLowHrThreshold, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health low HR threshold: $value');
     }
+  }
+
+  Future<void> _pushToRust() async {
+    final startParts = _quietStart.split(':');
+    final endParts = _quietEnd.split(':');
+    final startHour = int.tryParse(startParts[0]) ?? 22;
+    final endHour = int.tryParse(endParts[0]) ?? 7;
+    await updateHealthSettings(
+      thresholdBpm: _lowHrThreshold,
+      sustainedSecs: BigInt.from(_sustainedMinutes * 60),
+      quietStartHour: startHour,
+      quietEndHour: endHour,
+      notificationsEnabled: _notificationsEnabled,
+    );
   }
 
   Future<void> setSustainedMinutes(int value) async {
@@ -118,6 +135,7 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_prefSustainedMinutes, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health sustained minutes: $value');
     }
@@ -128,6 +146,7 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_prefSampleCadenceSecs, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health sample cadence secs: $value');
     }
@@ -138,6 +157,7 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefQuietStart, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health quiet start: $value');
     }
@@ -148,6 +168,7 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefQuietEnd, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health quiet end: $value');
     }
@@ -158,6 +179,7 @@ class HealthSettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefNotificationsEnabled, value);
     notifyListeners();
+    await _pushToRust();
     if (kDebugMode) {
       debugPrint('Health notifications enabled: $value');
     }

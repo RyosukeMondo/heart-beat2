@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1110316214;
+  int get rustContentHash => -41266878;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -425,6 +425,14 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiStopWorkout();
 
   Future<ReceiverApiBatteryLevel> crateApiSubscribeBatteryStream();
+
+  Future<void> crateApiUpdateHealthSettings({
+    required int thresholdBpm,
+    required BigInt sustainedSecs,
+    required int quietStartHour,
+    required int quietEndHour,
+    required bool notificationsEnabled,
+  });
 
   Future<bool> crateApiZoneStatusIsInZone({required ApiZoneStatus status});
 
@@ -3618,6 +3626,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiSubscribeBatteryStreamConstMeta =>
       const TaskConstMeta(debugName: "subscribe_battery_stream", argNames: []);
+
+  @override
+  Future<void> crateApiUpdateHealthSettings({
+    required int thresholdBpm,
+    required BigInt sustainedSecs,
+    required int quietStartHour,
+    required int quietEndHour,
+    required bool notificationsEnabled,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_u_16(thresholdBpm);
+          var arg1 = cst_encode_u_64(sustainedSecs);
+          var arg2 = cst_encode_u_8(quietStartHour);
+          var arg3 = cst_encode_u_8(quietEndHour);
+          var arg4 = cst_encode_bool(notificationsEnabled);
+          return wire.wire__crate__api__update_health_settings(
+            port_,
+            arg0,
+            arg1,
+            arg2,
+            arg3,
+            arg4,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiUpdateHealthSettingsConstMeta,
+        argValues: [
+          thresholdBpm,
+          sustainedSecs,
+          quietStartHour,
+          quietEndHour,
+          notificationsEnabled,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiUpdateHealthSettingsConstMeta =>
+      const TaskConstMeta(
+        debugName: "update_health_settings",
+        argNames: [
+          "thresholdBpm",
+          "sustainedSecs",
+          "quietStartHour",
+          "quietEndHour",
+          "notificationsEnabled",
+        ],
+      );
 
   @override
   Future<bool> crateApiZoneStatusIsInZone({required ApiZoneStatus status}) {

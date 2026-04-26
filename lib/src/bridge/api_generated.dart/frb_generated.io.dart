@@ -4182,6 +4182,41 @@ class RustLibWire implements BaseWire {
       _wire__crate__api__subscribe_battery_streamPtr
           .asFunction<void Function(int)>();
 
+  void wire__crate__api__update_health_settings(
+    int port_,
+    int threshold_bpm,
+    int sustained_secs,
+    int quiet_start_hour,
+    int quiet_end_hour,
+    bool notifications_enabled,
+  ) {
+    return _wire__crate__api__update_health_settings(
+      port_,
+      threshold_bpm,
+      sustained_secs,
+      quiet_start_hour,
+      quiet_end_hour,
+      notifications_enabled,
+    );
+  }
+
+  late final _wire__crate__api__update_health_settingsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint16,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Bool,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__update_health_settings');
+  late final _wire__crate__api__update_health_settings =
+      _wire__crate__api__update_health_settingsPtr
+          .asFunction<void Function(int, int, int, int, int, bool)>();
+
   void wire__crate__api__zone_status_is_in_zone(int port_, int status) {
     return _wire__crate__api__zone_status_is_in_zone(port_, status);
   }
