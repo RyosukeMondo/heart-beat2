@@ -15,6 +15,8 @@ import 'package:heart_beat/src/widgets/debug_console_overlay.dart';
 import 'package:heart_beat/src/screens/diagnosis_screen.dart';
 import 'package:heart_beat/src/screens/coaching_screen.dart';
 import 'package:heart_beat/src/screens/health_settings_screen.dart';
+import 'package:heart_beat/src/screens/health_screen.dart';
+import 'package:heart_beat/src/services/coaching_cue_service.dart';
 
 /// Main application widget
 class MyApp extends StatelessWidget {
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DebugConsoleOverlay(
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Heart Beat',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -54,6 +57,7 @@ class MyApp extends StatelessWidget {
           '/diagnosis': (context) => const DiagnosisScreen(),
           '/coaching': (context) => const CoachingScreen(),
           '/health-settings': (context) => const HealthSettingsScreen(),
+          '/health': (context) => const HealthScreen(),
         },
         onGenerateRoute: (settings) {
           // Handle /workout/:planName route

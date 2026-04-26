@@ -447,6 +447,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Card(
                     child: ListTile(
                       leading: const Icon(Icons.favorite, color: Colors.red),
+                      title: const Text('Health'),
+                      subtitle: const Text('View averages, sparkline & rule status'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.pushNamed(context, '/health'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.favorite_border, color: Colors.red),
                       title: const Text('Health Settings'),
                       subtitle: const Text('Low heart rate alerts & quiet hours'),
                       trailing: const Icon(Icons.chevron_right),
