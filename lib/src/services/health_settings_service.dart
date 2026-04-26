@@ -86,6 +86,19 @@ class HealthSettingsService extends ChangeNotifier {
     }
   }
 
+  /// Re-read all values from SharedPreferences and notify listeners.
+  /// Used in tests to simulate a fresh load.
+  Future<void> reload() async {
+    final prefs = await SharedPreferences.getInstance();
+    _lowHrThreshold = prefs.getInt(_prefLowHrThreshold) ?? defaultLowHrThreshold;
+    _sustainedMinutes = prefs.getInt(_prefSustainedMinutes) ?? defaultSustainedMinutes;
+    _sampleCadenceSecs = prefs.getInt(_prefSampleCadenceSecs) ?? defaultSampleCadenceSecs;
+    _quietStart = prefs.getString(_prefQuietStart) ?? defaultQuietStart;
+    _quietEnd = prefs.getString(_prefQuietEnd) ?? defaultQuietEnd;
+    _notificationsEnabled = prefs.getBool(_prefNotificationsEnabled) ?? defaultNotificationsEnabled;
+    notifyListeners();
+  }
+
   // ---------------------------------------------------------------------------
   // Setters — persist then notify
   // ---------------------------------------------------------------------------
