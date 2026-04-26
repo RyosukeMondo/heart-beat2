@@ -53,6 +53,9 @@ pub use crate::domain::session_progress::{
 // Re-export reconnection types for FRB code generation
 pub use crate::domain::reconnection::ConnectionStatus as ApiConnectionStatus;
 
+// Re-export hr_store types for FRB code generation
+pub use crate::hr_store::Sample as ApiSample;
+
 /// Format for exporting session data.
 ///
 /// Specifies the output format when exporting a completed training session.
@@ -1758,6 +1761,26 @@ async fn get_hr_store() -> Result<HrStore> {
     let store = HrStore::new(data_dir).await?;
     *guard = Some(store.clone());
     Ok(store)
+}
+
+/// Returns all HR samples with timestamps in [start_ms, end_ms] across all daily files.
+/// Samples are returned in chronological order.
+pub async fn samples_in_range(start_ms: u64, end_ms: u64) -> Result<Vec<ApiSample>> {
+    let store = get_hr_store().await?;
+    store.samples_in_range(start_ms, end_ms).await
+}
+
+/// Computes the rolling average BPM over the given window (in seconds) ending at the latest sample.
+/// Returns `None` if the store is empty or no samples fall within the window.
+pub async fn rolling_avg(window_secs: u64) -> Result<Option<f32>> {
+    let store = get_hr_store().await?;
+    store.rolling_avg(window_secs).await
+}
+
+/// Returns the most recent HR sample, or `None` if the store is empty.
+pub async fn latest_sample() -> Result<Option<ApiSample>> {
+    let store = get_hr_store().await?;
+    store.latest_sample().await
 }
 
 /// List all completed training sessions.
