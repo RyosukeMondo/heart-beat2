@@ -149,6 +149,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionProgress
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     dynamic raw,
@@ -572,6 +578,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSample
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     SseDeserializer deserializer,
   );
 
@@ -1624,6 +1636,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ApiSessionProgress raw,
   );
@@ -1843,6 +1861,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
     ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
     SseSerializer serializer,
   );
 
@@ -2358,6 +2383,12 @@ class RustLibWire implements BaseWire {
     NativePortType port_,
     JSAny data,
   ) => wasmModule.wire__crate__api__analytics_weeks_count(port_, data);
+
+  void wire__crate__api__api_sample_bpm(NativePortType port_, int sample) =>
+      wasmModule.wire__crate__api__api_sample_bpm(port_, sample);
+
+  void wire__crate__api__api_sample_ts_ms(NativePortType port_, int sample) =>
+      wasmModule.wire__crate__api__api_sample_ts_ms(port_, sample);
 
   void wire__crate__api__connect_device(
     NativePortType port_,
@@ -3106,6 +3137,16 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__analytics_weeks_count(
     NativePortType port_,
     JSAny data,
+  );
+
+  external void wire__crate__api__api_sample_bpm(
+    NativePortType port_,
+    int sample,
+  );
+
+  external void wire__crate__api__api_sample_ts_ms(
+    NativePortType port_,
+    int sample,
   );
 
   external void wire__crate__api__connect_device(

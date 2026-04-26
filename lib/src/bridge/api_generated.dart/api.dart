@@ -590,6 +590,14 @@ Future<double?> rollingAvg({required BigInt windowSecs}) =>
 Future<ApiSample?> latestSample() =>
     RustLib.instance.api.crateApiLatestSample();
 
+/// Returns the BPM of an HR sample.
+Future<int> apiSampleBpm({required ApiSample sample}) =>
+    RustLib.instance.api.crateApiApiSampleBpm(sample: sample);
+
+/// Returns the Unix timestamp in milliseconds of an HR sample.
+Future<BigInt> apiSampleTsMs({required ApiSample sample}) =>
+    RustLib.instance.api.crateApiApiSampleTsMs(sample: sample);
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).

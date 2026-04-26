@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1110316214;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1554840755;
 
 // Section: executor
 
@@ -249,6 +249,86 @@ fn wire__crate__api__analytics_weeks_count_impl(
                 transform_result_dco::<_, _, ()>((move || {
                     let output_ok =
                         Result::<_, ()>::Ok(crate::api::analytics_weeks_count(&api_data))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__api_sample_bpm_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sample: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSample>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "api_sample_bpm",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sample = sample.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_sample_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_sample,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_sample_guard = Some(api_sample.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_sample_guard = api_sample_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::api_sample_bpm(&*api_sample_guard))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__api_sample_ts_ms_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    sample: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSample>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "api_sample_ts_ms",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_sample = sample.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, ()>((move || {
+                    let mut api_sample_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_sample,
+                                0,
+                                false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_sample_guard = Some(api_sample.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let api_sample_guard = api_sample_guard.unwrap();
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::api_sample_ts_ms(&*api_sample_guard))?;
                     Ok(output_ok)
                 })())
             }
@@ -3564,6 +3644,43 @@ fn wire__crate__api__subscribe_battery_stream_impl(
                     let output_ok = Result::<_, ()>::Ok(crate::api::subscribe_battery_stream())?;
                     Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__update_health_settings_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    threshold_bpm: impl CstDecode<u16>,
+    sustained_secs: impl CstDecode<u64>,
+    quiet_start_hour: impl CstDecode<u8>,
+    quiet_end_hour: impl CstDecode<u8>,
+    notifications_enabled: impl CstDecode<bool>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "update_health_settings",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_threshold_bpm = threshold_bpm.cst_decode();
+            let api_sustained_secs = sustained_secs.cst_decode();
+            let api_quiet_start_hour = quiet_start_hour.cst_decode();
+            let api_quiet_end_hour = quiet_end_hour.cst_decode();
+            let api_notifications_enabled = notifications_enabled.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::update_health_settings(
+                            api_threshold_bpm,
+                            api_sustained_secs,
+                            api_quiet_start_hour,
+                            api_quiet_end_hour,
+                            api_notifications_enabled,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
             }
         },
     )
@@ -7277,6 +7394,22 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__api_sample_bpm(
+        port_: i64,
+        sample: usize,
+    ) {
+        wire__crate__api__api_sample_bpm_impl(port_, sample)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__api_sample_ts_ms(
+        port_: i64,
+        sample: usize,
+    ) {
+        wire__crate__api__api_sample_ts_ms_impl(port_, sample)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__connect_device(
         port_: i64,
         device_id: *mut wire_cst_list_prim_u_8_strict,
@@ -8034,6 +8167,25 @@ mod io {
     #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_heart_beat_wire__crate__api__subscribe_battery_stream(port_: i64) {
         wire__crate__api__subscribe_battery_stream_impl(port_)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_heart_beat_wire__crate__api__update_health_settings(
+        port_: i64,
+        threshold_bpm: u16,
+        sustained_secs: u64,
+        quiet_start_hour: u8,
+        quiet_end_hour: u8,
+        notifications_enabled: bool,
+    ) {
+        wire__crate__api__update_health_settings_impl(
+            port_,
+            threshold_bpm,
+            sustained_secs,
+            quiet_start_hour,
+            quiet_end_hour,
+            notifications_enabled,
+        )
     }
 
     #[unsafe(no_mangle)]
@@ -9884,6 +10036,22 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn wire__crate__api__api_sample_bpm(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sample: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__api_sample_bpm_impl(port_, sample)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__api_sample_ts_ms(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        sample: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+    ) {
+        wire__crate__api__api_sample_ts_ms_impl(port_, sample)
+    }
+
+    #[wasm_bindgen]
     pub fn wire__crate__api__connect_device(
         port_: flutter_rust_bridge::for_generated::MessagePort,
         device_id: String,
@@ -10681,6 +10849,25 @@ mod web {
         port_: flutter_rust_bridge::for_generated::MessagePort,
     ) {
         wire__crate__api__subscribe_battery_stream_impl(port_)
+    }
+
+    #[wasm_bindgen]
+    pub fn wire__crate__api__update_health_settings(
+        port_: flutter_rust_bridge::for_generated::MessagePort,
+        threshold_bpm: u16,
+        sustained_secs: flutter_rust_bridge::for_generated::wasm_bindgen::JsValue,
+        quiet_start_hour: u8,
+        quiet_end_hour: u8,
+        notifications_enabled: bool,
+    ) {
+        wire__crate__api__update_health_settings_impl(
+            port_,
+            threshold_bpm,
+            sustained_secs,
+            quiet_start_hour,
+            quiet_end_hour,
+            notifications_enabled,
+        )
     }
 
     #[wasm_bindgen]

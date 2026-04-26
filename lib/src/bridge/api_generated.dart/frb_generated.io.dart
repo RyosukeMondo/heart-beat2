@@ -147,6 +147,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  );
+
+  @protected
   ApiSessionProgress
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     dynamic raw,
@@ -570,6 +576,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSample
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     SseDeserializer deserializer,
   );
 
@@ -1784,6 +1796,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ApiSessionProgress raw,
   );
@@ -2003,6 +2021,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
     ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
     SseSerializer serializer,
   );
 
@@ -2689,6 +2714,30 @@ class RustLibWire implements BaseWire {
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_api_analytics_data>)
           >();
+
+  void wire__crate__api__api_sample_bpm(int port_, int sample) {
+    return _wire__crate__api__api_sample_bpm(port_, sample);
+  }
+
+  late final _wire__crate__api__api_sample_bpmPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__api_sample_bpm',
+      );
+  late final _wire__crate__api__api_sample_bpm =
+      _wire__crate__api__api_sample_bpmPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__api_sample_ts_ms(int port_, int sample) {
+    return _wire__crate__api__api_sample_ts_ms(port_, sample);
+  }
+
+  late final _wire__crate__api__api_sample_ts_msPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__api_sample_ts_ms',
+      );
+  late final _wire__crate__api__api_sample_ts_ms =
+      _wire__crate__api__api_sample_ts_msPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__connect_device(
     int port_,

@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -41266878;
+  int get rustContentHash => 1554840755;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -112,6 +112,10 @@ abstract class RustLibApi extends BaseApi {
   });
 
   Future<int> crateApiAnalyticsWeeksCount({required ApiAnalyticsData data});
+
+  Future<int> crateApiApiSampleBpm({required ApiSample sample});
+
+  Future<BigInt> crateApiApiSampleTsMs({required ApiSample sample});
 
   Future<void> crateApiConnectDevice({required String deviceId});
 
@@ -799,6 +803,56 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "analytics_weeks_count",
         argNames: ["data"],
       );
+
+  @override
+  Future<int> crateApiApiSampleBpm({required ApiSample sample}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+                sample,
+              );
+          return wire.wire__crate__api__api_sample_bpm(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_16,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiSampleBpmConstMeta,
+        argValues: [sample],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiApiSampleBpmConstMeta =>
+      const TaskConstMeta(debugName: "api_sample_bpm", argNames: ["sample"]);
+
+  @override
+  Future<BigInt> crateApiApiSampleTsMs({required ApiSample sample}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+                sample,
+              );
+          return wire.wire__crate__api__api_sample_ts_ms(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_64,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiSampleTsMsConstMeta,
+        argValues: [sample],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiApiSampleTsMsConstMeta =>
+      const TaskConstMeta(debugName: "api_sample_ts_ms", argNames: ["sample"]);
 
   @override
   Future<void> crateApiConnectDevice({required String deviceId}) {
@@ -4007,6 +4061,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ApiSample
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ApiSampleImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   ApiSessionProgress
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     dynamic raw,
@@ -4964,6 +5027,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ApiPhaseProgressImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ApiSample
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ApiSampleImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -6113,6 +6188,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   int
+  cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    // ignore: invalid_use_of_internal_member
+    return (raw as ApiSampleImpl).frbInternalCstEncode(move: false);
+  }
+
+  @protected
+  int
   cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ApiSessionProgress raw,
   ) {
@@ -6512,6 +6597,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as ApiPhaseProgressImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ApiSampleImpl).frbInternalSseEncode(move: false),
       serializer,
     );
   }

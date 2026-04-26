@@ -1855,6 +1855,16 @@ pub async fn latest_sample() -> Result<Option<ApiSample>> {
     store.latest_sample().await
 }
 
+/// Returns the BPM of an HR sample.
+pub fn api_sample_bpm(sample: &ApiSample) -> u16 {
+    sample.bpm
+}
+
+/// Returns the Unix timestamp in milliseconds of an HR sample.
+pub fn api_sample_ts_ms(sample: &ApiSample) -> u64 {
+    sample.ts_ms
+}
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).
