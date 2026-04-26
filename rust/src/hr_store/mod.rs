@@ -5,6 +5,7 @@
 //! Flush on every write; rotate automatically when the local date changes.
 
 use anyhow::{Context, Result};
+use chrono::{NaiveDate, Local};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tokio::fs::{File, OpenOptions};
@@ -48,6 +49,7 @@ impl HrStore {
     /// Open (or create) the HR store under `data_dir/hr/`.
     ///
     /// Creates the `hr/` subdirectory if it does not exist.
+    /// Runs a 30-day retention sweep on startup.
     pub async fn new(data_dir: PathBuf) -> Result<Self> {
         let hr_dir = data_dir.join("hr");
         tokio::fs::create_dir_all(&hr_dir)
@@ -56,10 +58,40 @@ impl HrStore {
 
         let today_path = Self::today_path(&hr_dir);
 
-        Ok(Self {
+        let store = Self {
             hr_dir,
             today_path,
-        })
+        };
+
+        store.retention_sweep().await?;
+
+        Ok(store)
+    }
+
+    /// Delete all `<app_docs>/hr/*.jsonl` files older than 30 days.
+    ///
+    /// Date is parsed from the filename (YYYY-MM-DD.jsonl) rather than mtime,
+    /// since mtime can be unreliable across device reboots or file transfers.
+    pub async fn retention_sweep(&self) -> Result<()> {
+        let cutoff = Local::now().date_naive() - chrono::Duration::days(30);
+
+        let mut entries = tokio::fs::read_dir(&self.hr_dir).await?;
+        while let Some(entry) = entries.next_entry().await? {
+            let path = entry.path();
+            if path.extension().and_then(|s| s.to_str()) != Some("jsonl") {
+                continue;
+            }
+
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                if let Ok(date) = NaiveDate::parse_from_str(stem, "%Y-%m-%d") {
+                    if date < cutoff {
+                        tracing::debug!("Removing stale HR file: {:?}", path);
+                        tokio::fs::remove_file(&path).await?;
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     /// Returns the path where today's file should live.
@@ -495,5 +527,69 @@ mod tests {
         let avg = store.rolling_avg(3600).await.unwrap();
         assert!(avg.is_some());
         assert!((avg.unwrap() - 71.0).abs() < 0.01);
+    }
+
+    // ─── Retention sweep tests ────────────────────────────────────────────────
+
+    #[tokio::test]
+    async fn test_retention_sweep_removes_old_files() {
+        let dir = TempDir::new().unwrap();
+        let hr_dir = dir.path().join("hr");
+        tokio::fs::create_dir_all(&hr_dir).await.unwrap();
+
+        // Create a file with an old date in the name (35 days ago)
+        let old_date = Local::now().date_naive() - chrono::Duration::days(35);
+        let old_file = hr_dir.join(format!("{}.jsonl", old_date.format("%Y-%m-%d")));
+        tokio::fs::write(&old_file, "{\"ts_ms\":1,\"bpm\":60}\n").await.unwrap();
+
+        // Create a file with a recent date in the name (today)
+        let today_date = Local::now().date_naive();
+        let recent_file = hr_dir.join(format!("{}.jsonl", today_date.format("%Y-%m-%d")));
+        tokio::fs::write(&recent_file, "{\"ts_ms\":2,\"bpm\":70}\n").await.unwrap();
+
+        // Also create a file with a date 15 days ago (within retention)
+        let recent_date = Local::now().date_naive() - chrono::Duration::days(15);
+        let recent_file2 = hr_dir.join(format!("{}.jsonl", recent_date.format("%Y-%m-%d")));
+        tokio::fs::write(&recent_file2, "{\"ts_ms\":3,\"bpm\":75}\n").await.unwrap();
+
+        // Initialize store and run sweep
+        HrStore::new(dir.path().to_path_buf()).await.unwrap();
+
+        // Old file should be gone
+        assert!(!old_file.exists(), "Old file should have been deleted");
+
+        // Recent files should still exist
+        assert!(recent_file.exists(), "Today's file should still exist");
+        assert!(recent_file2.exists(), "15-day-old file should still exist");
+    }
+
+    #[tokio::test]
+    async fn test_retention_sweep_keeps_all_when_all_recent() {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new(dir.path().to_path_buf()).await.unwrap();
+
+        // Write some samples (creates today's file)
+        store.append(1000, 72, None).await.unwrap();
+
+        // Init again (should not error)
+        HrStore::new(dir.path().to_path_buf()).await.unwrap();
+        assert!(store.latest_sample().await.unwrap().is_some());
+    }
+
+    #[tokio::test]
+    async fn test_retention_sweep_handles_non_jsonl_files() {
+        let dir = TempDir::new().unwrap();
+        let hr_dir = dir.path().join("hr");
+        tokio::fs::create_dir_all(&hr_dir).await.unwrap();
+
+        // Create a non-jsonl file
+        tokio::fs::write(hr_dir.join("readme.txt"), "not a hr file").await.unwrap();
+
+        // Create a file with invalid date name
+        tokio::fs::write(hr_dir.join("invalid-date.jsonl"), "{}").await.unwrap();
+
+        // Init should not error
+        let store = HrStore::new(dir.path().to_path_buf()).await.unwrap();
+        assert!(store.latest_sample().await.unwrap().is_none());
     }
 }
