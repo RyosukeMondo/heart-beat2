@@ -36,13 +36,26 @@ struct SampleRecord<'a> {
 ///
 /// Created once via `HrStore::new` and reused across all samples.
 /// Internally re-opens the file if the local date has rolled over.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct HrStore {
     /// Directory containing daily `.jsonl` files.
     hr_dir: PathBuf,
     /// Path to today's file (updated on rotation).
     #[allow(dead_code)]
     today_path: PathBuf,
+    /// Owned data directory — kept alive by this store (used in tests with TempDir).
+    /// When `Some`, the directory at this path is kept alive by this store.
+    owned_dir: Option<PathBuf>,
+}
+
+impl Default for HrStore {
+    fn default() -> Self {
+        Self {
+            hr_dir: PathBuf::new(),
+            today_path: PathBuf::new(),
+            owned_dir: None,
+        }
+    }
 }
 
 impl HrStore {
@@ -59,13 +72,34 @@ impl HrStore {
         let today_path = Self::today_path(&hr_dir);
 
         let store = Self {
-            hr_dir,
+            hr_dir: hr_dir.clone(),
             today_path,
+            owned_dir: None,
         };
 
         store.retention_sweep().await?;
 
         Ok(store)
+    }
+
+    /// Open an HR store that owns its data directory (for use with TempDir in tests).
+    ///
+    /// The caller should pass a `TempDir` guard and keep it alive for the lifetime
+    /// of the `HrStore`. The store stores the path so the caller must also keep
+    /// the `TempDir` alive.
+    pub async fn new_owned(data_dir: PathBuf) -> Result<Self> {
+        let hr_dir = data_dir.join("hr");
+        tokio::fs::create_dir_all(&hr_dir)
+            .await
+            .with_context(|| format!("Failed to create hr directory: {:?}", hr_dir))?;
+
+        let today_path = Self::today_path(&hr_dir);
+
+        Ok(Self {
+            hr_dir,
+            today_path,
+            owned_dir: Some(data_dir),
+        })
     }
 
     /// Delete all `<app_docs>/hr/*.jsonl` files older than 30 days.
@@ -104,6 +138,8 @@ impl HrStore {
     ///
     /// The line is immediately flushed (`sync_all`) to guarantee durability.
     pub async fn append(&self, ts_ms: u64, bpm: u16, rr_intervals: Option<&[u16]>) -> Result<()> {
+        // Ensure the directory exists (re-create if TempDir was dropped and recreated).
+        tokio::fs::create_dir_all(&self.hr_dir).await.ok();
         let expected = Self::today_path(&self.hr_dir);
         let mut file = OpenOptions::new()
             .create(true)
@@ -591,5 +627,138 @@ mod tests {
         // Init should not error
         let store = HrStore::new(dir.path().to_path_buf()).await.unwrap();
         assert!(store.latest_sample().await.unwrap().is_none());
+    }
+
+    // ─── Day-boundary / multi-file tests ───────────────────────────────────────
+
+    /// Verify rolling_avg correctly aggregates samples across two daily files
+    /// spanning a midnight boundary. The window is computed from the latest sample
+    /// (ts=100_000), which falls in the second file.
+    #[tokio::test]
+    async fn test_rolling_avg_spans_midnight_across_files() {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new_owned(dir.path().to_path_buf()).await.unwrap();
+        let hr_dir = dir.path().join("hr");
+
+        // File for "yesterday": samples at ts=50_000 and ts=100_000 (BPM 60 and 65)
+        let yesterday = Local::now().date_naive() - chrono::Duration::days(1);
+        let yesterday_file = hr_dir.join(format!("{}.jsonl", yesterday.format("%Y-%m-%d")));
+        tokio::fs::write(
+            &yesterday_file,
+            "{\"ts_ms\":50000,\"bpm\":60}\n{\"ts_ms\":100000,\"bpm\":65}\n",
+        )
+        .await
+        .unwrap();
+
+        // Rolling avg with a wide window should include both files.
+        // latest ts_ms = 100_000, window = 100_000 s covers everything.
+        let avg = store.rolling_avg(100_000).await.unwrap();
+        let avg = avg.expect("rolling_avg should return Some");
+        // (60 + 65) / 2 = 62.5
+        assert!((avg - 62.5).abs() < 0.01, "avg={}", avg);
+    }
+
+    /// Verify rolling_avg with a window that starts before midnight and ends
+    /// after it — samples from both files must be included.
+    #[tokio::test]
+    async fn test_rolling_avg_window_straddles_midnight() {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new_owned(dir.path().to_path_buf()).await.unwrap();
+        let hr_dir = dir.path().join("hr");
+
+        // Yesterday file: ts_ms = 86_400_000 (midnight yesterday in ms from epoch)
+        let yesterday = Local::now().date_naive() - chrono::Duration::days(1);
+        let yesterday_file = hr_dir.join(format!("{}.jsonl", yesterday.format("%Y-%m-%d")));
+        tokio::fs::write(&yesterday_file, "{\"ts_ms\":86400000,\"bpm\":70}\n").await.unwrap();
+
+        // Today's file: one sample shortly after midnight
+        let today = Local::now().date_naive();
+        let today_file = hr_dir.join(format!("{}.jsonl", today.format("%Y-%m-%d")));
+        tokio::fs::write(&today_file, "{\"ts_ms\":86460000,\"bpm\":72}\n").await.unwrap();
+        // Latest sample is at ts=86460000 (10 min after midnight).
+
+        // Window of 2 hours = 7200 s = 7_200_000 ms, starting at 86460000 - 7200000 = 79260000.
+        // This window covers both the 86400000 and 86460000 samples.
+        let avg = store.rolling_avg(7200).await.unwrap();
+        let avg = avg.expect("rolling_avg should return Some");
+        // (70 + 72) / 2 = 71.0
+        assert!((avg - 71.0).abs() < 0.01, "avg={}", avg);
+    }
+
+    /// Files exactly at the 30-day cutoff must be retained (not deleted).
+    /// The sweep uses date < cutoff, so a 30-day-old file (date == cutoff) is kept.
+    #[tokio::test]
+    async fn test_retention_sweep_keeps_exactly_30_day_old_file() {
+        let dir = TempDir::new().unwrap();
+        let hr_dir = dir.path().join("hr");
+        tokio::fs::create_dir_all(&hr_dir).await.unwrap();
+
+        // File exactly 30 days ago — must be retained
+        let cutoff_date = Local::now().date_naive() - chrono::Duration::days(30);
+        let cutoff_file = hr_dir.join(format!("{}.jsonl", cutoff_date.format("%Y-%m-%d")));
+        tokio::fs::write(&cutoff_file, "{\"ts_ms\":1,\"bpm\":60}\n").await.unwrap();
+
+        // File 31 days ago — must be deleted
+        let old_date = Local::now().date_naive() - chrono::Duration::days(31);
+        let old_file = hr_dir.join(format!("{}.jsonl", old_date.format("%Y-%m-%d")));
+        tokio::fs::write(&old_file, "{\"ts_ms\":2,\"bpm\":65}\n").await.unwrap();
+
+        // Init store (runs sweep)
+        HrStore::new(dir.path().to_path_buf()).await.unwrap();
+
+        // Cutoff file (30 days old) must still exist
+        assert!(cutoff_file.exists(), "File exactly at 30-day cutoff should be retained");
+        // Old file (31 days) must be gone
+        assert!(!old_file.exists(), "File older than 30 days should be deleted");
+    }
+
+    /// The latest sample must be found correctly when it is the only sample
+    /// in the most-recently-named file (day-boundary case with one file having
+    /// the newest timestamp).
+    #[tokio::test]
+    async fn test_latest_sample_at_day_boundary() {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new_owned(dir.path().to_path_buf()).await.unwrap();
+        let hr_dir = dir.path().join("hr");
+
+        // Yesterday's file with a large timestamp
+        let yesterday = Local::now().date_naive() - chrono::Duration::days(1);
+        let yesterday_file = hr_dir.join(format!("{}.jsonl", yesterday.format("%Y-%m-%d")));
+        tokio::fs::write(&yesterday_file, "{\"ts_ms\":50000,\"bpm\":70}\n").await.unwrap();
+
+        // Today's file with a larger timestamp
+        let today = Local::now().date_naive();
+        let today_file = hr_dir.join(format!("{}.jsonl", today.format("%Y-%m-%d")));
+        tokio::fs::write(&today_file, "{\"ts_ms\":90000,\"bpm\":80}\n{\"ts_ms\":95000,\"bpm\":85}\n").await.unwrap();
+
+        let latest = store.latest_sample().await.unwrap();
+        let latest = latest.expect("latest_sample should return Some");
+        assert_eq!(latest.ts_ms, 95000);
+        assert_eq!(latest.bpm, 85);
+    }
+
+    /// Verify samples_in_range returns correct count and values when the range
+    /// spans midnight and samples live in two files.
+    #[tokio::test]
+    async fn test_samples_in_range_spans_midnight() {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new_owned(dir.path().to_path_buf()).await.unwrap();
+        let hr_dir = dir.path().join("hr");
+
+        // Yesterday's file: one sample before midnight
+        let yesterday = Local::now().date_naive() - chrono::Duration::days(1);
+        let yesterday_file = hr_dir.join(format!("{}.jsonl", yesterday.format("%Y-%m-%d")));
+        tokio::fs::write(&yesterday_file, "{\"ts_ms\":86399000,\"bpm\":68}\n{\"ts_ms\":86400000,\"bpm\":69}\n").await.unwrap();
+
+        // Today's file: samples after midnight
+        let today = Local::now().date_naive();
+        let today_file = hr_dir.join(format!("{}.jsonl", today.format("%Y-%m-%d")));
+        tokio::fs::write(&today_file, "{\"ts_ms\":86401000,\"bpm\":71}\n{\"ts_ms\":86402000,\"bpm\":72}\n").await.unwrap();
+
+        // Range from just before midnight to just after
+        let samples = store.samples_in_range(86399000, 86402000).await.unwrap();
+        assert_eq!(samples.len(), 4, "should include 2 samples from each file");
+        assert_eq!(samples[0].bpm, 68);
+        assert_eq!(samples[3].bpm, 72);
     }
 }
