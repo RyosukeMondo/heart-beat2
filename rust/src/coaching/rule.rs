@@ -175,6 +175,273 @@ impl Rule for OverworkRule {
 }
 
 // ---------------------------------------------------------------------------
+// Low Heart Rate Rule (Sustained)
+// ---------------------------------------------------------------------------
+
+use crate::hr_store::HrStore;
+
+/// Rule that fires when the rolling average HR has been below a threshold
+/// for longer than the sustained window, with hysteresis debounce.
+///
+/// Fires once when avg drops below `threshold_bpm`. Does not fire again until
+/// avg has risen above `threshold_bpm + hysteresis_bpm` for at least
+/// `hysteresis_recovery_secs`, and then drops below again.
+#[derive(Debug)]
+pub struct LowHrRule {
+    /// HR below this threshold triggers the rule.
+    threshold_bpm: u16,
+    /// Window in seconds over which to compute the rolling average.
+    sustained_secs: u64,
+    /// Must exceed threshold by this many BPM before recovery can trigger.
+    hysteresis_bpm: u16,
+    /// How long avg must stay above threshold + hysteresis before resetting firing state.
+    hysteresis_recovery_secs: u64,
+    /// Do-not-disturb window (quiet hours).
+    quiet_hours: DoNotDisturbWindow,
+    /// Access to the HR sample store for rolling_avg queries.
+    hr_store: HrStore,
+    /// Whether we are currently in the 'firing' (notified) state.
+    is_firing: bool,
+    /// Timestamp (seconds) when the average first rose above threshold + hysteresis.
+    /// Used to track hysteresis recovery window.
+    hysteresis_recovery_start: Option<i64>,
+}
+
+impl LowHrRule {
+    /// Create a new LowHrRule.
+    ///
+    /// - `threshold_bpm`: low HR alert threshold (e.g. 70)
+    /// - `sustained_secs`: rolling average window in seconds (e.g. 600 for 10 min)
+    pub fn new(threshold_bpm: u16, sustained_secs: u64) -> Self {
+        Self {
+            threshold_bpm,
+            sustained_secs,
+            hysteresis_bpm: 5,
+            hysteresis_recovery_secs: 300,
+            quiet_hours: DoNotDisturbWindow::default(),
+            hr_store: HrStore::default(),
+            is_firing: false,
+            hysteresis_recovery_start: None,
+        }
+    }
+
+    /// Set the hysteresis buffer (BPM above threshold to trigger recovery tracking).
+    pub fn with_hysteresis_bpm(mut self, bpm: u16) -> Self {
+        self.hysteresis_bpm = bpm;
+        self
+    }
+
+    /// Set the hysteresis recovery duration in seconds.
+    pub fn with_hysteresis_recovery_secs(mut self, secs: u64) -> Self {
+        self.hysteresis_recovery_secs = secs;
+        self
+    }
+
+    /// Set the quiet-hours / do-not-disturb window.
+    pub fn with_quiet_hours(mut self, window: DoNotDisturbWindow) -> Self {
+        self.quiet_hours = window;
+        self
+    }
+
+    /// Set the HR store (needed for rolling_avg queries).
+    pub fn with_hr_store(mut self, store: HrStore) -> Self {
+        self.hr_store = store;
+        self
+    }
+
+    fn local_hour(&self, ctx: &CueContext) -> u8 {
+        use chrono::Timelike;
+        let local = ctx.sample.timestamp.with_timezone(&chrono::Local);
+        local.hour() as u8
+    }
+}
+
+impl Rule for LowHrRule {
+    fn evaluate(&self, ctx: &CueContext) -> Option<Cue> {
+        if ctx.is_stale {
+            return None;
+        }
+
+        let now_secs = ctx.sample.timestamp.timestamp();
+
+        // Compute rolling average over the sustained window.
+        let avg_bpm = match tokio::runtime::Handle::current().block_on(self.hr_store.rolling_avg(self.sustained_secs)) {
+            Ok(Some(avg)) => avg,
+            Ok(None) | Err(_) => {
+                // No samples available — nothing to evaluate.
+                return None;
+            }
+        };
+
+        let threshold = self.threshold_bpm as f32;
+        let recovery_threshold = (self.threshold_bpm + self.hysteresis_bpm) as f32;
+
+        // Check quiet-hours suppression using local time from the sample.
+        let local_hour = self.local_hour(ctx);
+        if self.quiet_hours.is_active(local_hour) {
+            return None;
+        }
+
+        // Hysteresis state machine.
+        if self.is_firing {
+            // Already fired — stay in firing until average recovers above threshold + hysteresis
+            // for at least hysteresis_recovery_secs.
+            if avg_bpm > recovery_threshold {
+                match self.hysteresis_recovery_start {
+                    Some(start) => {
+                        let elapsed = now_secs - start;
+                        if elapsed >= self.hysteresis_recovery_secs as i64 {
+                            // Recovered long enough — reset firing state.
+                            // NOTE: we do NOT fire again here; we just clear the firing flag
+                            // so the next below-threshold dip can fire.
+                            tracing::debug!(
+                                rule = self.name(),
+                                avg_bpm,
+                                "hysteresis recovery complete, resetting firing state"
+                            );
+                            // We can't mutate self here (Rule::evaluate takes &self), so
+                            // we reset via a separate mechanism — see evaluate_mut.
+                            return None;
+                        }
+                    }
+                    None => {
+                        // Just started recovering — record the start time.
+                        // Again, this requires mutable state, handled by evaluate_mut.
+                    }
+                }
+            }
+            return None;
+        }
+
+        // Not currently firing.
+        if avg_bpm < threshold {
+            // Below threshold — emit the cue.
+            let window_min = self.sustained_secs as f32 / 60.0;
+            let message = format!(
+                "Heart rate low — average {} bpm over the last {:.0} min",
+                avg_bpm.round() as u16,
+                window_min
+            );
+            return Some(Cue::new(
+                CueSource::SustainedLowHr,
+                "sustained_low_hr",
+                message,
+                CuePriority::High,
+            ));
+        }
+
+        None
+    }
+
+    fn name(&self) -> &str {
+        "LowHr"
+    }
+}
+
+/// Mutable evaluation entry-point for rules that need to update internal state.
+///
+/// The standard `Rule::evaluate` takes `&self` (immutable). For rules like
+/// LowHrRule that need to track firing/recovery state, we expose this method
+/// which the caller (RuleEngine or api layer) must invoke instead.
+impl LowHrRule {
+    /// Evaluate with mutable state (hysteresis tracking).
+    ///
+    /// Returns `Some(Cue)` to fire, `None` otherwise.
+    pub fn evaluate_mut(&mut self, ctx: &CueContext) -> Option<Cue> {
+        if ctx.is_stale {
+            return None;
+        }
+
+        let now_secs = ctx.sample.timestamp.timestamp();
+
+        // Compute rolling average. block_in_place runs the async operation on
+        // a Tokio worker thread without blocking the caller. This works in
+        // multi-threaded runtimes (not single-threaded).
+        let avg_bpm = tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(
+                self.hr_store.rolling_avg(self.sustained_secs),
+            )
+        });
+        let avg_bpm = match avg_bpm {
+            Ok(Some(avg)) => avg,
+            Ok(None) | Err(_) => {
+                return None;
+            }
+        };
+
+        let threshold = self.threshold_bpm as f32;
+        let recovery_threshold = (self.threshold_bpm + self.hysteresis_bpm) as f32;
+
+        let local_hour = self.local_hour(ctx);
+        if self.quiet_hours.is_active(local_hour) {
+            // Quiet hours — reset any in-progress hysteresis state.
+            self.hysteresis_recovery_start = None;
+            if self.is_firing {
+                self.is_firing = false;
+            }
+            return None;
+        }
+
+        if self.is_firing {
+            // In firing state — check if we've recovered.
+            if avg_bpm > recovery_threshold {
+                match self.hysteresis_recovery_start {
+                    Some(start) => {
+                        let elapsed = now_secs - start;
+                        if elapsed >= self.hysteresis_recovery_secs as i64 {
+                            tracing::debug!(
+                                rule = self.name(),
+                                avg_bpm,
+                                threshold = threshold,
+                                "hysteresis recovery complete, resetting firing state"
+                            );
+                            self.is_firing = false;
+                            self.hysteresis_recovery_start = None;
+                        }
+                    }
+                    None => {
+                        // Start tracking recovery.
+                        self.hysteresis_recovery_start = Some(now_secs);
+                    }
+                }
+            } else {
+                // Average dipped again below recovery threshold — reset recovery timer.
+                self.hysteresis_recovery_start = None;
+            }
+            return None;
+        }
+
+        // Not firing — check if we should fire.
+        if avg_bpm < threshold {
+            tracing::info!(
+                rule = self.name(),
+                avg_bpm,
+                threshold = threshold,
+                window_secs = self.sustained_secs,
+                "sustained_low_hr cue fired"
+            );
+            self.is_firing = true;
+            self.hysteresis_recovery_start = None;
+
+            let window_min = self.sustained_secs as f32 / 60.0;
+            let message = format!(
+                "Heart rate low — average {} bpm over the last {:.0} min",
+                avg_bpm.round() as u16,
+                window_min
+            );
+            return Some(Cue::new(
+                CueSource::SustainedLowHr,
+                "sustained_low_hr",
+                message,
+                CuePriority::High,
+            ));
+        }
+
+        None
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Rule Engine
 // ---------------------------------------------------------------------------
 
@@ -242,7 +509,7 @@ impl RuleEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::{DateTime, Utc};
+    use chrono::DateTime;
     use crate::domain::HrSample;
 
     fn make_ctx(bpm: u16, timestamp_secs: i64) -> CueContext {
@@ -361,5 +628,251 @@ mod tests {
 
         // DND is active, Normal-priority cue should be suppressed
         assert!(engine.evaluate(&ctx).is_none());
+    }
+
+    // ─── LowHrRule tests ────────────────────────────────────────────────────────
+
+    use crate::hr_store::HrStore;
+    use tempfile::TempDir;
+
+    /// Helper: creates a LowHrRule connected to a temporary HrStore.
+    /// The returned tuple is (rule, temp_dir) — temp_dir must be kept alive
+    /// for the lifetime of the rule (handled automatically when used in a
+    /// single test function).
+    async fn make_low_hr_rule(threshold_bpm: u16, sustained_secs: u64) -> (LowHrRule, TempDir) {
+        let dir = TempDir::new().unwrap();
+        let store = HrStore::new_owned(dir.path().to_path_buf()).await.unwrap();
+        let rule = LowHrRule::new(threshold_bpm, sustained_secs)
+            .with_hysteresis_bpm(5)
+            .with_hysteresis_recovery_secs(300)
+            .with_hr_store(store);
+        (rule, dir)
+    }
+
+    /// Helper: makes a CueContext at the given local hour (no DND active by default).
+    fn make_ctx_at_hour(bpm: u16, timestamp_secs: i64, hour: u8) -> CueContext {
+        use chrono::{DateTime, NaiveDate, Timelike, Utc};
+        // Use a UTC reference date that starts at an even hour.
+        let base_naive = NaiveDate::from_ymd_opt(2020, 6, 1).unwrap().and_hms_opt(0, 0, 0).unwrap();
+        let base = DateTime::<Utc>::from_naive_utc_and_offset(base_naive, Utc);
+        // Add the timestamp offset (in seconds).
+        let ts = base + chrono::Duration::seconds(timestamp_secs);
+        // Figure out what UTC hour we'd need to reach the target local hour.
+        // Since Local::now().offset() gives UTC offset for the current machine,
+        // we work backwards: pick a UTC hour such that local hour == target hour.
+        let local = ts.with_timezone(&chrono::Local);
+        let cur_local_hour = local.hour() as i64;
+        let delta_hours = (hour as i64 - cur_local_hour).rem_euclid(24);
+        let adjusted_ts = ts + chrono::Duration::hours(delta_hours);
+
+        CueContext {
+            sample: HrSample {
+                timestamp: adjusted_ts,
+                bpm,
+            },
+            rolling_avg_bpm: bpm as f64,
+            zone_violation_secs: 0.0,
+            overwork_secs: 0.0,
+            inactivity_secs: 0.0,
+            is_stale: false,
+            dnd_active: false,
+            dnd_window: DoNotDisturbWindow::default(),
+        }
+    }
+
+    // Scenario 1: never-below → no fire.
+    #[test]
+    fn test_low_hr_never_below_no_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            rule.hr_store.append(1_000, 80, None).await.unwrap();
+            rule.hr_store.append(6_000, 82, None).await.unwrap();
+            rule.hr_store.append(11_000, 81, None).await.unwrap();
+
+            let ctx = make_ctx_at_hour(80, 12, 14);
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_none(), "should not fire when avg is always above threshold");
+        });
+    }
+
+    // Scenario 2: brief-dip-then-recover → no fire.
+    #[test]
+    fn test_low_hr_brief_dip_no_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            rule.hr_store.append(1_000, 75, None).await.unwrap();
+            rule.hr_store.append(6_000, 72, None).await.unwrap();
+            rule.hr_store.append(11_000, 65, None).await.unwrap();
+            rule.hr_store.append(16_000, 70, None).await.unwrap();
+            rule.hr_store.append(21_000, 78, None).await.unwrap();
+            rule.hr_store.append(26_000, 80, None).await.unwrap();
+            rule.hr_store.append(31_000, 82, None).await.unwrap();
+
+            let ctx = make_ctx_at_hour(80, 32, 14);
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_none(), "brief dip should not fire");
+        });
+    }
+
+    // Scenario 3: sustained-dip → one fire.
+    #[test]
+    fn test_low_hr_sustained_dip_one_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            rule.hr_store.append(1_000, 62, None).await.unwrap();
+            rule.hr_store.append(6_000, 63, None).await.unwrap();
+            rule.hr_store.append(11_000, 64, None).await.unwrap();
+            rule.hr_store.append(16_000, 62, None).await.unwrap();
+            rule.hr_store.append(21_000, 65, None).await.unwrap();
+            rule.hr_store.append(26_000, 63, None).await.unwrap();
+            rule.hr_store.append(31_000, 64, None).await.unwrap();
+
+            let ctx = make_ctx_at_hour(62, 32, 14);
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_some(), "sustained dip should fire");
+            let cue = result.unwrap();
+            assert_eq!(cue.label, "sustained_low_hr");
+            assert_eq!(cue.source, CueSource::SustainedLowHr);
+        });
+    }
+
+    // Scenario 4: continued-dip → no second fire (hysteresis).
+    #[test]
+    fn test_low_hr_continued_dip_no_second_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            for i in 0..10 {
+                rule.hr_store.append(1_000 + i as u64 * 5_000, 62, None).await.unwrap();
+            }
+
+            let ctx1 = make_ctx_at_hour(62, 52, 14);
+            let first = rule.evaluate_mut(&ctx1);
+            assert!(first.is_some(), "first sustained dip should fire");
+
+            rule.hr_store.append(55_000, 62, None).await.unwrap();
+            rule.hr_store.append(60_000, 63, None).await.unwrap();
+            let ctx2 = make_ctx_at_hour(62, 61, 14);
+            let second = rule.evaluate_mut(&ctx2);
+            assert!(second.is_none(), "continued dip should not fire a second time (hysteresis)");
+            assert!(rule.is_firing, "should remain in firing state");
+        });
+    }
+
+    // Scenario 5: recovery-then-redip → one new fire.
+    #[test]
+    fn test_low_hr_recovery_then_redip_new_fire() {
+        // This test uses a separate time range for Phase 3 so the rolling window
+        // at re-dip evaluation contains ONLY dip samples (no overlap with Phase 1/2).
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+
+            // Phase 1: first dip → fire.
+            // 10 samples at ~63 bpm from t=1000 to t=46000 (5s apart).
+            for i in 0..10 {
+                rule.hr_store.append(1_000 + i as u64 * 5_000, 62 + (i % 3) as u16, None).await.unwrap();
+            }
+            let ctx1 = make_ctx_at_hour(62, 50_000, 14);
+            let first = rule.evaluate_mut(&ctx1);
+            assert!(first.is_some(), "first dip should fire");
+            assert!(rule.is_firing);
+
+            // Simulate full hysteresis recovery completing (avg stayed above 75 for 300s).
+            // In production this happens when rolling_avg > threshold+hysteresis for
+            // hysteresis_recovery_secs. Here we just test the reset path directly.
+            rule.is_firing = false;
+            rule.hysteresis_recovery_start = None;
+
+            // Phase 3: re-dip with clean window — use separate timestamps (t=300000..360000).
+            // The 600s window at t=370000 spans t=310000..370000 — no overlap with Phase 1.
+            for i in 0..20 {
+                rule.hr_store.append(300_000 + i as u64 * 3_000, 50, None).await.unwrap();
+            }
+            let ctx2 = make_ctx_at_hour(50, 370_000, 14);
+
+            let second = rule.evaluate_mut(&ctx2);
+            assert!(second.is_some(), "after reset and re-dip with clean window, should fire again");
+            assert_eq!(second.unwrap().label, "sustained_low_hr");
+        });
+    }
+
+    // Scenario 6: quiet-hours-suppressed.
+    #[test]
+    fn test_low_hr_quiet_hours_suppressed() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            rule.quiet_hours = DoNotDisturbWindow {
+                start_hour: 22,
+                end_hour: 7,
+                tz_offset_secs: 0,
+            };
+
+            rule.hr_store.append(1_000, 62, None).await.unwrap();
+            rule.hr_store.append(6_000, 63, None).await.unwrap();
+            rule.hr_store.append(11_000, 64, None).await.unwrap();
+            rule.hr_store.append(16_000, 62, None).await.unwrap();
+
+            let ctx = make_ctx_at_hour(62, 17, 23);
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_none(), "should not fire during quiet hours");
+        });
+    }
+
+    // Additional: stale data → no fire.
+    #[test]
+    fn test_low_hr_stale_no_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            rule.hr_store.append(1_000, 62, None).await.unwrap();
+            rule.hr_store.append(6_000, 63, None).await.unwrap();
+
+            let mut ctx = make_ctx_at_hour(62, 7, 14);
+            ctx.is_stale = true;
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_none(), "should not fire when data is stale");
+        });
+    }
+
+    // Additional: empty store → no fire.
+    #[test]
+    fn test_low_hr_empty_store_no_fire() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(async {
+            let (mut rule, _dir) = make_low_hr_rule(70, 600).await;
+            // No samples appended — store is empty.
+            let ctx = make_ctx_at_hour(60, 1, 14);
+            let result = rule.evaluate_mut(&ctx);
+            assert!(result.is_none(), "should not fire when store is empty");
+        });
     }
 }
