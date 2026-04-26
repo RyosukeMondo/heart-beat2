@@ -11,6 +11,7 @@ use crate::domain::heart_rate::{parse_heart_rate, DiscoveredDevice, FilteredHear
 use crate::domain::training_plan::TrainingPlan;
 use crate::frb_generated::StreamSink;
 use crate::debug_http;
+use crate::hr_store::HrStore;
 use crate::logging::{emit_log, subscribe_log_stream};
 use crate::ports::{BleAdapter, NotificationPort, SessionRepository};
 use crate::scheduler::executor::SessionExecutor;
@@ -186,6 +187,9 @@ static CONNECTION_STATE: OnceLock<tokio::sync::Mutex<Option<ConnectionState>>> =
 
 // Global coaching rule engine (lives for the lifetime of the app session)
 static COACHING_ENGINE: OnceLock<tokio::sync::Mutex<RuleEngine>> = OnceLock::new();
+
+// Global HR store for persisting heart rate samples to JSONL
+static HR_STORE: OnceLock<tokio::sync::Mutex<Option<HrStore>>> = OnceLock::new();
 
 /// Stub notification port for battery monitoring.
 /// This is a temporary implementation until full notification system is wired up.
@@ -832,6 +836,8 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                 // Initialize Kalman filter for this connection
                 // Using default parameters (process_noise=0.1, measurement_noise=2.0)
                 let mut kalman_filter = KalmanFilter::default();
+                // Duplicate suppression: track last sample timestamp to drop duplicates within 500ms
+                let mut last_sample_ts: Option<u64> = None;
 
                 while let Some(data) = hr_receiver.recv().await {
                     // Capture high-precision timestamp immediately upon receiving notification
@@ -881,6 +887,15 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 .duration_since(std::time::UNIX_EPOCH)
                                 .map(|d| d.as_millis() as u64)
                                 .unwrap_or(0);
+
+                            // Drop duplicates within 500ms (some straps spam)
+                            if let Some(last_ts) = last_sample_ts {
+                                if timestamp.saturating_sub(last_ts) < 500 {
+                                    tracing::trace!("Dropping duplicate HR sample within 500ms");
+                                    continue;
+                                }
+                            }
+                            last_sample_ts = Some(timestamp);
 
                             // Convert receive_timestamp to microseconds for UI latency calculation
                             let receive_timestamp_micros =
@@ -937,6 +952,16 @@ pub async fn connect_device(device_id: String) -> Result<()> {
                                 if let Some(cue) = engine_guard.evaluate(&ctx) {
                                     emit_cue(cue);
                                 }
+                            }
+
+                            // Persist the sample to JSONL (ignore errors - store is best-effort)
+                            if let Ok(store) = get_hr_store().await {
+                                let rr_ref: Option<&[u16]> = if measurement.rr_intervals.is_empty() {
+                                    None
+                                } else {
+                                    Some(&measurement.rr_intervals)
+                                };
+                                let _ = store.append(timestamp, filtered_data.filtered_bpm, rr_ref).await;
                             }
                         }
                         Err(e) => {
@@ -1716,6 +1741,23 @@ async fn get_session_repository() -> Result<Arc<FileSessionRepository>> {
     let repo = Arc::new(FileSessionRepository::with_directory(sessions_dir).await?);
     *guard = Some(repo.clone());
     Ok(repo)
+}
+
+/// Get or create the global HR store instance for persisting samples to JSONL.
+async fn get_hr_store() -> Result<HrStore> {
+    let mutex = HR_STORE.get_or_init(|| tokio::sync::Mutex::new(None));
+    let mut guard = mutex.lock().await;
+
+    if let Some(ref store) = *guard {
+        return Ok(store.clone());
+    }
+
+    // Create new HR store with the correct data directory
+    let data_dir = get_data_dir()?;
+    tracing::info!("Creating HrStore at {:?}", data_dir);
+    let store = HrStore::new(data_dir).await?;
+    *guard = Some(store.clone());
+    Ok(store)
 }
 
 /// List all completed training sessions.
@@ -3269,66 +3311,6 @@ pub async fn get_resting_hr_stats() -> Result<ApiRestingHrStats> {
             })
             .collect(),
     })
-}
-
-/// JNI_OnLoad - Initialize Android context and btleplug for JNI operations
-///
-/// This function is called by the Android runtime when the native library is loaded.
-/// It initializes the ndk-context and btleplug while we have access to the app's classloader.
-#[cfg(target_os = "android")]
-#[no_mangle]
-pub extern "C" fn JNI_OnLoad(vm: jni::JavaVM, _res: *mut std::os::raw::c_void) -> jni::sys::jint {
-    use std::ffi::c_void;
-
-    // Initialize android_logger FIRST so we can see all logs
-    android_logger::init_once(
-        android_logger::Config::default()
-            .with_max_level(LevelFilter::Debug)
-            .with_tag("heart_beat"),
-    );
-
-    log::info!("JNI_OnLoad: Starting initialization");
-
-    let vm_ptr = vm.get_java_vm_pointer() as *mut c_void;
-    unsafe {
-        ndk_context::initialize_android_context(vm_ptr, _res);
-    }
-    log::info!("JNI_OnLoad: NDK context initialized");
-
-    // Initialize btleplug and jni-utils while we have access to the main thread's classloader
-    // This must be done here, not later from Flutter, because the classloader
-    // context is only correct during JNI_OnLoad
-    match vm.get_env() {
-        Ok(mut env) => {
-            log::info!("JNI_OnLoad: Got JNI environment");
-
-            // Initialize jni-utils first (required by btleplug's async operations)
-            log::info!("JNI_OnLoad: Initializing jni-utils");
-            if let Err(e) = jni_utils::init(&mut env) {
-                log::error!("JNI_OnLoad: jni-utils init failed: {:?}", e);
-            } else {
-                log::info!("JNI_OnLoad: jni-utils initialized successfully");
-            }
-
-            // Then initialize btleplug
-            log::info!("JNI_OnLoad: Initializing btleplug");
-            match btleplug::platform::init(&mut env) {
-                Ok(()) => {
-                    log::info!("JNI_OnLoad: btleplug initialized successfully");
-                }
-                Err(e) => {
-                    // Log error but don't fail - btleplug may already be initialized
-                    log::error!("JNI_OnLoad: btleplug init failed: {}", e);
-                }
-            }
-        }
-        Err(e) => {
-            log::error!("JNI_OnLoad: Failed to get JNI environment: {:?}", e);
-        }
-    }
-
-    log::info!("JNI_OnLoad: Initialization complete");
-    jni::JNIVersion::V6.into()
 }
 
 #[cfg(test)]

@@ -23,6 +23,7 @@ struct SampleRecord<'a> {
 ///
 /// Created once via `HrStore::new` and reused across all samples.
 /// Internally re-opens the file if the local date has rolled over.
+#[derive(Clone)]
 pub struct HrStore {
     /// Directory containing daily `.jsonl` files.
     hr_dir: PathBuf,
