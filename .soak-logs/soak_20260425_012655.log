@@ -1,0 +1,15 @@
+Heart Beat Coaching Soak Test
+Started: 2026年 4月25日 土曜日 01時27分48秒 JST
+Duration: 30s
+Pattern: interval 70-120 BPM
+----------------------------------------
+Expected interval cycles: 0
+----------------------------------------
+Soak Test Complete
+Duration: 30s
+Disconnects: 0
+Reconnects: 0
+Cues fired: 0
+Battery start: 85%
+Battery end: 85%
+Battery drain: 0%

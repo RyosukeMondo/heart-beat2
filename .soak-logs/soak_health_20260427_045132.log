@@ -1,0 +1,18 @@
+Heart Beat Health Monitoring Soak Test
+Started: 2026年 4月27日 月曜日 04時51分32秒 JST
+Duration: 60s
+Threshold: 70 bpm, sustained 10 min
+Pattern: 58-62 BPM (resting)
+Expected samples: ~60
+----------------------------------------
+----------------------------------------
+Soak Test Complete
+Duration: 60s
+Threshold: 70 bpm
+Sustained window: 10 min
+Sample count: 58
+Notification count: 0
+Battery start: 92%
+Battery end: 91%
+Battery drain: 1%
+Battery drain rate: 60.00%/h

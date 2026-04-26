@@ -1,0 +1,1 @@
+duration=60 sample_count=58 notification_count=0 battery_start=92 battery_end=91
