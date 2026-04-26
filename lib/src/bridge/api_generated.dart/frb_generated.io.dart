@@ -36,6 +36,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgressPtr;
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ApiSamplePtr => wire
+      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ApiSessionProgressPtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgressPtr;
 
@@ -79,6 +83,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSample
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     dynamic raw,
   );
 
@@ -181,6 +191,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    dynamic raw,
+  );
+
+  @protected
+  ApiSample
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     dynamic raw,
   );
 
@@ -298,6 +314,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample
+  dco_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  );
+
+  @protected
   ApiAnalyticsData dco_decode_box_autoadd_api_analytics_data(dynamic raw);
 
   @protected
@@ -311,6 +333,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ApiWeeklySummary dco_decode_box_autoadd_api_weekly_summary(dynamic raw);
+
+  @protected
+  double dco_decode_box_autoadd_f_32(dynamic raw);
 
   @protected
   double dco_decode_box_autoadd_f_64(dynamic raw);
@@ -334,6 +359,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExportFormat dco_decode_export_format(dynamic raw);
 
   @protected
+  double dco_decode_f_32(dynamic raw);
+
+  @protected
   double dco_decode_f_64(dynamic raw);
 
   @protected
@@ -347,6 +375,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int dco_decode_i_8(dynamic raw);
+
+  @protected
+  List<ApiSample>
+  dco_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  );
 
   @protected
   List<ApiSessionSummaryPreview>
@@ -397,10 +431,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample?
+  dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    dynamic raw,
+  );
+
+  @protected
   ApiTrendPoint? dco_decode_opt_box_autoadd_api_trend_point(dynamic raw);
 
   @protected
   ApiWeeklySummary? dco_decode_opt_box_autoadd_api_weekly_summary(dynamic raw);
+
+  @protected
+  double? dco_decode_opt_box_autoadd_f_32(dynamic raw);
 
   @protected
   double? dco_decode_opt_box_autoadd_f_64(dynamic raw);
@@ -467,6 +510,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSample
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     SseDeserializer deserializer,
   );
 
@@ -569,6 +618,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ApiPhaseProgress
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ApiSample
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
     SseDeserializer deserializer,
   );
 
@@ -700,6 +755,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample
+  sse_decode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiAnalyticsData sse_decode_box_autoadd_api_analytics_data(
     SseDeserializer deserializer,
   );
@@ -721,6 +782,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ApiWeeklySummary sse_decode_box_autoadd_api_weekly_summary(
     SseDeserializer deserializer,
   );
+
+  @protected
+  double sse_decode_box_autoadd_f_32(SseDeserializer deserializer);
 
   @protected
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer);
@@ -746,6 +810,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExportFormat sse_decode_export_format(SseDeserializer deserializer);
 
   @protected
+  double sse_decode_f_32(SseDeserializer deserializer);
+
+  @protected
   double sse_decode_f_64(SseDeserializer deserializer);
 
   @protected
@@ -759,6 +826,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int sse_decode_i_8(SseDeserializer deserializer);
+
+  @protected
+  List<ApiSample>
+  sse_decode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<ApiSessionSummaryPreview>
@@ -819,6 +892,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ApiSample?
+  sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ApiTrendPoint? sse_decode_opt_box_autoadd_api_trend_point(
     SseDeserializer deserializer,
   );
@@ -827,6 +906,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ApiWeeklySummary? sse_decode_opt_box_autoadd_api_weekly_summary(
     SseDeserializer deserializer,
   );
+
+  @protected
+  double? sse_decode_opt_box_autoadd_f_32(SseDeserializer deserializer);
 
   @protected
   double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer);
@@ -996,6 +1078,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.UintPtr>
+  cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire
+        .cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+          cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+            raw,
+          ),
+        );
+  }
+
+  @protected
   ffi.Pointer<wire_cst_api_analytics_data>
   cst_encode_box_autoadd_api_analytics_data(ApiAnalyticsData raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -1041,6 +1137,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.Float> cst_encode_box_autoadd_f_32(double raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire.cst_new_box_autoadd_f_32(cst_encode_f_32(raw));
+  }
+
+  @protected
   ffi.Pointer<ffi.Double> cst_encode_box_autoadd_f_64(double raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return wire.cst_new_box_autoadd_f_64(cst_encode_f_64(raw));
@@ -1077,6 +1179,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int cst_encode_i_64(PlatformInt64 raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.toInt();
+  }
+
+  @protected
+  ffi.Pointer<
+    wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+  >
+  cst_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    List<ApiSample> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire
+        .cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+          raw.length,
+        );
+    for (var i = 0; i < raw.length; ++i) {
+      ans.ref.ptr[i] =
+          cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+            raw[i],
+          );
+    }
+    return ans;
   }
 
   @protected
@@ -1229,6 +1352,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.UintPtr>
+  cst_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample? raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+            raw,
+          );
+  }
+
+  @protected
   ffi.Pointer<wire_cst_api_trend_point>
   cst_encode_opt_box_autoadd_api_trend_point(ApiTrendPoint? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -1244,6 +1380,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     return raw == null
         ? ffi.nullptr
         : cst_encode_box_autoadd_api_weekly_summary(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.Float> cst_encode_opt_box_autoadd_f_32(double? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? ffi.nullptr : cst_encode_box_autoadd_f_32(raw);
   }
 
   @protected
@@ -1582,6 +1724,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  );
+
+  @protected
+  int
   cst_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ApiSessionProgress raw,
   );
@@ -1684,6 +1832,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int
+  cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample raw,
+  );
+
+  @protected
+  int
   cst_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ApiSessionProgress raw,
   );
@@ -1717,6 +1871,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int cst_encode_export_format(ExportFormat raw);
+
+  @protected
+  double cst_encode_f_32(double raw);
 
   @protected
   double cst_encode_f_64(double raw);
@@ -1776,6 +1933,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
     ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
     SseSerializer serializer,
   );
 
@@ -1895,6 +2059,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiPhaseProgress(
     ApiPhaseProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
     SseSerializer serializer,
   );
 
@@ -2061,6 +2232,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void
+  sse_encode_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_api_analytics_data(
     ApiAnalyticsData self,
     SseSerializer serializer,
@@ -2086,6 +2264,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     ApiWeeklySummary self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_box_autoadd_f_32(double self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer);
@@ -2115,6 +2296,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_export_format(ExportFormat self, SseSerializer serializer);
 
   @protected
+  void sse_encode_f_32(double self, SseSerializer serializer);
+
+  @protected
   void sse_encode_f_64(double self, SseSerializer serializer);
 
   @protected
@@ -2128,6 +2312,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_i_8(int self, SseSerializer serializer);
+
+  @protected
+  void
+  sse_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    List<ApiSample> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void
@@ -2204,6 +2395,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void
+  sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ApiSample? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_api_trend_point(
     ApiTrendPoint? self,
     SseSerializer serializer,
@@ -2214,6 +2412,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     ApiWeeklySummary? self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_opt_box_autoadd_f_32(double? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer);
@@ -3305,6 +3506,17 @@ class RustLibWire implements BaseWire {
   late final _wire__crate__api__init_platform =
       _wire__crate__api__init_platformPtr.asFunction<void Function(int)>();
 
+  void wire__crate__api__latest_sample(int port_) {
+    return _wire__crate__api__latest_sample(port_);
+  }
+
+  late final _wire__crate__api__latest_samplePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'frbgen_heart_beat_wire__crate__api__latest_sample',
+      );
+  late final _wire__crate__api__latest_sample =
+      _wire__crate__api__latest_samplePtr.asFunction<void Function(int)>();
+
   void wire__crate__api__list_plans(int port_) {
     return _wire__crate__api__list_plans(port_);
   }
@@ -3411,6 +3623,29 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__resume_workout =
       _wire__crate__api__resume_workoutPtr.asFunction<void Function(int)>();
+
+  void wire__crate__api__rolling_avg(int port_, int window_secs) {
+    return _wire__crate__api__rolling_avg(port_, window_secs);
+  }
+
+  late final _wire__crate__api__rolling_avgPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Uint64)>>(
+        'frbgen_heart_beat_wire__crate__api__rolling_avg',
+      );
+  late final _wire__crate__api__rolling_avg = _wire__crate__api__rolling_avgPtr
+      .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__samples_in_range(int port_, int start_ms, int end_ms) {
+    return _wire__crate__api__samples_in_range(port_, start_ms, end_ms);
+  }
+
+  late final _wire__crate__api__samples_in_rangePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Uint64, ffi.Uint64)>
+      >('frbgen_heart_beat_wire__crate__api__samples_in_range');
+  late final _wire__crate__api__samples_in_range =
+      _wire__crate__api__samples_in_rangePtr
+          .asFunction<void Function(int, int, int)>();
 
   void wire__crate__api__scan_devices(int port_) {
     return _wire__crate__api__scan_devices(port_);
@@ -4132,6 +4367,40 @@ class RustLibWire implements BaseWire {
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample',
+      );
+  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample =
+      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    ffi.Pointer<ffi.Void> ptr,
+  ) {
+    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+      ptr,
+    );
+  }
+
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'frbgen_heart_beat_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample',
+      );
+  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample =
+      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionProgress(
     ffi.Pointer<ffi.Void> ptr,
   ) {
@@ -4320,6 +4589,25 @@ class RustLibWire implements BaseWire {
       _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSessionPtr
           .asFunction<ffi.Pointer<ffi.UintPtr> Function(int)>();
 
+  ffi.Pointer<ffi.UintPtr>
+  cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    int value,
+  ) {
+    return _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+      value,
+    );
+  }
+
+  late final _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<ffi.UintPtr> Function(ffi.UintPtr)>
+      >(
+        'frbgen_heart_beat_cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample',
+      );
+  late final _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample =
+      _cst_new_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr
+          .asFunction<ffi.Pointer<ffi.UintPtr> Function(int)>();
+
   ffi.Pointer<wire_cst_api_analytics_data>
   cst_new_box_autoadd_api_analytics_data() {
     return _cst_new_box_autoadd_api_analytics_data();
@@ -4382,6 +4670,17 @@ class RustLibWire implements BaseWire {
       _cst_new_box_autoadd_api_weekly_summaryPtr
           .asFunction<ffi.Pointer<wire_cst_api_weekly_summary> Function()>();
 
+  ffi.Pointer<ffi.Float> cst_new_box_autoadd_f_32(double value) {
+    return _cst_new_box_autoadd_f_32(value);
+  }
+
+  late final _cst_new_box_autoadd_f_32Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Float> Function(ffi.Float)>>(
+        'frbgen_heart_beat_cst_new_box_autoadd_f_32',
+      );
+  late final _cst_new_box_autoadd_f_32 = _cst_new_box_autoadd_f_32Ptr
+      .asFunction<ffi.Pointer<ffi.Float> Function(double)>();
+
   ffi.Pointer<ffi.Double> cst_new_box_autoadd_f_64(double value) {
     return _cst_new_box_autoadd_f_64(value);
   }
@@ -4438,6 +4737,37 @@ class RustLibWire implements BaseWire {
       );
   late final _cst_new_box_autoadd_u_8 = _cst_new_box_autoadd_u_8Ptr
       .asFunction<ffi.Pointer<ffi.Uint8> Function(int)>();
+
+  ffi.Pointer<
+    wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+  >
+  cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+    int len,
+  ) {
+    return _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+      len,
+    );
+  }
+
+  late final _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<
+            wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+          >
+          Function(ffi.Int32)
+        >
+      >(
+        'frbgen_heart_beat_cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample',
+      );
+  late final _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample =
+      _cst_new_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSamplePtr
+          .asFunction<
+            ffi.Pointer<
+              wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+            >
+            Function(int)
+          >();
 
   ffi.Pointer<
     wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
@@ -4626,17 +4956,6 @@ class RustLibWire implements BaseWire {
   late final _cst_new_list_prim_u_8_strict = _cst_new_list_prim_u_8_strictPtr
       .asFunction<ffi.Pointer<wire_cst_list_prim_u_8_strict> Function(int)>();
 
-  int JNI_OnLoad(int vm, ffi.Pointer<ffi.Void> _res) {
-    return _JNI_OnLoad(vm, _res);
-  }
-
-  late final _JNI_OnLoadPtr =
-      _lookup<
-        ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Pointer<ffi.Void>)>
-      >('JNI_OnLoad');
-  late final _JNI_OnLoad =
-      _JNI_OnLoadPtr.asFunction<int Function(int, ffi.Pointer<ffi.Void>)>();
-
   int dummy_method_to_enforce_bundling() {
     return _dummy_method_to_enforce_bundling();
   }
@@ -4798,6 +5117,14 @@ final class wire_cst_record_i_64_u_16 extends ffi.Struct {
 
   @ffi.Uint16()
   external int field1;
+}
+
+final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+    extends ffi.Struct {
+  external ffi.Pointer<ffi.UintPtr> ptr;
+
+  @ffi.Int32()
+  external int len;
 }
 
 final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview

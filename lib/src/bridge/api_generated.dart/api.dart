@@ -7,7 +7,7 @@ import 'domain/heart_rate.dart';
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_coaching_cue_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`, `subscribe_coaching_cue_stream`, `zone_from_number`, `zone_to_number`
+// These functions are ignored because they are not marked as `pub`: `create_session_progress_forwarder`, `get_battery_stream_receiver`, `get_ble_adapter`, `get_connection_status_receiver`, `get_data_dir`, `get_hr_store`, `get_hr_stream_receiver`, `get_or_create_battery_broadcast_sender`, `get_or_create_coaching_cue_broadcast_sender`, `get_or_create_connection_status_broadcast_sender`, `get_or_create_hr_broadcast_sender`, `get_or_create_session_progress_broadcast_sender`, `get_session_executor`, `get_session_progress_receiver`, `get_session_repository`, `load_plan`, `save_plan`, `subscribe_coaching_cue_stream`, `zone_from_number`, `zone_to_number`
 // These functions are ignored because they have generic arguments: `notify`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ConnectionState`, `FlutterLogWriter`, `StubNotificationPort`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `flush`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `make_writer`, `write`
@@ -554,6 +554,23 @@ Future<String> connectionStatusToString({
   required ApiConnectionStatus status,
 }) => RustLib.instance.api.crateApiConnectionStatusToString(status: status);
 
+/// Returns all HR samples with timestamps in [start_ms, end_ms] across all daily files.
+/// Samples are returned in chronological order.
+Future<List<ApiSample>> samplesInRange({
+  required BigInt startMs,
+  required BigInt endMs,
+}) =>
+    RustLib.instance.api.crateApiSamplesInRange(startMs: startMs, endMs: endMs);
+
+/// Computes the rolling average BPM over the given window (in seconds) ending at the latest sample.
+/// Returns `None` if the store is empty or no samples fall within the window.
+Future<double?> rollingAvg({required BigInt windowSecs}) =>
+    RustLib.instance.api.crateApiRollingAvg(windowSecs: windowSecs);
+
+/// Returns the most recent HR sample, or `None` if the store is empty.
+Future<ApiSample?> latestSample() =>
+    RustLib.instance.api.crateApiLatestSample();
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).
@@ -1064,6 +1081,9 @@ abstract class ApiFilteredHeartRate implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiPhaseProgress>>
 abstract class ApiPhaseProgress implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSample>>
+abstract class ApiSample implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ApiSessionProgress>>
 abstract class ApiSessionProgress implements RustOpaqueInterface {}
