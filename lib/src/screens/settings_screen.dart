@@ -443,6 +443,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onAudioFeedbackChanged: (v) => setState(() => _audioFeedbackEnabled = v),
                     onAudioVolumeChanged: (v) => setState(() => _audioVolume = v),
                   ),
+                  const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.favorite, color: Colors.red),
+                      title: const Text('Health Settings'),
+                      subtitle: const Text('Low heart rate alerts & quiet hours'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.pushNamed(context, '/health-settings'),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: _isSaving ? null : _saveProfile,
