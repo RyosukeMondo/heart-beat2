@@ -1,6 +1,9 @@
 # Miscellaneous
 *.class
 *.log
+# Soak test logs (committed for audit trail)
+!.soak-logs/*.log
+!.soak-logs/*.txt
 *.pyc
 *.swp
 .DS_Store
