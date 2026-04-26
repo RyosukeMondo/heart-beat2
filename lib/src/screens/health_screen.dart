@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart' as generated;
 import '../services/hr_history_service.dart';
+import 'package:heart_beat/src/services/coaching_cue_service.dart';
 
 /// A single HR sample with resolved BPM and timestamp for synchronous access.
 class _SamplePoint {
@@ -40,18 +41,37 @@ class _HealthScreenState extends State<HealthScreen> {
   bool _sparklineLoading = true;
   Timer? _liveBpmTimer;
 
+  // Status banner state — reads from the cue stream.
+  _RuleStatus _ruleStatus = _RuleStatus.ok;
+  String _ruleStatusDetail = '';
+  StreamSubscription<generated.ApiCue>? _cueSubscription;
+
   @override
   void initState() {
     super.initState();
     _loadAverages();
     _loadSparklineData();
     _startLiveBpmPolling();
+    _startCueListener();
   }
 
   @override
   void dispose() {
     _liveBpmTimer?.cancel();
+    _cueSubscription?.cancel();
     super.dispose();
+  }
+
+  void _startCueListener() {
+    _cueSubscription = CoachingCueService.instance.createCueStream().listen((cue) {
+      if (!mounted) return;
+      if (cue.label == 'sustained_low_hr') {
+        setState(() {
+          _ruleStatus = _RuleStatus.low;
+          _ruleStatusDetail = cue.message;
+        });
+      }
+    });
   }
 
   void _startLiveBpmPolling() {
@@ -161,6 +181,8 @@ class _HealthScreenState extends State<HealthScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            _StatusBanner(status: _ruleStatus, detail: _ruleStatusDetail),
+            const SizedBox(height: 16),
             _AverageCard(
               label: '1 Hour',
               avg: _avg1h,
@@ -390,6 +412,44 @@ class _AverageCard extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+enum _RuleStatus { ok, low }
+
+class _StatusBanner extends StatelessWidget {
+  final _RuleStatus status;
+  final String detail;
+
+  const _StatusBanner({required this.status, required this.detail});
+
+  @override
+  Widget build(BuildContext context) {
+    final (color, label) = switch (status) {
+      _RuleStatus.ok => (Colors.green, 'OK'),
+      _RuleStatus.low => (Colors.amber, detail),
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: color.withValues(alpha: 0.15),
+      child: Row(
+        children: [
+          Icon(Icons.favorite, color: color, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
