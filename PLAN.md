@@ -31,6 +31,7 @@ diagnose Phase 5 reliably over USB from a Mac.
 | 3 | `[ ]` | [Diagnosis GUI](PLAN_diagnosis_gui.md) | In-app screen: live state, log viewer, operations panel |
 | 4 | `[ ]` | [Developer workflow](PLAN_dev_workflow.md) | Scripts + docs for iproxy log streaming from Mac |
 | 5 | `[ ]` | [Long-session coaching](PLAN_coaching.md) | All-day BLE session + rule-driven prompts ("stand up", "raise HR to 120") |
+| 6 | `[~]` | Background HR monitoring & low-HR alerts | Persistent HR store + configurable low-HR rule → notification + Health screen |
 
 ## Progress tracker
 Milestone-level rollup. These mirror the big checkpoints inside each phase
@@ -65,9 +66,16 @@ file; the per-file tasks are finer-grained.
 - [x] 5.1 iOS background modes (`bluetooth-central`) + Android foreground service for BLE
 - [x] 5.2 Robust reconnect loop in Rust (survive drops, throttle retries, battery-aware)
 - [x] 5.3 Rule engine (target zone, inactivity timer, cue cadence, do-not-disturb window)
-- [ ] 5.4 Coaching cue FFI stream + delivery surfaces (in-app toast, local notification, optional TTS)
-- [ ] 5.5 Coaching screen UI (current cue, live HR vs target band, countdown)
-- [ ] 5.6 All-day soak test (8h+ on-device) — no disconnect regressions, battery <20% drain
+- [x] 5.4 Coaching cue FFI stream + delivery surfaces (in-app toast, local notification, optional TTS)
+- [x] 5.5 Coaching screen UI (current cue, live HR vs target band, countdown)
+- [x] 5.6 All-day soak test (8h+ on-device) — no disconnect regressions, battery <20% drain
+
+### Phase 6 — Background HR monitoring & low-HR alerts
+- [x] 6.1 Persistent HR sample store (Rust JSONL + `samples_in_range` / `rolling_avg` / `latest_sample`)
+- [x] 6.2 User settings for monitoring (`HealthSettingsService` + `HealthSettingsScreen`)
+- [x] 6.3 Sustained-low-HR alert rule (Rust `low_hr_rule`, hysteresis, quiet-hours suppression)
+- [x] 6.4 Health screen (live BPM, 1h/24h/7d averages, 24h sparkline, status banner)
+- [ ] 6.5 Manual soak test (4h on-device, threshold 70 / sustained 10 min)
 
 ## Cross-cutting decisions
 - **Log directory:** `<app_docs>/logs/` (from `path_provider.getApplicationDocumentsDirectory()`).

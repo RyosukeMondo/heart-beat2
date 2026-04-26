@@ -53,3 +53,22 @@ Available log levels (lowest to highest): `trace`, `debug`, `info`, `warn`, `err
 - Android testing: `./scripts/adb-install.sh`
 
 For detailed workflows, debugging tips, and script reference, see [docs/DEVELOPER-GUIDE.md](docs/DEVELOPER-GUIDE.md).
+
+### Health Monitoring — Manual Testing
+
+The Health screen (`/health`) shows live BPM, 1h/24h/7d rolling averages, a 24h sparkline, and the low-HR rule status banner. The rule fires a local notification when sustained average HR drops below the configured threshold.
+
+**Forcing a low-HR notification (manual test):**
+- Open **Health Settings** and set **Low HR threshold** to `200` (or any value above realistic resting HR).
+- Set **Sustained window** to `1 min` (minimum) to speed up the test.
+- Ensure quiet hours are off (or set them to a time range that doesn't include now).
+- Wait up to 30 seconds — the rule ticks every 30s while connected.
+- A notification "Heart rate low — Average HR was N bpm over the last 1 min" should appear.
+- Reset threshold back to `70` after the test.
+
+**Files:**
+- `lib/src/services/health_settings_service.dart` — threshold, sustained window, quiet hours, cadence, notifications toggle
+- `lib/src/services/hr_history_service.dart` — `samplesInRange`, `rollingAvg`, `latestSample`
+- `lib/src/services/coaching_cue_service.dart` — handles `sustained_low_hr` cue → local notification
+- `rust/src/hr_store/` — Rust JSONL store + query functions (`samples_in_range`, `rolling_avg`, `latest_sample`)
+- `rust/src/coaching/low_hr_rule.rs` — rule engine: rolling avg, hysteresis, quiet-hours suppression
