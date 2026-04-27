@@ -19,6 +19,9 @@ dependencies:
   # Permission handling
   permission_handler: ^11.0.0
 
+  # State management
+  provider: ^6.1.0
+
   # Local storage
   shared_preferences: ^2.2.0
 

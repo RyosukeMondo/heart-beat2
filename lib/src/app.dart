@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:heart_beat/src/services/diagnosis_log_service.dart';
 import 'package:heart_beat/src/screens/home_screen.dart';
 import 'package:heart_beat/src/screens/session_screen.dart';
 import 'package:heart_beat/src/screens/settings_screen.dart';
@@ -24,63 +26,66 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DebugConsoleOverlay(
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        title: 'Heart Beat',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.red,
-            brightness: Brightness.light,
+    return ChangeNotifierProvider<DiagnosisLogService>.value(
+      value: DiagnosisLogService.instance,
+      child: DebugConsoleOverlay(
+        child: MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'Heart Beat',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.red,
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
           ),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.red,
-            brightness: Brightness.dark,
+          darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.red,
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
           ),
-          useMaterial3: true,
+          routes: {
+            '/': (context) => const HomeScreen(),
+            '/session': (context) => const SessionScreen(),
+            '/settings': (context) => const SettingsScreen(),
+            '/history': (context) => const HistoryScreen(),
+            '/session-detail': (context) => const SessionDetailScreen(),
+            '/plan-builder': (context) => const PlanBuilderScreen(),
+            '/analytics': (context) => const AnalyticsScreen(),
+            '/readiness': (context) => const ReadinessScreen(),
+            '/training-load': (context) => const TrainingLoadScreen(),
+            '/calendar': (context) => const CalendarScreen(),
+            '/workout-library': (context) => const WorkoutLibraryScreen(),
+            '/diagnosis': (context) => const DiagnosisScreen(),
+            '/coaching': (context) => const CoachingScreen(),
+            '/health-settings': (context) => const HealthSettingsScreen(),
+            '/health': (context) => const HealthScreen(),
+          },
+          onGenerateRoute: (settings) {
+            // Handle /workout/:planName route
+            if (settings.name?.startsWith('/workout/') == true) {
+              final planName = settings.name!.substring('/workout/'.length);
+              return MaterialPageRoute(
+                builder: (context) => WorkoutScreen(planName: planName),
+                settings: settings,
+              );
+            }
+            // Handle /plan-builder/edit/:planName route
+            if (settings.name?.startsWith('/plan-builder/edit/') == true) {
+              final planName = settings.name!.substring(
+                '/plan-builder/edit/'.length,
+              );
+              return MaterialPageRoute(
+                builder: (context) => PlanBuilderScreen(editPlanName: planName),
+                settings: settings,
+              );
+            }
+            return null;
+          },
+          initialRoute: '/',
         ),
-        routes: {
-          '/': (context) => const HomeScreen(),
-          '/session': (context) => const SessionScreen(),
-          '/settings': (context) => const SettingsScreen(),
-          '/history': (context) => const HistoryScreen(),
-          '/session-detail': (context) => const SessionDetailScreen(),
-          '/plan-builder': (context) => const PlanBuilderScreen(),
-          '/analytics': (context) => const AnalyticsScreen(),
-          '/readiness': (context) => const ReadinessScreen(),
-          '/training-load': (context) => const TrainingLoadScreen(),
-          '/calendar': (context) => const CalendarScreen(),
-          '/workout-library': (context) => const WorkoutLibraryScreen(),
-          '/diagnosis': (context) => const DiagnosisScreen(),
-          '/coaching': (context) => const CoachingScreen(),
-          '/health-settings': (context) => const HealthSettingsScreen(),
-          '/health': (context) => const HealthScreen(),
-        },
-        onGenerateRoute: (settings) {
-          // Handle /workout/:planName route
-          if (settings.name?.startsWith('/workout/') == true) {
-            final planName = settings.name!.substring('/workout/'.length);
-            return MaterialPageRoute(
-              builder: (context) => WorkoutScreen(planName: planName),
-              settings: settings,
-            );
-          }
-          // Handle /plan-builder/edit/:planName route
-          if (settings.name?.startsWith('/plan-builder/edit/') == true) {
-            final planName = settings.name!.substring(
-              '/plan-builder/edit/'.length,
-            );
-            return MaterialPageRoute(
-              builder: (context) => PlanBuilderScreen(editPlanName: planName),
-              settings: settings,
-            );
-          }
-          return null;
-        },
-        initialRoute: '/',
       ),
     );
   }

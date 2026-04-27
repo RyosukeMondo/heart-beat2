@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../bridge/api_generated.dart/api.dart';
-import '../../services/log_service.dart';
+import 'package:provider/provider.dart';
+import '../../services/diagnosis_log_service.dart';
 import 'connection_status_card.dart';
 import 'filter_bar.dart';
 import 'log_line.dart';
@@ -32,7 +32,7 @@ class DiagnosisBody extends StatelessWidget {
         const Divider(height: 1),
         const _DiagnosisFilterBarWrapper(),
         const Divider(height: 1),
-        Expanded(child: _DiagnosisLogList()),
+        const Expanded(child: _DiagnosisLogList()),
         const Divider(height: 1),
         _DiagnosisOperationsPanelWrapper(onScan: onScan, onConnectLast: onConnectLast, onDisconnect: onDisconnect, onToggleMock: onToggleMock, onExport: onExport, onClearCache: onClearCache),
       ],
@@ -40,172 +40,61 @@ class DiagnosisBody extends StatelessWidget {
   }
 }
 
-class _DiagnosisFilterBarWrapper extends StatefulWidget {
+class _DiagnosisFilterBarWrapper extends StatelessWidget {
   const _DiagnosisFilterBarWrapper();
 
   @override
-  State<_DiagnosisFilterBarWrapper> createState() => _DiagnosisFilterBarWrapperState();
-}
-
-class _DiagnosisFilterBarWrapperState extends State<_DiagnosisFilterBarWrapper> {
-  String? _sourceFilter;
-  String? _levelFilter;
-  final TextEditingController _searchController = TextEditingController();
-  bool _autoScroll = true;
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final svc = context.watch<DiagnosisLogService>();
+
     return DiagnosisFilterBar(
-      sourceFilter: _sourceFilter,
-      levelFilter: _levelFilter,
-      searchController: _searchController,
-      autoScroll: _autoScroll,
-      onSourceChanged: (v) => setState(() => _sourceFilter = v),
-      onLevelChanged: (v) => setState(() => _levelFilter = v),
-      onSearchChanged: (_) => setState(() {}),
-      onAutoScrollToggled: () => setState(() => _autoScroll = !_autoScroll),
+      sourceFilter: svc.sourceFilter,
+      levelFilter: svc.levelFilter,
+      searchController: TextEditingController(text: svc.searchQuery),
+      autoScroll: svc.autoScroll,
+      onSourceChanged: (v) => svc.setSourceFilter(v),
+      onLevelChanged: (v) => svc.setLevelFilter(v),
+      onSearchChanged: (v) => svc.setSearchQuery(v),
+      onAutoScrollToggled: () => svc.toggleAutoScroll(),
       onClearPinned: () {},
     );
   }
 }
 
-class _DiagnosisLogList extends StatefulWidget {
-  @override
-  State<_DiagnosisLogList> createState() => _DiagnosisLogListState();
-}
-
-class _DiagnosisLogListState extends State<_DiagnosisLogList> {
-  String? _sourceFilter;
-  String? _levelFilter;
-  String _searchQuery = '';
-  bool _autoScroll = true;
-  int? _pinnedIndex;
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  List<LogMessage> _filterLogs(List<LogMessage> logs) {
-    return logs.where((log) {
-      if (_levelFilter != null && _levelFilter != 'all') {
-        if (!_meetsLevelFilter(log.level, _levelFilter!)) return false;
-      }
-      if (_sourceFilter != null && _sourceFilter != 'all') {
-        if (!_matchesSource(log.target, _sourceFilter!)) return false;
-      }
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
-        if (!log.message.toLowerCase().contains(q) &&
-            !log.target.toLowerCase().contains(q)) {
-          return false;
-        }
-      }
-      return true;
-    }).toList();
-  }
-
-  bool _meetsLevelFilter(String logLevel, String filter) {
-    const order = ['trace', 'debug', 'info', 'warn', 'error'];
-    final logIdx = order.indexOf(logLevel.toLowerCase());
-    final filterIdx = order.indexOf(filter.toLowerCase());
-    if (logIdx < 0 || filterIdx < 0) return logLevel.toLowerCase() == filter;
-    return logIdx >= filterIdx;
-  }
-
-  bool _matchesSource(String target, String source) {
-    final t = target.toLowerCase();
-    switch (source) {
-      case 'rust':
-        return t != 'dart' && !t.startsWith('native-');
-      case 'dart':
-        return t == 'dart';
-      case 'native-ios':
-        return t.contains('ios') || t.contains('native_ios');
-      case 'native-android':
-        return t.contains('android') || t.contains('native_android');
-      default:
-        return true;
-    }
-  }
-
-  Color _levelColor(String level) {
-    switch (level.toUpperCase()) {
-      case 'TRACE':
-        return Colors.grey;
-      case 'DEBUG':
-        return Colors.blue;
-      case 'INFO':
-        return Colors.green;
-      case 'WARN':
-        return Colors.orange;
-      case 'ERROR':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  void _scrollToBottom() {
-    if (_scrollController.hasClients && _autoScroll && _pinnedIndex == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-        );
-      });
-    }
-  }
+class _DiagnosisLogList extends StatelessWidget {
+  const _DiagnosisLogList();
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<LogMessage>(
-      stream: LogService.instance.stream,
-      builder: (context, snapshot) {
-        final allLogs = LogService.instance.logs;
-        final filtered = _filterLogs(allLogs);
+    final svc = context.watch<DiagnosisLogService>();
+    final allLogs = svc.logs;
+    final filtered = svc.filterLogs(allLogs);
+    final pinnedIndex = svc.pinnedIndex;
 
-        if (filtered.isEmpty) {
-          return Center(
-            child: Text(
-              allLogs.isEmpty
-                  ? 'No logs yet'
-                  : 'No logs match filters',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          );
-        }
+    if (filtered.isEmpty) {
+      return Center(
+        child: Text(
+          allLogs.isEmpty
+              ? 'No logs yet'
+              : 'No logs match filters',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      );
+    }
 
-        if (snapshot.hasData && _autoScroll && _pinnedIndex == null) {
-          _scrollToBottom();
-        }
-
-        return ListView.builder(
-          controller: _scrollController,
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            final log = filtered[index];
-            final isPinned = _pinnedIndex == index;
-            return DiagnosisLogLine(
-              log: log,
-              levelColor: _levelColor(log.level),
-              isPinned: isPinned,
-              onTap: () => setState(() {
-                _pinnedIndex = isPinned ? null : index;
-              }),
-            );
-          },
+    return ListView.builder(
+      controller: svc.scrollController,
+      itemCount: filtered.length,
+      itemBuilder: (context, index) {
+        final log = filtered[index];
+        final isPinned = pinnedIndex == index;
+        return DiagnosisLogLine(
+          log: log,
+          levelColor: svc.levelColor(log.level),
+          isPinned: isPinned,
+          onTap: () => svc.togglePinned(index),
         );
       },
     );
