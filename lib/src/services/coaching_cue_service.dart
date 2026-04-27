@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
-import 'package:heart_beat/src/services/health_settings_service.dart';
 import 'voice_coaching_service.dart';
 
 /// Global navigator key for deep-links from notifications when no context
@@ -209,10 +208,10 @@ class CoachingCueService {
   }
 
   /// Handle the sustained_low_hr cue: show a custom notification only when
-  /// the health-notifications master toggle is enabled.
+  /// the coaching-notifications master toggle is enabled.
   Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
     // Only show notification if master notifications toggle is on.
-    if (!HealthSettingsService.instance.notificationsEnabled) {
+    if (!_notificationsEnabled) {
       if (kDebugMode) {
         debugPrint('sustained_low_hr suppressed: notifications disabled');
       }
