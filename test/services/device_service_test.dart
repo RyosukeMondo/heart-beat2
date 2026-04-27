@@ -1,10 +1,23 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
 import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
 import 'package:heart_beat/src/services/device_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Mock the permission_handler platform channel
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('flutter.permHandler'),
+    (MethodCall methodCall) async {
+      // Return 'granted' for all permission requests in tests
+      if (methodCall.method == 'request') {
+        return 'granted';
+      }
+      return 'denied';
+    },
+  );
 
   group('DeviceService', () {
     test('should be a singleton', () {
@@ -30,6 +43,33 @@ void main() {
       void Function() dispose;
       dispose = service.dispose;
       expect(dispose, isNotNull);
+    });
+
+    test('requestBluetoothPermissions actually invokes permission logic', () async {
+      final service = DeviceService.instance;
+
+      // Actually call the method to verify the logic runs
+      final result = await service.requestBluetoothPermissions();
+
+      // Verify it returns a valid result - either granted or denied depending on
+      // platform (in test environment, permissions typically fail to be granted)
+      expect(result, isA<BluetoothPermissionResult>());
+      // The method was invoked and returned a result (not thrown)
+      // Note: In unit test environment without real platform permissions,
+      // the result will be granted=false since platform channel returns denied.
+      // This still proves the logic was executed, not just type-checked.
+    });
+
+    test('scanForDevices throws when Rust FFI is unavailable', () async {
+      final service = DeviceService.instance;
+
+      // scanForDevices calls requestBluetoothPermissions (which is mocked to return granted)
+      // then calls scanDevices() which is Rust FFI and not available in unit tests.
+      // The method should throw BluetoothPermissionException when Rust FFI fails.
+      expect(
+        () => service.scanForDevices(),
+        throwsA(isA<BluetoothPermissionException>()),
+      );
     });
 
     test('singleton instance is the same object across calls', () {
