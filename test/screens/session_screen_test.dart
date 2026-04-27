@@ -32,5 +32,35 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Connecting to device...'), findsOneWidget);
     });
+
+    testWidgets('SessionScreen disconnect button not visible when stream is null',
+        (tester) async {
+      // When _hrStream is null (not connected), the disconnect button
+      // (bluetooth_disabled icon) should not be visible in AppBar
+      const widget = SessionScreen();
+      await tester.pumpWidget(testWrapper(widget));
+
+      expect(find.byIcon(Icons.bluetooth_disabled), findsNothing);
+    });
+
+    testWidgets('SessionScreen shows error state when connection fails',
+        (tester) async {
+      // TODO: Requires API mocking to trigger _errorMessage state
+      // The error state shows Icons.error_outline when _errorMessage is set
+      // Skipping until API mocking is available
+    }, skip: true);
+
+    testWidgets('SessionScreen shows HR display when stream has data',
+        (tester) async {
+      // TODO: Requires API mocking to provide _hrStream data
+      // The HR display state shows HrDisplay, ZoneIndicator widgets
+      // Skipping until API mocking is available
+    }, skip: true);
+
+    testWidgets('SessionScreen shows session timer during active session',
+        (tester) async {
+      // TODO: Session timer not yet implemented in SessionScreen
+      // When implemented, should display elapsed session time
+    }, skip: true);
   });
 }
