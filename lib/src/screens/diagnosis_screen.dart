@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart';
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
-import 'diagnosis/diagnosis.dart';
+import 'diagnosis/diagnosis_body.dart';
 import '../services/log_service.dart';
 import 'package:share_plus/share_plus.dart';
 
