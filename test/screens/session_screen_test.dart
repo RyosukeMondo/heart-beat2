@@ -45,10 +45,29 @@ void main() {
 
     testWidgets('SessionScreen shows error state when connection fails',
         (tester) async {
-      // TODO: Requires API mocking to trigger _errorMessage state
-      // The error state shows Icons.error_outline when _errorMessage is set
-      // Skipping until API mocking is available
-    }, skip: true);
+      // Provide route arguments so didChangeDependencies triggers _connectToDevice.
+      // Without a real device, the API call fails and triggers error state.
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Navigator(
+            initialRoute: '/session',
+            onGenerateRoute: (settings) => MaterialPageRoute(
+              settings: RouteSettings(
+                arguments: {'device_id': 'test-device', 'device_name': 'Test HR'},
+              ),
+              builder: (context) => const SessionScreen(),
+            ),
+          ),
+        ),
+      );
+
+      // Pump to allow async connection attempt to complete
+      await tester.pump(const Duration(seconds: 2));
+
+      // Error state shows Icons.error_outline when _errorMessage is set
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
 
     testWidgets('SessionScreen shows HR display when stream has data',
         (tester) async {
