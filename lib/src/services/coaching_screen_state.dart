@@ -1,7 +1,8 @@
-import 'dart:async';
+import 'dart:async' hide Zone;
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
+import 'hr_processor.dart';
 import 'coaching_session_state.dart';
 import 'coaching_screen_streams.dart';
 import 'profile_service.dart';
@@ -9,8 +10,8 @@ import 'profile_service.dart';
 /// UI state and session logic for [CoachingScreen].
 ///
 /// Holds:
-/// - Current BPM, zone, connection status, and cue
-/// - HR processing (BPM extraction, zone mapping)
+/// - Connection status and cue state
+/// - Delegates HR processing to [HrProcessor]
 /// - Delegates timer/zone-tracking to [CoachingSessionState]
 /// - Delegates stream subscriptions to [CoachingScreenStreams]
 class CoachingScreenState {
@@ -21,18 +22,16 @@ class CoachingScreenState {
     _streams.onCue = _handleCue;
   }
 
-  final CoachingSessionState _sessionState = CoachingSessionState();
   final CoachingScreenStreams _streams = CoachingScreenStreams();
-  final ProfileService _profileService = ProfileService.instance;
+  final CoachingSessionState _sessionState = CoachingSessionState();
+  final HrProcessor _hrProcessor = HrProcessor(ProfileService.instance);
 
-  int _currentBpm = 0;
-  Zone _currentZone = Zone.zone1;
   bool _isConnected = false;
   api.ApiCue? _currentCue;
   VoidCallback? _onStateChange;
 
-  int get currentBpm => _currentBpm;
-  Zone get currentZone => _currentZone;
+  int get currentBpm => _hrProcessor.currentBpm;
+  Zone get currentZone => _hrProcessor.currentZone;
   bool get isConnected => _isConnected;
   api.ApiCue? get currentCue => _currentCue;
   Duration get elapsed => _sessionState.elapsed;
@@ -43,20 +42,15 @@ class CoachingScreenState {
   }
 
   void initialize() {
-    _profileService.loadProfile();
+    ProfileService.instance.loadProfile();
     _sessionState.start();
     _streams.subscribe();
   }
 
   void _handleHrData(api.ApiFilteredHeartRate data) async {
-    final bpm = await api.hrFilteredBpm(data: data);
-    final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
-
-    _currentBpm = bpm;
-    _currentZone = zone;
+    await _hrProcessor.process(data);
     _onStateChange?.call();
-
-    _sessionState.onZoneTick(zone);
+    _sessionState.onZoneTick(_hrProcessor.currentZone);
   }
 
   void _handleStatusChange(api.ApiConnectionStatus status) async {
