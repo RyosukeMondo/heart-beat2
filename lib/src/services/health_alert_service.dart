@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
+import 'package:heart_beat/src/services/coaching_cue_service.dart';
 
 /// Service that provides health-rule alerts (e.g. sustained low HR) to the UI
 /// without coupling the screen to the coaching subsystem.
 ///
-/// Shares the single [CoachingCueService.cueStream] subscription, filtering for
-/// health-specific cues and exposing them via a dedicated [healthAlertStream].
+/// Subscribes independently to the coaching cue stream to filter for
+/// health-specific cues, exposing them via [healthAlertStream].
 class HealthAlertService {
   HealthAlertService._();
 
@@ -19,17 +20,25 @@ class HealthAlertService {
   /// Stream of health alerts. Currently only emits for [sustained_low_hr],
   /// but this interface allows future health rules to be added without
   /// coupling additional coaching logic to the UI.
-  ///
-  /// Requires [setCoachingCueStream] to be called before first use.
-  Stream<generated.ApiCue> get healthAlertStream => _coachingCueStream.where(
-        (cue) => cue.label == 'sustained_low_hr',
-      );
+  Stream<generated.ApiCue> get healthAlertStream => _healthAlertController.stream;
 
-  Stream<generated.ApiCue> _coachingCueStream = const Stream.empty();
+  final StreamController<generated.ApiCue> _healthAlertController =
+      StreamController<generated.ApiCue>.broadcast();
 
-  /// Set the coaching cue stream to filter for health alerts.
-  void setCoachingCueStream(Stream<generated.ApiCue> stream) {
-    _coachingCueStream = stream;
+  StreamSubscription<generated.ApiCue>? _cueSubscription;
+
+  /// Start listening to the coaching cue stream and filter for health alerts.
+  /// Call this once at app startup, after [CoachingCueService] is initialized.
+  void startListening() {
+    _cueSubscription?.cancel();
+    _cueSubscription = CoachingCueService.instance.cueStream.listen((cue) {
+      if (cue.label == 'sustained_low_hr') {
+        _healthAlertController.add(cue);
+      }
+    });
+    if (kDebugMode) {
+      debugPrint('HealthAlertService: started listening to cue stream');
+    }
   }
 
   /// Show a custom low-HR notification with the exact format required:
