@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import '../services/coaching_cue_service.dart';
+import '../services/coaching_session_state.dart';
+import '../services/coaching_screen_streams.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../services/profile_service.dart';
@@ -22,73 +21,30 @@ class CoachingScreen extends StatefulWidget {
 }
 
 class _CoachingScreenState extends State<CoachingScreen> {
-  StreamSubscription<api.ApiFilteredHeartRate>? _hrSubscription;
-  StreamSubscription<api.ApiConnectionStatus>? _statusSubscription;
-  StreamSubscription<api.ApiCue>? _cueSubscription;
+  final CoachingSessionState _sessionState = CoachingSessionState();
+  final CoachingScreenStreams _streams = CoachingScreenStreams();
 
   int _currentBpm = 0;
   Zone _currentZone = Zone.zone1;
   bool _isConnected = false;
   api.ApiCue? _currentCue;
-
-  // Session tracking
-  DateTime? _sessionStartTime;
-  Duration _elapsed = Duration.zero;
-  Timer? _sessionTimer;
-
-  // Time in each zone
-  final Map<Zone, Duration> _zoneTime = {
-    Zone.zone1: Duration.zero,
-    Zone.zone2: Duration.zero,
-    Zone.zone3: Duration.zero,
-    Zone.zone4: Duration.zero,
-    Zone.zone5: Duration.zero,
-  };
-  Zone? _lastZone;
-
-  // Profile for target zone calculation
   final ProfileService _profileService = ProfileService.instance;
-
-  // Session controls
-  bool _isPaused = false;
 
   @override
   void initState() {
     super.initState();
     _profileService.loadProfile();
-    _sessionStartTime = DateTime.now();
-    _startSessionTimer();
-    _subscribeToStreams();
+    _sessionState.start();
+    _sessionState.onUpdate = _onSessionUpdate;
+    _streams.onHrData = _onHrData;
+    _streams.onStatusChange = _onStatusChange;
+    _streams.onCue = _onCue;
+    _streams.subscribe();
   }
 
-  void _startSessionTimer() {
-    _sessionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!_isPaused) {
-        setState(() {
-          _elapsed = DateTime.now().difference(_sessionStartTime!);
-        });
-      }
-    });
-  }
-
-  void _subscribeToStreams() {
-    // HR stream
-    final hrStream = api.createHrStream();
-    _hrSubscription = hrStream.listen(_onHrData, onError: (e) {
-      debugPrint('[CoachingScreen] HR stream error: $e');
-    });
-
-    // Connection status stream
-    final statusStream = api.createConnectionStatusStream();
-    _statusSubscription = statusStream.listen(_onStatusChange, onError: (e) {
-      debugPrint('[CoachingScreen] status stream error: $e');
-    });
-
-    // Coaching cue stream — shared via CoachingCueService to avoid duplicate subscription
-    final cueStream = CoachingCueService.instance.cueStream;
-    _cueSubscription = cueStream.listen(_onCue, onError: (e) {
-      debugPrint('[CoachingScreen] cue stream error: $e');
-    });
+  void _onSessionUpdate(Duration elapsed, Map<Zone, Duration> zoneTime) {
+    if (!mounted) return;
+    setState(() {});
   }
 
   void _onHrData(api.ApiFilteredHeartRate data) async {
@@ -99,13 +55,8 @@ class _CoachingScreenState extends State<CoachingScreen> {
     setState(() {
       _currentBpm = bpm;
       _currentZone = zone;
-
-      // Track time in zone
-      if (_lastZone != null && !_isPaused) {
-        _zoneTime[_lastZone!] = _zoneTime[_lastZone!]! + const Duration(seconds: 1);
-      }
-      _lastZone = zone;
     });
+    _sessionState.onZoneTick(zone);
   }
 
   void _onStatusChange(api.ApiConnectionStatus status) async {
@@ -124,9 +75,9 @@ class _CoachingScreenState extends State<CoachingScreen> {
   }
 
   void _togglePause() {
-    setState(() {
-      _isPaused = !_isPaused;
-    });
+    _sessionState.togglePause();
+    if (!mounted) return;
+    setState(() {});
   }
 
   Future<void> _stopSession() async {
@@ -168,10 +119,8 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   @override
   void dispose() {
-    _hrSubscription?.cancel();
-    _statusSubscription?.cancel();
-    _cueSubscription?.cancel();
-    _sessionTimer?.cancel();
+    _streams.dispose();
+    _sessionState.dispose();
     super.dispose();
   }
 
@@ -186,8 +135,8 @@ class _CoachingScreenState extends State<CoachingScreen> {
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
         actions: [
           IconButton(
-            icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-            tooltip: _isPaused ? 'Resume' : 'Pause',
+            icon: Icon(_sessionState.isPaused ? Icons.play_arrow : Icons.pause),
+            tooltip: _sessionState.isPaused ? 'Resume' : 'Pause',
             onPressed: _togglePause,
           ),
           IconButton(
@@ -456,7 +405,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
           _statItem(
             theme,
             'Session',
-            _formatDuration(_elapsed),
+            _formatDuration(_sessionState.elapsed),
             Icons.timer,
           ),
           _statItem(
