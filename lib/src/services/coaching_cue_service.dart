@@ -185,12 +185,11 @@ class CoachingCueService {
   /// Stream of all coaching cues from the Rust rule engine.
   /// Shared by [CoachingScreen] and [CoachingCueService] to avoid duplicate
   /// stream consumption.
-  Stream<ApiCue> get cueStream =>
-      RustLib.instance.api.crateApiCreateCoachingCueStream();
+  Stream<ApiCue> get cueStream => createCueStream();
 
   /// Start listening to coaching cues from the Rust rule engine.
   Stream<ApiCue> createCueStream() {
-    return cueStream;
+    return RustLib.instance.api.crateApiCreateCoachingCueStream();
   }
 
   /// Start listening to the cue stream and dispatch each cue to the appropriate
