@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart' as generated;
 import '../services/hr_history_service.dart';
-import 'package:heart_beat/src/services/health_alert_service.dart';
+import '../services/health_alert_service.dart';
 
 /// A single HR sample with resolved BPM and timestamp for synchronous access.
 class _SamplePoint {
