@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
-import 'package:heart_beat/src/screens/diagnosis/diagnosis.dart';
-import 'package:heart_beat/src/services/log_service.dart';
+import '../bridge/api_generated.dart/api.dart';
+import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import 'diagnosis/diagnosis.dart';
+import '../services/log_service.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Diagnosis screen — a debug/dev surface showing live device state,
