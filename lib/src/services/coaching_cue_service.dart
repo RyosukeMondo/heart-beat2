@@ -185,6 +185,9 @@ class CoachingCueService {
   /// surface (toast, notification, TTS). Call this once at app startup.
   void startCueListener() {
     _cueSubscription?.cancel();
+    // Wire up HealthAlertService to share the same stream so it can filter
+    // health-specific cues (e.g. sustained_low_hr) independently.
+    HealthAlertService.instance.setCoachingCueStream(cueStream);
     _cueSubscription = createCueStream().listen((cue) => onCue(cue));
     if (kDebugMode) {
       debugPrint('CoachingCueService: cue listener started');
@@ -221,8 +224,8 @@ class CoachingCueService {
     }
   }
 
-  /// Handle the sustained_low_hr cue: delegate to [HealthAlertService] for
-  /// custom notification formatting, gated by the master notifications toggle.
+  /// Handle the sustained_low_hr cue: show a custom notification with
+  /// formatted body, gated by the master notifications toggle.
   Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
     if (!_notificationsEnabled) {
       if (kDebugMode) {

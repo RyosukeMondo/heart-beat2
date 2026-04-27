@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
-import 'coaching_cue_service.dart';
 
 /// Service that provides health-rule alerts (e.g. sustained low HR) to the UI
 /// without coupling the screen to the coaching subsystem.
@@ -20,10 +19,18 @@ class HealthAlertService {
   /// Stream of health alerts. Currently only emits for [sustained_low_hr],
   /// but this interface allows future health rules to be added without
   /// coupling additional coaching logic to the UI.
-  Stream<generated.ApiCue> get healthAlertStream =>
-      CoachingCueService.instance.cueStream.where(
-            (cue) => cue.label == 'sustained_low_hr',
-          );
+  ///
+  /// Requires [setCoachingCueStream] to be called before first use.
+  Stream<generated.ApiCue> get healthAlertStream => _coachingCueStream.where(
+        (cue) => cue.label == 'sustained_low_hr',
+      );
+
+  Stream<generated.ApiCue> _coachingCueStream = const Stream.empty();
+
+  /// Set the coaching cue stream to filter for health alerts.
+  void setCoachingCueStream(Stream<generated.ApiCue> stream) {
+    _coachingCueStream = stream;
+  }
 
   /// Show a custom low-HR notification with the exact format required:
   /// title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over
@@ -55,7 +62,7 @@ class HealthAlertService {
     const title = 'Heart rate low';
     final body = 'Average HR was $avgBpm bpm over the last $windowMin min';
 
-    await CoachingCueService.instance.notifications.show(
+    await _notificationPlugin.show(
       cue.hashCode,
       title,
       body,
@@ -67,6 +74,9 @@ class HealthAlertService {
       debugPrint('HealthAlertService: showed low-HR notification: $body');
     }
   }
+
+  final FlutterLocalNotificationsPlugin _notificationPlugin =
+      FlutterLocalNotificationsPlugin();
 
   int _parseAvgBpm(String message) {
     final match = RegExp(r'average (\d+) bpm').firstMatch(message);
