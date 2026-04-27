@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
-import 'package:heart_beat/src/screens/coaching_helpers.dart';
+import 'package:heart_beat/src/utils/coaching_helpers.dart';
 import 'package:heart_beat/src/widgets/hr_display.dart';
 import 'package:heart_beat/src/widgets/zone_indicator.dart';
 import '../helpers/test_helpers.dart';

@@ -10,7 +10,7 @@ import '../widgets/connection_banner.dart';
 import '../services/background_service_provider.dart';
 import '../services/profile_service.dart';
 import '../services/latency_service.dart';
-import '../screens/coaching_helpers.dart';
+import '../utils/coaching_helpers.dart';
 import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
