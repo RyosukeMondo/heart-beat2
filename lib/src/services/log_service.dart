@@ -211,7 +211,7 @@ class LogService {
       if (call.method == 'onNativeLog') {
         final line = call.arguments as String?;
         if (line != null && line.isNotEmpty) {
-          _nativeIosLogWriter?.append(line);
+          _nativeIosLogWriter?.appendLine(line);
         }
       }
       return null;
@@ -221,7 +221,7 @@ class LogService {
       if (call.method == 'onNativeLog') {
         final line = call.arguments as String?;
         if (line != null && line.isNotEmpty) {
-          _nativeAndroidLogWriter?.append(line);
+          _nativeAndroidLogWriter?.appendLine(line);
         }
       }
       return null;
@@ -261,24 +261,26 @@ class LogService {
   }
 }
 
-/// Rolling file writer for Dart log entries.
-class _DartLogWriter {
-  _DartLogWriter(this._logDirPath);
+/// Base class for rolling file writers.
+///
+/// Handles file naming, writing, and retention — subclasses only override
+/// the log-line formatting in [formatLine].
+abstract class _RollingFileWriter {
+  _RollingFileWriter(this._logDirPath, this._prefix);
 
   final String _logDirPath;
-
-  static const String _prefix = 'heart-beat-dart';
+  final String _prefix;
 
   String _filenameFor(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  /// Append a log line to today's file.
-  /// Uses FileMode.append so concurrent writes and crashes are safe.
-  void append(DateTime now, String level, String target, String message) {
+  String formatLine(DateTime now, String level, String target, String message);
+
+  void _append(DateTime now, String level, String target, String message) {
     final dateStr = _filenameFor(now);
     final path = '$_logDirPath/$_prefix.$dateStr.log';
-    final line = '${now.toIso8601String()} $level $target: $message\n';
+    final line = formatLine(now, level, target, message);
 
     try {
       final file = File(path);
@@ -288,49 +290,10 @@ class _DartLogWriter {
     }
   }
 
-  /// Flush is a no-op since writeAsStringSync is synchronous.
-  Future<void> flush() async {}
+  void append(DateTime now, String level, String target, String message) =>
+      _append(now, level, target, message);
 
-  /// Close is a no-op for writeAsStringSync approach.
-  Future<void> close() async {}
-
-  /// Delete log files older than [LogService._retentionDays] days.
-  Future<void> sweepOldFiles() async {
-    try {
-      final dir = Directory(_logDirPath);
-      if (!await dir.exists()) return;
-
-      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
-      await for (final entity in dir.list()) {
-        if (entity is File) {
-          final name = entity.path.split('/').last;
-          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
-          final stat = await entity.stat();
-          if (stat.modified.isBefore(cutoff)) {
-            await entity.delete();
-          }
-        }
-      }
-    } catch (_) {
-      // Best-effort cleanup
-    }
-  }
-}
-
-/// Rolling file writer for native iOS log entries.
-class _NativeIosLogWriter {
-  _NativeIosLogWriter(this._logDirPath);
-
-  final String _logDirPath;
-
-  static const String _prefix = 'heart-beat-native-ios';
-
-  String _filenameFor(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
-  /// Append a log line from native iOS.
-  void append(String line) {
+  void appendLine(String line) {
     final now = DateTime.now();
     final dateStr = _filenameFor(now);
     final path = '$_logDirPath/$_prefix.$dateStr.log';
@@ -343,7 +306,10 @@ class _NativeIosLogWriter {
     }
   }
 
-  /// Delete log files older than [LogService._retentionDays] days.
+  Future<void> flush() async {}
+
+  Future<void> close() async {}
+
   Future<void> sweepOldFiles() async {
     try {
       final dir = Directory(_logDirPath);
@@ -364,120 +330,36 @@ class _NativeIosLogWriter {
       // Best-effort cleanup
     }
   }
-
-  /// Flush is a no-op since writeAsStringSync is synchronous.
-  Future<void> flush() async {}
-
-  /// Close is a no-op for writeAsStringSync approach.
-  Future<void> close() async {}
 }
 
-/// Rolling file writer for native Android log entries.
-class _NativeAndroidLogWriter {
-  _NativeAndroidLogWriter(this._logDirPath);
+class _DartLogWriter extends _RollingFileWriter {
+  _DartLogWriter(String logDirPath) : super(logDirPath, 'heart-beat-dart');
 
-  final String _logDirPath;
-
-  static const String _prefix = 'heart-beat-native-android';
-
-  String _filenameFor(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
-  /// Append a log line from native Android.
-  void append(String line) {
-    final now = DateTime.now();
-    final dateStr = _filenameFor(now);
-    final path = '$_logDirPath/$_prefix.$dateStr.log';
-
-    try {
-      final file = File(path);
-      file.writeAsStringSync(line, mode: FileMode.append);
-    } catch (_) {
-      // Best-effort — never throw from log writer
-    }
-  }
-
-  /// Delete log files older than [LogService._retentionDays] days.
-  Future<void> sweepOldFiles() async {
-    try {
-      final dir = Directory(_logDirPath);
-      if (!await dir.exists()) return;
-
-      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
-      await for (final entity in dir.list()) {
-        if (entity is File) {
-          final name = entity.path.split('/').last;
-          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
-          final stat = await entity.stat();
-          if (stat.modified.isBefore(cutoff)) {
-            await entity.delete();
-          }
-        }
-      }
-    } catch (_) {
-      // Best-effort cleanup
-    }
-  }
-
-  /// Flush is a no-op since writeAsStringSync is synchronous.
-  Future<void> flush() async {}
-
-  /// Close is a no-op for writeAsStringSync approach.
-  Future<void> close() async {}
+  @override
+  String formatLine(DateTime now, String level, String target, String message) =>
+      '${now.toIso8601String()} $level $target: $message\n';
 }
 
-/// Rolling file writer for Rust log entries forwarded from FlutterLogWriter.
-class _RustLogWriter {
-  _RustLogWriter(this._logDirPath);
+class _RustLogWriter extends _RollingFileWriter {
+  _RustLogWriter(String logDirPath) : super(logDirPath, 'heart-beat-rust');
 
-  final String _logDirPath;
+  @override
+  String formatLine(DateTime now, String level, String target, String message) =>
+      '${now.toIso8601String()} $level $target: $message\n';
+}
 
-  static const String _prefix = 'heart-beat-rust';
+class _NativeIosLogWriter extends _RollingFileWriter {
+  _NativeIosLogWriter(String logDirPath) : super(logDirPath, 'heart-beat-native-ios');
 
-  String _filenameFor(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
+  @override
+  String formatLine(DateTime now, String level, String target, String message) =>
+      '${now.toIso8601String()} $message\n';
+}
 
-  /// Append a Rust log entry to today's file.
-  void append(DateTime now, String level, String target, String message) {
-    final dateStr = _filenameFor(now);
-    final path = '$_logDirPath/$_prefix.$dateStr.log';
-    final line = '${now.toIso8601String()} $level $target: $message\n';
+class _NativeAndroidLogWriter extends _RollingFileWriter {
+  _NativeAndroidLogWriter(String logDirPath) : super(logDirPath, 'heart-beat-native-android');
 
-    try {
-      final file = File(path);
-      file.writeAsStringSync(line, mode: FileMode.append);
-    } catch (_) {
-      // Best-effort — never throw from log writer
-    }
-  }
-
-  /// Flush is a no-op since writeAsStringSync is synchronous.
-  Future<void> flush() async {}
-
-  /// Close is a no-op for writeAsStringSync approach.
-  Future<void> close() async {}
-
-  /// Delete log files older than [LogService._retentionDays] days.
-  Future<void> sweepOldFiles() async {
-    try {
-      final dir = Directory(_logDirPath);
-      if (!await dir.exists()) return;
-
-      final cutoff = DateTime.now().subtract(const Duration(days: LogService._retentionDays));
-      await for (final entity in dir.list()) {
-        if (entity is File) {
-          final name = entity.path.split('/').last;
-          if (!name.startsWith(_prefix) || !name.endsWith('.log')) continue;
-          final stat = await entity.stat();
-          if (stat.modified.isBefore(cutoff)) {
-            await entity.delete();
-          }
-        }
-      }
-    } catch (_) {
-      // Best-effort cleanup
-    }
-  }
+  @override
+  String formatLine(DateTime now, String level, String target, String message) =>
+      '${now.toIso8601String()} $message\n';
 }
