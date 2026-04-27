@@ -113,14 +113,20 @@ class _HealthScreenState extends State<HealthScreen> {
     );
     if (!mounted) return;
 
-    // Resolve BPM and timestamp for each sample (async FFI calls)
-    final points = await Future.wait(
-      samples.map((s) async {
-        final bpm = await generated.apiSampleBpm(sample: s);
-        final ts = (await generated.apiSampleTsMs(sample: s)).toInt();
-        return _SamplePoint(sample: s, bpm: bpm, tsMs: ts);
-      }),
+    // Resolve BPM and timestamp for each sample in two parallel batches
+    // instead of O(n) sequential await pairs.
+    final bpms = await Future.wait(
+      samples.map((s) => generated.apiSampleBpm(sample: s)),
     );
+    final tsMsList = await Future.wait(
+      samples.map((s) => generated.apiSampleTsMs(sample: s)),
+    );
+
+    final points = List.generate(samples.length, (i) => _SamplePoint(
+      sample: samples[i],
+      bpm: bpms[i],
+      tsMs: tsMsList[i].toInt(),
+    ));
 
     if (!mounted) return;
     setState(() {
