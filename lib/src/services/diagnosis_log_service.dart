@@ -66,28 +66,6 @@ class DiagnosisLogService extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // UI state
-  // ---------------------------------------------------------------------------
-
-  bool _autoScroll = true;
-  int? _pinnedIndex;
-  final ScrollController _scrollController = ScrollController();
-
-  bool get autoScroll => _autoScroll;
-  int? get pinnedIndex => _pinnedIndex;
-  ScrollController get scrollController => _scrollController;
-
-  void toggleAutoScroll() {
-    _autoScroll = !_autoScroll;
-    notifyListeners();
-  }
-
-  void togglePinned(int index) {
-    _pinnedIndex = (_pinnedIndex == index) ? null : index;
-    notifyListeners();
-  }
-
-  // ---------------------------------------------------------------------------
   // Log stream — delegate to LogService
   // ---------------------------------------------------------------------------
 

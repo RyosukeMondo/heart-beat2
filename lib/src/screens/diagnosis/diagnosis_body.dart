@@ -6,7 +6,7 @@ import 'filter_bar.dart';
 import 'log_line.dart';
 import 'operations_panel.dart';
 
-class DiagnosisBody extends StatelessWidget {
+class DiagnosisBody extends StatefulWidget {
   final Future<void> Function() onScan;
   final Future<void> Function() onConnectLast;
   final Future<void> Function() onDisconnect;
@@ -25,23 +25,43 @@ class DiagnosisBody extends StatelessWidget {
   });
 
   @override
+  State<DiagnosisBody> createState() => _DiagnosisBodyState();
+}
+
+class _DiagnosisBodyState extends State<DiagnosisBody> {
+  bool _autoScroll = true;
+
+  void _toggleAutoScroll() {
+    setState(() => _autoScroll = !_autoScroll);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const DiagnosisConnectionStatusCard(),
         const Divider(height: 1),
-        const _DiagnosisFilterBarWrapper(),
+        _DiagnosisFilterBarWrapper(
+          autoScroll: _autoScroll,
+          onAutoScrollToggled: _toggleAutoScroll,
+        ),
         const Divider(height: 1),
-        const Expanded(child: _DiagnosisLogList()),
+        Expanded(child: _DiagnosisLogList(autoScroll: _autoScroll)),
         const Divider(height: 1),
-        _DiagnosisOperationsPanelWrapper(onScan: onScan, onConnectLast: onConnectLast, onDisconnect: onDisconnect, onToggleMock: onToggleMock, onExport: onExport, onClearCache: onClearCache),
+        _DiagnosisOperationsPanelWrapper(onScan: widget.onScan, onConnectLast: widget.onConnectLast, onDisconnect: widget.onDisconnect, onToggleMock: widget.onToggleMock, onExport: widget.onExport, onClearCache: widget.onClearCache),
       ],
     );
   }
 }
 
 class _DiagnosisFilterBarWrapper extends StatelessWidget {
-  const _DiagnosisFilterBarWrapper();
+  final bool autoScroll;
+  final VoidCallback onAutoScrollToggled;
+
+  const _DiagnosisFilterBarWrapper({
+    required this.autoScroll,
+    required this.onAutoScrollToggled,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,25 +71,44 @@ class _DiagnosisFilterBarWrapper extends StatelessWidget {
       sourceFilter: svc.sourceFilter,
       levelFilter: svc.levelFilter,
       searchController: TextEditingController(text: svc.searchQuery),
-      autoScroll: svc.autoScroll,
+      autoScroll: autoScroll,
       onSourceChanged: (v) => svc.setSourceFilter(v),
       onLevelChanged: (v) => svc.setLevelFilter(v),
       onSearchChanged: (v) => svc.setSearchQuery(v),
-      onAutoScrollToggled: () => svc.toggleAutoScroll(),
+      onAutoScrollToggled: onAutoScrollToggled,
       onClearPinned: () {},
     );
   }
 }
 
-class _DiagnosisLogList extends StatelessWidget {
-  const _DiagnosisLogList();
+class _DiagnosisLogList extends StatefulWidget {
+  final bool autoScroll;
+
+  const _DiagnosisLogList({required this.autoScroll});
+
+  @override
+  State<_DiagnosisLogList> createState() => _DiagnosisLogListState();
+}
+
+class _DiagnosisLogListState extends State<_DiagnosisLogList> {
+  final ScrollController _scrollController = ScrollController();
+  int? _pinnedIndex;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _togglePinned(int index) {
+    setState(() => _pinnedIndex = (_pinnedIndex == index) ? null : index);
+  }
 
   @override
   Widget build(BuildContext context) {
     final svc = context.watch<DiagnosisLogService>();
     final allLogs = svc.logs;
     final filtered = svc.filterLogs(allLogs);
-    final pinnedIndex = svc.pinnedIndex;
 
     if (filtered.isEmpty) {
       return Center(
@@ -85,16 +124,16 @@ class _DiagnosisLogList extends StatelessWidget {
     }
 
     return ListView.builder(
-      controller: svc.scrollController,
+      controller: _scrollController,
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final log = filtered[index];
-        final isPinned = pinnedIndex == index;
+        final isPinned = _pinnedIndex == index;
         return DiagnosisLogLine(
           log: log,
           levelColor: svc.levelColor(log.level),
           isPinned: isPinned,
-          onTap: () => svc.togglePinned(index),
+          onTap: () => _togglePinned(index),
         );
       },
     );
