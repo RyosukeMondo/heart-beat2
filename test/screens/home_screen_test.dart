@@ -9,6 +9,18 @@ void main() {
       const widget = HomeScreen(key: Key('homeScreen'));
       await tester.pumpWidget(testWrapper(widget));
       expect(find.byType(HomeScreen), findsOneWidget);
+
+      // Verify scan button is present
+      expect(find.text('Scan for Devices'), findsOneWidget);
+
+      // Verify empty state placeholder in device list area
+      expect(
+        find.text('Tap "Scan for Devices" to find heart rate monitors'),
+        findsOneWidget,
+      );
+
+      // Verify not in scanning state (button should not show "Scanning...")
+      expect(find.text('Scanning...'), findsNothing);
     });
 
     testWidgets('HomeScreen renders AppBar with title', (tester) async {
