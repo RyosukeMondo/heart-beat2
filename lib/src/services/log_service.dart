@@ -39,8 +39,7 @@ class LogService {
   FlutterExceptionHandler? _originalOnError;
 
   /// Original PlatformDispatcher.onError handler.
-  /// Type: bool Function(Object error, StackTrace? stackTrace)?
-  dynamic _originalPlatformOnError;
+  bool Function(Object error, StackTrace stackTrace)? _originalPlatformOnError;
 
   /// Rolling file writer for Dart logs.
   _DartLogWriter? _dartLogWriter;
@@ -169,7 +168,7 @@ class LogService {
       _log('ERROR', 'dart', msg);
       final original = _originalPlatformOnError;
       if (original != null) {
-        return original(error, stack);
+        return original(error, stack ?? StackTrace.current);
       }
       return false;
     };
