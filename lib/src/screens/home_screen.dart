@@ -36,10 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
         _readiness = readiness;
         _readinessLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       setState(() {
         _readinessLoading = false;
+        _error = 'Failed to load readiness: $e';
       });
     }
   }
