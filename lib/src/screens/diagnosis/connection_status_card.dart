@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 
 class DiagnosisConnectionStatusCard extends StatelessWidget {
-  final Stream<ApiConnectionStatus>? statusStream;
-
-  const DiagnosisConnectionStatusCard({super.key, this.statusStream});
+  const DiagnosisConnectionStatusCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ApiConnectionStatus>(
-      stream: statusStream ?? createConnectionStatusStream(),
+      stream: createConnectionStatusStream(),
       builder: (context, snapshot) {
         final status = snapshot.data;
         final theme = Theme.of(context);
