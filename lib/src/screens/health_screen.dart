@@ -41,10 +41,10 @@ class _HealthScreenState extends State<HealthScreen> {
   bool _sparklineLoading = true;
   Timer? _liveBpmTimer;
 
-  // Status banner state — reads from the cue stream.
+  // Status banner state — reads from HealthAlertService state stream.
   _RuleStatus _ruleStatus = _RuleStatus.ok;
   String _ruleStatusDetail = '';
-  StreamSubscription<generated.ApiCue>? _cueSubscription;
+  StreamSubscription<HealthAlertState>? _cueSubscription;
 
   @override
   void initState() {
@@ -63,11 +63,11 @@ class _HealthScreenState extends State<HealthScreen> {
   }
 
   void _startCueListener() {
-    _cueSubscription = HealthAlertService.instance.healthAlertStream.listen((cue) {
+    _cueSubscription = HealthAlertService.instance.healthAlertStateStream.listen((state) {
       if (!mounted) return;
       setState(() {
-        _ruleStatus = _RuleStatus.low;
-        _ruleStatusDetail = cue.message;
+        _ruleStatus = state.status == HealthRuleStatus.ok ? _RuleStatus.ok : _RuleStatus.low;
+        _ruleStatusDetail = state.detail;
       });
     });
   }

@@ -9,7 +9,7 @@ import 'package:heart_beat/src/services/cue_stream_provider.dart';
 /// without coupling the screen to the coaching subsystem.
 ///
 /// Subscribes independently to the coaching cue stream to filter for
-/// health-specific cues, exposing them via [healthAlertStream].
+/// health-specific cues, exposing them via [healthAlertStream] and [healthAlertState].
 class HealthAlertService {
   HealthAlertService._();
 
@@ -25,6 +25,17 @@ class HealthAlertService {
   final StreamController<generated.ApiCue> _healthAlertController =
       StreamController<generated.ApiCue>.broadcast();
 
+  /// Emits the current [HealthAlertState] whenever the health alert status changes.
+  Stream<HealthAlertState> get healthAlertStateStream => _healthAlertStateController.stream;
+
+  final StreamController<HealthAlertState> _healthAlertStateController =
+      StreamController<HealthAlertState>.broadcast();
+
+  /// The current health alert state.
+  HealthAlertState get healthAlertState => _currentState;
+
+  HealthAlertState _currentState = const HealthAlertState(HealthRuleStatus.ok, '');
+
   StreamSubscription<generated.ApiCue>? _cueSubscription;
 
   /// Start listening to the coaching cue stream and filter for health alerts.
@@ -34,6 +45,8 @@ class HealthAlertService {
     _cueSubscription = cueStream.listen((cue) {
       if (cue.label == 'sustained_low_hr') {
         _healthAlertController.add(cue);
+        _currentState = HealthAlertState(HealthRuleStatus.low, cue.message);
+        _healthAlertStateController.add(_currentState);
       }
     });
     if (kDebugMode) {
@@ -98,3 +111,14 @@ class HealthAlertService {
     return double.parse(match.group(1)!).round();
   }
 }
+
+/// Immutable health alert state containing the current rule status and detail message.
+class HealthAlertState {
+  final HealthRuleStatus status;
+  final String detail;
+
+  const HealthAlertState(this.status, this.detail);
+}
+
+/// Health rule status enum.
+enum HealthRuleStatus { ok, low }
