@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/api.dart' as generated;
 import '../services/hr_history_service.dart';
-import 'package:heart_beat/src/services/coaching_cue_service.dart';
+import 'package:heart_beat/src/services/health_alert_service.dart';
 
 /// A single HR sample with resolved BPM and timestamp for synchronous access.
 class _SamplePoint {
@@ -63,14 +63,12 @@ class _HealthScreenState extends State<HealthScreen> {
   }
 
   void _startCueListener() {
-    _cueSubscription = CoachingCueService.instance.createCueStream().listen((cue) {
+    _cueSubscription = HealthAlertService.instance.healthAlertStream.listen((cue) {
       if (!mounted) return;
-      if (cue.label == 'sustained_low_hr') {
-        setState(() {
-          _ruleStatus = _RuleStatus.low;
-          _ruleStatusDetail = cue.message;
-        });
-      }
+      setState(() {
+        _ruleStatus = _RuleStatus.low;
+        _ruleStatusDetail = cue.message;
+      });
     });
   }
 
