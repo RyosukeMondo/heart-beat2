@@ -75,19 +75,19 @@ class _CoachingScreenState extends State<CoachingScreen> {
     // HR stream
     final hrStream = api.createHrStream();
     _hrSubscription = hrStream.listen(_onHrData, onError: (e) {
-      if (kDebugMode) debugPrint('[CoachingScreen] HR stream error: $e');
+      debugPrint('[CoachingScreen] HR stream error: $e');
     });
 
     // Connection status stream
     final statusStream = api.createConnectionStatusStream();
     _statusSubscription = statusStream.listen(_onStatusChange, onError: (e) {
-      if (kDebugMode) debugPrint('[CoachingScreen] status stream error: $e');
+      debugPrint('[CoachingScreen] status stream error: $e');
     });
 
     // Coaching cue stream — shared via CoachingCueService to avoid duplicate subscription
     final cueStream = CoachingCueService.instance.cueStream;
     _cueSubscription = cueStream.listen(_onCue, onError: (e) {
-      if (kDebugMode) debugPrint('[CoachingScreen] cue stream error: $e');
+      debugPrint('[CoachingScreen] cue stream error: $e');
     });
   }
 
