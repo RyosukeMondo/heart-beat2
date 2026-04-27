@@ -32,5 +32,46 @@ void main() {
       rollingAvg = service.rollingAvg;
       expect(rollingAvg, isNotNull);
     });
+
+    test('singleton instance is the same object across calls', () {
+      final instance1 = HrHistoryService.instance;
+      final instance2 = HrHistoryService.instance;
+      final instance3 = HrHistoryService.instance;
+
+      // All references point to the same singleton
+      expect(identical(instance1, instance2), isTrue);
+      expect(identical(instance2, instance3), isTrue);
+      expect(identical(instance1, instance3), isTrue);
+    });
+
+    test('singleton has all three query methods', () {
+      final service = HrHistoryService.instance;
+
+      // Verify all three methods are present and callable
+      expect(service.latestSample, isNotNull);
+      expect(service.samplesInRange, isNotNull);
+      expect(service.rollingAvg, isNotNull);
+
+      // Each method should be a function (not null)
+      // We only verify the methods are not null - actual invocation
+      // requires RustLib.init() which is not available in unit tests
+      expect(service.latestSample, isA<Function>());
+      expect(service.samplesInRange, isA<Function>());
+      expect(service.rollingAvg, isA<Function>());
+    });
+
+    test('singleton identity preserved across multiple accesses', () {
+      // Access the singleton multiple times
+      final first = HrHistoryService.instance;
+      final second = HrHistoryService.instance;
+
+      // Should be the exact same object instance
+      expect(identical(first, second), isTrue);
+
+      // Multiple accesses should all return the same reference
+      for (int i = 0; i < 5; i++) {
+        expect(identical(HrHistoryService.instance, first), isTrue);
+      }
+    });
   });
 }
