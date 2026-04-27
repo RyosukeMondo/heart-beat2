@@ -37,7 +37,6 @@ class CoachingCueService {
   // ---------------------------------------------------------------------------
 
   static const _prefNotificationsEnabled = 'coaching_notifications_enabled';
-  static const _prefTtsEnabled = 'coaching_tts_enabled';
   static const _prefInAppToastEnabled = 'coaching_inapp_toast_enabled';
 
   // ---------------------------------------------------------------------------
@@ -52,9 +51,6 @@ class CoachingCueService {
   /// User preference: show local notifications when backgrounded.
   bool _notificationsEnabled = true;
 
-  /// User preference: speak cues via TTS.
-  bool _ttsEnabled = false;
-
   /// User preference: show in-app toast/banner.
   bool _inAppToastEnabled = true;
 
@@ -63,7 +59,7 @@ class CoachingCueService {
   // ---------------------------------------------------------------------------
 
   bool get notificationsEnabled => _notificationsEnabled;
-  bool get ttsEnabled => _ttsEnabled;
+  bool get ttsEnabled => VoiceCoachingService.instance.isEnabled;
   bool get inAppToastEnabled => _inAppToastEnabled;
 
   // ---------------------------------------------------------------------------
@@ -93,7 +89,6 @@ class CoachingCueService {
     // Load user preferences
     final prefs = await SharedPreferences.getInstance();
     _notificationsEnabled = prefs.getBool(_prefNotificationsEnabled) ?? true;
-    _ttsEnabled = prefs.getBool(_prefTtsEnabled) ?? false;
     _inAppToastEnabled = prefs.getBool(_prefInAppToastEnabled) ?? true;
 
     _isInitialized = true;
@@ -147,10 +142,7 @@ class CoachingCueService {
   }
 
   Future<void> setTtsEnabled(bool value) async {
-    _ttsEnabled = value;
-    VoiceCoachingService.instance.setEnabled(value);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefTtsEnabled, value);
+    await VoiceCoachingService.instance.setEnabled(value);
     if (kDebugMode) {
       debugPrint('Coaching TTS enabled: $value');
     }
@@ -206,7 +198,7 @@ class CoachingCueService {
     }
 
     // TTS for High/Critical priority cues
-    if (_ttsEnabled && cue.priority >= 2) {
+    if (VoiceCoachingService.instance.isEnabled && cue.priority >= 2) {
       await _speakCue(cue);
     }
 

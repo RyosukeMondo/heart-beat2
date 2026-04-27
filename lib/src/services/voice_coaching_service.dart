@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service for providing voice-based coaching during workouts via TTS.
 ///
@@ -17,11 +18,23 @@ class VoiceCoachingService {
   /// Singleton instance accessor.
   static VoiceCoachingService get instance => _instance;
 
+  // ---------------------------------------------------------------------------
+  // Preferences keys
+  // ---------------------------------------------------------------------------
+
+  static const _prefTtsEnabled = 'coaching_tts_enabled';
+
+  // ---------------------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------------------
+
   /// TTS engine instance.
   final FlutterTts _tts = FlutterTts();
 
   /// Whether voice coaching is enabled (off by default, user opts in).
   bool isEnabled = false;
+
+  bool _isInitialized = false;
 
   /// Speech volume (0.0 to 1.0).
   double _volume = 0.8;
@@ -51,17 +64,25 @@ class VoiceCoachingService {
   // Initialization & configuration
   // ---------------------------------------------------------------------------
 
-  /// Initialize the TTS engine.
+  /// Initialize the TTS engine and load user preferences.
   ///
   /// Should be called during app initialization before any coaching methods.
   Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    // Load user preferences
+    final prefs = await SharedPreferences.getInstance();
+    isEnabled = prefs.getBool(_prefTtsEnabled) ?? false;
+
     try {
       await _tts.setLanguage(_language);
       await _tts.setSpeechRate(_rate);
       await _tts.setVolume(_volume);
 
+      _isInitialized = true;
+
       if (kDebugMode) {
-        debugPrint('VoiceCoachingService initialized');
+        debugPrint('VoiceCoachingService initialized (isEnabled: $isEnabled)');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -70,12 +91,16 @@ class VoiceCoachingService {
     }
   }
 
-  /// Enable or disable voice coaching.
-  void setEnabled(bool enabled) {
+  /// Enable or disable voice coaching and persist the preference.
+  Future<void> setEnabled(bool enabled) async {
     isEnabled = enabled;
     if (!enabled) {
-      _tts.stop();
+      await _tts.stop();
     }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefTtsEnabled, enabled);
+
     if (kDebugMode) {
       debugPrint('VoiceCoachingService enabled: $enabled');
     }
@@ -118,10 +143,6 @@ class VoiceCoachingService {
   }
 
   /// Speak [text] through TTS if enabled and debounce allows.
-  ///
-  /// When [bypassDebounce] is true the debounce check is skipped (used for
-  /// phase announcements that must always be heard).
-  @visibleForTesting
   Future<void> speak(String text, {bool bypassDebounce = false}) async {
     if (!isEnabled) return;
 
