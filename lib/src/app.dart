@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:heart_beat/src/services/diagnosis_log_service.dart';
+import 'package:heart_beat/src/services/background_service_provider.dart';
 import 'package:heart_beat/src/screens/home_screen.dart';
 import 'package:heart_beat/src/screens/session_screen.dart';
 import 'package:heart_beat/src/screens/settings_screen.dart';
@@ -27,8 +28,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<DiagnosisLogService>.value(
-      value: DiagnosisLogService.instance,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DiagnosisLogService>.value(
+          value: DiagnosisLogService.instance,
+        ),
+        ChangeNotifierProvider<BackgroundServiceProvider>.value(
+          value: BackgroundServiceProvider.instance,
+        ),
+      ],
       child: DebugConsoleOverlay(
         child: MaterialApp(
           navigatorKey: navigatorKey,

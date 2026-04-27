@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../widgets/hr_display.dart';
@@ -6,9 +7,10 @@ import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
 import '../widgets/connection_banner.dart';
-import '../services/background_service.dart';
+import '../services/background_service_provider.dart';
 import '../services/profile_service.dart';
 import '../services/latency_service.dart';
+import '../utils/coaching_helpers.dart';
 import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
@@ -97,7 +99,8 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _startBackgroundService() async {
-    final started = await BackgroundService.instance.startService();
+    final bgService = context.read<BackgroundServiceProvider>();
+    final started = await bgService.startService();
     if (started && mounted) {
       setState(() {
         _isServiceRunning = true;
@@ -129,13 +132,20 @@ class _SessionScreenState extends State<SessionScreen> {
 
     if (shouldDisconnect != true) return;
 
+    // Capture provider reference before async gap
+    // ignore: use_build_context_synchronously
+    final bgService = _isServiceRunning
+        // ignore: use_build_context_synchronously
+        ? Provider.of<BackgroundServiceProvider>(context, listen: false)
+        : null;
+
     try {
       // Call disconnect API
       await api.disconnect();
 
       // Stop background service
-      if (_isServiceRunning) {
-        await BackgroundService.instance.stopService();
+      if (bgService != null) {
+        await bgService.stopService();
       }
 
       // Navigate back to home
@@ -159,7 +169,8 @@ class _SessionScreenState extends State<SessionScreen> {
   void dispose() {
     // Stop background service when leaving session
     if (_isServiceRunning) {
-      BackgroundService.instance.stopService();
+      final bgService = context.read<BackgroundServiceProvider>();
+      bgService.stopService();
     }
     // Clean up battery subscription
     _batterySubscription?.cancel();
@@ -304,7 +315,8 @@ class _SessionScreenState extends State<SessionScreen> {
 
         // Update background service notification with current BPM and zone
         if (_isServiceRunning) {
-          BackgroundService.instance.updateBpm(bpm, zone: zone.name);
+          final bgService = context.read<BackgroundServiceProvider>();
+          bgService.updateBpm(bpm, zone: zone.name);
         }
 
         return Column(
@@ -345,8 +357,9 @@ class _SessionScreenState extends State<SessionScreen> {
     api.ApiFilteredHeartRate data,
   ) async {
     final bpm = await api.hrFilteredBpm(data: data);
-    // Use ProfileService to calculate zone based on user's profile settings
-    final zone = _profileService.getZoneForBpm(bpm) ?? Zone.zone1;
+    // Use CoachingHelpers to calculate zone based on user's profile settings
+    final profile = _profileService.getCurrentProfile() ?? _profileService.getDefaultProfile();
+    final zone = CoachingHelpers.zoneForBpm(bpm, profile);
 
     return {'bpm': bpm, 'zone': zone};
   }
