@@ -29,9 +29,8 @@ void main() {
       importSessions = service.importSessions;
       expect(importSessions, isNotNull);
 
-      // getSyncStatus: () -> Future<SyncStatus>
-      Future<SyncStatus> Function() getSyncStatus;
-      getSyncStatus = service.getSyncStatus;
+      // getSyncStatus: () -> Future<_SyncStatus>
+      var getSyncStatus = service.getSyncStatus;
       expect(getSyncStatus, isNotNull);
 
       // createBackup: () -> Future<void>

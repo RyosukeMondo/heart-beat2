@@ -10,8 +10,8 @@ import '../bridge/api_generated.dart/api.dart';
 ///
 /// Provides a snapshot of the current backup state including when the last
 /// backup was created, how many sessions are stored, and the backup size.
-class SyncStatus {
-  SyncStatus({
+class _SyncStatus {
+  _SyncStatus({
     this.lastBackupTime,
     required this.sessionCount,
     required this.backupSizeBytes,
@@ -243,7 +243,7 @@ class CloudSyncService {
   ///
   /// Returns a [SyncStatus] snapshot with the last backup time, number of
   /// sessions currently in the repository, backup file size, and backup path.
-  Future<SyncStatus> getSyncStatus() async {
+  Future<_SyncStatus> getSyncStatus() async {
     _ensureInitialized();
 
     try {
@@ -255,7 +255,7 @@ class CloudSyncService {
         backupSizeBytes = latestBackup.lengthSync();
       }
 
-      return SyncStatus(
+      return _SyncStatus(
         lastBackupTime: _lastBackupTime,
         sessionCount: sessions.length,
         backupSizeBytes: backupSizeBytes,
