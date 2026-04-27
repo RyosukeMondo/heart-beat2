@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../services/coaching_helpers.dart';
+import '../utils/coaching_helpers.dart';
 import '../services/coaching_screen_state.dart';
 import '../services/profile_service.dart';
 
