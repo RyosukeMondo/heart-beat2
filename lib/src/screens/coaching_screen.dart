@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../services/coaching_cue_service.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../services/profile_service.dart';
@@ -83,8 +84,8 @@ class _CoachingScreenState extends State<CoachingScreen> {
       if (kDebugMode) debugPrint('[CoachingScreen] status stream error: $e');
     });
 
-    // Coaching cue stream
-    final cueStream = api.createCoachingCueStream();
+    // Coaching cue stream — shared via CoachingCueService to avoid duplicate subscription
+    final cueStream = CoachingCueService.instance.cueStream;
     _cueSubscription = cueStream.listen(_onCue, onError: (e) {
       if (kDebugMode) debugPrint('[CoachingScreen] cue stream error: $e');
     });
