@@ -2,6 +2,7 @@ import 'dart:async' hide Zone;
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
+import '../models/user_profile.dart';
 import 'hr_processor.dart';
 import 'coaching_session_state.dart';
 import 'coaching_screen_streams.dart';
@@ -36,6 +37,10 @@ class CoachingScreenState {
   api.ApiCue? get currentCue => _currentCue;
   Duration get elapsed => _sessionState.elapsed;
   bool get isPaused => _sessionState.isPaused;
+
+  /// Returns the active profile (current if set, else default).
+  UserProfile get currentProfile =>
+      ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
 
   void setOnStateChange(VoidCallback callback) {
     _onStateChange = callback;
