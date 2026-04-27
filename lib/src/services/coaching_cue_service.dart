@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'voice_coaching_handler.dart';
 import 'voice_coaching_service.dart';
 
 /// Global navigator key for deep-links from notifications when no context
@@ -25,7 +26,8 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 ///  - TTS (optional, opt-in): flutter_tts speaks the cue aloud.
 ///  User preference toggles: enable notifications, enable TTS, choose voice."
 class CoachingCueService {
-  CoachingCueService._();
+  CoachingCueService._([VoiceCoachingHandler? voiceHandler])
+      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance;
 
   static final CoachingCueService _instance = CoachingCueService._();
 
@@ -45,6 +47,8 @@ class CoachingCueService {
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
+  final VoiceCoachingHandler _voiceHandler;
+
   bool _isInitialized = false;
 
   /// User preference: show local notifications when backgrounded.
@@ -58,7 +62,7 @@ class CoachingCueService {
   // ---------------------------------------------------------------------------
 
   bool get notificationsEnabled => _notificationsEnabled;
-  bool get ttsEnabled => VoiceCoachingService.instance.isEnabled;
+  bool get ttsEnabled => _voiceHandler.isEnabled;
   bool get inAppToastEnabled => _inAppToastEnabled;
 
   // ---------------------------------------------------------------------------
@@ -99,7 +103,7 @@ class CoachingCueService {
 
   /// Initialize the TTS engine (called from app startup).
   Future<void> initializeTts() async {
-    await VoiceCoachingService.instance.initialize();
+    await _voiceHandler.initialize();
   }
 
   void _onNotificationTapped(NotificationResponse response) {
@@ -141,7 +145,7 @@ class CoachingCueService {
   }
 
   Future<void> setTtsEnabled(bool value) async {
-    await VoiceCoachingService.instance.setEnabled(value);
+    await _voiceHandler.setEnabled(value);
     if (kDebugMode) {
       debugPrint('Coaching TTS enabled: $value');
     }
@@ -197,7 +201,7 @@ class CoachingCueService {
     }
 
     // TTS for High/Critical priority cues
-    if (VoiceCoachingService.instance.isEnabled && cue.priority >= 2) {
+    if (_voiceHandler.isEnabled && cue.priority >= 2) {
       await _speakCue(cue);
     }
 
@@ -339,7 +343,7 @@ class CoachingCueService {
   Future<void> _speakCue(ApiCue cue) async {
     // Strip any ANSI / formatting from the message before speaking
     final text = cue.message.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '');
-    await VoiceCoachingService.instance.speak(text);
+    await _voiceHandler.speak(text);
   }
 
   // ---------------------------------------------------------------------------
@@ -348,7 +352,7 @@ class CoachingCueService {
 
   Future<void> dispose() async {
     await _notifications.cancelAll();
-    await VoiceCoachingService.instance.dispose();
+    await _voiceHandler.dispose();
     _isInitialized = false;
     if (kDebugMode) {
       debugPrint('CoachingCueService disposed');

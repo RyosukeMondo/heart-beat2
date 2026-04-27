@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'voice_coaching_handler.dart';
+
 /// Service for providing voice-based coaching during workouts via TTS.
 ///
 /// Complements [AudioFeedbackService] (which plays sound effects) by
@@ -10,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Implemented as a singleton to prevent overlapping speech and ensure
 /// consistent TTS engine state.
-class VoiceCoachingService {
+class VoiceCoachingService implements VoiceCoachingHandler {
   VoiceCoachingService._();
 
   static final VoiceCoachingService _instance = VoiceCoachingService._();
@@ -32,6 +34,7 @@ class VoiceCoachingService {
   final FlutterTts _tts = FlutterTts();
 
   /// Whether voice coaching is enabled (off by default, user opts in).
+  @override
   bool isEnabled = false;
 
   bool _isInitialized = false;
@@ -67,6 +70,7 @@ class VoiceCoachingService {
   /// Initialize the TTS engine and load user preferences.
   ///
   /// Should be called during app initialization before any coaching methods.
+  @override
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -92,6 +96,7 @@ class VoiceCoachingService {
   }
 
   /// Enable or disable voice coaching and persist the preference.
+  @override
   Future<void> setEnabled(bool enabled) async {
     isEnabled = enabled;
     if (!enabled) {
@@ -143,6 +148,7 @@ class VoiceCoachingService {
   }
 
   /// Speak [text] through TTS if enabled and debounce allows.
+  @override
   Future<void> speak(String text, {bool bypassDebounce = false}) async {
     if (!isEnabled) return;
 
@@ -263,6 +269,7 @@ class VoiceCoachingService {
   /// Stop TTS and release resources.
   ///
   /// As a singleton this is typically only called on app termination.
+  @override
   Future<void> dispose() async {
     try {
       await _tts.stop();
