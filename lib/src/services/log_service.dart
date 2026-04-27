@@ -284,7 +284,7 @@ abstract class _RollingFileWriter {
     try {
       final file = File(path);
       file.writeAsStringSync(line, mode: FileMode.append);
-    } catch (_) {
+    } on Exception catch (_) {
       // Best-effort — never throw from log writer
     }
   }
@@ -300,7 +300,7 @@ abstract class _RollingFileWriter {
     try {
       final file = File(path);
       file.writeAsStringSync(line, mode: FileMode.append);
-    } catch (_) {
+    } on Exception catch (_) {
       // Best-effort — never throw from log writer
     }
   }
