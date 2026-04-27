@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+import '../../bridge/api_generated.dart/api.dart';
 
 class DiagnosisLogLine extends StatelessWidget {
   final LogMessage log;
