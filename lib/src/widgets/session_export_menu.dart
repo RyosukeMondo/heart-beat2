@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
-import 'package:heart_beat/src/services/share_service.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 /// Export menu widget for session data in multiple formats.
 class SessionExportMenu extends StatelessWidget {
@@ -85,59 +81,6 @@ class SessionExportMenu extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Handles exporting session data to various formats.
-class SessionExporter {
-  final String sessionId;
-
-  SessionExporter({required this.sessionId});
-
-  Future<void> exportAsCsv() async {
-    final content = await exportSession(id: sessionId, format: ExportFormat.csv);
-    await _shareFile(content, 'csv', 'text/csv');
-  }
-
-  Future<void> exportAsJson() async {
-    final content = await exportSession(id: sessionId, format: ExportFormat.json);
-    await _shareFile(content, 'json', 'application/json');
-  }
-
-  Future<void> exportAsSummary() async {
-    final content = await exportSession(id: sessionId, format: ExportFormat.summary);
-    await _shareText(content);
-  }
-
-  Future<void> exportAsTcx() async {
-    final content = await exportSessionTcx(sessionId: sessionId);
-    await _shareFile(content, 'tcx', 'application/xml');
-  }
-
-  Future<void> exportAsGpx() async {
-    final content = await exportSessionGpx(sessionId: sessionId);
-    await _shareFile(content, 'gpx', 'application/xml');
-  }
-
-  Future<void> _shareFile(String content, String extension, String mimeType) async {
-    final tempDir = await getTemporaryDirectory();
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final fileName = 'session_${sessionId}_$timestamp.$extension';
-    final filePath = '${tempDir.path}/$fileName';
-    final file = File(filePath);
-    await file.writeAsString(content);
-    await ShareService.instance.shareFile(
-      filePath,
-      mimeType,
-      subject: 'Training Session Export',
-    );
-  }
-
-  Future<void> _shareText(String content) async {
-    await ShareService.instance.shareText(
-      content,
-      subject: 'Training Session Summary',
     );
   }
 }
