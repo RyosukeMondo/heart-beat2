@@ -40,6 +40,9 @@ pub enum CueSource {
     TargetZone,
     Inactivity,
     Overwork,
+    /// Emitted when the rolling average HR has been below the low-HR threshold
+    /// for longer than the sustained window (outside quiet hours).
+    SustainedLowHr,
 }
 
 /// Shared context passed to every rule on each evaluation.

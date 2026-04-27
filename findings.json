@@ -1,0 +1,4 @@
+{
+  "reasoning": "I scanned each top-level function, method, and field across all 20 files. All functions have explicit return types. All method parameters have explicit types or are correctly inferred from context (e.g., StreamSubscription callbacks infer parameter type from the stream's type parameter). Fields using `required this.fieldName` constructor syntax have their types tied to the explicitly-typed constructor parameters. No missing type annotations found.",
+  "findings": []
+}

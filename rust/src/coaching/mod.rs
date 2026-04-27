@@ -28,7 +28,7 @@ pub mod cue;
 pub mod rule;
 
 pub use cue::{Cue, CueContext, CuePriority, CueSource};
-pub use rule::{InactivityRule, OverworkRule, Rule, RuleEngine, TargetZoneRule};
+pub use rule::{InactivityRule, LowHrRule, OverworkRule, Rule, RuleEngine, TargetZoneRule};
 
 // Re-export for internal use (not FFI)
 pub use cue::CueCadence;

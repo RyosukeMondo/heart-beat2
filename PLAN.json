@@ -1,0 +1,602 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "heart-beat",
+    "root": "/Volumes/PhoneSSD/repos/heart-beat2",
+    "description": "Flutter + Rust app that pairs with a BLE heart-rate strap. This plan adds an always-on background heart-rate monitor: continuous tracking while the app is backgrounded, persistent recording of samples, configurable low-HR alerts, rolling averages, and a Health screen so the user can stay on top of their cardiovascular baseline."
+  },
+  "master": {
+    "title": "Background heart-rate monitoring & low-HR alerts",
+    "goal": "Let the user wear the strap all day and trust the app to (a) keep recording HR while backgrounded, (b) notify them when HR has been below a configurable threshold (default 70 bpm) for a sustained window, and (c) surface average / trend stats so they can act on their cardiovascular health.",
+    "problems": [
+      "Today, HR sampling stops or becomes unreliable when the app is backgrounded for long periods on iOS/Android.",
+      "There is no persistent time-series store of HR samples \u2014 once the session ends, the data is gone, so rolling averages over 1h/24h/7d cannot be computed.",
+      "The coaching rule engine focuses on training cues; it has no general-purpose 'sustained low HR' alert that fires outside an active session.",
+      "The user cannot configure low-HR threshold, sustained-window duration, sampling cadence, or quiet hours.",
+      "There is no Health/at-a-glance screen showing live BPM + rolling averages + trend."
+    ],
+    "decisions_locked": [
+      {
+        "name": "Reuse existing background plumbing",
+        "decision": "Build on the Phase-5 background plumbing already in the repo: Android foreground service via flutter_background_service, iOS bluetooth-central background mode, and the Rust BLE reconnect loop. Do NOT introduce a second background runner.",
+        "rationale": "PLAN.md shows Phase 5.1/5.2 are already complete. Adding a parallel background mechanism would fragment battery usage and lifecycle handling."
+      },
+      {
+        "name": "Persist samples via Rust",
+        "decision": "Store HR samples in a rolling on-disk store on the Rust side (append-only daily JSONL or SQLite under app docs dir), exposed to Dart through the existing flutter_rust_bridge api. Retention: 30 days by default.",
+        "rationale": "Rust already owns the BLE pipeline and survives Flutter UI being torn down on iOS. Keeping persistence next to the data source avoids isolate-boundary loss."
+      },
+      {
+        "name": "Reuse the coaching cue notification path",
+        "decision": "Deliver the low-HR alert through the existing flutter_local_notifications integration in CoachingCueService (or a slim sibling), not a brand-new notification plugin.",
+        "rationale": "CoachingCueService already handles permissions, channels, taps, and quiet-hour suppression \u2014 extending it costs less than a parallel system."
+      },
+      {
+        "name": "Default thresholds",
+        "decision": "Default low-HR threshold = 70 bpm, sustained window = 10 minutes, sampling cadence = 1 sample / 5s while connected, quiet hours = 22:00\u201307:00 local, retention = 30 days.",
+        "rationale": "Matches the user's stated example (70 bpm) while picking conservative defaults that won't spam notifications for a transient dip."
+      }
+    ]
+  },
+  "phases": [
+    {
+      "number": 1,
+      "title": "Persistent HR sample store",
+      "status": "planned",
+      "goal": "Every HR sample emitted by the BLE pipeline is appended to a durable, queryable on-disk store so rolling stats and the alert rule have something to read.",
+      "context": [
+        "Rust currently emits HR notifications through an FFI stream consumed by Dart; samples are not persisted beyond the in-memory session store.",
+        "The Rust crate already owns the BLE adapter abstraction in rust/src/adapters and rust/src/ports, so the writer should sit alongside those, not in Dart."
+      ],
+      "scope_boundaries": {
+        "included": [
+          "Daily-rotated JSONL file under app documents directory (timestamp_ms, bpm, rr_intervals?).",
+          "30-day retention sweep on app start.",
+          "Rust-side query API: samples_in_range(start_ms, end_ms), rolling_avg(window_secs), latest_sample().",
+          "FRB-bridged Dart API for the new query functions."
+        ],
+        "excluded": [
+          "Cloud sync of samples (out of scope; existing cloud_sync_service is unaffected).",
+          "ECG / HRV analytics beyond a basic rolling mean.",
+          "Migration of historical data \u2014 store starts empty."
+        ]
+      },
+      "tasks": [
+        {
+          "id": "1.1",
+          "text": "Add a `hr_store` module under rust/src that opens an append-only JSONL writer at <app_docs>/hr/YYYY-MM-DD.jsonl. Each line: {ts_ms, bpm, rr?}. Flush on every write; rotate at local midnight.",
+          "priority": "high",
+          "effort": "m",
+          "code_refs": [
+            {
+              "file": "rust/src/lib.rs",
+              "description": "Register the new module"
+            },
+            {
+              "file": "rust/src/adapters",
+              "description": "BLE notification handler currently lives here; tap it as the write source"
+            }
+          ],
+          "acceptance_criteria": [
+            "Killing and relaunching the app preserves prior-day files.",
+            "A 24-hour soak produces exactly one file per local day."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "1.2",
+          "text": "Wire the BLE HR notification path so every accepted sample is forwarded to `hr_store::append`. Drop duplicates within 500 ms (some straps spam).",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "1.1"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src/api.rs",
+              "description": "HR stream wiring; add the store hook here"
+            }
+          ],
+          "acceptance_criteria": [
+            "While the app is backgrounded on Android (foreground service active), JSONL grows continuously.",
+            "On iOS, JSONL grows whenever the BLE central is active in background."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "1.3",
+          "text": "Implement Rust query functions: `samples_in_range(start_ms, end_ms) -> Vec<Sample>`, `rolling_avg(window_secs) -> Option<f32>`, `latest_sample() -> Option<Sample>`. Read across files spanning the range.",
+          "priority": "high",
+          "effort": "m",
+          "dependencies": [
+            "1.1"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src/api.rs",
+              "description": "Expose via FRB"
+            }
+          ],
+          "acceptance_criteria": [
+            "Unit test in rust/src for boundary cases (empty store, single file, multi-day range).",
+            "Returns within 200ms for a 7-day range with ~120k samples."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "1.4",
+          "text": "30-day retention sweep: on Rust init, delete `<app_docs>/hr/*.jsonl` older than 30 days.",
+          "priority": "medium",
+          "effort": "s",
+          "dependencies": [
+            "1.1"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src/api.rs",
+              "description": "Hook into existing init"
+            }
+          ],
+          "acceptance_criteria": [
+            "Test that touches files with old mtimes and verifies they are removed."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "1.5",
+          "text": "Regenerate FRB bindings and add a thin Dart wrapper service `lib/src/services/hr_history_service.dart` that exposes `samplesInRange`, `rollingAvg`, `latestSample`.",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "1.3"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/bridge/api_generated.dart/frb_generated.io.dart"
+            },
+            {
+              "file": "lib/src/services/hr_history_service.dart",
+              "description": "New file"
+            }
+          ],
+          "acceptance_criteria": [
+            "Dart unit test calls each method on a mocked Rust side and gets typed results."
+          ],
+          "done": true,
+          "status": "completed"
+        }
+      ],
+      "acceptance_criteria": [
+        "After a 1-hour background run on a real device, the JSONL file contains > 600 samples and `rolling_avg(3600)` returns a plausible value within 200ms.",
+        "App relaunch sees the prior file and is ready to query immediately."
+      ]
+    },
+    {
+      "number": 2,
+      "title": "User settings for monitoring",
+      "status": "planned",
+      "goal": "Give the user a Settings screen to configure low-HR threshold, sustained-window duration, sampling cadence, quiet hours, and notification opt-in.",
+      "context": [
+        "SharedPreferences is already a dependency. CoachingCueService at lib/src/services/coaching_cue_service.dart shows the existing pattern for persisted user prefs.",
+        "Defaults: threshold=70, sustained=10min, cadence=5s, quiet hours=22:00\u201307:00."
+      ],
+      "scope_boundaries": {
+        "included": [
+          "New `HealthSettingsService` in lib/src/services with typed getters/setters and a ChangeNotifier-style listenable.",
+          "New `health_settings_screen.dart` under lib/src/screens with form widgets.",
+          "Wire into existing app navigation (settings/drawer entry)."
+        ],
+        "excluded": [
+          "Per-zone targets (handled by training UI).",
+          "Cloud-sync of settings (local only)."
+        ]
+      },
+      "tasks": [
+        {
+          "id": "2.1",
+          "text": "Create `HealthSettingsService` with keys: `health_low_hr_threshold` (int, default 70), `health_sustained_minutes` (int, default 10), `health_sample_cadence_secs` (int, default 5), `health_quiet_start` / `health_quiet_end` (HH:mm strings, defaults 22:00 / 07:00), `health_notifications_enabled` (bool, default true).",
+          "priority": "high",
+          "effort": "s",
+          "code_refs": [
+            {
+              "file": "lib/src/services/health_settings_service.dart",
+              "description": "New file"
+            },
+            {
+              "file": "lib/src/services/coaching_cue_service.dart",
+              "description": "Reference pattern"
+            }
+          ],
+          "acceptance_criteria": [
+            "Service round-trips every key through SharedPreferences.",
+            "Notifies listeners on change."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "2.2",
+          "text": "Build `HealthSettingsScreen` with form fields: number input for threshold (40\u2013120 clamp), slider/stepper for sustained minutes (1\u201360), dropdown for cadence (1s/5s/15s/60s), two TimeOfDay pickers for quiet hours, master notifications toggle.",
+          "priority": "high",
+          "effort": "m",
+          "dependencies": [
+            "2.1"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/screens/health_settings_screen.dart",
+              "description": "New file"
+            }
+          ],
+          "acceptance_criteria": [
+            "Widget test: change threshold to 65 \u2192 service emits update with value 65.",
+            "Quiet-hours picker rejects invalid HH:mm and clamps to range."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "2.3",
+          "text": "Add a navigation entry (drawer or settings list) that opens HealthSettingsScreen. Reuse existing app navigation conventions.",
+          "priority": "medium",
+          "effort": "xs",
+          "dependencies": [
+            "2.2"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/app.dart",
+              "description": "Routes / drawer"
+            }
+          ],
+          "acceptance_criteria": [
+            "From the app home, the user can reach HealthSettingsScreen in <= 2 taps."
+          ],
+          "done": true,
+          "status": "completed"
+        }
+      ],
+      "acceptance_criteria": [
+        "All five settings persist across app restart and emit listenable changes."
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Sustained-low-HR alert rule",
+      "status": "planned",
+      "goal": "Whenever the rolling average HR over the user's sustained-window is below the threshold (and we are NOT in quiet hours), fire exactly one local notification, then debounce until the condition clears.",
+      "context": [
+        "rust/src/coaching already hosts the rule engine for training cues; this rule is health-baseline, not training-specific. We add it as a sibling rule that runs whenever the BLE session is active, regardless of training mode.",
+        "Notification delivery on the Dart side is owned by CoachingCueService \u2014 we extend it (or add a sibling) rather than introducing a new plugin."
+      ],
+      "scope_boundaries": {
+        "included": [
+          "Rust rule that consumes hr_store + settings + clock and emits a 'sustained_low_hr' cue.",
+          "Debounce: don't re-notify until rolling avg has gone above (threshold + 5 bpm) for at least 5 minutes (hysteresis).",
+          "Quiet hours: rule output suppressed when local time is within [quiet_start, quiet_end)."
+        ],
+        "excluded": [
+          "High-HR alerting (separate future feature).",
+          "Per-zone training cues (already covered by Phase 5 of PLAN.md)."
+        ]
+      },
+      "tasks": [
+        {
+          "id": "3.1",
+          "text": "Add a `low_hr_rule` to rust/src/coaching that, on each tick (every 30s while connected), computes rolling_avg over `health_sustained_minutes`. If below threshold and not in quiet hours and not currently in 'firing' state, emit cue { type: 'sustained_low_hr', avg_bpm, window_min }. Hysteresis as described in the goal.",
+          "priority": "high",
+          "effort": "m",
+          "dependencies": [
+            "1.3",
+            "2.1"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src/coaching",
+              "description": "Rule engine module"
+            },
+            {
+              "file": "rust/src/api.rs",
+              "description": "Surface settings injection"
+            }
+          ],
+          "acceptance_criteria": [
+            "Unit tests cover: never-below, brief-dip-then-recover (no fire), sustained-dip (one fire), continued-dip (no second fire), recovery-then-redip (one new fire), quiet-hours-suppressed."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "3.2",
+          "text": "Plumb settings (threshold, sustained, quiet hours, notifications-enabled) from `HealthSettingsService` into the Rust rule via FRB. Re-push on change.",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "2.1",
+            "3.1"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/services/health_settings_service.dart"
+            },
+            {
+              "file": "rust/src/api.rs"
+            }
+          ],
+          "acceptance_criteria": [
+            "Changing the threshold in the UI updates the rule within one tick (\u226430s)."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "3.3",
+          "text": "On the Dart side, subscribe to the cue stream and, when `sustained_low_hr` arrives AND notifications are enabled, present a `flutter_local_notifications` notification: title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over the last {window_min} min'. Tap opens the Health screen.",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "3.1"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/services/coaching_cue_service.dart",
+              "description": "Extend cue type handling"
+            }
+          ],
+          "acceptance_criteria": [
+            "Manual test on Android: with threshold = 200 (forces fire), one notification appears within 30s.",
+            "Notifications stop when master toggle is off."
+          ],
+          "done": true,
+          "status": "completed"
+        }
+      ],
+      "acceptance_criteria": [
+        "End-to-end: with threshold 70 and a real strap, walking-pace HR (~85bpm) does NOT fire; resting HR (~65bpm sustained 10 min) fires exactly once.",
+        "Quiet hours fully suppress the notification."
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Health screen (live + averages)",
+      "status": "planned",
+      "goal": "One glanceable screen showing current BPM, rolling averages over 1h / 24h / 7d, a 24h sparkline, and the current rule state ('OK' / 'Below threshold for X min').",
+      "context": [
+        "fl_chart is already a dependency.",
+        "Existing screens live under lib/src/screens \u2014 reuse the app shell."
+      ],
+      "scope_boundaries": {
+        "included": [
+          "New `health_screen.dart` with live BPM, three average cards, a 24h sparkline.",
+          "Pull-to-refresh recomputes averages.",
+          "Bottom-nav / drawer entry."
+        ],
+        "excluded": [
+          "Workout detail charts (already covered by session screens).",
+          "Editing past samples."
+        ]
+      },
+      "tasks": [
+        {
+          "id": "4.1",
+          "text": "Build `HealthScreen` widget with three Card tiles (1h / 24h / 7d averages) calling `HrHistoryService.rollingAvg` on init and on pull-to-refresh.",
+          "priority": "high",
+          "effort": "m",
+          "dependencies": [
+            "1.5"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/screens/health_screen.dart",
+              "description": "New file"
+            },
+            {
+              "file": "lib/src/services/hr_history_service.dart"
+            }
+          ],
+          "acceptance_criteria": [
+            "Tiles show '\u2014' when the store is empty, a number with units otherwise.",
+            "Pull-to-refresh re-queries and updates within 500ms."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "4.2",
+          "text": "Add a 24h sparkline using fl_chart, downsampled to ~288 points (5-min buckets). Live BPM is overlaid as the rightmost point and updates from the existing HR stream.",
+          "priority": "medium",
+          "effort": "m",
+          "dependencies": [
+            "4.1"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/screens/health_screen.dart"
+            }
+          ],
+          "acceptance_criteria": [
+            "Empty store renders a placeholder, not a crash.",
+            "On a 1h+ run, the chart shows a non-flat curve."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "4.3",
+          "text": "Add a 'Status' banner at the top of HealthScreen reflecting the rule state: green 'OK', amber 'Below {threshold} bpm for {N} min'. Read from the same cue stream as the notification.",
+          "priority": "medium",
+          "effort": "s",
+          "dependencies": [
+            "3.1",
+            "4.1"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/screens/health_screen.dart"
+            }
+          ],
+          "acceptance_criteria": [
+            "Banner color and text update in real time as the rule transitions."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "4.4",
+          "text": "Wire navigation: a 'Health' entry in the app drawer / bottom nav opens HealthScreen. Notification taps from Phase 3 deep-link here.",
+          "priority": "medium",
+          "effort": "xs",
+          "dependencies": [
+            "4.1",
+            "3.3"
+          ],
+          "code_refs": [
+            {
+              "file": "lib/src/app.dart",
+              "description": "Routes"
+            }
+          ],
+          "acceptance_criteria": [
+            "Notification tap opens HealthScreen even if the app was cold-started."
+          ],
+          "done": true,
+          "status": "completed"
+        }
+      ],
+      "acceptance_criteria": [
+        "User can open the Health screen, see live BPM, 1h / 24h / 7d averages, a sparkline, and the current rule status."
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Tests, soak, and docs",
+      "status": "planned",
+      "goal": "Lock in the behavior with automated tests and a manual soak; add a short doc so the next contributor can extend the rule.",
+      "context": [
+        "Phase 5.6 of PLAN.md established an 8-hour soak template \u2014 we reuse it."
+      ],
+      "scope_boundaries": {
+        "included": [
+          "Rust unit tests for hr_store and low_hr_rule.",
+          "Dart widget tests for HealthSettingsScreen and HealthScreen.",
+          "Manual soak instructions appended to the relevant existing doc.",
+          "CLAUDE.md quickref entry under 'Common Commands' for any new scripts."
+        ],
+        "excluded": [
+          "End-to-end integration tests on real hardware (covered by manual soak)."
+        ]
+      },
+      "tasks": [
+        {
+          "id": "5.1",
+          "text": "Add Rust unit tests covering hr_store rotation, retention sweep, and rolling_avg correctness across day boundaries.",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "1.4"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src",
+              "description": "Co-located #[cfg(test)] modules"
+            }
+          ],
+          "acceptance_criteria": [
+            "`cargo test` passes; new tests cover the boundary cases listed in the goal."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "5.2",
+          "text": "Add Rust unit tests for low_hr_rule covering the six scenarios listed in 3.1's acceptance criteria.",
+          "priority": "high",
+          "effort": "s",
+          "dependencies": [
+            "3.1"
+          ],
+          "code_refs": [
+            {
+              "file": "rust/src/coaching"
+            }
+          ],
+          "acceptance_criteria": [
+            "All six scenarios have a named test that asserts the expected fire count."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "5.3",
+          "text": "Add Dart widget tests for HealthSettingsScreen (each field round-trips through the service) and HealthScreen (renders empty state, renders populated state, banner reflects rule state).",
+          "priority": "medium",
+          "effort": "m",
+          "dependencies": [
+            "2.2",
+            "4.3"
+          ],
+          "code_refs": [
+            {
+              "file": "test",
+              "description": "Existing Dart test root"
+            }
+          ],
+          "acceptance_criteria": [
+            "`flutter test` passes; new tests are listed by file."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "5.4",
+          "text": "Update PLAN.md and CLAUDE.md: add a milestone row for this work and document any new scripts or how to flip the threshold for manual testing.",
+          "priority": "low",
+          "effort": "xs",
+          "code_refs": [
+            {
+              "file": "PLAN.md"
+            },
+            {
+              "file": "CLAUDE.md"
+            }
+          ],
+          "acceptance_criteria": [
+            "PLAN.md shows the new feature and its checkbox state.",
+            "CLAUDE.md mentions any added scripts or test entry-points."
+          ],
+          "done": true,
+          "status": "completed"
+        },
+        {
+          "id": "5.5",
+          "text": "Run a 4-hour on-device soak with the rule armed at threshold 70 / sustained 10min. Verify: no missed samples, exactly the expected number of notifications, battery drain < 10% per hour.",
+          "priority": "medium",
+          "effort": "s",
+          "dependencies": [
+            "1.2",
+            "3.3",
+            "4.1"
+          ],
+          "code_refs": [
+            {
+              "file": "PLAN_coaching.md",
+              "description": "Reuse soak template"
+            }
+          ],
+          "acceptance_criteria": [
+            "Soak log captured under .soak-logs/ with sample count, notification timestamps, and battery delta."
+          ],
+          "done": true,
+          "status": "completed"
+        }
+      ],
+      "acceptance_criteria": [
+        "All new tests pass. Manual soak log committed."
+      ]
+    }
+  ]
+}
