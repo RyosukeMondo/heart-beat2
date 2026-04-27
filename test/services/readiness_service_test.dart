@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/services/readiness_service.dart';
 
 void main() {
@@ -23,7 +24,25 @@ void main() {
 
     test('singleton has stream accessor', () {
       final service = ReadinessService.instance;
-      expect(service.stream, isNotNull);
+      expect(service.stream, isA<Stream<ApiReadinessData>>());
+    });
+
+    test('singleton stream emits readiness data', () async {
+      final service = ReadinessService.instance;
+      final stream = service.stream;
+
+      // Listen to verify stream is functional and can emit ApiReadinessData
+      final subscription = stream.listen((ApiReadinessData data) {
+        // Verify readiness data is received when stream emits
+        expect(data.score, isA<int>());
+        expect(data.level, isA<String>());
+      });
+
+      // Verify stream is a broadcast stream that emits ApiReadinessData
+      expect(stream, isA<Stream<ApiReadinessData>>());
+
+      // Clean up
+      await subscription.cancel();
     });
 
     test('singleton has cachedReadiness accessor', () {
