@@ -4,10 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
-import 'health_alert_service.dart';
+import 'package:heart_beat/src/services/cue_stream_provider.dart';
 import 'voice_coaching_handler.dart';
 import 'voice_coaching_service.dart';
 
@@ -27,8 +26,9 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 ///  - TTS (optional, opt-in): flutter_tts speaks the cue aloud.
 ///  User preference toggles: enable notifications, enable TTS, choose voice."
 class CoachingCueService {
-  CoachingCueService._([VoiceCoachingHandler? voiceHandler])
-      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance;
+  CoachingCueService._([VoiceCoachingHandler? voiceHandler, SustainedLowHrHandler? onSustainedLowHr])
+      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance,
+        _onSustainedLowHr = onSustainedLowHr;
 
   static final CoachingCueService _instance = CoachingCueService._();
 
@@ -52,6 +52,8 @@ class CoachingCueService {
   FlutterLocalNotificationsPlugin get notifications => _notifications;
 
   final VoiceCoachingHandler _voiceHandler;
+
+  SustainedLowHrHandler? _onSustainedLowHr;
 
   bool _isInitialized = false;
 
@@ -133,6 +135,16 @@ class CoachingCueService {
       // otherwise fall back to the global navigator.
       navigatorKey.currentState?.pushNamed('/health');
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sustained low HR handler
+  // ---------------------------------------------------------------------------
+
+  /// Sets the handler for sustained_low_hr cues.
+  /// Should be called once at app startup after [HealthAlertService] is available.
+  void setSustainedLowHrHandler(SustainedLowHrHandler? handler) {
+    _onSustainedLowHr = handler;
   }
 
   // ---------------------------------------------------------------------------
@@ -231,7 +243,7 @@ class CoachingCueService {
       return;
     }
 
-    await HealthAlertService.instance.showSustainedLowHrNotification(cue);
+    _onSustainedLowHr?.call(cue);
   }
 
   // ---------------------------------------------------------------------------

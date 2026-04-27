@@ -9,6 +9,7 @@ import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
 import 'package:heart_beat/src/services/background_service.dart';
 import 'package:heart_beat/src/services/coaching_cue_service.dart';
+import 'package:heart_beat/src/services/health_alert_service.dart';
 import 'package:heart_beat/src/services/log_service.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -84,6 +85,10 @@ Future<void> main() async {
   try {
     await CoachingCueService.instance.initialize();
     await CoachingCueService.instance.initializeTts();
+    // Wire up sustained_low_hr handler to HealthAlertService
+    CoachingCueService.instance.setSustainedLowHrHandler(
+      HealthAlertService.instance.showSustainedLowHrNotification,
+    );
     // Initialize coaching engine in Rust before connecting
     await initCoachingEngine();
     // Subscribe to coaching cue stream from Rust rule engine
