@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../services/log_service.dart';
 import 'debug_console.dart';
 
 /// Wrapper widget that adds triple-tap gesture to toggle debug console overlay.
@@ -169,7 +170,13 @@ class _ConsoleOverlayWidgetState extends State<_ConsoleOverlayWidget> {
               ),
 
               // Debug console
-              Expanded(child: DebugConsole(onClose: widget.onClose)),
+              Expanded(
+                child: DebugConsole(
+                  onClose: widget.onClose,
+                  logStream: LogService.instance.stream,
+                  logs: LogService.instance.logs,
+                ),
+              ),
             ],
           ),
         ),

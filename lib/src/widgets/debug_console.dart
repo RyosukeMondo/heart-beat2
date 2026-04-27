@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/log_service.dart';
 import '../bridge/api_generated.dart/api.dart';
 
 /// Debug console widget that displays real-time logs with filtering capabilities.
@@ -8,7 +7,18 @@ class DebugConsole extends StatefulWidget {
   /// Callback invoked when the close button is pressed.
   final VoidCallback onClose;
 
-  const DebugConsole({super.key, required this.onClose});
+  /// Stream of incoming log messages.
+  final Stream<LogMessage> logStream;
+
+  /// Current list of log messages.
+  final List<LogMessage> logs;
+
+  const DebugConsole({
+    super.key,
+    required this.onClose,
+    required this.logStream,
+    required this.logs,
+  });
 
   @override
   State<DebugConsole> createState() => _DebugConsoleState();
@@ -229,9 +239,9 @@ class _DebugConsoleState extends State<DebugConsole> {
             // Log list
             Expanded(
               child: StreamBuilder<LogMessage>(
-                stream: LogService.instance.stream,
+                stream: widget.logStream,
                 builder: (context, snapshot) {
-                  final allLogs = LogService.instance.logs;
+                  final allLogs = widget.logs;
 
                   if (allLogs.isEmpty) {
                     return Center(
