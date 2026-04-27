@@ -22,23 +22,29 @@ class CoachingScreenStreams {
   /// Callback for coaching cue updates.
   void Function(api.ApiCue cue)? onCue;
 
+  /// Callback for stream errors.
+  void Function(Object error, StackTrace stackTrace)? onError;
+
   void subscribe() {
     // HR stream
     final hrStream = api.createHrStream();
-    _hrSubscription = hrStream.listen(_handleHrData, onError: (e) {
+    _hrSubscription = hrStream.listen(_handleHrData, onError: (e, st) {
       debugPrint('[CoachingScreen] HR stream error: $e');
+      onError?.call(e, st);
     });
 
     // Connection status stream
     final statusStream = api.createConnectionStatusStream();
-    _statusSubscription = statusStream.listen(_handleStatusChange, onError: (e) {
+    _statusSubscription = statusStream.listen(_handleStatusChange, onError: (e, st) {
       debugPrint('[CoachingScreen] status stream error: $e');
+      onError?.call(e, st);
     });
 
     // Coaching cue stream
     final cueStream = CoachingCueService.instance.cueStream;
-    _cueSubscription = cueStream.listen(_handleCue, onError: (e) {
+    _cueSubscription = cueStream.listen(_handleCue, onError: (e, st) {
       debugPrint('[CoachingScreen] cue stream error: $e');
+      onError?.call(e, st);
     });
   }
 
