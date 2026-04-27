@@ -47,13 +47,13 @@ class CoachingScreenState {
     _streams.subscribe();
   }
 
-  void _handleHrData(api.ApiFilteredHeartRate data) async {
+  Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
     await _hrProcessor.process(data);
     _onStateChange?.call();
     _sessionState.onZoneTick(_hrProcessor.currentZone);
   }
 
-  void _handleStatusChange(api.ApiConnectionStatus status) async {
+  Future<void> _handleStatusChange(api.ApiConnectionStatus status) async {
     final isConn = await api.connectionStatusIsConnected(status: status);
     _isConnected = isConn;
     _onStateChange?.call();
