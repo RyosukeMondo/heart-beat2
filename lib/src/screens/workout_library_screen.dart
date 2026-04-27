@@ -197,7 +197,7 @@ class _WorkoutLibraryScreenState extends State<WorkoutLibraryScreen> {
   String? _error;
 
   static const _sports = ['Running', 'Cycling', 'Swimming', 'General'];
-  static const _difficulties = ['Beginner', 'Intermediate', 'Advanced'];
+  static const _difficulties = ['Beginner', 'Intermediate', 'Advanced', 'Custom'];
 
   @override
   void initState() {
@@ -211,9 +211,14 @@ class _WorkoutLibraryScreenState extends State<WorkoutLibraryScreen> {
       _error = null;
     });
     try {
-      // Try to load templates from the Rust API
       final apiTemplates = await api.getWorkoutTemplates();
+      // Load user-created plans and merge them in
+      final planNames = await api.listPlans();
+      final planDetails = await Future.wait(
+        planNames.map((name) => api.getPlanDetails(name: name)),
+      );
       if (!mounted) return;
+
       final fromApi = apiTemplates
           .map(
             (t) => _Template(
@@ -227,10 +232,27 @@ class _WorkoutLibraryScreenState extends State<WorkoutLibraryScreen> {
             ),
           )
           .toList();
-      // Merge: use API templates if available, fallback to defaults
-      final ids = fromApi.map((t) => t.id).toSet();
+      // Convert plans to templates, avoiding ID collisions with API templates
+      final apiIds = fromApi.map((t) => t.id).toSet();
+      final fromPlans = planDetails
+          .where((p) => !apiIds.contains('plan-${p.name}'))
+          .map(
+            (p) => _Template(
+              id: 'plan-${p.name}',
+              name: p.name,
+              description: 'Custom plan',
+              sport: 'General',
+              difficulty: 'Custom',
+              durationMins: p.phaseDurations.fold(0, (s, d) => s + d) ~/ 60,
+              phaseCount: p.phaseNames.length,
+            ),
+          )
+          .toList();
+      // Merge: API templates + custom plans + missing defaults
+      final ids = {...fromApi.map((t) => t.id), ...fromPlans.map((t) => t.id)};
       final merged = [
         ...fromApi,
+        ...fromPlans,
         ..._defaults.where((t) => !ids.contains(t.id)),
       ];
       setState(() {
