@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../bridge/api_generated.dart/api.dart';
-import 'package:heart_beat/src/services/log_service.dart';
+import '../../services/log_service.dart';
 import 'connection_status_card.dart';
 import 'filter_bar.dart';
 import 'log_line.dart';
