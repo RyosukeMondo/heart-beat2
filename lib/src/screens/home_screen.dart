@@ -1,10 +1,9 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:permission_handler/permission_handler.dart';
 import '../bridge/api_generated.dart/api.dart';
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../services/device_service.dart';
+import '../services/readiness_service.dart';
 
 /// Home screen for device scanning and selection
 class HomeScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadReadiness() async {
     try {
-      final readiness = await getReadinessScore();
+      final readiness = await ReadinessService.instance.loadReadiness();
       if (!mounted) return;
       setState(() {
         _readiness = readiness;
@@ -53,49 +52,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      // Request Bluetooth permissions.
-      // iOS: requesting Permission.bluetooth instantiates CBCentralManager,
-      // which is what actually triggers the system popup using the
-      // NSBluetoothAlwaysUsageDescription string in Info.plist. The
-      // bluetoothScan/bluetoothConnect/location permissions are Android-only.
-      final bool granted;
-      if (Platform.isIOS) {
-        final bluetooth = await Permission.bluetooth.request();
-        granted = bluetooth.isGranted;
-      } else {
-        final bluetoothScan = await Permission.bluetoothScan.request();
-        final bluetoothConnect = await Permission.bluetoothConnect.request();
-        final location = await Permission.locationWhenInUse.request();
-        granted =
-            bluetoothScan.isGranted &&
-            bluetoothConnect.isGranted &&
-            location.isGranted;
-      }
-
-      if (!granted) {
-        if (!mounted) return;
-        setState(() {
-          _error = 'Bluetooth permissions are required';
-          _isScanning = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Bluetooth permissions denied. Please enable them in settings.',
-            ),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        return;
-      }
-
-      // Scan for devices
-      final devices = await scanDevices();
+      final devices = await DeviceService.instance.scanForDevices();
       if (!mounted) return;
       setState(() {
         _devices = devices;
         _isScanning = false;
       });
+    } on BluetoothPermissionException {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Bluetooth permissions are required';
+        _isScanning = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Bluetooth permissions denied. Please enable them in settings.',
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
