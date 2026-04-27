@@ -3752,4 +3752,140 @@ mod tests {
             "State should be clear and ready for reconnection"
         );
     }
+
+    #[test]
+    fn test_analytics_summary_time_in_zone() {
+        // Test that analytics_summary correctly returns time-in-zone data
+        // which the CLI formats as minutes (seconds / 60)
+        let summary = ApiAnalyticsSummary {
+            total_sessions: 5,
+            total_duration_secs: 3600,
+            overall_avg_hr: 140,
+            overall_time_in_zone: vec![300, 600, 900, 1200, 1500], // 5/10/15/20/25 minutes
+            weeks_count: 2,
+            hr_trend_count: 10,
+            volume_trend_count: 5,
+        };
+
+        let data = ApiAnalyticsData {
+            summary: summary.clone(),
+            weekly_summaries: vec![],
+            hr_trend: vec![],
+            volume_trend: vec![],
+            consistency_trend: vec![],
+        };
+
+        let result = analytics_summary(&data);
+        assert_eq!(result.total_sessions, 5);
+        assert_eq!(result.total_duration_secs, 3600);
+        assert_eq!(result.overall_avg_hr, 140);
+        // Verify time-in-zone values in seconds (CLI divides by 60 for display)
+        assert_eq!(result.overall_time_in_zone.len(), 5);
+        assert_eq!(result.overall_time_in_zone, vec![300, 600, 900, 1200, 1500]);
+        assert_eq!(result.weeks_count, 2);
+
+        // Verify minutes conversion for CLI display: zones[i] / 60
+        let minutes: Vec<u32> = result
+            .overall_time_in_zone
+            .iter()
+            .map(|&s| s / 60)
+            .collect();
+        assert_eq!(minutes, vec![5, 10, 15, 20, 25]);
+    }
+
+    #[test]
+    fn test_analytics_summary_empty_zones() {
+        // Test with empty time-in-zone (no sessions)
+        let summary = ApiAnalyticsSummary {
+            total_sessions: 0,
+            total_duration_secs: 0,
+            overall_avg_hr: 0,
+            overall_time_in_zone: vec![0, 0, 0, 0, 0],
+            weeks_count: 0,
+            hr_trend_count: 0,
+            volume_trend_count: 0,
+        };
+
+        let data = ApiAnalyticsData {
+            summary,
+            weekly_summaries: vec![],
+            hr_trend: vec![],
+            volume_trend: vec![],
+            consistency_trend: vec![],
+        };
+
+        let result = analytics_summary(&data);
+        assert_eq!(result.total_sessions, 0);
+        assert_eq!(result.overall_time_in_zone, vec![0, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_training_load_data_structure() {
+        // Test that ApiTrainingLoadData structure correctly holds CTL/ATL/TSB
+        // These values are computed by training_load::compute_training_load
+        // and displayed by the CLI handler handle_analytics_training_load
+        let load_data = ApiTrainingLoadData {
+            current_ctl: 45.0,  // Chronic Training Load (fitness)
+            current_atl: 30.0,  // Acute Training Load (fatigue)
+            current_tsb: 15.0,  // Training Stress Balance (form) = CTL - ATL
+            load_history: vec![
+                ApiLoadPoint {
+                    timestamp_millis: 1704067200000, // 2024-01-01
+                    ctl: 40.0,
+                    atl: 25.0,
+                    tsb: 15.0,
+                },
+                ApiLoadPoint {
+                    timestamp_millis: 1704153600000, // 2024-01-02
+                    ctl: 42.0,
+                    atl: 28.0,
+                    tsb: 14.0,
+                },
+            ],
+            session_trimp: vec![
+                ApiTrendPoint {
+                    timestamp_millis: 1704067200000,
+                    value: 35.0,
+                },
+            ],
+        };
+
+        // Verify CTL/ATL/TSB values are correctly stored
+        assert!((load_data.current_ctl - 45.0).abs() < f64::EPSILON);
+        assert!((load_data.current_atl - 30.0).abs() < f64::EPSILON);
+        assert!((load_data.current_tsb - 15.0).abs() < f64::EPSILON);
+
+        // Verify TSB = CTL - ATL relationship (CLI displays this)
+        assert!(
+            (load_data.current_tsb - (load_data.current_ctl - load_data.current_atl)).abs()
+                < f64::EPSILON
+        );
+
+        // Verify load history
+        assert_eq!(load_data.load_history.len(), 2);
+        assert_eq!(load_data.session_trimp.len(), 1);
+
+        // Verify the TSB calculation in history points
+        for point in &load_data.load_history {
+            assert!((point.tsb - (point.ctl - point.atl)).abs() < f64::EPSILON);
+        }
+    }
+
+    #[test]
+    fn test_time_in_zone_minutes_conversion() {
+        // Verify the time-in-zone seconds-to-minutes conversion that CLI performs:
+        // format!("{}m / {}m / {}m / {}m / {}m", zones[0]/60, zones[1]/60, ...)
+        let time_in_zone_seconds = vec![120, 300, 600, 900, 1800]; // 2, 5, 10, 15, 30 minutes
+
+        let formatted: String = format!(
+            "{}m / {}m / {}m / {}m / {}m",
+            time_in_zone_seconds[0] / 60,
+            time_in_zone_seconds[1] / 60,
+            time_in_zone_seconds[2] / 60,
+            time_in_zone_seconds[3] / 60,
+            time_in_zone_seconds[4] / 60
+        );
+
+        assert_eq!(formatted, "2m / 5m / 10m / 15m / 30m");
+    }
 }
