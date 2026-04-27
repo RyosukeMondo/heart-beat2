@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'health_alert_service.dart';
 import 'voice_coaching_handler.dart';
 import 'voice_coaching_service.dart';
 
@@ -46,6 +47,9 @@ class CoachingCueService {
 
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
+
+  /// Exposed for [HealthAlertService] to show health-specific notifications.
+  FlutterLocalNotificationsPlugin get notifications => _notifications;
 
   final VoiceCoachingHandler _voiceHandler;
 
@@ -217,10 +221,9 @@ class CoachingCueService {
     }
   }
 
-  /// Handle the sustained_low_hr cue: show a custom notification only when
-  /// the coaching-notifications master toggle is enabled.
+  /// Handle the sustained_low_hr cue: delegate to [HealthAlertService] for
+  /// custom notification formatting, gated by the master notifications toggle.
   Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
-    // Only show notification if master notifications toggle is on.
     if (!_notificationsEnabled) {
       if (kDebugMode) {
         debugPrint('sustained_low_hr suppressed: notifications disabled');
@@ -228,61 +231,7 @@ class CoachingCueService {
       return;
     }
 
-    await _showSustainedLowHrNotification(cue);
-  }
-
-  /// Show the custom low-HR notification with the exact format required:
-  /// title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over
-  /// the last {window_min} min', tap opens the Health screen.
-  Future<void> _showSustainedLowHrNotification(ApiCue cue) async {
-    const androidDetails = AndroidNotificationDetails(
-      'health_alerts',
-      'Health Alerts',
-      channelDescription: 'Low heart rate health alerts',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
-
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // Parse avg_bpm and window_min from the cue message.
-    // Message format: "Heart rate low — average {avg_bpm} bpm over the last {:.0} min"
-    final avgBpm = _parseAvgBpm(cue.message);
-    final windowMin = _parseWindowMin(cue.message);
-
-    const title = 'Heart rate low';
-    final body = 'Average HR was $avgBpm bpm over the last $windowMin min';
-
-    await _notifications.show(
-      cue.hashCode,
-      title,
-      body,
-      details,
-      payload: 'sustained_low_hr',
-    );
-  }
-
-  int _parseAvgBpm(String message) {
-    // Extract "average N bpm" from the message.
-    final match = RegExp(r'average (\d+) bpm').firstMatch(message);
-    return int.tryParse(match?.group(1) ?? '0') ?? 0;
-  }
-
-  int _parseWindowMin(String message) {
-    // Extract "last N min" from the message.
-    final match = RegExp(r'last ([\d.]+) min').firstMatch(message);
-    if (match == null) return 0;
-    return double.parse(match.group(1)!).round();
+    await HealthAlertService.instance.showSustainedLowHrNotification(cue);
   }
 
   // ---------------------------------------------------------------------------

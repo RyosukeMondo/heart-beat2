@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
 import 'coaching_cue_service.dart';
 
@@ -22,4 +24,58 @@ class HealthAlertService {
       CoachingCueService.instance.cueStream.where(
             (cue) => cue.label == 'sustained_low_hr',
           );
+
+  /// Show a custom low-HR notification with the exact format required:
+  /// title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over
+  /// the last {window_min} min', tap opens the Health screen.
+  Future<void> showSustainedLowHrNotification(generated.ApiCue cue) async {
+    const androidDetails = AndroidNotificationDetails(
+      'health_alerts',
+      'Health Alerts',
+      channelDescription: 'Low heart rate health alerts',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final avgBpm = _parseAvgBpm(cue.message);
+    final windowMin = _parseWindowMin(cue.message);
+
+    const title = 'Heart rate low';
+    final body = 'Average HR was $avgBpm bpm over the last $windowMin min';
+
+    await CoachingCueService.instance.notifications.show(
+      cue.hashCode,
+      title,
+      body,
+      details,
+      payload: 'sustained_low_hr',
+    );
+
+    if (kDebugMode) {
+      debugPrint('HealthAlertService: showed low-HR notification: $body');
+    }
+  }
+
+  int _parseAvgBpm(String message) {
+    final match = RegExp(r'average (\d+) bpm').firstMatch(message);
+    return int.tryParse(match?.group(1) ?? '0') ?? 0;
+  }
+
+  int _parseWindowMin(String message) {
+    final match = RegExp(r'last ([\d.]+) min').firstMatch(message);
+    if (match == null) return 0;
+    return double.parse(match.group(1)!).round();
+  }
 }
