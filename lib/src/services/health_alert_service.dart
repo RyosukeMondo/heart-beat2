@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
-import 'package:heart_beat/src/services/coaching_cue_service.dart';
+import 'coaching_cue_service.dart';
 
 /// Service that provides health-rule alerts (e.g. sustained low HR) to the UI
 /// without coupling the screen to the coaching subsystem.
