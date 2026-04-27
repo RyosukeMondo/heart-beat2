@@ -18,6 +18,7 @@ import 'package:heart_beat/src/screens/diagnosis_screen.dart';
 import 'package:heart_beat/src/screens/coaching_screen.dart';
 import 'package:heart_beat/src/screens/health_settings_screen.dart';
 import 'package:heart_beat/src/screens/health_screen.dart';
+import 'package:heart_beat/src/screens/zone_editor_screen.dart';
 import 'package:heart_beat/src/services/coaching_cue_service.dart';
 
 /// Main application widget
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
             '/coaching': (context) => const CoachingScreen(),
             '/health-settings': (context) => const HealthSettingsScreen(),
             '/health': (context) => const HealthScreen(),
+            '/zone-editor': (context) => const ZoneEditorScreen(),
           },
           onGenerateRoute: (settings) {
             // Handle /workout/:planName route

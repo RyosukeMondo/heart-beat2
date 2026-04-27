@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
 import '../services/audio_feedback_service.dart';
-import 'zone_editor_screen.dart';
 
 // --- Profile Settings Card ---
 // Handles heart rate configuration (age, max HR, age-based calculation)
@@ -214,9 +213,7 @@ class TrainingZonesCard extends StatelessWidget {
                 Text('Training Zones', style: Theme.of(context).textTheme.titleMedium),
                 TextButton.icon(
                   onPressed: () async {
-                    final result = await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const ZoneEditorScreen()),
-                    );
+                    final result = await Navigator.pushNamed(context, '/zone-editor');
                     if (result == true) {}
                   },
                   icon: const Icon(Icons.edit),
