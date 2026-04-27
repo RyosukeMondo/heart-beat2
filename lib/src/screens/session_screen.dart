@@ -31,6 +31,8 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _isServiceRunning = false;
   final ProfileService _profileService = ProfileService.instance;
   bool _hasInitialized = false;
+  final Stopwatch _sessionTimer = Stopwatch();
+  Timer? _sessionTimerTicker;
 
   @override
   void didChangeDependencies() {
@@ -87,6 +89,12 @@ class _SessionScreenState extends State<SessionScreen> {
       setState(() {
         _hrStream = stream;
         _isConnecting = false;
+      });
+
+      // Start session timer
+      _sessionTimer.start();
+      _sessionTimerTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
       });
     } catch (e) {
       if (!mounted) return;
@@ -174,6 +182,8 @@ class _SessionScreenState extends State<SessionScreen> {
     }
     // Clean up battery subscription
     _batterySubscription?.cancel();
+    _sessionTimer.stop();
+    _sessionTimerTicker?.cancel();
     // Stop latency tracking
     LatencyService.instance.stop();
     // Stream will be automatically cleaned up
@@ -333,6 +343,17 @@ class _SessionScreenState extends State<SessionScreen> {
                     // BPM Display
                     HrDisplay(bpm: bpm),
 
+                    const SizedBox(height: 16),
+
+                    // Session Timer
+                    Text(
+                      _formatElapsedTime(),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: colorScheme.primary,
+                            fontFeatures: [const FontFeature.tabularFigures()],
+                          ),
+                    ),
+
                     const SizedBox(height: 32),
 
                     // Zone Indicator
@@ -362,5 +383,16 @@ class _SessionScreenState extends State<SessionScreen> {
     final zone = CoachingHelpers.zoneForBpm(bpm, profile);
 
     return {'bpm': bpm, 'zone': zone};
+  }
+
+  String _formatElapsedTime() {
+    final elapsed = _sessionTimer.elapsed;
+    final minutes = elapsed.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = elapsed.inSeconds.remainder(60).toString().padLeft(2, '0');
+    if (elapsed.inHours > 0) {
+      final hours = elapsed.inHours.toString().padLeft(2, '0');
+      return '$hours:$minutes:$seconds';
+    }
+    return '$minutes:$seconds';
   }
 }
