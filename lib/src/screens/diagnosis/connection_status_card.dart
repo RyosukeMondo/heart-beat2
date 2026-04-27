@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+import '../../bridge/api_generated.dart/api.dart';
 
 class DiagnosisConnectionStatusCard extends StatelessWidget {
   const DiagnosisConnectionStatusCard({super.key});
