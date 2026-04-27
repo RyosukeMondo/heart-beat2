@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
+import 'package:heart_beat/src/services/coaching_helpers.dart';
 import 'package:heart_beat/src/widgets/hr_display.dart';
 import 'package:heart_beat/src/widgets/zone_indicator.dart';
 import '../helpers/test_helpers.dart';
@@ -123,249 +124,104 @@ void main() {
 
   group('Coaching Session Timer Logic Tests', () {
     test('duration formatting shows hours when > 60 minutes', () {
-      // Test the formatting logic that CoachingScreen uses
       const duration = Duration(hours: 1, minutes: 30, seconds: 45);
-      final formatted = _formatTestDuration(duration);
+      final formatted = CoachingHelpers.formatDuration(duration);
       expect(formatted, equals('1h 30m 45s'));
     });
 
     test('duration formatting shows minutes and seconds without hours', () {
       const duration = Duration(minutes: 5, seconds: 30);
-      final formatted = _formatTestDuration(duration);
+      final formatted = CoachingHelpers.formatDuration(duration);
       expect(formatted, equals('5m 30s'));
     });
 
     test('duration formatting handles zero duration', () {
       const duration = Duration.zero;
-      final formatted = _formatTestDuration(duration);
+      final formatted = CoachingHelpers.formatDuration(duration);
       expect(formatted, equals('0m 0s'));
     });
 
     test('duration formatting handles exactly one hour', () {
       const duration = Duration(hours: 1);
-      final formatted = _formatTestDuration(duration);
+      final formatted = CoachingHelpers.formatDuration(duration);
       expect(formatted, equals('1h 0m 0s'));
     });
 
     test('duration formatting handles long sessions', () {
       const duration = Duration(hours: 8, minutes: 45, seconds: 12);
-      final formatted = _formatTestDuration(duration);
+      final formatted = CoachingHelpers.formatDuration(duration);
       expect(formatted, equals('8h 45m 12s'));
     });
   });
 
   group('Coaching Cue Card Tests', () {
     testWidgets('cue card priority colors are correct', (tester) async {
-      // These match the logic in CoachingScreen._cuePriorityColor
-      expect(_getCuePriorityColor(0), equals(Colors.grey));
-      expect(_getCuePriorityColor(1), equals(Colors.blue));
-      expect(_getCuePriorityColor(2), equals(Colors.orange));
-      expect(_getCuePriorityColor(3), equals(Colors.red));
-      expect(_getCuePriorityColor(99), equals(Colors.grey));
+      expect(CoachingHelpers.cuePriorityColor(0), equals(Colors.grey));
+      expect(CoachingHelpers.cuePriorityColor(1), equals(Colors.blue));
+      expect(CoachingHelpers.cuePriorityColor(2), equals(Colors.orange));
+      expect(CoachingHelpers.cuePriorityColor(3), equals(Colors.red));
+      expect(CoachingHelpers.cuePriorityColor(99), equals(Colors.grey));
     });
 
     testWidgets('cue priority labels are correct', (tester) async {
-      expect(_getPriorityLabel(0), equals('LOW'));
-      expect(_getPriorityLabel(1), equals('NORMAL'));
-      expect(_getPriorityLabel(2), equals('HIGH'));
-      expect(_getPriorityLabel(3), equals('CRITICAL'));
-      expect(_getPriorityLabel(99), equals('UNKNOWN'));
+      expect(CoachingHelpers.priorityLabel(0), equals('LOW'));
+      expect(CoachingHelpers.priorityLabel(1), equals('NORMAL'));
+      expect(CoachingHelpers.priorityLabel(2), equals('HIGH'));
+      expect(CoachingHelpers.priorityLabel(3), equals('CRITICAL'));
+      expect(CoachingHelpers.priorityLabel(99), equals('UNKNOWN'));
     });
 
     testWidgets('cue source icons are assigned correctly', (tester) async {
-      expect(_getCueSourceIcon(0), equals(Icons.track_changes));
-      expect(_getCueSourceIcon(1), equals(Icons.airline_seat_flat));
-      expect(_getCueSourceIcon(2), equals(Icons.whatshot));
-      expect(_getCueSourceIcon(99), equals(Icons.info));
+      expect(CoachingHelpers.cueSourceIcon(0), equals(Icons.track_changes));
+      expect(CoachingHelpers.cueSourceIcon(1), equals(Icons.airline_seat_flat));
+      expect(CoachingHelpers.cueSourceIcon(2), equals(Icons.whatshot));
+      expect(CoachingHelpers.cueSourceIcon(99), equals(Icons.info));
     });
 
     testWidgets('cue label text formatting works', (tester) async {
-      expect(_formatCueLabel('raise_hr'), equals('Raise HR'));
-      expect(_formatCueLabel('cool_down'), equals('Cool Down'));
-      expect(_formatCueLabel('stand_up'), equals('Stand Up'));
-      expect(_formatCueLabel('ease_off'), equals('Ease Off'));
-      expect(_formatCueLabel('unknown_label'), equals('Unknown Label'));
+      expect(CoachingHelpers.cueLabelText('raise_hr'), equals('Raise HR'));
+      expect(CoachingHelpers.cueLabelText('cool_down'), equals('Cool Down'));
+      expect(CoachingHelpers.cueLabelText('stand_up'), equals('Stand Up'));
+      expect(CoachingHelpers.cueLabelText('ease_off'), equals('Ease Off'));
+      expect(CoachingHelpers.cueLabelText('unknown_label'), equals('Unknown Label'));
     });
   });
 
   group('Coaching Zone Color Tests', () {
     testWidgets('zone colors match coaching UI expectations', (tester) async {
       // Zone 1 - recovery/easy
-      expect(_getZoneColor(Zone.zone1), equals(Colors.blue));
+      expect(CoachingHelpers.zoneColor(Zone.zone1), equals(Colors.blue));
 
       // Zone 2 - aerobic
-      expect(_getZoneColor(Zone.zone2), equals(Colors.green));
+      expect(CoachingHelpers.zoneColor(Zone.zone2), equals(Colors.green));
 
       // Zone 3 - tempo
-      expect(_getZoneColor(Zone.zone3), equals(Colors.yellow.shade700));
+      expect(CoachingHelpers.zoneColor(Zone.zone3), equals(Colors.yellow.shade700));
 
       // Zone 4 - threshold
-      expect(_getZoneColor(Zone.zone4), equals(Colors.orange));
+      expect(CoachingHelpers.zoneColor(Zone.zone4), equals(Colors.orange));
 
       // Zone 5 - VO2max/anaerobic
-      expect(_getZoneColor(Zone.zone5), equals(Colors.red));
+      expect(CoachingHelpers.zoneColor(Zone.zone5), equals(Colors.red));
     });
 
     testWidgets('zone icons match coaching UI expectations', (tester) async {
       // Each zone has a distinct coaching-relevant icon
-      expect(_getZoneIcon(Zone.zone1), equals(Icons.airline_seat_recline_extra));
-      expect(_getZoneIcon(Zone.zone2), equals(Icons.directions_walk));
-      expect(_getZoneIcon(Zone.zone3), equals(Icons.directions_run));
-      expect(_getZoneIcon(Zone.zone4), equals(Icons.sports_gymnastics));
-      expect(_getZoneIcon(Zone.zone5), equals(Icons.local_fire_department));
+      expect(CoachingHelpers.zoneIcon(Zone.zone1), equals(Icons.airline_seat_recline_extra));
+      expect(CoachingHelpers.zoneIcon(Zone.zone2), equals(Icons.directions_walk));
+      expect(CoachingHelpers.zoneIcon(Zone.zone3), equals(Icons.directions_run));
+      expect(CoachingHelpers.zoneIcon(Zone.zone4), equals(Icons.sports_gymnastics));
+      expect(CoachingHelpers.zoneIcon(Zone.zone5), equals(Icons.local_fire_department));
     });
   });
 
   group('Coaching Screen Helper Integration', () {
-    test('helper methods replicate actual CoachingScreen logic', () {
-      // Verify our test helper implementations match expected behavior
-      // The actual CoachingScreen._formatDuration logic:
-      expect(_formatTestDuration(const Duration(hours: 2, minutes: 15)), equals('2h 15m 0s'));
-      expect(_formatTestDuration(const Duration(minutes: 45, seconds: 30)), equals('45m 30s'));
+    test('helper methods return expected CoachingHelpers values', () {
+      expect(CoachingHelpers.formatDuration(const Duration(hours: 2, minutes: 15)), equals('2h 15m 0s'));
+      expect(CoachingHelpers.formatDuration(const Duration(minutes: 45, seconds: 30)), equals('45m 30s'));
 
-      // The actual CoachingScreen._zoneColor logic:
-      expect(_getZoneColor(Zone.zone3), equals(Colors.yellow.shade700));
-      expect(_getZoneColor(Zone.zone5), equals(Colors.red));
-    });
-
-    test('zone calculation from BPM matches ProfileService behavior', () {
-      // This tests the zone determination logic used by coaching
-      // Assuming maxHR of 180:
-      // Zone 1: 0-60% = 0-108 BPM
-      // Zone 2: 60-70% = 108-126 BPM
-      // Zone 3: 70-80% = 126-144 BPM
-      // Zone 4: 80-90% = 144-162 BPM
-      // Zone 5: 90-100% = 162-180 BPM
-
-      // Test boundary values
-      final zones = [
-        (bpm: 100, expectedZone: Zone.zone1),
-        (bpm: 120, expectedZone: Zone.zone2),
-        (bpm: 140, expectedZone: Zone.zone3),
-        (bpm: 160, expectedZone: Zone.zone4),
-        (bpm: 175, expectedZone: Zone.zone5),
-      ];
-
-      for (final testCase in zones) {
-        final calculatedZone = _getZoneForBpm(testCase.bpm, 180);
-        expect(calculatedZone, equals(testCase.expectedZone),
-            reason: 'BPM ${testCase.bpm} should be in ${testCase.expectedZone}');
-      }
+      expect(CoachingHelpers.zoneColor(Zone.zone3), equals(Colors.yellow.shade700));
+      expect(CoachingHelpers.zoneColor(Zone.zone5), equals(Colors.red));
     });
   });
-}
-
-// Re-implementations of CoachingScreen helper methods for testing
-// These replicate the logic in _CoachingScreenState helper methods
-
-String _formatTestDuration(Duration d) {
-  final hours = d.inHours;
-  final minutes = d.inMinutes.remainder(60);
-  final seconds = d.inSeconds.remainder(60);
-  if (hours > 0) {
-    return '${hours}h ${minutes}m ${seconds}s';
-  }
-  return '${minutes}m ${seconds}s';
-}
-
-Color _getCuePriorityColor(int priority) {
-  switch (priority) {
-    case 0:
-      return Colors.grey;
-    case 1:
-      return Colors.blue;
-    case 2:
-      return Colors.orange;
-    case 3:
-      return Colors.red;
-    default:
-      return Colors.grey;
-  }
-}
-
-String _getPriorityLabel(int priority) {
-  switch (priority) {
-    case 0:
-      return 'LOW';
-    case 1:
-      return 'NORMAL';
-    case 2:
-      return 'HIGH';
-    case 3:
-      return 'CRITICAL';
-    default:
-      return 'UNKNOWN';
-  }
-}
-
-IconData _getCueSourceIcon(int source) {
-  switch (source) {
-    case 0:
-      return Icons.track_changes;
-    case 1:
-      return Icons.airline_seat_flat;
-    case 2:
-      return Icons.whatshot;
-    default:
-      return Icons.info;
-  }
-}
-
-String _formatCueLabel(String label) {
-  switch (label) {
-    case 'raise_hr':
-      return 'Raise HR';
-    case 'cool_down':
-      return 'Cool Down';
-    case 'stand_up':
-      return 'Stand Up';
-    case 'ease_off':
-      return 'Ease Off';
-    default:
-      return label.replaceAll('_', ' ').split(' ').map((w) =>
-        w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : ''
-      ).join(' ');
-  }
-}
-
-Color _getZoneColor(Zone zone) {
-  switch (zone) {
-    case Zone.zone1:
-      return Colors.blue;
-    case Zone.zone2:
-      return Colors.green;
-    case Zone.zone3:
-      return Colors.yellow.shade700;
-    case Zone.zone4:
-      return Colors.orange;
-    case Zone.zone5:
-      return Colors.red;
-  }
-}
-
-IconData _getZoneIcon(Zone zone) {
-  switch (zone) {
-    case Zone.zone1:
-      return Icons.airline_seat_recline_extra;
-    case Zone.zone2:
-      return Icons.directions_walk;
-    case Zone.zone3:
-      return Icons.directions_run;
-    case Zone.zone4:
-      return Icons.sports_gymnastics;
-    case Zone.zone5:
-      return Icons.local_fire_department;
-  }
-}
-
-/// Calculate zone for a given BPM and max HR.
-///
-/// This replicates the ProfileService.getZoneForBpm logic.
-Zone _getZoneForBpm(int bpm, int maxHr) {
-  final percentage = (bpm / maxHr) * 100;
-  if (percentage < 60) return Zone.zone1;
-  if (percentage < 70) return Zone.zone2;
-  if (percentage < 80) return Zone.zone3;
-  if (percentage < 90) return Zone.zone4;
-  return Zone.zone5;
 }
