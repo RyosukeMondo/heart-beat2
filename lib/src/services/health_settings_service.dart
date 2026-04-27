@@ -2,121 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 
-/// Repository for persisted health-monitoring settings.
-///
-/// Pure I/O: reads and writes SharedPreferences keys only.
-/// No ChangeNotifier, no Rust bridge, no business logic.
-class HealthSettingsRepository {
-  HealthSettingsRepository._();
-
-  static final HealthSettingsRepository _instance = HealthSettingsRepository._();
-
-  static HealthSettingsRepository get instance => _instance;
-
-  // ---------------------------------------------------------------------------
-  // Preferences keys
-  // ---------------------------------------------------------------------------
-
-  static const _prefLowHrThreshold = 'health_low_hr_threshold';
-  static const _prefSustainedMinutes = 'health_sustained_minutes';
-  static const _prefSampleCadenceSecs = 'health_sample_cadence_secs';
-  static const _prefQuietStart = 'health_quiet_start';
-  static const _prefQuietEnd = 'health_quiet_end';
-  static const _prefNotificationsEnabled = 'health_notifications_enabled';
-
-  // ---------------------------------------------------------------------------
-  // Defaults
-  // ---------------------------------------------------------------------------
-
-  static const int defaultLowHrThreshold = 70;
-  static const int defaultSustainedMinutes = 10;
-  static const int defaultSampleCadenceSecs = 5;
-  static const String defaultQuietStart = '22:00';
-  static const String defaultQuietEnd = '07:00';
-  static const bool defaultNotificationsEnabled = true;
-
-  // ---------------------------------------------------------------------------
-  // Read
-  // ---------------------------------------------------------------------------
-
-  Future<int> readLowHrThreshold() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_prefLowHrThreshold) ?? defaultLowHrThreshold;
-  }
-
-  Future<int> readSustainedMinutes() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_prefSustainedMinutes) ?? defaultSustainedMinutes;
-  }
-
-  Future<int> readSampleCadenceSecs() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_prefSampleCadenceSecs) ?? defaultSampleCadenceSecs;
-  }
-
-  Future<String> readQuietStart() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_prefQuietStart) ?? defaultQuietStart;
-  }
-
-  Future<String> readQuietEnd() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_prefQuietEnd) ?? defaultQuietEnd;
-  }
-
-  Future<bool> readNotificationsEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_prefNotificationsEnabled) ?? defaultNotificationsEnabled;
-  }
-
-  /// Load all values at once.
-  Future<HealthSettingsData> loadAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    return HealthSettingsData(
-      lowHrThreshold: prefs.getInt(_prefLowHrThreshold) ?? defaultLowHrThreshold,
-      sustainedMinutes: prefs.getInt(_prefSustainedMinutes) ?? defaultSustainedMinutes,
-      sampleCadenceSecs: prefs.getInt(_prefSampleCadenceSecs) ?? defaultSampleCadenceSecs,
-      quietStart: prefs.getString(_prefQuietStart) ?? defaultQuietStart,
-      quietEnd: prefs.getString(_prefQuietEnd) ?? defaultQuietEnd,
-      notificationsEnabled: prefs.getBool(_prefNotificationsEnabled) ?? defaultNotificationsEnabled,
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Write
-  // ---------------------------------------------------------------------------
-
-  Future<void> writeLowHrThreshold(int value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_prefLowHrThreshold, value);
-  }
-
-  Future<void> writeSustainedMinutes(int value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_prefSustainedMinutes, value);
-  }
-
-  Future<void> writeSampleCadenceSecs(int value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_prefSampleCadenceSecs, value);
-  }
-
-  Future<void> writeQuietStart(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefQuietStart, value);
-  }
-
-  Future<void> writeQuietEnd(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefQuietEnd, value);
-  }
-
-  Future<void> writeNotificationsEnabled(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefNotificationsEnabled, value);
-  }
-}
-
 /// Immutable settings data bundle.
 class HealthSettingsData {
   final int lowHrThreshold;
@@ -141,7 +26,7 @@ class HealthSettingsData {
 /// State holder + Rust bridge: owns in-memory values, notifies listeners
 /// on change, and pushes updated settings to the Rust rule engine.
 ///
-/// Persistence is delegated to [HealthSettingsRepository].
+/// Persistence is handled directly via SharedPreferences.
 class HealthSettingsService extends ChangeNotifier {
   HealthSettingsService._();
 
@@ -149,7 +34,27 @@ class HealthSettingsService extends ChangeNotifier {
 
   static HealthSettingsService get instance => _instance;
 
-  final HealthSettingsRepository _repo = HealthSettingsRepository.instance;
+  // ---------------------------------------------------------------------------
+  // Preferences keys
+  // ---------------------------------------------------------------------------
+
+  static const _prefLowHrThreshold = 'health_low_hr_threshold';
+  static const _prefSustainedMinutes = 'health_sustained_minutes';
+  static const _prefSampleCadenceSecs = 'health_sample_cadence_secs';
+  static const _prefQuietStart = 'health_quiet_start';
+  static const _prefQuietEnd = 'health_quiet_end';
+  static const _prefNotificationsEnabled = 'health_notifications_enabled';
+
+  // ---------------------------------------------------------------------------
+  // Defaults
+  // ---------------------------------------------------------------------------
+
+  static const int defaultLowHrThreshold = 70;
+  static const int defaultSustainedMinutes = 10;
+  static const int defaultSampleCadenceSecs = 5;
+  static const String defaultQuietStart = '22:00';
+  static const String defaultQuietEnd = '07:00';
+  static const bool defaultNotificationsEnabled = true;
 
   // ---------------------------------------------------------------------------
   // State
@@ -157,12 +62,12 @@ class HealthSettingsService extends ChangeNotifier {
 
   bool _isInitialized = false;
 
-  int _lowHrThreshold = HealthSettingsRepository.defaultLowHrThreshold;
-  int _sustainedMinutes = HealthSettingsRepository.defaultSustainedMinutes;
-  int _sampleCadenceSecs = HealthSettingsRepository.defaultSampleCadenceSecs;
-  String _quietStart = HealthSettingsRepository.defaultQuietStart;
-  String _quietEnd = HealthSettingsRepository.defaultQuietEnd;
-  bool _notificationsEnabled = HealthSettingsRepository.defaultNotificationsEnabled;
+  int _lowHrThreshold = defaultLowHrThreshold;
+  int _sustainedMinutes = defaultSustainedMinutes;
+  int _sampleCadenceSecs = defaultSampleCadenceSecs;
+  String _quietStart = defaultQuietStart;
+  String _quietEnd = defaultQuietEnd;
+  bool _notificationsEnabled = defaultNotificationsEnabled;
 
   // ---------------------------------------------------------------------------
   // Accessors
@@ -182,13 +87,13 @@ class HealthSettingsService extends ChangeNotifier {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    final data = await _repo.loadAll();
-    _lowHrThreshold = data.lowHrThreshold;
-    _sustainedMinutes = data.sustainedMinutes;
-    _sampleCadenceSecs = data.sampleCadenceSecs;
-    _quietStart = data.quietStart;
-    _quietEnd = data.quietEnd;
-    _notificationsEnabled = data.notificationsEnabled;
+    final prefs = await SharedPreferences.getInstance();
+    _lowHrThreshold = prefs.getInt(_prefLowHrThreshold) ?? defaultLowHrThreshold;
+    _sustainedMinutes = prefs.getInt(_prefSustainedMinutes) ?? defaultSustainedMinutes;
+    _sampleCadenceSecs = prefs.getInt(_prefSampleCadenceSecs) ?? defaultSampleCadenceSecs;
+    _quietStart = prefs.getString(_prefQuietStart) ?? defaultQuietStart;
+    _quietEnd = prefs.getString(_prefQuietEnd) ?? defaultQuietEnd;
+    _notificationsEnabled = prefs.getBool(_prefNotificationsEnabled) ?? defaultNotificationsEnabled;
 
     _isInitialized = true;
 
@@ -200,13 +105,13 @@ class HealthSettingsService extends ChangeNotifier {
   /// Re-read all values from SharedPreferences and notify listeners.
   /// Used in tests to simulate a fresh load.
   Future<void> reload() async {
-    final data = await _repo.loadAll();
-    _lowHrThreshold = data.lowHrThreshold;
-    _sustainedMinutes = data.sustainedMinutes;
-    _sampleCadenceSecs = data.sampleCadenceSecs;
-    _quietStart = data.quietStart;
-    _quietEnd = data.quietEnd;
-    _notificationsEnabled = data.notificationsEnabled;
+    final prefs = await SharedPreferences.getInstance();
+    _lowHrThreshold = prefs.getInt(_prefLowHrThreshold) ?? defaultLowHrThreshold;
+    _sustainedMinutes = prefs.getInt(_prefSustainedMinutes) ?? defaultSustainedMinutes;
+    _sampleCadenceSecs = prefs.getInt(_prefSampleCadenceSecs) ?? defaultSampleCadenceSecs;
+    _quietStart = prefs.getString(_prefQuietStart) ?? defaultQuietStart;
+    _quietEnd = prefs.getString(_prefQuietEnd) ?? defaultQuietEnd;
+    _notificationsEnabled = prefs.getBool(_prefNotificationsEnabled) ?? defaultNotificationsEnabled;
     notifyListeners();
   }
 
@@ -234,7 +139,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setLowHrThreshold(int value) async {
     _lowHrThreshold = value;
-    await _repo.writeLowHrThreshold(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_prefLowHrThreshold, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
@@ -244,7 +150,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setSustainedMinutes(int value) async {
     _sustainedMinutes = value;
-    await _repo.writeSustainedMinutes(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_prefSustainedMinutes, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
@@ -254,7 +161,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setSampleCadenceSecs(int value) async {
     _sampleCadenceSecs = value;
-    await _repo.writeSampleCadenceSecs(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_prefSampleCadenceSecs, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
@@ -264,7 +172,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setQuietStart(String value) async {
     _quietStart = value;
-    await _repo.writeQuietStart(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefQuietStart, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
@@ -274,7 +183,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setQuietEnd(String value) async {
     _quietEnd = value;
-    await _repo.writeQuietEnd(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefQuietEnd, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
@@ -284,7 +194,8 @@ class HealthSettingsService extends ChangeNotifier {
 
   Future<void> setNotificationsEnabled(bool value) async {
     _notificationsEnabled = value;
-    await _repo.writeNotificationsEnabled(value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefNotificationsEnabled, value);
     notifyListeners();
     await _pushToRust();
     if (kDebugMode) {
