@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
-import 'package:heart_beat/src/screens/diagnosis/connection_status_card.dart';
-import 'package:heart_beat/src/screens/diagnosis/filter_bar.dart';
-import 'package:heart_beat/src/screens/diagnosis/log_line.dart';
-import 'package:heart_beat/src/screens/diagnosis/operations_panel.dart';
 import 'package:heart_beat/src/services/log_service.dart';
+import 'connection_status_card.dart';
+import 'filter_bar.dart';
+import 'log_line.dart';
+import 'operations_panel.dart';
 
 class DiagnosisBody extends StatefulWidget {
   final Future<void> Function() onScan;
