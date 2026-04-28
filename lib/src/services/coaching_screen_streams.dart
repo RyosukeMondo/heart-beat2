@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import 'coaching_cue_service.dart';
+import 'connection_status_stream_provider.dart';
+import 'hr_stream_provider.dart';
 
 /// Manages stream subscriptions for the coaching screen.
 ///
@@ -27,15 +29,13 @@ class CoachingScreenStreams {
 
   void subscribe() {
     // HR stream
-    final hrStream = api.createHrStream();
     _hrSubscription = hrStream.listen(_handleHrData, onError: (e, st) {
       debugPrint('[CoachingScreen] HR stream error: $e');
       onError?.call(e, st);
     });
 
     // Connection status stream
-    final statusStream = api.createConnectionStatusStream();
-    _statusSubscription = statusStream.listen(_handleStatusChange, onError: (e, st) {
+    _statusSubscription = connectionStatusStream.listen(_handleStatusChange, onError: (e, st) {
       debugPrint('[CoachingScreen] status stream error: $e');
       onError?.call(e, st);
     });
