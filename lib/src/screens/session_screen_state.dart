@@ -11,9 +11,10 @@ import '../utils/zone_helpers.dart';
 ///
 /// Handles HR data processing, latency recording, and background service updates.
 class SessionScreenState {
-  SessionScreenState();
+  SessionScreenState({HrProcessor? hrProcessor})
+      : _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance);
 
-  final HrProcessor _hrProcessor = HrProcessor(ProfileService.instance);
+  final HrProcessor _hrProcessor;
 
   bool _isServiceRunning = false;
   VoidCallback? _onStateChange;
