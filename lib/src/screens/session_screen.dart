@@ -8,10 +8,8 @@ import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
 import '../widgets/connection_banner.dart';
 import '../services/background_service_provider.dart';
-import '../services/profile_service.dart';
-import '../services/latency_service.dart';
-import '../utils/zone_helpers.dart';
 import 'dart:async';
+import 'session_screen_state.dart';
 
 /// Session screen for live HR monitoring during workouts
 class SessionScreen extends StatefulWidget {
@@ -28,8 +26,7 @@ class _SessionScreenState extends State<SessionScreen> {
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
-  bool _isServiceRunning = false;
-  final ProfileService _profileService = ProfileService.instance;
+  final SessionScreenState _state = SessionScreenState();
   bool _hasInitialized = false;
   final Stopwatch _sessionTimer = Stopwatch();
   Timer? _sessionTimerTicker;
@@ -41,9 +38,6 @@ class _SessionScreenState extends State<SessionScreen> {
     // Only initialize once to prevent reconnection on navigation events
     if (_hasInitialized) return;
     _hasInitialized = true;
-
-    // Load profile to ensure zone calculations use user settings
-    _profileService.loadProfile();
 
     // Get route arguments
     final args =
@@ -65,8 +59,8 @@ class _SessionScreenState extends State<SessionScreen> {
       // Connect to the device
       await api.connectDevice(deviceId: deviceId);
 
-      // Start latency tracking
-      LatencyService.instance.start();
+      // Initialize state (loads profile and starts latency tracking)
+      _state.initialize();
 
       // Create the HR stream
       final stream = api.createHrStream();
@@ -110,9 +104,7 @@ class _SessionScreenState extends State<SessionScreen> {
     final bgService = context.read<BackgroundServiceProvider>();
     final started = await bgService.startService();
     if (started && mounted) {
-      setState(() {
-        _isServiceRunning = true;
-      });
+      _state.setServiceRunning(true);
     }
   }
 
@@ -142,7 +134,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     // Capture provider reference before async gap
     // ignore: use_build_context_synchronously
-    final bgService = _isServiceRunning
+    final bgService = _state.isServiceRunning
         // ignore: use_build_context_synchronously
         ? Provider.of<BackgroundServiceProvider>(context, listen: false)
         : null;
@@ -176,7 +168,7 @@ class _SessionScreenState extends State<SessionScreen> {
   @override
   void dispose() {
     // Stop background service when leaving session
-    if (_isServiceRunning) {
+    if (_state.isServiceRunning) {
       final bgService = context.read<BackgroundServiceProvider>();
       bgService.stopService();
     }
@@ -184,8 +176,8 @@ class _SessionScreenState extends State<SessionScreen> {
     _batterySubscription?.cancel();
     _sessionTimer.stop();
     _sessionTimerTicker?.cancel();
-    // Stop latency tracking
-    LatencyService.instance.stop();
+    // Clean up state
+    _state.dispose();
     // Stream will be automatically cleaned up
     super.dispose();
   }
@@ -300,8 +292,8 @@ class _SessionScreenState extends State<SessionScreen> {
           );
         }
 
-        // Record latency sample when HR data arrives in UI
-        LatencyService.instance.recordSample(snapshot.data!);
+        // Process HR data and record latency (fire and forget - state updates independently)
+        unawaited(_state.processHrData(snapshot.data!));
 
         return _buildHrDisplay(snapshot.data!, colorScheme);
       },
@@ -312,19 +304,18 @@ class _SessionScreenState extends State<SessionScreen> {
     api.ApiFilteredHeartRate data,
     ColorScheme colorScheme,
   ) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _extractHrData(data),
+    return FutureBuilder<({int bpm, Zone zone})>(
+      future: _state.extractHrData(data),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final hrData = snapshot.data!;
-        final bpm = hrData['bpm'] as int;
-        final zone = hrData['zone'] as Zone;
+        final bpm = snapshot.data!.bpm;
+        final zone = snapshot.data!.zone;
 
         // Update background service notification with current BPM and zone
-        if (_isServiceRunning) {
+        if (_state.isServiceRunning) {
           final bgService = context.read<BackgroundServiceProvider>();
           bgService.updateBpm(bpm, zone: zone.name);
         }
@@ -372,17 +363,6 @@ class _SessionScreenState extends State<SessionScreen> {
         );
       },
     );
-  }
-
-  Future<Map<String, dynamic>> _extractHrData(
-    api.ApiFilteredHeartRate data,
-  ) async {
-    final bpm = await api.hrFilteredBpm(data: data);
-    // Use ZoneHelpers to calculate zone based on user's profile settings
-    final profile = _profileService.getCurrentProfile() ?? _profileService.getDefaultProfile();
-    final zone = ZoneHelpers.zoneForBpm(bpm, profile);
-
-    return {'bpm': bpm, 'zone': zone};
   }
 
   String _formatElapsedTime() {
