@@ -6,6 +6,7 @@ import '../utils/zone_helpers.dart';
 import '../utils/cue_helpers.dart';
 import 'coaching_screen_state.dart';
 import '../services/profile_service.dart';
+import '../services/coaching_session_state.dart';
 
 /// Coaching screen — primary surface during an active coaching session.
 ///
@@ -31,7 +32,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   @override
   void initState() {
     super.initState();
-    _state = CoachingScreenState();
+    _state = CoachingScreenState(sessionState: CoachingSessionState());
     _state.setOnStateChange(_onStateChange);
     _state.initialize();
   }

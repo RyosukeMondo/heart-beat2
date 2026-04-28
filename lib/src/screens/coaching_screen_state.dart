@@ -11,16 +11,22 @@ import '../services/profile_service.dart';
 ///
 /// Coordinates [CoachingScreenStreams], [CoachingSessionState], and [HrProcessor].
 class CoachingScreenState {
-  CoachingScreenState() {
+  CoachingScreenState({
+    required CoachingSessionState sessionState,
+    CoachingScreenStreams? streams,
+    HrProcessor? hrProcessor,
+  })  : _sessionState = sessionState,
+        _streams = streams ?? CoachingScreenStreams(),
+        _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance) {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
     _streams.onHrData = _handleHrData;
     _streams.onStatusChange = _handleStatusChange;
     _streams.onCue = _handleCue;
   }
 
-  final CoachingScreenStreams _streams = CoachingScreenStreams();
-  final CoachingSessionState _sessionState = CoachingSessionState();
-  final HrProcessor _hrProcessor = HrProcessor(ProfileService.instance);
+  final CoachingScreenStreams _streams;
+  final CoachingSessionState _sessionState;
+  final HrProcessor _hrProcessor;
 
   bool _isConnected = false;
   api.ApiCue? _currentCue;
