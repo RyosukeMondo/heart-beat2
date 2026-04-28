@@ -10,7 +10,7 @@ import '../widgets/connection_banner.dart';
 import '../services/background_service_provider.dart';
 import '../services/profile_service.dart';
 import '../services/latency_service.dart';
-import '../utils/coaching_helpers.dart';
+import '../utils/zone_helpers.dart';
 import 'dart:async';
 
 /// Session screen for live HR monitoring during workouts
@@ -380,7 +380,7 @@ class _SessionScreenState extends State<SessionScreen> {
     final bpm = await api.hrFilteredBpm(data: data);
     // Use CoachingHelpers to calculate zone based on user's profile settings
     final profile = _profileService.getCurrentProfile() ?? _profileService.getDefaultProfile();
-    final zone = CoachingHelpers.zoneForBpm(bpm, profile);
+    final zone = ZoneHelpers.zoneForBpm(bpm, profile);
 
     return {'bpm': bpm, 'zone': zone};
   }

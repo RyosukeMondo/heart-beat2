@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../utils/coaching_helpers.dart';
+import '../utils/duration_helpers.dart';
+import '../utils/zone_helpers.dart';
+import '../utils/cue_helpers.dart';
 import '../services/coaching_screen_state.dart';
 
 /// Coaching screen — primary surface during an active coaching session.
@@ -126,7 +128,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   Widget _buildCueCard(ThemeData theme) {
     final cue = _state.currentCue!;
-    final priorityColor = CoachingHelpers.cuePriorityColor(cue.priority);
+    final priorityColor = CueHelpers.cuePriorityColor(cue.priority);
 
     return Container(
       width: double.infinity,
@@ -142,17 +144,17 @@ class _CoachingScreenState extends State<CoachingScreen> {
         children: [
           Row(
             children: [
-              Icon(CoachingHelpers.cueSourceIcon(cue.source), color: priorityColor, size: 20),
+              Icon(CueHelpers.cueSourceIcon(cue.source), color: priorityColor, size: 20),
               const SizedBox(width: 8),
               Text(
-                CoachingHelpers.cueLabelText(cue.label),
+                CueHelpers.cueLabelText(cue.label),
                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: priorityColor),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(color: priorityColor.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
-                child: Text(CoachingHelpers.priorityLabel(cue.priority), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: priorityColor)),
+                child: Text(CueHelpers.priorityLabel(cue.priority), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: priorityColor)),
               ),
             ],
           ),
@@ -174,7 +176,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
             fontSize: 72,
             fontWeight: FontWeight.bold,
             fontFeatures: const [FontFeature.tabularFigures()],
-            color: _state.isConnected ? CoachingHelpers.zoneColor(_state.currentZone) : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+            color: _state.isConnected ? ZoneHelpers.zoneColor(_state.currentZone) : theme.colorScheme.onSurface.withValues(alpha: 0.4),
           ),
         ),
         Text('BPM', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300, color: theme.colorScheme.onSurfaceVariant)),
@@ -263,8 +265,8 @@ class _CoachingScreenState extends State<CoachingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _statItem(theme, 'Session', CoachingHelpers.formatDuration(_state.elapsed), Icons.timer),
-          _statItem(theme, 'Zone', _state.currentZone.name.replaceAll('zone', 'Z'), CoachingHelpers.zoneIcon(_state.currentZone)),
+          _statItem(theme, 'Session', DurationHelpers.formatDuration(_state.elapsed), Icons.timer),
+          _statItem(theme, 'Zone', _state.currentZone.name.replaceAll('zone', 'Z'), ZoneHelpers.zoneIcon(_state.currentZone)),
         ],
       ),
     );
