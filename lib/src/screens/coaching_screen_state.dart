@@ -5,11 +5,14 @@ import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
 import '../services/hr_processor.dart';
 import '../services/coaching_session_state.dart';
 import '../services/coaching_screen_streams.dart';
+import '../services/coaching_cue_service.dart';
 import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
 ///
 /// Coordinates [CoachingScreenStreams], [CoachingSessionState], and [HrProcessor].
+/// Cue stream subscription is owned directly here (not via [CoachingScreenStreams])
+/// to avoid duplicate consumption — [CoachingCueService] owns the single subscription.
 class CoachingScreenState {
   CoachingScreenState({
     required CoachingSessionState sessionState,
@@ -21,7 +24,6 @@ class CoachingScreenState {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
     _streams.onHrData = _handleHrData;
     _streams.onStatusChange = _handleStatusChange;
-    _streams.onCue = _handleCue;
   }
 
   final CoachingScreenStreams _streams;
@@ -31,6 +33,7 @@ class CoachingScreenState {
   bool _isConnected = false;
   api.ApiCue? _currentCue;
   VoidCallback? _onStateChange;
+  StreamSubscription<api.ApiCue>? _cueSubscription;
 
   int get currentBpm => _hrProcessor.currentBpm;
   Zone get currentZone => _hrProcessor.currentZone;
@@ -47,6 +50,7 @@ class CoachingScreenState {
     ProfileService.instance.loadProfile();
     _sessionState.start();
     _streams.subscribe();
+    _cueSubscription = CoachingCueService.instance.cueStream.listen(_handleCue);
   }
 
   Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
@@ -78,5 +82,7 @@ class CoachingScreenState {
   void dispose() {
     _streams.dispose();
     _sessionState.dispose();
+    _cueSubscription?.cancel();
+    _cueSubscription = null;
   }
 }
