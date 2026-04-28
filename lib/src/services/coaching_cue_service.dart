@@ -6,9 +6,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
-import 'package:heart_beat/src/services/cue_stream_provider.dart';
 import 'voice_coaching_handler.dart';
 import 'voice_coaching_service.dart';
+
+/// Callback type for handling sustained low HR coaching cues.
+typedef SustainedLowHrHandler = void Function(ApiCue cue);
 
 /// Global navigator key for deep-links from notifications when no context
 /// is available (e.g., cold-start from notification tap).
