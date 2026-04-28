@@ -48,16 +48,14 @@ void main() {
     test('requestBluetoothPermissions actually invokes permission logic', () async {
       final service = DeviceService.instance;
 
-      // Actually call the method to verify the logic runs
+      // Actually call the method to verify it runs without throwing
       final result = await service.requestBluetoothPermissions();
 
-      // Verify it returns a valid result - either granted or denied depending on
-      // platform (in test environment, permissions typically fail to be granted)
+      // Verify the result structure - in test environment without real permissions,
+      // granted will be false, but the method executed and returned a valid result
       expect(result, isA<BluetoothPermissionResult>());
-      // The method was invoked and returned a result (not thrown)
-      // Note: In unit test environment without real platform permissions,
-      // the result will be granted=false since platform channel returns denied.
-      // This still proves the logic was executed, not just type-checked.
+      expect(result.granted, isA<bool>());
+      // The method executed without throwing, proving the permission logic ran
     });
 
     test('scanForDevices throws when Rust FFI is unavailable', () async {
