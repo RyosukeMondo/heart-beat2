@@ -4,7 +4,7 @@ import '../models/user_profile.dart';
 import '../utils/duration_helpers.dart';
 import '../utils/zone_helpers.dart';
 import '../utils/cue_helpers.dart';
-import '../services/coaching_screen_state.dart';
+import 'coaching_screen_state.dart';
 import '../services/profile_service.dart';
 
 /// Coaching screen — primary surface during an active coaching session.

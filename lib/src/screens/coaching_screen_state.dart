@@ -2,10 +2,10 @@ import 'dart:async' hide Zone;
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
-import 'hr_processor.dart';
-import 'coaching_session_state.dart';
-import 'coaching_screen_streams.dart';
-import 'profile_service.dart';
+import '../services/hr_processor.dart';
+import '../services/coaching_session_state.dart';
+import '../services/coaching_screen_streams.dart';
+import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
 ///
