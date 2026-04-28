@@ -378,7 +378,7 @@ class _SessionScreenState extends State<SessionScreen> {
     api.ApiFilteredHeartRate data,
   ) async {
     final bpm = await api.hrFilteredBpm(data: data);
-    // Use CoachingHelpers to calculate zone based on user's profile settings
+    // Use ZoneHelpers to calculate zone based on user's profile settings
     final profile = _profileService.getCurrentProfile() ?? _profileService.getDefaultProfile();
     final zone = ZoneHelpers.zoneForBpm(bpm, profile);
 
