@@ -7,6 +7,7 @@ class DiagnosisOperationsPanel extends StatelessWidget {
   final VoidCallback onToggleMock;
   final VoidCallback onExport;
   final VoidCallback onClearCache;
+  final VoidCallback onDumpLogs;
   final bool mockActive;
   final ValueChanged<bool> onMockActiveChanged;
 
@@ -18,6 +19,7 @@ class DiagnosisOperationsPanel extends StatelessWidget {
     required this.onToggleMock,
     required this.onExport,
     required this.onClearCache,
+    required this.onDumpLogs,
     required this.mockActive,
     required this.onMockActiveChanged,
   });
@@ -59,6 +61,11 @@ class DiagnosisOperationsPanel extends StatelessWidget {
             icon: Icons.delete_sweep,
             label: 'Clear Cache',
             onPressed: onClearCache,
+          ),
+          _DiagnosisOpButton(
+            icon: Icons.download,
+            label: 'Dump Logs',
+            onPressed: onDumpLogs,
           ),
         ],
       ),

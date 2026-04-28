@@ -8,6 +8,7 @@ class DiagnosisOperationsPanelWrapper extends StatefulWidget {
   final Future<void> Function() onToggleMock;
   final Future<void> Function() onExport;
   final Future<void> Function() onClearCache;
+  final Future<void> Function() onDumpLogs;
 
   const DiagnosisOperationsPanelWrapper({
     super.key,
@@ -17,6 +18,7 @@ class DiagnosisOperationsPanelWrapper extends StatefulWidget {
     required this.onToggleMock,
     required this.onExport,
     required this.onClearCache,
+    required this.onDumpLogs,
   });
 
   @override
@@ -40,6 +42,7 @@ class _DiagnosisOperationsPanelWrapperState
       },
       onExport: widget.onExport,
       onClearCache: widget.onClearCache,
+      onDumpLogs: widget.onDumpLogs,
       mockActive: _mockActive,
       onMockActiveChanged: (v) => setState(() => _mockActive = v),
     );

@@ -25,6 +25,7 @@ class DiagnosisScreen extends StatelessWidget {
         onToggleMock: () => _handleToggleMock(context),
         onExport: () => _handleExport(context),
         onClearCache: () => _handleClearCache(context),
+        onDumpLogs: () => _handleDumpLogs(context),
       ),
     );
   }
@@ -138,6 +139,18 @@ Future<void> _handleClearCache(BuildContext context) async {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Clear cache failed: $e')),
+    );
+  }
+}
+
+Future<void> _handleDumpLogs(BuildContext context) async {
+  try {
+    final json = LogService.instance.exportAsJson();
+    await Share.share(json, subject: 'Heart Beat logs export');
+  } catch (e) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Dump logs failed: $e')),
     );
   }
 }

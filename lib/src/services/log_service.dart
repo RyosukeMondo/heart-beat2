@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io' show Directory, File, FileMode;
@@ -233,6 +234,20 @@ class LogService {
 
   /// Get all stored logs as an unmodifiable list.
   List<LogMessage> get logs => UnmodifiableListView(_logBuffer);
+
+  /// Export the in-memory log buffer as a JSON string.
+  String exportAsJson() {
+    final entries = _logBuffer.map((log) {
+      final ts = DateTime.fromMillisecondsSinceEpoch(log.timestamp.toInt());
+      return {
+        'timestamp': ts.toIso8601String(),
+        'level': log.level,
+        'target': log.target,
+        'message': log.message,
+      };
+    }).toList();
+    return const JsonEncoder.withIndent('  ').convert({'logs': entries});
+  }
 
   /// Clear all stored logs.
   /// Does not affect active stream listeners.

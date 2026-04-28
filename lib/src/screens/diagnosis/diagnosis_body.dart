@@ -11,6 +11,7 @@ class DiagnosisBody extends StatefulWidget {
   final Future<void> Function() onToggleMock;
   final Future<void> Function() onExport;
   final Future<void> Function() onClearCache;
+  final Future<void> Function() onDumpLogs;
 
   const DiagnosisBody({
     super.key,
@@ -20,6 +21,7 @@ class DiagnosisBody extends StatefulWidget {
     required this.onToggleMock,
     required this.onExport,
     required this.onClearCache,
+    required this.onDumpLogs,
   });
 
   @override
@@ -53,6 +55,7 @@ class _DiagnosisBodyState extends State<DiagnosisBody> {
           onToggleMock: widget.onToggleMock,
           onExport: widget.onExport,
           onClearCache: widget.onClearCache,
+          onDumpLogs: widget.onDumpLogs,
         ),
       ],
     );
