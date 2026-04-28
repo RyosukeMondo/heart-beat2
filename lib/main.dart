@@ -85,18 +85,12 @@ Future<void> main() async {
   try {
     await CoachingCueService.instance.initialize();
     await CoachingCueService.instance.initializeTts();
-    // Wire up sustained_low_hr handler to HealthAlertService
-    CoachingCueService.instance.setSustainedLowHrHandler(
-      HealthAlertService.instance.showSustainedLowHrNotification,
-    );
     // Initialize coaching engine in Rust before connecting
     await initCoachingEngine();
     // Subscribe to coaching cue stream from Rust rule engine
-    CoachingCueService.instance.createCueStream().listen(
-      (cue) => CoachingCueService.instance.onCue(cue),
-      onError: (e) => debugPrint('[CoachingCueService] stream error: $e'),
-      cancelOnError: false,
-    );
+    CoachingCueService.instance.startCueListener();
+    // HealthAlertService listens to the same cue stream independently
+    HealthAlertService.instance.startListening(CoachingCueService.instance.cueStream);
     if (kDebugMode) {
       debugPrint('[heart_beat] CoachingCueService stream subscribed');
     }

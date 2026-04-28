@@ -46,9 +46,6 @@ class CoachingCueService {
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
-  /// Exposed for [HealthAlertService] to show health-specific notifications.
-  FlutterLocalNotificationsPlugin get notifications => _notifications;
-
   final VoiceCoachingHandler _voiceHandler;
 
   bool _isInitialized = false;
@@ -219,8 +216,8 @@ class CoachingCueService {
   }
 
   /// Handle the sustained_low_hr cue: suppress delivery when notifications
-  /// are disabled; the [HealthAlertService] independently consumes the same
-  /// cue stream and handles its own notification rendering.
+  /// are disabled; [HealthAlertService] independently consumes the cue stream
+  /// and handles its own notification rendering.
   Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
     if (!_notificationsEnabled) {
       if (kDebugMode) {
