@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../models/user_profile.dart';
 import '../utils/duration_helpers.dart';
 import '../utils/zone_helpers.dart';
 import '../utils/cue_helpers.dart';
 import '../services/coaching_screen_state.dart';
+import '../services/profile_service.dart';
 
 /// Coaching screen — primary surface during an active coaching session.
 ///
@@ -22,6 +24,9 @@ class CoachingScreen extends StatefulWidget {
 
 class _CoachingScreenState extends State<CoachingScreen> {
   late final CoachingScreenState _state;
+
+  UserProfile get currentProfile =>
+      ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
 
   @override
   void initState() {
@@ -185,7 +190,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   }
 
   Widget _buildTargetBand(ThemeData theme) {
-    final profile = _state.currentProfile;
+    final profile = currentProfile;
     final maxHr = profile.effectiveMaxHr;
     final zones = profile.effectiveZones;
 
