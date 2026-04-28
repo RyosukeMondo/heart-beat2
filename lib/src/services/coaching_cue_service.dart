@@ -9,9 +9,6 @@ import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
 import 'voice_coaching_handler.dart';
 import 'voice_coaching_service.dart';
 
-/// Callback type for handling sustained low HR coaching cues.
-typedef SustainedLowHrHandler = void Function(ApiCue cue);
-
 /// Global navigator key for deep-links from notifications when no context
 /// is available (e.g., cold-start from notification tap).
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -28,9 +25,8 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 ///  - TTS (optional, opt-in): flutter_tts speaks the cue aloud.
 ///  User preference toggles: enable notifications, enable TTS, choose voice."
 class CoachingCueService {
-  CoachingCueService._([VoiceCoachingHandler? voiceHandler, SustainedLowHrHandler? onSustainedLowHr])
-      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance,
-        _onSustainedLowHr = onSustainedLowHr;
+  CoachingCueService._([VoiceCoachingHandler? voiceHandler])
+      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance;
 
   static final CoachingCueService _instance = CoachingCueService._();
 
@@ -54,8 +50,6 @@ class CoachingCueService {
   FlutterLocalNotificationsPlugin get notifications => _notifications;
 
   final VoiceCoachingHandler _voiceHandler;
-
-  SustainedLowHrHandler? _onSustainedLowHr;
 
   bool _isInitialized = false;
 
@@ -139,19 +133,9 @@ class CoachingCueService {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // Sustained low HR handler
-  // ---------------------------------------------------------------------------
-
-  /// Sets the handler for sustained_low_hr cues.
-  /// Should be called once at app startup after [HealthAlertService] is available.
-  void setSustainedLowHrHandler(SustainedLowHrHandler? handler) {
-    _onSustainedLowHr = handler;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Preference setters
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Preference setters
+// ---------------------------------------------------------------------------
 
   Future<void> setNotificationsEnabled(bool value) async {
     _notificationsEnabled = value;
@@ -234,17 +218,15 @@ class CoachingCueService {
     }
   }
 
-  /// Handle the sustained_low_hr cue: show a custom notification with
-  /// formatted body, gated by the master notifications toggle.
+  /// Handle the sustained_low_hr cue: suppress delivery when notifications
+  /// are disabled; the [HealthAlertService] independently consumes the same
+  /// cue stream and handles its own notification rendering.
   Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
     if (!_notificationsEnabled) {
       if (kDebugMode) {
         debugPrint('sustained_low_hr suppressed: notifications disabled');
       }
-      return;
     }
-
-    _onSustainedLowHr?.call(cue);
   }
 
   // ---------------------------------------------------------------------------
