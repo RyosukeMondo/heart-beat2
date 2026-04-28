@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
-import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'cue_stream_provider.dart';
 
 /// Service that provides health-rule alerts (e.g. sustained low HR) to the UI
 /// without coupling the screen to the coaching subsystem.
 ///
-/// Subscribes independently to the coaching cue stream to filter for
-/// health-specific cues, exposing them via [healthAlertStream] and [healthAlertState].
+/// Receives sustained_low_hr cues via the shared cue stream from [cueStreamProvider],
+/// avoiding a duplicate Rust stream subscription.
 class HealthAlertService {
   HealthAlertService._();
 
@@ -38,11 +38,11 @@ class HealthAlertService {
 
   StreamSubscription<generated.ApiCue>? _cueSubscription;
 
-  /// Start listening to the coaching cue stream and filter for health alerts.
+  /// Start listening to the shared cue stream and filter for health alerts.
   /// Call this once at app startup, after [CoachingCueService] is initialized.
   void startListening() {
     _cueSubscription?.cancel();
-    _cueSubscription = RustLib.instance.api.crateApiCreateCoachingCueStream().listen((cue) {
+    _cueSubscription = cueStream.listen((cue) {
       if (cue.label == 'sustained_low_hr') {
         _healthAlertController.add(cue);
         _currentState = HealthAlertState(HealthRuleStatus.low, cue.message);
