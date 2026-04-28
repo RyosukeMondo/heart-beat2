@@ -192,13 +192,6 @@ class CoachingCueService {
       debugPrint('CoachingCueService received cue: ${cue.label} - ${cue.message}');
     }
 
-    // Handle sustained_low_hr with custom notification formatting and
-    // master-toggle-gated notification delivery.
-    if (cue.label == 'sustained_low_hr') {
-      await _handleSustainedLowHrCue(cue);
-      return;
-    }
-
     // In-app toast (Normal+ priority cues only)
     if (_inAppToastEnabled && cue.priority >= 1) {
       await _showInAppToast(cue);
@@ -215,17 +208,7 @@ class CoachingCueService {
     }
   }
 
-  /// Handle the sustained_low_hr cue: suppress delivery when notifications
-  /// are disabled; [HealthAlertService] independently consumes the cue stream
-  /// and handles its own notification rendering.
-  Future<void> _handleSustainedLowHrCue(ApiCue cue) async {
-    if (!_notificationsEnabled) {
-      if (kDebugMode) {
-        debugPrint('sustained_low_hr suppressed: notifications disabled');
-      }
-    }
-  }
-
+  
   // ---------------------------------------------------------------------------
   // Delivery surfaces
   // ---------------------------------------------------------------------------
