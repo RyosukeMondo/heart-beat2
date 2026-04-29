@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heart_beat/src/services/health_settings_service.dart';
+import 'package:heart_beat/src/services/health_settings_repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -13,12 +14,12 @@ void main() {
 
     test('has correct default values', () {
       const expected = HealthSettingsData(
-        lowHrThreshold: HealthSettingsService.defaultLowHrThreshold,
-        sustainedMinutes: HealthSettingsService.defaultSustainedMinutes,
-        sampleCadenceSecs: HealthSettingsService.defaultSampleCadenceSecs,
-        quietStart: HealthSettingsService.defaultQuietStart,
-        quietEnd: HealthSettingsService.defaultQuietEnd,
-        notificationsEnabled: HealthSettingsService.defaultNotificationsEnabled,
+        lowHrThreshold: HealthSettingsRepository.defaultLowHrThreshold,
+        sustainedMinutes: HealthSettingsRepository.defaultSustainedMinutes,
+        sampleCadenceSecs: HealthSettingsRepository.defaultSampleCadenceSecs,
+        quietStart: HealthSettingsRepository.defaultQuietStart,
+        quietEnd: HealthSettingsRepository.defaultQuietEnd,
+        notificationsEnabled: HealthSettingsRepository.defaultNotificationsEnabled,
       );
       expect(expected.lowHrThreshold, 70);
       expect(expected.sustainedMinutes, 10);
