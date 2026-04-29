@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../services/hr_processor.dart';
+import '../services/latency_service.dart';
+import '../services/profile_service.dart';
+import '../services/background_service_provider.dart';
+import '../utils/zone_helpers.dart';
 import '../widgets/hr_display.dart';
 import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
 import '../widgets/connection_banner.dart';
-import '../services/background_service_provider.dart';
-import 'dart:async';
 import 'session_screen_state.dart';
 
 /// Session screen for live HR monitoring during workouts
@@ -20,6 +24,9 @@ class SessionScreen extends StatefulWidget {
 }
 
 class _SessionScreenState extends State<SessionScreen> {
+  late final HrProcessor _hrProcessor;
+  late final LatencyServiceBase _latencyService;
+
   Stream<api.ApiFilteredHeartRate>? _hrStream;
   StreamSubscription<api.ApiBatteryLevel>? _batterySubscription;
   int? _batteryLevel;
@@ -30,6 +37,13 @@ class _SessionScreenState extends State<SessionScreen> {
   bool _hasInitialized = false;
   final Stopwatch _sessionTimer = Stopwatch();
   Timer? _sessionTimerTicker;
+
+  @override
+  void initState() {
+    super.initState();
+    _hrProcessor = HrProcessor(ProfileService.instance);
+    _latencyService = LatencyService.instance;
+  }
 
   @override
   void didChangeDependencies() {
@@ -60,7 +74,8 @@ class _SessionScreenState extends State<SessionScreen> {
       await api.connectDevice(deviceId: deviceId);
 
       // Initialize state (loads profile and starts latency tracking)
-      _state.initialize();
+      ProfileService.instance.loadProfile();
+      _latencyService.start();
 
       // Create the HR stream
       final stream = api.createHrStream();
@@ -174,8 +189,8 @@ class _SessionScreenState extends State<SessionScreen> {
     _batterySubscription?.cancel();
     _sessionTimer.stop();
     _sessionTimerTicker?.cancel();
-    // Clean up state
-    _state.dispose();
+    // Stop latency tracking
+    _latencyService.stop();
     // Stream will be automatically cleaned up
     super.dispose();
   }
@@ -291,7 +306,7 @@ class _SessionScreenState extends State<SessionScreen> {
         }
 
         // Process HR data and record latency (fire and forget - state updates independently)
-        unawaited(_state.processHrData(snapshot.data!));
+        unawaited(_processHrData(snapshot.data!));
 
         return _buildHrDisplay(snapshot.data!, colorScheme);
       },
@@ -303,7 +318,7 @@ class _SessionScreenState extends State<SessionScreen> {
     ColorScheme colorScheme,
   ) {
     return FutureBuilder<({int bpm, Zone zone})>(
-      future: _state.extractHrData(data),
+      future: _extractHrData(data),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -372,5 +387,21 @@ class _SessionScreenState extends State<SessionScreen> {
       return '$hours:$minutes:$seconds';
     }
     return '$minutes:$seconds';
+  }
+
+  Future<void> _processHrData(api.ApiFilteredHeartRate data) async {
+    await _hrProcessor.process(data);
+    _latencyService.recordSample(data);
+    _state.notifyStateChange();
+  }
+
+  Future<({int bpm, Zone zone})> _extractHrData(
+    api.ApiFilteredHeartRate data,
+  ) async {
+    final bpm = await api.hrFilteredBpm(data: data);
+    final profile = ProfileService.instance.getCurrentProfile() ??
+        ProfileService.instance.getDefaultProfile();
+    final zone = ZoneHelpers.zoneForBpm(bpm, profile);
+    return (bpm: bpm, zone: zone);
   }
 }
