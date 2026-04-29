@@ -109,6 +109,11 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _disconnectDevice() async {
+    // Capture provider reference before async gap
+    final bgService = _state.isServiceRunning
+        ? Provider.of<BackgroundServiceProvider>(context, listen: false)
+        : null;
+
     // Show confirmation dialog
     final shouldDisconnect = await showDialog<bool>(
       context: context,
@@ -131,13 +136,6 @@ class _SessionScreenState extends State<SessionScreen> {
     );
 
     if (shouldDisconnect != true) return;
-
-    // Capture provider reference before async gap
-    // ignore: use_build_context_synchronously
-    final bgService = _state.isServiceRunning
-        // ignore: use_build_context_synchronously
-        ? Provider.of<BackgroundServiceProvider>(context, listen: false)
-        : null;
 
     try {
       // Call disconnect API
