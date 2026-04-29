@@ -16,8 +16,9 @@ import '../services/profile_service.dart';
 class CoachingScreenState {
   CoachingScreenState({
     CoachingScreenStreams? streams,
+    CoachingSessionState? sessionState,
     HrProcessor? hrProcessor,
-  })  : _sessionState = CoachingSessionState(),
+  })  : _sessionState = sessionState ?? CoachingSessionState(),
         _streams = streams ?? CoachingScreenStreams(),
         _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance) {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
