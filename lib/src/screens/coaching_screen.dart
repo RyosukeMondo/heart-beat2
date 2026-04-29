@@ -28,9 +28,10 @@ class CoachingScreen extends StatefulWidget {
   @override
   State<CoachingScreen> createState() => _CoachingScreenState(_state ?? _createDefaultState());
 
-  static CoachingScreenState _createDefaultState() => CoachingScreenState(
+  static CoachingScreenState _createDefaultState([CoachingSessionState? sessionState]) =>
+      CoachingScreenState(
         streams: CoachingScreenStreams(),
-        sessionState: CoachingSessionStateImpl(),
+        sessionState: sessionState ?? CoachingSessionStateImpl(),
         cueService: CoachingCueService.instance,
       );
 }
