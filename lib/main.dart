@@ -11,6 +11,7 @@ import 'package:heart_beat/src/services/background_service.dart';
 import 'package:heart_beat/src/services/coaching_cue_service.dart';
 import 'package:heart_beat/src/services/health_alert_service.dart';
 import 'package:heart_beat/src/services/log_service.dart';
+import 'package:heart_beat/src/services/voice_coaching_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
@@ -83,6 +84,11 @@ Future<void> main() async {
 
   // Initialize coaching cue service (FFI stream + delivery surfaces)
   try {
+    // Wire up CoachingCueService with VoiceCoachingService concrete.
+    // This keeps CoachingCueService decoupled from VoiceCoachingService.
+    CoachingCueService.setInstance(
+      CoachingCueService.create(VoiceCoachingService.instance),
+    );
     await CoachingCueService.instance.initialize();
     await CoachingCueService.instance.initializeTts();
     // Initialize coaching engine in Rust before connecting

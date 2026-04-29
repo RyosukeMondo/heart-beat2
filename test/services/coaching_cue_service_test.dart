@@ -49,6 +49,10 @@ void main() {
     late CoachingCueService service;
 
     setUp(() async {
+      // Set up the singleton with a real handler before each test
+      CoachingCueService.setInstance(
+        CoachingCueService.create(VoiceCoachingService.instance),
+      );
       await CoachingCueService.instance.initialize();
       service = CoachingCueService.instance;
     });

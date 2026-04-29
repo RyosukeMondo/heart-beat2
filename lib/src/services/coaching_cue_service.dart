@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
 import 'voice_coaching_handler.dart';
-import 'voice_coaching_service.dart';
 
 /// Global navigator key for deep-links from notifications when no context
 /// is available (e.g., cold-start from notification tap).
@@ -25,12 +24,39 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 ///  - TTS (optional, opt-in): flutter_tts speaks the cue aloud.
 ///  User preference toggles: enable notifications, enable TTS, choose voice."
 class CoachingCueService {
-  CoachingCueService._([VoiceCoachingHandler? voiceHandler])
-      : _voiceHandler = voiceHandler ?? VoiceCoachingService.instance;
+  CoachingCueService._(VoiceCoachingHandler voiceHandler)
+      : _voiceHandler = voiceHandler;
 
-  static final CoachingCueService _instance = CoachingCueService._();
+  /// Factory constructor that creates a [CoachingCueService] with the
+  /// given [handler]. The returned instance must be set as the singleton
+  /// via [setInstance].
+  factory CoachingCueService.create(VoiceCoachingHandler handler) {
+    return CoachingCueService._(handler);
+  }
 
-  static CoachingCueService get instance => _instance;
+  static CoachingCueService? _instance;
+
+  /// Returns the singleton [CoachingCueService] instance.
+  ///
+  /// The handler must be set via [setInstance] before first access in
+  /// production. In tests, a mock handler can be injected.
+  static CoachingCueService get instance {
+    final inst = _instance;
+    if (inst == null) {
+      throw StateError(
+        'CoachingCueService.instance used before setInstance() called. '
+        'Call setInstance() with a VoiceCoachingHandler implementation.',
+      );
+    }
+    return inst;
+  }
+
+  /// Sets the singleton instance with the given [instance].
+  ///
+  /// Must be called once at app startup before any other access.
+  static void setInstance(CoachingCueService instance) {
+    _instance = instance;
+  }
 
   // ---------------------------------------------------------------------------
   // Preferences keys
