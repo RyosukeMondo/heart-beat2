@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' as generated;
+import 'package:heart_beat/src/services/coaching_cue.dart';
 
 /// Service that provides health-rule alerts (e.g. sustained low HR) to the UI
 /// without coupling the screen to the coaching subsystem.
@@ -19,10 +19,10 @@ class HealthAlertService {
   /// Stream of health alerts. Currently only emits for [sustained_low_hr],
   /// but this interface allows future health rules to be added without
   /// coupling additional coaching logic to the UI.
-  Stream<generated.ApiCue> get healthAlertStream => _healthAlertController.stream;
+  Stream<Cue> get healthAlertStream => _healthAlertController.stream;
 
-  final StreamController<generated.ApiCue> _healthAlertController =
-      StreamController<generated.ApiCue>.broadcast();
+  final StreamController<Cue> _healthAlertController =
+      StreamController<Cue>.broadcast();
 
   /// Emits the current [HealthAlertState] whenever the health alert status changes.
   Stream<HealthAlertState> get healthAlertStateStream => _healthAlertStateController.stream;
@@ -35,11 +35,11 @@ class HealthAlertService {
 
   HealthAlertState _currentState = const HealthAlertState(HealthRuleStatus.ok, '');
 
-  StreamSubscription<generated.ApiCue>? _cueSubscription;
+  StreamSubscription<Cue>? _cueSubscription;
 
   /// Start listening to the cue stream and filter for health alerts.
   /// Call this once at app startup, passing in the cue stream to listen on.
-  void startListening(Stream<generated.ApiCue> cueStream) {
+  void startListening(Stream<Cue> cueStream) {
     _cueSubscription?.cancel();
     _cueSubscription = cueStream.listen((cue) {
       if (cue.label == 'sustained_low_hr') {
@@ -56,7 +56,7 @@ class HealthAlertService {
   /// Show a custom low-HR notification with the exact format required:
   /// title = 'Heart rate low', body = 'Average HR was {avg_bpm} bpm over
   /// the last {window_min} min', tap opens the Health screen.
-  Future<void> showSustainedLowHrNotification(generated.ApiCue cue) async {
+  Future<void> showSustainedLowHrNotification(Cue cue) async {
     const androidDetails = AndroidNotificationDetails(
       'health_alerts',
       'Health Alerts',
