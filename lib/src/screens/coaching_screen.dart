@@ -5,7 +5,7 @@ import '../utils/zone_helpers.dart';
 import 'coaching_screen_state.dart';
 import '../services/profile_service.dart';
 import '../services/coaching_screen_streams.dart';
-import '../services/coaching_session_state.dart';
+import 'coaching_session_state.dart';
 import '../services/coaching_cue_service.dart';
 import '../widgets/cue_card.dart';
 import '../widgets/target_band_visualization.dart';
