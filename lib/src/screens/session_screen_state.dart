@@ -11,10 +11,14 @@ import '../utils/zone_helpers.dart';
 ///
 /// Handles HR data processing, latency recording, and background service updates.
 class SessionScreenState {
-  SessionScreenState({HrProcessor? hrProcessor})
-      : _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance);
+  SessionScreenState({
+    HrProcessor? hrProcessor,
+    LatencyServiceBase? latencyService,
+  })  : _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance),
+        _latencyService = latencyService ?? LatencyService.instance;
 
   final HrProcessor _hrProcessor;
+  final LatencyServiceBase _latencyService;
 
   bool _isServiceRunning = false;
   VoidCallback? _onStateChange;
@@ -33,12 +37,12 @@ class SessionScreenState {
 
   void initialize() {
     ProfileService.instance.loadProfile();
-    LatencyService.instance.start();
+    _latencyService.start();
   }
 
   Future<void> processHrData(api.ApiFilteredHeartRate data) async {
     await _hrProcessor.process(data);
-    LatencyService.instance.recordSample(data);
+    _latencyService.recordSample(data);
     _onStateChange?.call();
   }
 
@@ -53,6 +57,6 @@ class SessionScreenState {
   }
 
   void dispose() {
-    LatencyService.instance.stop();
+    _latencyService.stop();
   }
 }

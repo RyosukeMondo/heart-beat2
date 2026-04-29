@@ -7,7 +7,17 @@ import '../bridge/api_generated.dart/api.dart';
 ///
 /// Collects latency samples and periodically logs percentile statistics (P50, P95, P99).
 /// Used to validate the P95 < 100ms requirement from BLE notification to UI rendering.
-class LatencyService {
+abstract class LatencyServiceBase {
+  LatencyServiceBase();
+
+  void start();
+  void stop();
+  Future<void> recordSample(ApiFilteredHeartRate hrData);
+  LatencyStats? getStats();
+  void clearSamples();
+}
+
+class LatencyService implements LatencyServiceBase {
   LatencyService._();
 
   static final LatencyService _instance = LatencyService._();
@@ -34,6 +44,7 @@ class LatencyService {
   bool _isActive = false;
 
   /// Start collecting latency samples and periodic logging.
+  @override
   void start() {
     if (_isActive) return;
 
@@ -53,6 +64,7 @@ class LatencyService {
   }
 
   /// Stop collecting latency samples and cancel periodic logging.
+  @override
   void stop() {
     if (!_isActive) return;
 
@@ -74,6 +86,7 @@ class LatencyService {
   ///
   /// Calculates latency from BLE receive timestamp to current time.
   /// This should be called immediately when HR data arrives in the UI layer.
+  @override
   Future<void> recordSample(ApiFilteredHeartRate hrData) async {
     if (!_isActive) return;
 
@@ -168,6 +181,7 @@ class LatencyService {
   }
 
   /// Get current latency statistics (for debugging/UI display).
+  @override
   LatencyStats? getStats() {
     if (_latencySamples.isEmpty) return null;
 
@@ -186,6 +200,7 @@ class LatencyService {
   }
 
   /// Clear all collected samples.
+  @override
   void clearSamples() {
     _latencySamples.clear();
     _totalSamples = 0;
