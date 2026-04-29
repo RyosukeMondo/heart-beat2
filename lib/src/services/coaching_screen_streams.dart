@@ -1,14 +1,22 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
+import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import 'connection_status_stream_provider.dart';
 import 'hr_stream_provider.dart';
+import 'hr_processor.dart';
+import 'profile_service.dart';
 
 /// Manages stream subscriptions for the coaching screen.
 ///
-/// Extracted from CoachingScreenState to reduce its responsibilities.
+/// Handles HR data processing and owns the callbacks for HR updates and
+/// connection status changes. Extracted from CoachingScreenState to reduce
+/// its responsibilities.
 class CoachingScreenStreams {
-  CoachingScreenStreams();
+  CoachingScreenStreams({HrProcessor? hrProcessor})
+      : _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance);
+
+  final HrProcessor _hrProcessor;
 
   StreamSubscription<api.ApiFilteredHeartRate>? _hrSubscription;
   StreamSubscription<api.ApiConnectionStatus>? _statusSubscription;
@@ -16,8 +24,11 @@ class CoachingScreenStreams {
   bool _isConnected = false;
   bool get isConnected => _isConnected;
 
-  /// Callback for HR data updates.
-  void Function(api.ApiFilteredHeartRate data)? onHrData;
+  int get currentBpm => _hrProcessor.currentBpm;
+  Zone get currentZone => _hrProcessor.currentZone;
+
+  /// Callback for HR data updates (bpm, zone).
+  void Function(int bpm, Zone zone)? onHrData;
 
   /// Callback for connection status changes (deprecated — use isConnected instead).
   void Function(api.ApiConnectionStatus status)? onStatusChange;
@@ -44,8 +55,9 @@ class CoachingScreenStreams {
     // subscription to CoachingCueService — no second subscription here.
   }
 
-  void _handleHrData(api.ApiFilteredHeartRate data) {
-    onHrData?.call(data);
+  Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
+    await _hrProcessor.process(data);
+    onHrData?.call(_hrProcessor.currentBpm, _hrProcessor.currentZone);
   }
 
   Future<void> _handleStatusChange(api.ApiConnectionStatus status) async {

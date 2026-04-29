@@ -2,11 +2,10 @@ import 'dart:async' hide Zone;
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
-import '../services/hr_processor.dart';
-import '../services/coaching_session_state.dart';
-import '../services/coaching_screen_streams.dart';
-import '../services/coaching_cue_service.dart';
 import '../services/coaching_cue.dart';
+import '../services/coaching_screen_streams.dart';
+import '../services/coaching_session_state.dart';
+import '../services/coaching_cue_service.dart';
 import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
@@ -18,27 +17,23 @@ class CoachingScreenState {
   CoachingScreenState({
     CoachingScreenStreams? streams,
     CoachingSessionState? sessionState,
-    HrProcessor? hrProcessor,
     CoachingCueService? cueService,
-  })  : _sessionState = sessionState ?? CoachingSessionStateImpl(),
-        _streams = streams ?? CoachingScreenStreams(),
-        _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance),
+  })  : _streams = streams ?? CoachingScreenStreams(),
+        _sessionState = sessionState ?? CoachingSessionStateImpl(),
         _cueService = cueService ?? CoachingCueService.instance {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
-    _streams.onHrData = _handleHrData;
   }
 
   final CoachingScreenStreams _streams;
   final CoachingSessionState _sessionState;
-  final HrProcessor _hrProcessor;
   final CoachingCueService _cueService;
 
   Cue? _currentCue;
   VoidCallback? _onStateChange;
   StreamSubscription<Cue>? _cueSubscription;
 
-  int get currentBpm => _hrProcessor.currentBpm;
-  Zone get currentZone => _hrProcessor.currentZone;
+  int get currentBpm => _streams.currentBpm;
+  Zone get currentZone => _streams.currentZone;
   bool get isConnected => _streams.isConnected;
   Cue? get currentCue => _currentCue;
   Duration get elapsed => _sessionState.elapsed;
@@ -51,14 +46,14 @@ class CoachingScreenState {
   void initialize() {
     ProfileService.instance.loadProfile();
     _sessionState.start();
+    _streams.onHrData = _handleHrData;
     _streams.subscribe();
     _cueSubscription = _cueService.cueStream.listen(_handleCue);
   }
 
-  Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
-    await _hrProcessor.process(data);
+  void _handleHrData(int bpm, Zone zone) {
+    _sessionState.onZoneTick(zone);
     _onStateChange?.call();
-    _sessionState.onZoneTick(_hrProcessor.currentZone);
   }
 
   void _handleCue(Cue cue) {
