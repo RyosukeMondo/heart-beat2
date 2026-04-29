@@ -4,8 +4,26 @@ import '../bridge/api_generated.dart/domain/heart_rate.dart';
 /// Manages coaching session state: timer, zone time tracking, pause state.
 ///
 /// Extracted from CoachingScreenState to reduce its responsibilities.
-class CoachingSessionState {
+abstract class CoachingSessionState {
   CoachingSessionState();
+
+  /// Callback invoked on every tick with current elapsed time and zone times.
+  void Function(Duration elapsed, Map<Zone, Duration> zoneTime)? onUpdate;
+
+  Duration get elapsed;
+  bool get isPaused;
+  Map<Zone, Duration> get zoneTime;
+
+  void start();
+  void pause();
+  void resume();
+  void togglePause();
+  void onZoneTick(Zone zone);
+  void dispose();
+}
+
+class CoachingSessionStateImpl implements CoachingSessionState {
+  CoachingSessionStateImpl();
 
   DateTime? _sessionStartTime;
   Duration _elapsed = Duration.zero;
@@ -21,13 +39,19 @@ class CoachingSessionState {
   };
   Zone? _lastZone;
 
-  /// Callback invoked on every tick with current elapsed time and zone times.
+  @override
   void Function(Duration elapsed, Map<Zone, Duration> zoneTime)? onUpdate;
 
+  @override
   Duration get elapsed => _elapsed;
+
+  @override
   bool get isPaused => _isPaused;
+
+  @override
   Map<Zone, Duration> get zoneTime => Map.unmodifiable(_zoneTime);
 
+  @override
   void start() {
     _sessionStartTime = DateTime.now();
     _startTimer();
@@ -42,16 +66,19 @@ class CoachingSessionState {
     });
   }
 
+  @override
   void pause() {
     _isPaused = true;
     onUpdate?.call(_elapsed, _zoneTime);
   }
 
+  @override
   void resume() {
     _isPaused = false;
     onUpdate?.call(_elapsed, _zoneTime);
   }
 
+  @override
   void togglePause() {
     if (_isPaused) {
       resume();
@@ -60,7 +87,7 @@ class CoachingSessionState {
     }
   }
 
-  /// Call when entering a zone each second to accumulate zone time.
+  @override
   void onZoneTick(Zone zone) {
     if (_lastZone != null && !_isPaused) {
       _zoneTime[_lastZone!] = _zoneTime[_lastZone!]! + const Duration(seconds: 1);
@@ -68,6 +95,7 @@ class CoachingSessionState {
     _lastZone = zone;
   }
 
+  @override
   void dispose() {
     _sessionTimer?.cancel();
     _sessionTimer = null;

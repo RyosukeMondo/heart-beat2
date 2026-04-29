@@ -20,7 +20,7 @@ class CoachingScreenState {
     CoachingSessionState? sessionState,
     HrProcessor? hrProcessor,
     CoachingCueService? cueService,
-  })  : _sessionState = sessionState ?? CoachingSessionState(),
+  })  : _sessionState = sessionState ?? CoachingSessionStateImpl(),
         _streams = streams ?? CoachingScreenStreams(),
         _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance),
         _cueService = cueService ?? CoachingCueService.instance {
