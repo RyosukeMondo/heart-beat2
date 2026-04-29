@@ -7,7 +7,7 @@ void main() {
     late CoachingSessionState state;
 
     setUp(() {
-      state = CoachingSessionState();
+      state = CoachingSessionStateImpl();
       state.onUpdate = (elapsed, zoneTime) {
         // callbacks fire during session lifecycle
       };
