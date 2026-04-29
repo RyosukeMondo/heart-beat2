@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:heart_beat/src/services/diagnosis_log_service.dart';
 import 'package:heart_beat/src/services/profile_service.dart';
 import 'package:heart_beat/src/services/background_service_provider.dart';
+import 'package:heart_beat/src/services/connection_status_service.dart';
 import 'package:heart_beat/src/screens/home_screen.dart';
 import 'package:heart_beat/src/screens/session_screen.dart';
 import 'package:heart_beat/src/screens/settings_screen.dart';
@@ -39,6 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<BackgroundServiceProvider>.value(
           value: BackgroundServiceProvider.instance,
+        ),
+        ChangeNotifierProvider<ConnectionStatusServiceProvider>.value(
+          value: ConnectionStatusServiceProvider.instance,
         ),
       ],
       child: DebugConsoleOverlay(

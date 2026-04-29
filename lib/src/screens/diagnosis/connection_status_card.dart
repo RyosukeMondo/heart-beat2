@@ -2,8 +2,24 @@ import 'package:flutter/material.dart';
 import '../../bridge/api_generated.dart/api.dart';
 import '../../services/connection_status_service.dart';
 
-class DiagnosisConnectionStatusCard extends StatelessWidget {
+class DiagnosisConnectionStatusCard extends StatefulWidget {
   const DiagnosisConnectionStatusCard({super.key});
+
+  @override
+  State<DiagnosisConnectionStatusCard> createState() =>
+      _DiagnosisConnectionStatusCardState();
+}
+
+class _DiagnosisConnectionStatusCardState
+    extends State<DiagnosisConnectionStatusCard> {
+  late final ConnectionStatusServiceProvider _connectionStatusProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectionStatusProvider =
+        ConnectionStatusServiceProvider.instance;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +151,8 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
 
   Future<_CardData?> _getCardData(ApiConnectionStatus? status) async {
     if (status == null) return null;
-    final data = await ConnectionStatusService.instance.getStatusData(status);
+    final data =
+        await _connectionStatusProvider.getStatusData(status);
 
     if (data.isConnected) {
       return _CardData(
