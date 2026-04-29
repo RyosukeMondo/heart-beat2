@@ -15,12 +15,12 @@ import '../services/profile_service.dart';
 /// to avoid duplicate consumption — [CoachingCueService] owns the single subscription.
 class CoachingScreenState {
   CoachingScreenState({
-    CoachingScreenStreams? streams,
-    CoachingSessionState? sessionState,
-    CoachingCueService? cueService,
-  })  : _streams = streams ?? CoachingScreenStreams(),
-        _sessionState = sessionState ?? CoachingSessionStateImpl(),
-        _cueService = cueService ?? CoachingCueService.instance {
+    required CoachingScreenStreams streams,
+    required CoachingSessionState sessionState,
+    required CoachingCueService cueService,
+  })  : _streams = streams,
+        _sessionState = sessionState,
+        _cueService = cueService {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
   }
 

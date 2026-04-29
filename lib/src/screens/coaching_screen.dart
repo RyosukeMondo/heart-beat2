@@ -4,6 +4,9 @@ import '../models/user_profile.dart';
 import '../utils/zone_helpers.dart';
 import 'coaching_screen_state.dart';
 import '../services/profile_service.dart';
+import '../services/coaching_screen_streams.dart';
+import '../services/coaching_session_state.dart';
+import '../services/coaching_cue_service.dart';
 import '../widgets/cue_card.dart';
 import '../widgets/target_band_visualization.dart';
 import '../widgets/session_stats_card.dart';
@@ -32,7 +35,11 @@ class _CoachingScreenState extends State<CoachingScreen> {
   @override
   void initState() {
     super.initState();
-    _state = CoachingScreenState();
+    _state = CoachingScreenState(
+      streams: CoachingScreenStreams(),
+      sessionState: CoachingSessionStateImpl(),
+      cueService: CoachingCueService.instance,
+    );
     _state.setOnStateChange(_onStateChange);
     _state.initialize();
   }
