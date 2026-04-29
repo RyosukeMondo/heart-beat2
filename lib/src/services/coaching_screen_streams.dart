@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../bridge/api_generated.dart/api.dart' as api;
 import '../models/zone.dart';
 import 'connection_status_stream_provider.dart';
 import 'hr_stream_provider.dart';
@@ -18,8 +17,8 @@ class CoachingScreenStreams {
 
   final HrProcessor _hrProcessor;
 
-  StreamSubscription<api.ApiFilteredHeartRate>? _hrSubscription;
-  StreamSubscription<api.ApiConnectionStatus>? _statusSubscription;
+  StreamSubscription<ApiFilteredHeartRate>? _hrSubscription;
+  StreamSubscription<ApiConnectionStatus>? _statusSubscription;
 
   bool _isConnected = false;
   bool get isConnected => _isConnected;
@@ -31,7 +30,7 @@ class CoachingScreenStreams {
   void Function(int bpm, Zone zone)? onHrData;
 
   /// Callback for connection status changes (deprecated — use isConnected instead).
-  void Function(api.ApiConnectionStatus status)? onStatusChange;
+  void Function(ApiConnectionStatus status)? onStatusChange;
 
   /// Callback for stream errors.
   void Function(Object error, StackTrace stackTrace)? onError;
@@ -55,13 +54,13 @@ class CoachingScreenStreams {
     // subscription to CoachingCueService — no second subscription here.
   }
 
-  Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
+  Future<void> _handleHrData(ApiFilteredHeartRate data) async {
     await _hrProcessor.process(data);
     onHrData?.call(_hrProcessor.currentBpm, _hrProcessor.currentZone);
   }
 
-  Future<void> _handleStatusChange(api.ApiConnectionStatus status) async {
-    _isConnected = await api.connectionStatusIsConnected(status: status);
+  Future<void> _handleStatusChange(ApiConnectionStatus status) async {
+    _isConnected = await connectionStatusIsConnected(status: status);
   }
 
   void dispose() {
