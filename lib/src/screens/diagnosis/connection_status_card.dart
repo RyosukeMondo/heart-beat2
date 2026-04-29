@@ -151,7 +151,6 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         maxAttempts: 1,
       );
     }
-
     if (data.isConnecting) {
       return _CardData(
         label: 'Connecting...',
@@ -166,7 +165,6 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         maxAttempts: 1,
       );
     }
-
     if (data.isReconnecting) {
       return _CardData(
         label: 'Reconnecting...',
@@ -181,7 +179,6 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         maxAttempts: data.maxAttempts ?? 1,
       );
     }
-
     if (data.isReconnectFailed) {
       return _CardData(
         label: 'Connection Failed',
@@ -196,7 +193,6 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         maxAttempts: 1,
       );
     }
-
     return _CardData(
       label: 'Disconnected',
       icon: Icons.bluetooth_disabled,
