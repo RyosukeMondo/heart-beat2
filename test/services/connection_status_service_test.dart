@@ -4,17 +4,17 @@ import 'package:heart_beat/src/services/connection_status_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('ConnectionStatusService', () {
+  group('ConnectionStatusServiceProvider', () {
     test('should be a singleton', () {
-      final instance1 = ConnectionStatusService.instance;
-      final instance2 = ConnectionStatusService.instance;
+      final instance1 = ConnectionStatusServiceProvider.instance;
+      final instance2 = ConnectionStatusServiceProvider.instance;
       expect(identical(instance1, instance2), isTrue);
     });
 
     test('singleton instance is the same object across calls', () {
-      final instance1 = ConnectionStatusService.instance;
-      final instance2 = ConnectionStatusService.instance;
-      final instance3 = ConnectionStatusService.instance;
+      final instance1 = ConnectionStatusServiceProvider.instance;
+      final instance2 = ConnectionStatusServiceProvider.instance;
+      final instance3 = ConnectionStatusServiceProvider.instance;
 
       expect(identical(instance1, instance2), isTrue);
       expect(identical(instance2, instance3), isTrue);
@@ -22,7 +22,7 @@ void main() {
     });
 
     test('getStatusData returns ConnectionStatusData with correct mapping', () async {
-      final service = ConnectionStatusService.instance;
+      final service = ConnectionStatusServiceProvider.instance;
 
       // getStatusData: (ApiConnectionStatus) -> Future<ConnectionStatusData>
       // Verify the method is callable and returns the expected type structure.
@@ -40,13 +40,13 @@ void main() {
     });
 
     test('singleton identity preserved across multiple accesses', () {
-      final first = ConnectionStatusService.instance;
-      final second = ConnectionStatusService.instance;
+      final first = ConnectionStatusServiceProvider.instance;
+      final second = ConnectionStatusServiceProvider.instance;
 
       expect(identical(first, second), isTrue);
 
       for (int i = 0; i < 5; i++) {
-        expect(identical(ConnectionStatusService.instance, first), isTrue);
+        expect(identical(ConnectionStatusServiceProvider.instance, first), isTrue);
       }
     });
   });
