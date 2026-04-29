@@ -88,7 +88,9 @@ void main() {
     });
 
     test('initialize should complete without error', () async {
-      await expectLater(service.initialize(), completes);
+      await service.initialize();
+      expect(service.isEnabled, isTrue);
+      expect(service.volume, equals(0.7));
     });
 
     test('playZoneTooHigh should complete without error', () async {
