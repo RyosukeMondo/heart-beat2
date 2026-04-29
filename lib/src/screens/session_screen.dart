@@ -13,7 +13,6 @@ import '../widgets/zone_indicator.dart';
 import '../widgets/battery_indicator.dart';
 import '../widgets/plan_selector.dart';
 import '../widgets/connection_banner.dart';
-import 'session_screen_state.dart';
 
 /// Session screen for live HR monitoring during workouts
 class SessionScreen extends StatefulWidget {
@@ -33,8 +32,8 @@ class _SessionScreenState extends State<SessionScreen> {
   String? _deviceName;
   bool _isConnecting = true;
   String? _errorMessage;
-  final SessionScreenState _state = SessionScreenState();
   bool _hasInitialized = false;
+  bool _isServiceRunning = false;
   final Stopwatch _sessionTimer = Stopwatch();
   Timer? _sessionTimerTicker;
 
@@ -119,13 +118,13 @@ class _SessionScreenState extends State<SessionScreen> {
     final bgService = context.read<BackgroundServiceProvider>();
     final started = await bgService.startService();
     if (started && mounted) {
-      _state.setServiceRunning(true);
+      _isServiceRunning = true;
     }
   }
 
   Future<void> _disconnectDevice() async {
     // Capture provider reference before async gap
-    final bgService = _state.isServiceRunning
+    final bgService = _isServiceRunning
         ? Provider.of<BackgroundServiceProvider>(context, listen: false)
         : null;
 
@@ -181,7 +180,7 @@ class _SessionScreenState extends State<SessionScreen> {
   @override
   void dispose() {
     // Stop background service when leaving session
-    if (_state.isServiceRunning) {
+    if (_isServiceRunning) {
       final bgService = context.read<BackgroundServiceProvider>();
       bgService.stopService();
     }
@@ -328,7 +327,7 @@ class _SessionScreenState extends State<SessionScreen> {
         final zone = snapshot.data!.zone;
 
         // Update background service notification with current BPM and zone
-        if (_state.isServiceRunning) {
+        if (_isServiceRunning) {
           final bgService = context.read<BackgroundServiceProvider>();
           bgService.updateBpm(bpm, zone: zone.name);
         }
@@ -392,7 +391,6 @@ class _SessionScreenState extends State<SessionScreen> {
   Future<void> _processHrData(api.ApiFilteredHeartRate data) async {
     await _hrProcessor.process(data);
     _latencyService.recordSample(data);
-    _state.notifyStateChange();
   }
 
   Future<({int bpm, Zone zone})> _extractHrData(
