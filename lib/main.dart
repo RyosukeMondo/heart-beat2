@@ -96,7 +96,11 @@ Future<void> main() async {
     // Subscribe to coaching cue stream from Rust rule engine
     CoachingCueService.instance.startCueListener();
     // HealthAlertService listens to the same cue stream independently
-    HealthAlertService.instance.startListening(CoachingCueService.instance.cueStream);
+    HealthAlertService.instance.startListening(
+      CoachingCueService.instance.cueStream.map(
+        (cue) => RawCue(label: cue.label, message: cue.message),
+      ),
+    );
     if (kDebugMode) {
       debugPrint('[heart_beat] CoachingCueService stream subscribed');
     }
