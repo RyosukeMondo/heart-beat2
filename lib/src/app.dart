@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:heart_beat/src/services/diagnosis_log_service.dart';
+import 'package:heart_beat/src/services/profile_service.dart';
 import 'package:heart_beat/src/services/background_service_provider.dart';
 import 'package:heart_beat/src/screens/home_screen.dart';
 import 'package:heart_beat/src/screens/session_screen.dart';
@@ -32,6 +33,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<DiagnosisLogService>.value(
           value: DiagnosisLogService.instance,
+        ),
+        Provider<ProfileService>.value(
+          value: ProfileService.instance,
         ),
         ChangeNotifierProvider<BackgroundServiceProvider>.value(
           value: BackgroundServiceProvider.instance,
