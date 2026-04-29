@@ -20,29 +20,31 @@ import '../widgets/session_stats_card.dart';
 /// - Session timer + time-in-zone stats
 /// - Pause / Stop controls
 class CoachingScreen extends StatefulWidget {
-  const CoachingScreen({super.key});
+  const CoachingScreen({super.key, CoachingScreenState? state})
+      : _state = state;
+
+  final CoachingScreenState? _state;
 
   @override
-  State<CoachingScreen> createState() => _CoachingScreenState();
+  State<CoachingScreen> createState() => _CoachingScreenState(_state ?? _createDefaultState());
+
+  static CoachingScreenState _createDefaultState() => CoachingScreenState(
+        streams: CoachingScreenStreams(),
+        sessionState: CoachingSessionStateImpl(),
+        cueService: CoachingCueService.instance,
+      );
 }
 
 class _CoachingScreenState extends State<CoachingScreen> {
-  late final CoachingScreenState _state;
-
-  UserProfile get currentProfile =>
-      ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
-
-  @override
-  void initState() {
-    super.initState();
-    _state = CoachingScreenState(
-      streams: CoachingScreenStreams(),
-      sessionState: CoachingSessionStateImpl(),
-      cueService: CoachingCueService.instance,
-    );
+  _CoachingScreenState(this._state) {
     _state.setOnStateChange(_onStateChange);
     _state.initialize();
   }
+
+  final CoachingScreenState _state;
+
+  UserProfile get currentProfile =>
+      ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
 
   void _onStateChange() {
     if (mounted) setState(() {});
