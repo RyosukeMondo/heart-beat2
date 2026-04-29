@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:heart_beat/src/screens/coaching_session_state.dart';
+import 'package:heart_beat/src/services/coaching_session_state.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/domain/heart_rate.dart';
 
 void main() {
