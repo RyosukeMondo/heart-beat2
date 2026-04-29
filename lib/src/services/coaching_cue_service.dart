@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show ApiCue;
@@ -10,9 +9,19 @@ import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart'
 import 'coaching_cue.dart';
 import 'voice_coaching_handler.dart';
 
-/// Global navigator key for deep-links from notifications when no context
-/// is available (e.g., cold-start from notification tap).
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+/// Navigation intent emitted when the service needs the UI to navigate.
+/// The app's navigation layer subscribes to [CoachingCueService.navigationIntentStream]
+/// and handles the actual route pushing.
+sealed class NavigationIntent {
+  const NavigationIntent();
+}
+
+/// Intent to open the Health screen (e.g., from notification tap).
+const NavigationIntent navigateToHealth = _NavigateToHealth();
+
+class _NavigateToHealth extends NavigationIntent {
+  const _NavigateToHealth();
+}
 
 /// Service that consumes coaching cues from the Rust rule engine and
 /// delivers them via multiple surfaces: in-app toast, local notification,
@@ -133,29 +142,22 @@ class CoachingCueService {
     await _voiceHandler.initialize();
   }
 
+  /// Stream of navigation intents for the app layer to consume and act on.
+  final StreamController<NavigationIntent> _navigationIntentController =
+      StreamController<NavigationIntent>.broadcast();
+
+  /// Stream of navigation intents (e.g., open Health screen on notification tap).
+  Stream<NavigationIntent> get navigationIntentStream =>
+      _navigationIntentController.stream;
+
   void _onNotificationTapped(NotificationResponse response) {
     if (kDebugMode) {
       debugPrint('Coaching notification tapped: ${response.payload}');
     }
     // Handle deep-link: notification tap opens the Health screen.
     if (response.payload == 'sustained_low_hr') {
-      _openHealthScreen();
+      _navigationIntentController.add(navigateToHealth);
     }
-  }
-
-  void _openHealthScreen() {
-    // Navigation is handled via the global navigator; a simple push works
-    // whether the app is cold-started or already running.
-    // Use a post-frame callback so the navigator is ready.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (kDebugMode) {
-        debugPrint('Opening Health screen from notification tap');
-      }
-      // The route '/health' is registered in app.dart.
-      // We use Navigator state from the current context if available,
-      // otherwise fall back to the global navigator.
-      navigatorKey.currentState?.pushNamed('/health');
-    });
   }
 
 // ---------------------------------------------------------------------------
@@ -338,6 +340,7 @@ class CoachingCueService {
   Future<void> dispose() async {
     await _notifications.cancelAll();
     await _voiceHandler.dispose();
+    await _navigationIntentController.close();
     _isInitialized = false;
     if (kDebugMode) {
       debugPrint('CoachingCueService disposed');
