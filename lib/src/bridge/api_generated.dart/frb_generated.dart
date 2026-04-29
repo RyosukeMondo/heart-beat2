@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1554840755;
+  int get rustContentHash => 308943982;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -290,6 +290,10 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiResumeWorkout();
 
   Future<double?> crateApiRollingAvg({required BigInt windowSecs});
+
+  Future<List<(int, BigInt)>> crateApiSamplesBpmAndTs({
+    required List<ApiSample> samples,
+  });
 
   Future<List<ApiSample>> crateApiSamplesInRange({
     required BigInt startMs,
@@ -2509,6 +2513,35 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "rolling_avg", argNames: ["windowSecs"]);
 
   @override
+  Future<List<(int, BigInt)>> crateApiSamplesBpmAndTs({
+    required List<ApiSample> samples,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample(
+                samples,
+              );
+          return wire.wire__crate__api__samples_bpm_and_ts(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_record_u_16_u_64,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSamplesBpmAndTsConstMeta,
+        argValues: [samples],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSamplesBpmAndTsConstMeta => const TaskConstMeta(
+    debugName: "samples_bpm_and_ts",
+    argNames: ["samples"],
+  );
+
+  @override
   Future<List<ApiSample>> crateApiSamplesInRange({
     required BigInt startMs,
     required BigInt endMs,
@@ -4710,6 +4743,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_record_u_16_u_64).toList();
+  }
+
+  @protected
   LogMessage dco_decode_log_message(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -4813,6 +4852,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       throw Exception('Expected 2 elements, got ${arr.length}');
     }
     return (dco_decode_i_64(arr[0]), dco_decode_u_16(arr[1]));
+  }
+
+  @protected
+  (int, BigInt) dco_decode_record_u_16_u_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2) {
+      throw Exception('Expected 2 elements, got ${arr.length}');
+    }
+    return (dco_decode_u_16(arr[0]), dco_decode_u_64(arr[1]));
   }
 
   @protected
@@ -5839,6 +5888,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<(int, BigInt)> sse_decode_list_record_u_16_u_64(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <(int, BigInt)>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_record_u_16_u_64(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   LogMessage sse_decode_log_message(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_level = sse_decode_String(deserializer);
@@ -5997,6 +6060,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_field0 = sse_decode_i_64(deserializer);
     var var_field1 = sse_decode_u_16(deserializer);
+    return (var_field0, var_field1);
+  }
+
+  @protected
+  (int, BigInt) sse_decode_record_u_16_u_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_field0 = sse_decode_u_16(deserializer);
+    var var_field1 = sse_decode_u_64(deserializer);
     return (var_field0, var_field1);
   }
 
@@ -7406,6 +7477,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_record_u_16_u_64(
+    List<(int, BigInt)> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_record_u_16_u_64(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_log_message(LogMessage self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.level, serializer);
@@ -7555,6 +7638,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_64(self.$1, serializer);
     sse_encode_u_16(self.$2, serializer);
+  }
+
+  @protected
+  void sse_encode_record_u_16_u_64(
+    (int, BigInt) self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_16(self.$1, serializer);
+    sse_encode_u_64(self.$2, serializer);
   }
 
   @protected

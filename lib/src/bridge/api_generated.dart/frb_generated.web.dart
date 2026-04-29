@@ -427,6 +427,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw);
+
+  @protected
   LogMessage dco_decode_log_message(dynamic raw);
 
   @protected
@@ -472,6 +475,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   (PlatformInt64, int) dco_decode_record_i_64_u_16(dynamic raw);
+
+  @protected
+  (int, BigInt) dco_decode_record_u_16_u_64(dynamic raw);
 
   @protected
   int dco_decode_u_16(dynamic raw);
@@ -894,6 +900,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<(int, BigInt)> sse_decode_list_record_u_16_u_64(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   LogMessage sse_decode_log_message(SseDeserializer deserializer);
 
   @protected
@@ -945,6 +956,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) sse_decode_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  (int, BigInt) sse_decode_record_u_16_u_64(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_16(SseDeserializer deserializer);
@@ -1440,6 +1454,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  JSAny cst_encode_list_record_u_16_u_64(List<(int, BigInt)> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_record_u_16_u_64).toList().jsify()!;
+  }
+
+  @protected
   JSAny cst_encode_log_message(LogMessage raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return [
@@ -1536,6 +1556,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   JSAny cst_encode_record_i_64_u_16((PlatformInt64, int) raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return [cst_encode_i_64(raw.$1), cst_encode_u_16(raw.$2)].jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_record_u_16_u_64((int, BigInt) raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return [cst_encode_u_16(raw.$1), cst_encode_u_64(raw.$2)].jsify()!;
   }
 
   @protected
@@ -2247,6 +2273,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_record_u_16_u_64(
+    List<(int, BigInt)> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_log_message(LogMessage self, SseSerializer serializer);
 
   @protected
@@ -2302,6 +2334,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_record_i_64_u_16(
     (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_record_u_16_u_64(
+    (int, BigInt) self,
     SseSerializer serializer,
   );
 
@@ -2671,6 +2709,11 @@ class RustLibWire implements BaseWire {
 
   void wire__crate__api__rolling_avg(NativePortType port_, JSAny window_secs) =>
       wasmModule.wire__crate__api__rolling_avg(port_, window_secs);
+
+  void wire__crate__api__samples_bpm_and_ts(
+    NativePortType port_,
+    JSAny samples,
+  ) => wasmModule.wire__crate__api__samples_bpm_and_ts(port_, samples);
 
   void wire__crate__api__samples_in_range(
     NativePortType port_,
@@ -3401,6 +3444,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void wire__crate__api__rolling_avg(
     NativePortType port_,
     JSAny window_secs,
+  );
+
+  external void wire__crate__api__samples_bpm_and_ts(
+    NativePortType port_,
+    JSAny samples,
   );
 
   external void wire__crate__api__samples_in_range(

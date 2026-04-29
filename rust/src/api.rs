@@ -1865,6 +1865,13 @@ pub fn api_sample_ts_ms(sample: &ApiSample) -> u64 {
     sample.ts_ms
 }
 
+/// Returns BPM and timestamp for multiple samples in a single call.
+///
+/// Useful for resolving sparkline data without making individual FFI calls per sample.
+pub fn samples_bpm_and_ts(samples: &[ApiSample]) -> Vec<(u16, u64)> {
+    samples.iter().map(|s| (s.bpm, s.ts_ms)).collect()
+}
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).

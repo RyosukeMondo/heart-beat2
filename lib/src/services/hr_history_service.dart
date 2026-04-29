@@ -49,4 +49,15 @@ class HrHistoryService {
   Future<BigInt> apiSampleTsMs({required generated.ApiSample sample}) {
     return generated.apiSampleTsMs(sample: sample);
   }
+
+  /// Resolves BPM and timestamp for multiple samples in a single call.
+  ///
+  /// Returns a list of (bpm, tsMs) tuples, one per sample, in the same order
+  /// as the input list.
+  Future<List<(int, int)>> samplesBpmAndTs({
+    required List<generated.ApiSample> samples,
+  }) async {
+    final result = await generated.samplesBpmAndTs(samples: samples);
+    return result.map((r) => (r.$1.toInt(), r.$2.toInt())).toList();
+  }
 }

@@ -111,17 +111,13 @@ class _HealthScreenState extends State<HealthScreen> {
     );
     if (!mounted) return;
 
-    // Resolve BPM and timestamp for each sample in a single parallel batch.
-    final resolved = await Future.wait(
-      samples.map((s) async => _SamplePoint(
-        bpm: await HrHistoryService.instance.apiSampleBpm(sample: s),
-        tsMs: (await HrHistoryService.instance.apiSampleTsMs(sample: s)).toInt(),
-      )),
-    );
+    // Resolve BPM and timestamp for all samples in a single batch call.
+    final resolved = await HrHistoryService.instance.samplesBpmAndTs(samples: samples);
+    final points = resolved.map((r) => _SamplePoint(bpm: r.$1, tsMs: r.$2)).toList();
 
     if (!mounted) return;
     setState(() {
-      _sparklineSpots = _downsample(resolved, 288);
+      _sparklineSpots = _downsample(points, 288);
       _sparklineLoading = false;
     });
   }

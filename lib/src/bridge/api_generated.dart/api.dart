@@ -598,6 +598,13 @@ Future<int> apiSampleBpm({required ApiSample sample}) =>
 Future<BigInt> apiSampleTsMs({required ApiSample sample}) =>
     RustLib.instance.api.crateApiApiSampleTsMs(sample: sample);
 
+/// Returns BPM and timestamp for multiple samples in a single call.
+///
+/// Useful for resolving sparkline data without making individual FFI calls per sample.
+Future<List<(int, BigInt)>> samplesBpmAndTs({
+  required List<ApiSample> samples,
+}) => RustLib.instance.api.crateApiSamplesBpmAndTs(samples: samples);
+
 /// List all completed training sessions.
 ///
 /// Returns a list of session summaries sorted by start time (most recent first).

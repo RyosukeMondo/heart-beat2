@@ -425,6 +425,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw);
+
+  @protected
   LogMessage dco_decode_log_message(dynamic raw);
 
   @protected
@@ -470,6 +473,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   (PlatformInt64, int) dco_decode_record_i_64_u_16(dynamic raw);
+
+  @protected
+  (int, BigInt) dco_decode_record_u_16_u_64(dynamic raw);
 
   @protected
   int dco_decode_u_16(dynamic raw);
@@ -892,6 +898,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<(int, BigInt)> sse_decode_list_record_u_16_u_64(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   LogMessage sse_decode_log_message(SseDeserializer deserializer);
 
   @protected
@@ -943,6 +954,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   (PlatformInt64, int) sse_decode_record_i_64_u_16(
     SseDeserializer deserializer,
   );
+
+  @protected
+  (int, BigInt) sse_decode_record_u_16_u_64(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_16(SseDeserializer deserializer);
@@ -1343,6 +1357,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_list_record_u_16_u_64> cst_encode_list_record_u_16_u_64(
+    List<(int, BigInt)> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_record_u_16_u_64(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_record_u_16_u_64(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_opt_String(
     String? raw,
   ) {
@@ -1708,6 +1734,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ) {
     wireObj.field0 = cst_encode_i_64(apiObj.$1);
     wireObj.field1 = cst_encode_u_16(apiObj.$2);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_record_u_16_u_64(
+    (int, BigInt) apiObj,
+    wire_cst_record_u_16_u_64 wireObj,
+  ) {
+    wireObj.field0 = cst_encode_u_16(apiObj.$1);
+    wireObj.field1 = cst_encode_u_64(apiObj.$2);
   }
 
   @protected
@@ -2407,6 +2442,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_record_u_16_u_64(
+    List<(int, BigInt)> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_log_message(LogMessage self, SseSerializer serializer);
 
   @protected
@@ -2462,6 +2503,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_record_i_64_u_16(
     (PlatformInt64, int) self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_record_u_16_u_64(
+    (int, BigInt) self,
     SseSerializer serializer,
   );
 
@@ -3683,6 +3730,38 @@ class RustLibWire implements BaseWire {
       );
   late final _wire__crate__api__rolling_avg = _wire__crate__api__rolling_avgPtr
       .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__samples_bpm_and_ts(
+    int port_,
+    ffi.Pointer<
+      wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+    >
+    samples,
+  ) {
+    return _wire__crate__api__samples_bpm_and_ts(port_, samples);
+  }
+
+  late final _wire__crate__api__samples_bpm_and_tsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<
+              wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+            >,
+          )
+        >
+      >('frbgen_heart_beat_wire__crate__api__samples_bpm_and_ts');
+  late final _wire__crate__api__samples_bpm_and_ts =
+      _wire__crate__api__samples_bpm_and_tsPtr
+          .asFunction<
+            void Function(
+              int,
+              ffi.Pointer<
+                wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
+              >,
+            )
+          >();
 
   void wire__crate__api__samples_in_range(int port_, int start_ms, int end_ms) {
     return _wire__crate__api__samples_in_range(port_, start_ms, end_ms);
@@ -5040,6 +5119,21 @@ class RustLibWire implements BaseWire {
   late final _cst_new_list_prim_u_8_strict = _cst_new_list_prim_u_8_strictPtr
       .asFunction<ffi.Pointer<wire_cst_list_prim_u_8_strict> Function(int)>();
 
+  ffi.Pointer<wire_cst_list_record_u_16_u_64> cst_new_list_record_u_16_u_64(
+    int len,
+  ) {
+    return _cst_new_list_record_u_16_u_64(len);
+  }
+
+  late final _cst_new_list_record_u_16_u_64Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_record_u_16_u_64> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_record_u_16_u_64');
+  late final _cst_new_list_record_u_16_u_64 = _cst_new_list_record_u_16_u_64Ptr
+      .asFunction<ffi.Pointer<wire_cst_list_record_u_16_u_64> Function(int)>();
+
   int dummy_method_to_enforce_bundling() {
     return _dummy_method_to_enforce_bundling();
   }
@@ -5195,20 +5289,20 @@ final class wire_cst_api_cue extends ffi.Struct {
   external int generated_at_millis;
 }
 
-final class wire_cst_record_i_64_u_16 extends ffi.Struct {
-  @ffi.Int64()
-  external int field0;
-
-  @ffi.Uint16()
-  external int field1;
-}
-
 final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSample
     extends ffi.Struct {
   external ffi.Pointer<ffi.UintPtr> ptr;
 
   @ffi.Int32()
   external int len;
+}
+
+final class wire_cst_record_i_64_u_16 extends ffi.Struct {
+  @ffi.Int64()
+  external int field0;
+
+  @ffi.Uint16()
+  external int field1;
 }
 
 final class wire_cst_list_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiSessionSummaryPreview
@@ -5276,6 +5370,21 @@ final class wire_cst_discovered_device extends ffi.Struct {
 
 final class wire_cst_list_discovered_device extends ffi.Struct {
   external ffi.Pointer<wire_cst_discovered_device> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_record_u_16_u_64 extends ffi.Struct {
+  @ffi.Uint16()
+  external int field0;
+
+  @ffi.Uint64()
+  external int field1;
+}
+
+final class wire_cst_list_record_u_16_u_64 extends ffi.Struct {
+  external ffi.Pointer<wire_cst_record_u_16_u_64> ptr;
 
   @ffi.Int32()
   external int len;
