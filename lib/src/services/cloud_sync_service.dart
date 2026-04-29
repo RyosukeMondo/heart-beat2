@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../bridge/api_generated.dart/api.dart';
+import 'session_service.dart';
 
 /// Status of the local backup system.
 ///
@@ -130,14 +130,14 @@ class CloudSyncService {
     _ensureInitialized();
 
     try {
-      final sessions = await listSessions();
+      final sessions = await SessionService.instance.listSessions();
       final exportedSessions = <Map<String, dynamic>>[];
 
       for (final preview in sessions) {
-        final id = await sessionPreviewId(preview: preview);
+        final id = await SessionService.instance.sessionPreviewId(preview: preview);
 
         try {
-          final jsonString = await exportSession(
+          final jsonString = await SessionService.instance.exportSession(
             id: id,
             format: ExportFormat.json,
           );
@@ -247,7 +247,7 @@ class CloudSyncService {
     _ensureInitialized();
 
     try {
-      final sessions = await listSessions();
+      final sessions = await SessionService.instance.listSessions();
 
       var backupSizeBytes = 0;
       final latestBackup = File('${_backupDir!.path}/$_latestBackupName');
@@ -298,13 +298,13 @@ class CloudSyncService {
   /// Returns the exported session data as a JSON string that can be shared.
   /// Throws if no sessions exist.
   Future<String> exportLastSession() async {
-    final sessions = await listSessions();
+    final sessions = await SessionService.instance.listSessions();
     if (sessions.isEmpty) {
       throw Exception('No sessions to export');
     }
     final lastSession = sessions.first;
-    final id = await sessionPreviewId(preview: lastSession);
-    return exportSession(id: id, format: ExportFormat.json);
+    final id = await SessionService.instance.sessionPreviewId(preview: lastSession);
+    return SessionService.instance.exportSession(id: id, format: ExportFormat.json);
   }
 
   // ---------------------------------------------------------------------------
