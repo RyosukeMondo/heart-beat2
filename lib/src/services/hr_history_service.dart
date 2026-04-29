@@ -39,4 +39,14 @@ class HrHistoryService {
   Future<generated.ApiSample?> latestSample() {
     return generated.latestSample();
   }
+
+  /// Returns the BPM of an HR sample.
+  Future<int> apiSampleBpm({required generated.ApiSample sample}) {
+    return generated.apiSampleBpm(sample: sample);
+  }
+
+  /// Returns the Unix timestamp in milliseconds of an HR sample.
+  Future<BigInt> apiSampleTsMs({required generated.ApiSample sample}) {
+    return generated.apiSampleTsMs(sample: sample);
+  }
 }

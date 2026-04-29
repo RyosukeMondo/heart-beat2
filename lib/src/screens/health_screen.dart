@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../bridge/api_generated.dart/api.dart' as generated;
 import '../services/hr_history_service.dart';
 import '../services/health_alert_service.dart';
 
 /// A single HR sample with resolved BPM and timestamp for synchronous access.
 class _SamplePoint {
-  final generated.ApiSample sample;
   final int bpm;
   final int tsMs;
 
-  _SamplePoint({required this.sample, required this.bpm, required this.tsMs});
+  _SamplePoint({required this.bpm, required this.tsMs});
 }
 
 /// Health screen showing rolling HR averages over 1h / 24h / 7d.
@@ -78,7 +76,7 @@ class _HealthScreenState extends State<HealthScreen> {
       if (!mounted) return;
       int? bpm;
       if (sample != null) {
-        bpm = await generated.apiSampleBpm(sample: sample);
+        bpm = await HrHistoryService.instance.apiSampleBpm(sample: sample);
       }
       if (!mounted) return;
       setState(() {
@@ -113,24 +111,17 @@ class _HealthScreenState extends State<HealthScreen> {
     );
     if (!mounted) return;
 
-    // Resolve BPM and timestamp for each sample in two parallel batches
-    // instead of O(n) sequential await pairs.
-    final bpms = await Future.wait(
-      samples.map((s) => generated.apiSampleBpm(sample: s)),
+    // Resolve BPM and timestamp for each sample in a single parallel batch.
+    final resolved = await Future.wait(
+      samples.map((s) async => _SamplePoint(
+        bpm: await HrHistoryService.instance.apiSampleBpm(sample: s),
+        tsMs: (await HrHistoryService.instance.apiSampleTsMs(sample: s)).toInt(),
+      )),
     );
-    final tsMsList = await Future.wait(
-      samples.map((s) => generated.apiSampleTsMs(sample: s)),
-    );
-
-    final points = List.generate(samples.length, (i) => _SamplePoint(
-      sample: samples[i],
-      bpm: bpms[i],
-      tsMs: tsMsList[i].toInt(),
-    ));
 
     if (!mounted) return;
     setState(() {
-      _sparklineSpots = _downsample(points, 288);
+      _sparklineSpots = _downsample(resolved, 288);
       _sparklineLoading = false;
     });
   }
