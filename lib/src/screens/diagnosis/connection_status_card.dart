@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../bridge/api_generated.dart/api.dart';
+import '../../services/connection_status_service.dart';
 
 class DiagnosisConnectionStatusCard extends StatelessWidget {
   const DiagnosisConnectionStatusCard({super.key});
@@ -134,13 +135,9 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
 
   Future<_CardData?> _getCardData(ApiConnectionStatus? status) async {
     if (status == null) return null;
-    final isConn = await connectionStatusIsConnected(status: status);
-    final isConning = await connectionStatusIsConnecting(status: status);
-    final isRecon = await connectionStatusIsReconnecting(status: status);
-    final isFailed = await connectionStatusIsReconnectFailed(status: status);
+    final data = await ConnectionStatusService.instance.getStatusData(status);
 
-    if (isConn) {
-      final deviceId = await connectionStatusDeviceId(status: status) ?? '';
+    if (data.isConnected) {
       return _CardData(
         label: 'Device Connected',
         icon: Icons.bluetooth_connected,
@@ -148,14 +145,14 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         isConnected: true,
         isConnecting: false,
         isReconnecting: false,
-        deviceId: deviceId,
+        deviceId: data.deviceId ?? '',
         error: '',
         attempt: 0,
         maxAttempts: 1,
       );
     }
 
-    if (isConning) {
+    if (data.isConnecting) {
       return _CardData(
         label: 'Connecting...',
         icon: Icons.bluetooth_searching,
@@ -170,9 +167,7 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
       );
     }
 
-    if (isRecon) {
-      final attempt = await connectionStatusAttempt(status: status) ?? 0;
-      final maxAttempts = await connectionStatusMaxAttempts(status: status) ?? 1;
+    if (data.isReconnecting) {
       return _CardData(
         label: 'Reconnecting...',
         icon: Icons.sync,
@@ -182,13 +177,12 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         isReconnecting: true,
         deviceId: '',
         error: '',
-        attempt: attempt,
-        maxAttempts: maxAttempts,
+        attempt: data.attempt ?? 0,
+        maxAttempts: data.maxAttempts ?? 1,
       );
     }
 
-    if (isFailed) {
-      final reason = await connectionStatusFailureReason(status: status) ?? 'Unknown error';
+    if (data.isReconnectFailed) {
       return _CardData(
         label: 'Connection Failed',
         icon: Icons.error_outline,
@@ -197,7 +191,7 @@ class DiagnosisConnectionStatusCard extends StatelessWidget {
         isConnecting: false,
         isReconnecting: false,
         deviceId: '',
-        error: reason,
+        error: data.failureReason ?? 'Unknown error',
         attempt: 0,
         maxAttempts: 1,
       );
