@@ -6,6 +6,7 @@ import '../services/hr_processor.dart';
 import 'coaching_session_state.dart';
 import 'coaching_screen_streams.dart';
 import '../services/coaching_cue_service.dart';
+import '../services/coaching_cue.dart';
 import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
@@ -18,9 +19,11 @@ class CoachingScreenState {
     CoachingScreenStreams? streams,
     CoachingSessionState? sessionState,
     HrProcessor? hrProcessor,
+    CoachingCueService? cueService,
   })  : _sessionState = sessionState ?? CoachingSessionState(),
         _streams = streams ?? CoachingScreenStreams(),
-        _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance) {
+        _hrProcessor = hrProcessor ?? HrProcessor(ProfileService.instance),
+        _cueService = cueService ?? CoachingCueService.instance {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
     _streams.onHrData = _handleHrData;
     _streams.onStatusChange = _handleStatusChange;
@@ -29,16 +32,17 @@ class CoachingScreenState {
   final CoachingScreenStreams _streams;
   final CoachingSessionState _sessionState;
   final HrProcessor _hrProcessor;
+  final CoachingCueService _cueService;
 
   bool _isConnected = false;
-  api.ApiCue? _currentCue;
+  Cue? _currentCue;
   VoidCallback? _onStateChange;
-  StreamSubscription<api.ApiCue>? _cueSubscription;
+  StreamSubscription<Cue>? _cueSubscription;
 
   int get currentBpm => _hrProcessor.currentBpm;
   Zone get currentZone => _hrProcessor.currentZone;
   bool get isConnected => _isConnected;
-  api.ApiCue? get currentCue => _currentCue;
+  Cue? get currentCue => _currentCue;
   Duration get elapsed => _sessionState.elapsed;
   bool get isPaused => _sessionState.isPaused;
 
@@ -50,7 +54,7 @@ class CoachingScreenState {
     ProfileService.instance.loadProfile();
     _sessionState.start();
     _streams.subscribe();
-    _cueSubscription = CoachingCueService.instance.cueStream.listen(_handleCue);
+    _cueSubscription = _cueService.cueStream.listen(_handleCue);
   }
 
   Future<void> _handleHrData(api.ApiFilteredHeartRate data) async {
@@ -65,7 +69,7 @@ class CoachingScreenState {
     _onStateChange?.call();
   }
 
-  void _handleCue(api.ApiCue cue) {
+  void _handleCue(Cue cue) {
     _currentCue = cue;
     _onStateChange?.call();
   }
