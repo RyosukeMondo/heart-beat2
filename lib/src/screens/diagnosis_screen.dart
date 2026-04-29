@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'diagnosis/diagnosis_body.dart';
+import '../services/connection_status_service.dart';
 import '../services/diagnosis_service.dart';
 
 /// Diagnosis screen — a debug/dev surface showing live device state,
@@ -14,6 +15,7 @@ class DiagnosisScreen extends StatefulWidget {
 
 class _DiagnosisScreenState extends State<DiagnosisScreen> {
   final _svc = DiagnosisService.instance;
+  final _connectionStatusProvider = ConnectionStatusServiceProvider.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
         onExport: () => _handleExport(context),
         onClearCache: () => _handleClearCache(context),
         onDumpLogs: () => _handleDumpLogs(context),
+        connectionStatusProvider: _connectionStatusProvider,
       ),
     );
   }

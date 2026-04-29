@@ -3,7 +3,12 @@ import '../../bridge/api_generated.dart/api.dart';
 import '../../services/connection_status_service.dart';
 
 class DiagnosisConnectionStatusCard extends StatefulWidget {
-  const DiagnosisConnectionStatusCard({super.key});
+  const DiagnosisConnectionStatusCard({
+    super.key,
+    required this.connectionStatusProvider,
+  });
+
+  final ConnectionStatusServiceProvider connectionStatusProvider;
 
   @override
   State<DiagnosisConnectionStatusCard> createState() =>
@@ -17,8 +22,7 @@ class _DiagnosisConnectionStatusCardState
   @override
   void initState() {
     super.initState();
-    _connectionStatusProvider =
-        ConnectionStatusServiceProvider.instance;
+    _connectionStatusProvider = widget.connectionStatusProvider;
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/connection_status_service.dart';
 import 'connection_status_card.dart';
 import 'diagnosis_filter_bar_wrapper.dart';
 import 'diagnosis_log_list.dart';
@@ -12,6 +13,7 @@ class DiagnosisBody extends StatefulWidget {
   final Future<void> Function() onExport;
   final Future<void> Function() onClearCache;
   final Future<void> Function() onDumpLogs;
+  final ConnectionStatusServiceProvider connectionStatusProvider;
 
   const DiagnosisBody({
     super.key,
@@ -22,6 +24,7 @@ class DiagnosisBody extends StatefulWidget {
     required this.onExport,
     required this.onClearCache,
     required this.onDumpLogs,
+    required this.connectionStatusProvider,
   });
 
   @override
@@ -39,7 +42,9 @@ class _DiagnosisBodyState extends State<DiagnosisBody> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const DiagnosisConnectionStatusCard(),
+        DiagnosisConnectionStatusCard(
+          connectionStatusProvider: widget.connectionStatusProvider,
+        ),
         const Divider(height: 1),
         DiagnosisFilterBarWrapper(
           autoScroll: _autoScroll,
