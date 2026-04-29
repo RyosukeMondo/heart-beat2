@@ -189,23 +189,35 @@ class CoachingCueService {
   // Stream consumption
   // ---------------------------------------------------------------------------
 
-  StreamSubscription<ApiCue>? _cueSubscription;
+  /// Lazily created broadcast controller that holds a single shared Rust
+  /// subscription and fans it out to all consumers.
+  StreamController<ApiCue>? _cueStreamController;
 
   /// Stream of all coaching cues from the Rust rule engine.
   /// Shared by [CoachingScreen] and [CoachingCueService] to avoid duplicate
   /// stream consumption.
-  Stream<ApiCue> get cueStream => createCueStream();
+  Stream<ApiCue> get cueStream {
+    _cueStreamController ??= _createCueStreamController();
+    return _cueStreamController!.stream;
+  }
+
+  StreamController<ApiCue> _createCueStreamController() {
+    final controller = StreamController<ApiCue>.broadcast();
+    controller.addStream(RustLib.instance.api.crateApiCreateCoachingCueStream());
+    return controller;
+  }
 
   /// Start listening to coaching cues from the Rust rule engine.
   Stream<ApiCue> createCueStream() {
-    return RustLib.instance.api.crateApiCreateCoachingCueStream();
+    _cueStreamController ??= _createCueStreamController();
+    return _cueStreamController!.stream;
   }
 
   /// Start listening to the cue stream and dispatch each cue to the appropriate
   /// surface (toast, notification, TTS). Call this once at app startup.
   void startCueListener() {
-    _cueSubscription?.cancel();
-    _cueSubscription = createCueStream().listen((cue) => onCue(cue));
+    // Stream is already active once cueStream has been accessed; nothing extra
+    // needed here. The broadcast controller fans out to all listeners.
     if (kDebugMode) {
       debugPrint('CoachingCueService: cue listener started');
     }
