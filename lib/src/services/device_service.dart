@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:permission_handler/permission_handler.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+export '../bridge/api_generated.dart/domain/heart_rate.dart' show DiscoveredDevice;
 
 /// Result of a Bluetooth permission check.
 class BluetoothPermissionResult {
