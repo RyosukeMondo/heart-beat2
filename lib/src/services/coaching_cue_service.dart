@@ -6,9 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show ApiCue;
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart'
     show RustLib;
-import 'package:heart_beat/src/screens/coaching_navigation.dart';
 import 'coaching_cue.dart';
 import 'voice_coaching_handler.dart';
+
+/// Domain event emitted when a coaching notification is tapped.
+/// The app layer subscribes to [CoachingCueService.notificationTappedStream]
+/// and translates this to the appropriate navigation action.
+sealed class CoachingNotificationEvent {
+  const CoachingNotificationEvent();
+}
+
+/// Event emitted when the user taps the sustained low HR notification.
+const CoachingNotificationEvent notificationTappedSustainedLowHr =
+    _NotificationTappedSustainedLowHr();
+
+class _NotificationTappedSustainedLowHr extends CoachingNotificationEvent {
+  const _NotificationTappedSustainedLowHr();
+}
 
 /// Service that consumes coaching cues from the Rust rule engine and
 /// delivers them via multiple surfaces: in-app toast, local notification,
@@ -129,13 +143,13 @@ class CoachingCueService {
     await _voiceHandler.initialize();
   }
 
-  /// Stream of navigation intents for the app layer to consume and act on.
-  final StreamController<NavigationIntent> _navigationIntentController =
-      StreamController<NavigationIntent>.broadcast();
+  /// Stream of notification tap events for the app layer to consume and act on.
+  final StreamController<CoachingNotificationEvent> _notificationEventController =
+      StreamController<CoachingNotificationEvent>.broadcast();
 
-  /// Stream of navigation intents (e.g., open Health screen on notification tap).
-  Stream<NavigationIntent> get navigationIntentStream =>
-      _navigationIntentController.stream;
+  /// Stream of notification tap events (e.g., open Health screen on notification tap).
+  Stream<CoachingNotificationEvent> get notificationTappedStream =>
+      _notificationEventController.stream;
 
   void _onNotificationTapped(NotificationResponse response) {
     if (kDebugMode) {
@@ -143,7 +157,7 @@ class CoachingCueService {
     }
     // Handle deep-link: notification tap opens the Health screen.
     if (response.payload == 'sustained_low_hr') {
-      _navigationIntentController.add(navigateToHealth);
+      _notificationEventController.add(notificationTappedSustainedLowHr);
     }
   }
 
@@ -327,7 +341,7 @@ class CoachingCueService {
   Future<void> dispose() async {
     await _notifications.cancelAll();
     await _voiceHandler.dispose();
-    await _navigationIntentController.close();
+    await _notificationEventController.close();
     _isInitialized = false;
     if (kDebugMode) {
       debugPrint('CoachingCueService disposed');
