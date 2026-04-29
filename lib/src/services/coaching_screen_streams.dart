@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../models/zone.dart';
 import 'connection_status_stream_provider.dart';
 import 'hr_stream_provider.dart';
 import 'hr_processor.dart';

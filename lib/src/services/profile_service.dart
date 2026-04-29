@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../models/zone.dart';
 
 /// Centralized user profile management service.
 ///

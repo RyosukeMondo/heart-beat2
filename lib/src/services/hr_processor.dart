@@ -1,6 +1,6 @@
 import 'dart:async';
 import '../bridge/api_generated.dart/api.dart' as api;
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
+import '../models/zone.dart';
 import 'profile_service.dart';
 
 /// Processes HR data: extracts BPM and maps to zone.
