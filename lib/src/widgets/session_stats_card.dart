@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../utils/duration_helpers.dart';
-import '../utils/zone_helpers.dart';
 
 /// Widget displaying session statistics including elapsed time and current zone.
 class SessionStatsCard extends StatelessWidget {
@@ -9,10 +8,12 @@ class SessionStatsCard extends StatelessWidget {
     super.key,
     required this.elapsed,
     required this.currentZone,
+    required this.zoneIcon,
   });
 
   final Duration elapsed;
   final Zone currentZone;
+  final IconData zoneIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class SessionStatsCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _statItem(theme, 'Session', DurationHelpers.formatDuration(elapsed), Icons.timer),
-          _statItem(theme, 'Zone', currentZone.name.replaceAll('zone', 'Z'), ZoneHelpers.zoneIcon(currentZone)),
+          _statItem(theme, 'Zone', currentZone.name.replaceAll('zone', 'Z'), zoneIcon),
         ],
       ),
     );

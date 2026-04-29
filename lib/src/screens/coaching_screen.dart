@@ -135,7 +135,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
                 profile: currentProfile,
               ),
               const SizedBox(height: 24),
-              SessionStatsCard(elapsed: _state.elapsed, currentZone: _state.currentZone),
+              SessionStatsCard(elapsed: _state.elapsed, currentZone: _state.currentZone, zoneIcon: ZoneHelpers.zoneIcon(_state.currentZone)),
             ],
           ),
         ),
