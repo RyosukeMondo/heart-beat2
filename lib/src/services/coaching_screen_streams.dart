@@ -13,10 +13,13 @@ class CoachingScreenStreams {
   StreamSubscription<api.ApiFilteredHeartRate>? _hrSubscription;
   StreamSubscription<api.ApiConnectionStatus>? _statusSubscription;
 
+  bool _isConnected = false;
+  bool get isConnected => _isConnected;
+
   /// Callback for HR data updates.
   void Function(api.ApiFilteredHeartRate data)? onHrData;
 
-  /// Callback for connection status changes.
+  /// Callback for connection status changes (deprecated — use isConnected instead).
   void Function(api.ApiConnectionStatus status)? onStatusChange;
 
   /// Callback for stream errors.
@@ -45,8 +48,8 @@ class CoachingScreenStreams {
     onHrData?.call(data);
   }
 
-  void _handleStatusChange(api.ApiConnectionStatus status) {
-    onStatusChange?.call(status);
+  Future<void> _handleStatusChange(api.ApiConnectionStatus status) async {
+    _isConnected = await api.connectionStatusIsConnected(status: status);
   }
 
   void dispose() {

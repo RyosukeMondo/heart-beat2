@@ -26,7 +26,6 @@ class CoachingScreenState {
         _cueService = cueService ?? CoachingCueService.instance {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
     _streams.onHrData = _handleHrData;
-    _streams.onStatusChange = _handleStatusChange;
   }
 
   final CoachingScreenStreams _streams;
@@ -34,14 +33,13 @@ class CoachingScreenState {
   final HrProcessor _hrProcessor;
   final CoachingCueService _cueService;
 
-  bool _isConnected = false;
   Cue? _currentCue;
   VoidCallback? _onStateChange;
   StreamSubscription<Cue>? _cueSubscription;
 
   int get currentBpm => _hrProcessor.currentBpm;
   Zone get currentZone => _hrProcessor.currentZone;
-  bool get isConnected => _isConnected;
+  bool get isConnected => _streams.isConnected;
   Cue? get currentCue => _currentCue;
   Duration get elapsed => _sessionState.elapsed;
   bool get isPaused => _sessionState.isPaused;
@@ -61,12 +59,6 @@ class CoachingScreenState {
     await _hrProcessor.process(data);
     _onStateChange?.call();
     _sessionState.onZoneTick(_hrProcessor.currentZone);
-  }
-
-  Future<void> _handleStatusChange(api.ApiConnectionStatus status) async {
-    final isConn = await api.connectionStatusIsConnected(status: status);
-    _isConnected = isConn;
-    _onStateChange?.call();
   }
 
   void _handleCue(Cue cue) {
