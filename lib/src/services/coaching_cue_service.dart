@@ -6,22 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show ApiCue;
 import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart'
     show RustLib;
+import 'package:heart_beat/src/screens/coaching_navigation.dart';
 import 'coaching_cue.dart';
 import 'voice_coaching_handler.dart';
-
-/// Navigation intent emitted when the service needs the UI to navigate.
-/// The app's navigation layer subscribes to [CoachingCueService.navigationIntentStream]
-/// and handles the actual route pushing.
-sealed class NavigationIntent {
-  const NavigationIntent();
-}
-
-/// Intent to open the Health screen (e.g., from notification tap).
-const NavigationIntent navigateToHealth = _NavigateToHealth();
-
-class _NavigateToHealth extends NavigationIntent {
-  const _NavigateToHealth();
-}
 
 /// Service that consumes coaching cues from the Rust rule engine and
 /// delivers them via multiple surfaces: in-app toast, local notification,
