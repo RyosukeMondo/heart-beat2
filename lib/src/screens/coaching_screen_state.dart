@@ -6,7 +6,6 @@ import '../services/coaching_cue.dart';
 import '../services/coaching_screen_streams.dart';
 import 'coaching_session_state.dart';
 import '../services/coaching_cue_service.dart';
-import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
 ///
@@ -44,7 +43,6 @@ class CoachingScreenState {
   }
 
   void initialize() {
-    ProfileService.instance.loadProfile();
     _sessionState.start();
     _streams.onHrData = _handleHrData;
     _streams.subscribe();
