@@ -99,6 +99,14 @@ class HealthAlertService {
   final FlutterLocalNotificationsPlugin _notificationPlugin =
       FlutterLocalNotificationsPlugin();
 
+  /// Clean up resources. Call when the service is no longer needed.
+  void dispose() {
+    _cueSubscription?.cancel();
+    _cueSubscription = null;
+    _healthAlertController.close();
+    _healthAlertStateController.close();
+  }
+
   int _parseAvgBpm(String message) {
     final match = RegExp(r'average (\d+) bpm').firstMatch(message);
     return int.tryParse(match?.group(1) ?? '0') ?? 0;
