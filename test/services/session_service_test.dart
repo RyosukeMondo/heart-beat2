@@ -12,10 +12,15 @@ void main() {
       expect(identical(instance1, instance2), isTrue);
     });
 
-    test('listSessions method exists and is callable', () {
+    test('listSessions actually invokes Rust FFI', () async {
       final service = SessionService.instance;
-      // Verify the method exists and is a closure that can be invoked
-      expect(service.listSessions, isA<Function>());
+
+      // listSessions calls into Rust FFI via generated.listSessions()
+      // In unit tests without Rust runtime, this should throw
+      expect(
+        () => service.listSessions(),
+        throwsA(anything),
+      );
     });
 
     test('exportSession method exists and accepts id and format', () {
