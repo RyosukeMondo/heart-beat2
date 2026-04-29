@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../services/connection_status_service.dart';
 import 'connection_status_card.dart';
 import 'diagnosis_filter_bar_wrapper.dart';
 import 'diagnosis_log_list.dart';

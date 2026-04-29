@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/connection_status_service.dart';
 
+export '../../services/connection_status_service.dart';
+
 class DiagnosisConnectionStatusCard extends StatefulWidget {
   const DiagnosisConnectionStatusCard({
     super.key,
