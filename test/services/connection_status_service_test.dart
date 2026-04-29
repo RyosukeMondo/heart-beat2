@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'package:heart_beat/src/services/connection_status_service.dart';
 
 void main() {
@@ -32,12 +31,12 @@ void main() {
       // (connectionStatusIsConnected, etc.) call into Rust and do not use Dart
       // mock properties. Behavioral mapping tests require integration test
       // infrastructure where Rust FFI is available.
-      Future<ConnectionStatusData> Function(ApiConnectionStatus) getStatusData;
+      Future<ConnectionStatusData> Function() getStatusData;
       getStatusData = service.getStatusData;
       expect(getStatusData, isNotNull);
 
       // Verify the method has the correct signature by checking its type
-      expect(service.getStatusData, isA<Future<ConnectionStatusData> Function(ApiConnectionStatus)>());
+      expect(service.getStatusData, isA<Future<ConnectionStatusData> Function()>());
     });
 
     test('singleton identity preserved across multiple accesses', () {

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
+import 'package:heart_beat/src/services/connection_status_stream_provider.dart';
 
 /// Data extracted from an [ApiConnectionStatus].
 class ConnectionStatusData {
@@ -32,17 +33,39 @@ class ConnectionStatusData {
 /// widget tree using Provider pattern, satisfying the clean architecture
 /// boundary requirement that UI layer should receive services via DI.
 class ConnectionStatusServiceProvider extends ChangeNotifier {
-  ConnectionStatusServiceProvider._();
+  ConnectionStatusServiceProvider._() {
+    _initStreamSubscription();
+  }
 
   static final ConnectionStatusServiceProvider _instance =
       ConnectionStatusServiceProvider._();
 
   static ConnectionStatusServiceProvider get instance => _instance;
 
-  /// Extract all status data from an [ApiConnectionStatus] in a single call.
+  ApiConnectionStatus? _latestStatus;
+
+  void _initStreamSubscription() {
+    connectionStatusStream.listen((status) {
+      _latestStatus = status;
+    });
+  }
+
+  /// Extract all status data from the latest known connection status.
   ///
-  /// This is more efficient than making multiple FFI calls when all data is needed.
-  Future<ConnectionStatusData> getStatusData(ApiConnectionStatus status) async {
+  /// Uses cached status from the connection status stream subscription,
+  /// avoiding the need for callers to pass FFI boundary types.
+  Future<ConnectionStatusData> getStatusData() async {
+    final status = _latestStatus;
+    if (status == null) {
+      return const ConnectionStatusData(
+        isConnected: false,
+        isConnecting: false,
+        isReconnecting: false,
+        isReconnectFailed: false,
+        isDisconnected: true,
+      );
+    }
+
     final isConn = await connectionStatusIsConnected(status: status);
     final isConning = await connectionStatusIsConnecting(status: status);
     final isRecon = await connectionStatusIsReconnecting(status: status);
@@ -86,15 +109,37 @@ class ConnectionStatusServiceProvider extends ChangeNotifier {
 ///
 /// Breaks the API boundary so screens never call FFI functions directly.
 class ConnectionStatusService {
-  ConnectionStatusService._();
+  ConnectionStatusService._() {
+    _initStreamSubscription();
+  }
 
   static final ConnectionStatusService _instance = ConnectionStatusService._();
   static ConnectionStatusService get instance => _instance;
 
-  /// Extract all status data from an [ApiConnectionStatus] in a single call.
+  ApiConnectionStatus? _latestStatus;
+
+  void _initStreamSubscription() {
+    connectionStatusStream.listen((status) {
+      _latestStatus = status;
+    });
+  }
+
+  /// Extract all status data from the latest known connection status.
   ///
-  /// This is more efficient than making multiple FFI calls when all data is needed.
-  Future<ConnectionStatusData> getStatusData(ApiConnectionStatus status) async {
+  /// Uses cached status from the connection status stream subscription,
+  /// avoiding the need for callers to pass FFI boundary types.
+  Future<ConnectionStatusData> getStatusData() async {
+    final status = _latestStatus;
+    if (status == null) {
+      return const ConnectionStatusData(
+        isConnected: false,
+        isConnecting: false,
+        isReconnecting: false,
+        isReconnectFailed: false,
+        isDisconnected: true,
+      );
+    }
+
     final isConn = await connectionStatusIsConnected(status: status);
     final isConning = await connectionStatusIsConnecting(status: status);
     final isRecon = await connectionStatusIsReconnecting(status: status);

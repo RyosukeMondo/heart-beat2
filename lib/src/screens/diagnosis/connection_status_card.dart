@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../bridge/api_generated.dart/api.dart';
 import '../../services/connection_status_service.dart';
 
 class DiagnosisConnectionStatusCard extends StatefulWidget {
@@ -23,140 +22,143 @@ class _DiagnosisConnectionStatusCardState
   void initState() {
     super.initState();
     _connectionStatusProvider = widget.connectionStatusProvider;
+    _connectionStatusProvider.addListener(_onStatusChanged);
+  }
+
+  @override
+  void dispose() {
+    _connectionStatusProvider.removeListener(_onStatusChanged);
+    super.dispose();
+  }
+
+  void _onStatusChanged() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ApiConnectionStatus>(
-      stream: createConnectionStatusStream(),
-      builder: (context, snapshot) {
-        final status = snapshot.data;
+    return FutureBuilder<_CardData>(
+      future: _getCardData(),
+      builder: (context, dataSnapshot) {
+        final data = dataSnapshot.data ?? _defaultCardData();
         final theme = Theme.of(context);
 
-        return FutureBuilder<_CardData?>(
-          future: _getCardData(status),
-          builder: (context, dataSnapshot) {
-            final data = dataSnapshot.data ?? _defaultCardData(status);
-            return Container(
-              padding: const EdgeInsets.all(12),
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+        return Container(
+          padding: const EdgeInsets.all(12),
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Icon(data.icon, size: 20, color: data.color),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          data.label,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  Icon(data.icon, size: 20, color: data.color),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      data.label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      if (data.isConnected)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Connected',
-                            style: TextStyle(
-                              color: Colors.green.shade900,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      if (data.isConnecting)
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                  if (data.deviceId.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.device_unknown,
-                          size: 14,
-                          color: theme.colorScheme.onSurfaceVariant,
+                  if (data.isConnected)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Connected',
+                        style: TextStyle(
+                          color: Colors.green.shade900,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            data.deviceId,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontFamily: 'monospace',
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (data.error.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      data.error,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.red,
                       ),
                     ),
-                  ],
-                  if (data.isReconnecting) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: data.reconnectProgress,
-                              backgroundColor: Colors.orange.shade100,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.orange.shade700,
-                              ),
-                              minHeight: 6,
-                            ),
-                          ),
+                  if (data.isConnecting)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${data.attempt}/${data.maxAttempts}',
-                          style: theme.textTheme.labelSmall,
-                        ),
-                      ],
+                      ),
                     ),
-                  ],
                 ],
               ),
-            );
-          },
+              if (data.deviceId.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.device_unknown,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        data.deviceId,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontFamily: 'monospace',
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (data.error.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  data.error,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+              if (data.isReconnecting) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: data.reconnectProgress,
+                          backgroundColor: Colors.orange.shade100,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.orange.shade700,
+                          ),
+                          minHeight: 6,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${data.attempt}/${data.maxAttempts}',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         );
       },
     );
   }
 
-  Future<_CardData?> _getCardData(ApiConnectionStatus? status) async {
-    if (status == null) return null;
-    final data =
-        await _connectionStatusProvider.getStatusData(status);
+  Future<_CardData> _getCardData() async {
+    final data = await _connectionStatusProvider.getStatusData();
 
     if (data.isConnected) {
       return _CardData(
@@ -228,7 +230,7 @@ class _DiagnosisConnectionStatusCardState
     );
   }
 
-  _CardData _defaultCardData(ApiConnectionStatus? status) {
+  _CardData _defaultCardData() {
     return _CardData(
       label: 'Unknown',
       icon: Icons.bluetooth_disabled,
