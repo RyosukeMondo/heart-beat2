@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart';
+import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show ApiCue;
+import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart'
+    show RustLib;
+import 'coaching_cue.dart';
 import 'voice_coaching_handler.dart';
 
 /// Global navigator key for deep-links from notifications when no context
@@ -17,7 +19,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 /// and optional TTS.
 ///
 /// Implements the delivery portion of task 5.4:
-/// "Rust: create_coaching_cue_stream() -> Stream<Cue> via frb.
+/// "Rust: create_coaching_cue_stream() to Stream via frb.
 ///  Dart side consumer routes each cue to:
 ///  - In-app: toast/snackbar + optional animated banner on the coaching screen.
 ///  - Local notification: flutter_local_notifications package.
@@ -191,24 +193,39 @@ class CoachingCueService {
 
   /// Lazily created broadcast controller that holds a single shared Rust
   /// subscription and fans it out to all consumers.
-  StreamController<ApiCue>? _cueStreamController;
+  StreamController<Cue>? _cueStreamController;
 
   /// Stream of all coaching cues from the Rust rule engine.
   /// Shared by [CoachingScreen] and [CoachingCueService] to avoid duplicate
   /// stream consumption.
-  Stream<ApiCue> get cueStream {
+  Stream<Cue> get cueStream {
     _cueStreamController ??= _createCueStreamController();
     return _cueStreamController!.stream;
   }
 
-  StreamController<ApiCue> _createCueStreamController() {
-    final controller = StreamController<ApiCue>.broadcast();
-    controller.addStream(RustLib.instance.api.crateApiCreateCoachingCueStream());
+  StreamController<Cue> _createCueStreamController() {
+    final controller = StreamController<Cue>.broadcast();
+    controller.addStream(
+      RustLib.instance.api.crateApiCreateCoachingCueStream().map(_toCue),
+    );
     return controller;
   }
 
+  /// Converts an [ApiCue] from the Rust FFI layer to the stable [Cue] type.
+  Cue _toCue(ApiCue apiCue) {
+    return Cue(
+      id: apiCue.id,
+      label: apiCue.label,
+      message: apiCue.message,
+      priority: CuePriority.fromInt(apiCue.priority),
+      generatedAt: DateTime.fromMillisecondsSinceEpoch(
+        apiCue.generatedAtMillis.toInt(),
+      ),
+    );
+  }
+
   /// Start listening to coaching cues from the Rust rule engine.
-  Stream<ApiCue> createCueStream() {
+  Stream<Cue> createCueStream() {
     _cueStreamController ??= _createCueStreamController();
     return _cueStreamController!.stream;
   }
@@ -225,23 +242,23 @@ class CoachingCueService {
 
   /// Process a single cue — dispatch to toast, notification, and TTS
   /// based on user preferences and cue priority.
-  Future<void> onCue(ApiCue cue) async {
+  Future<void> onCue(Cue cue) async {
     if (kDebugMode) {
       debugPrint('CoachingCueService received cue: ${cue.label} - ${cue.message}');
     }
 
     // In-app toast (Normal+ priority cues only)
-    if (_inAppToastEnabled && cue.priority >= 1) {
+    if (_inAppToastEnabled && cue.priorityValue >= 1) {
       await _showInAppToast(cue);
     }
 
     // TTS for High/Critical priority cues
-    if (_voiceHandler.isEnabled && cue.priority >= 2) {
+    if (_voiceHandler.isEnabled && cue.priorityValue >= 2) {
       await _speakCue(cue);
     }
 
     // Local notification for High/Critical priority when backgrounded
-    if (_notificationsEnabled && cue.priority >= 2) {
+    if (_notificationsEnabled && cue.priorityValue >= 2) {
       await _showNotification(cue);
     }
   }
@@ -253,7 +270,7 @@ class CoachingCueService {
 
   /// In-app toast (implemented as debugPrint for now; UI integration
   /// via CoachingScreen will call onCue and display a banner).
-  Future<void> _showInAppToast(ApiCue cue) async {
+  Future<void> _showInAppToast(Cue cue) async {
     // The actual toast/banner rendering is done by the UI layer that
     // consumes the stream. This method can be extended to use a
     // global Snackbar or overlay. For now, log it.
@@ -262,7 +279,7 @@ class CoachingCueService {
     }
   }
 
-  Future<void> _showNotification(ApiCue cue) async {
+  Future<void> _showNotification(Cue cue) async {
     const androidDetails = AndroidNotificationDetails(
       'coaching_cues',
       'Coaching Cues',
@@ -308,7 +325,7 @@ class CoachingCueService {
     }
   }
 
-  Future<void> _speakCue(ApiCue cue) async {
+  Future<void> _speakCue(Cue cue) async {
     // Strip any ANSI / formatting from the message before speaking
     final text = cue.message.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '');
     await _voiceHandler.speak(text);
