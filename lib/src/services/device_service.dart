@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:permission_handler/permission_handler.dart';
-import '../bridge/api_generated.dart/api.dart';
+import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart';
 
 /// Result of a Bluetooth permission check.
@@ -88,7 +88,7 @@ class DeviceService {
       }
 
       // Perform the scan
-      final devices = await scanDevices();
+      final devices = await api.scanDevices();
 
       // Broadcast results
       _devicesController.add(devices);
@@ -97,6 +97,26 @@ class DeviceService {
     } finally {
       _isScanning = false;
     }
+  }
+
+  /// Connect to a specific device by ID.
+  Future<void> connectDeviceById(String deviceId) async {
+    await api.connectDevice(deviceId: deviceId);
+  }
+
+  /// Connect to the last known device.
+  Future<void> connectLastDevice() async {
+    await api.connectDevice(deviceId: 'last-connected');
+  }
+
+  /// Disconnect from the current device.
+  Future<void> disconnectDevice() async {
+    await api.disconnect();
+  }
+
+  /// Start mock mode for testing.
+  Future<void> startMockMode() async {
+    await api.startMockMode();
   }
 
   /// Dispose of resources.

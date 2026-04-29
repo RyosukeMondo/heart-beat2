@@ -293,6 +293,20 @@ class CloudSyncService {
     }
   }
 
+  /// Export the most recent session for sharing.
+  ///
+  /// Returns the exported session data as a JSON string that can be shared.
+  /// Throws if no sessions exist.
+  Future<String> exportLastSession() async {
+    final sessions = await listSessions();
+    if (sessions.isEmpty) {
+      throw Exception('No sessions to export');
+    }
+    final lastSession = sessions.first;
+    final id = await sessionPreviewId(preview: lastSession);
+    return exportSession(id: id, format: ExportFormat.json);
+  }
+
   // ---------------------------------------------------------------------------
   // Cleanup
   // ---------------------------------------------------------------------------
