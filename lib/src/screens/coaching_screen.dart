@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../models/user_profile.dart';
 import '../utils/zone_helpers.dart';
 import 'coaching_screen_state.dart';
-import '../services/profile_service.dart';
 import 'coaching_session_state.dart';
 import '../widgets/cue_card.dart';
 import '../widgets/target_band_visualization.dart';
@@ -37,9 +35,6 @@ class _CoachingScreenState extends State<CoachingScreen> {
   }
 
   final CoachingScreenState _state;
-
-  UserProfile get currentProfile =>
-      ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
 
   void _onStateChange() {
     if (mounted) setState(() {});
@@ -129,7 +124,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
               TargetBandVisualization(
                 currentBpm: _state.currentBpm,
                 currentZone: _state.currentZone,
-                profile: currentProfile,
+                profile: _state.currentProfile,
               ),
               const SizedBox(height: 24),
               SessionStatsCard(elapsed: _state.elapsed, currentZone: _state.currentZone, zoneIcon: ZoneHelpers.zoneIcon(_state.currentZone)),

@@ -2,10 +2,12 @@ import 'dart:async' hide Zone;
 import 'package:flutter/foundation.dart';
 import '../bridge/api_generated.dart/api.dart' as api;
 import '../bridge/api_generated.dart/domain/heart_rate.dart' show Zone;
+import '../models/user_profile.dart';
 import '../services/coaching_cue.dart';
 import '../services/coaching_screen_streams.dart';
 import 'coaching_session_state.dart';
 import '../services/coaching_cue_service.dart';
+import '../services/profile_service.dart';
 
 /// UI state and session logic for [CoachingScreen].
 ///
@@ -17,9 +19,11 @@ class CoachingScreenState {
     required CoachingScreenStreams streams,
     required CoachingSessionState sessionState,
     required CoachingCueService cueService,
+    UserProfile? profile,
   })  : _streams = streams,
         _sessionState = sessionState,
-        _cueService = cueService {
+        _cueService = cueService,
+        _profile = profile {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
   }
 
@@ -28,12 +32,17 @@ class CoachingScreenState {
       streams: CoachingScreenStreams(),
       sessionState: sessionState ?? CoachingSessionStateImpl(),
       cueService: CoachingCueService.instance,
+      profile: ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile(),
     );
   }
 
   final CoachingScreenStreams _streams;
   final CoachingSessionState _sessionState;
   final CoachingCueService _cueService;
+  final UserProfile? _profile;
+
+  UserProfile get currentProfile =>
+      _profile ?? ProfileService.instance.getCurrentProfile() ?? ProfileService.instance.getDefaultProfile();
 
   Cue? _currentCue;
   VoidCallback? _onStateChange;
