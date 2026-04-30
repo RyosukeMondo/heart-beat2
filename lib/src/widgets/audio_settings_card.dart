@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../services/audio_feedback_service.dart';
 
 class AudioSettingsCard extends StatelessWidget {
   final bool audioFeedbackEnabled;
   final double audioVolume;
   final ValueChanged<bool> onAudioFeedbackChanged;
   final ValueChanged<double> onAudioVolumeChanged;
+  final VoidCallback? onPlayTestSound;
 
   const AudioSettingsCard({
     super.key,
@@ -13,6 +13,7 @@ class AudioSettingsCard extends StatelessWidget {
     required this.audioVolume,
     required this.onAudioFeedbackChanged,
     required this.onAudioVolumeChanged,
+    this.onPlayTestSound,
   });
 
   @override
@@ -79,11 +80,7 @@ class AudioSettingsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton.icon(
-                  onPressed: audioFeedbackEnabled
-                      ? () async {
-                          await AudioFeedbackService.instance.playZoneTooHigh();
-                        }
-                      : null,
+                  onPressed: audioFeedbackEnabled ? onPlayTestSound : null,
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('Test Sound'),
                 ),

@@ -164,6 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     audioVolume: _audioVolume,
                     onAudioFeedbackChanged: (v) => setState(() => _audioFeedbackEnabled = v),
                     onAudioVolumeChanged: (v) => setState(() => _audioVolume = v),
+                    onPlayTestSound: () => AudioFeedbackService.instance.playZoneTooHigh(),
                   ),
                   const SizedBox(height: 16),
                   Card(
