@@ -9,7 +9,12 @@ import '../services/health_alert_service.dart';
 ///
 /// Tiles call [HrHistoryService.rollingAvg] on init and on pull-to-refresh.
 class HealthScreen extends StatefulWidget {
-  const HealthScreen({super.key});
+  const HealthScreen({
+    super.key,
+    HealthAlertService? healthAlertService,
+  }) : _healthAlertService = healthAlertService;
+
+  final HealthAlertService? _healthAlertService;
 
   @override
   State<HealthScreen> createState() => _HealthScreenState();
@@ -32,10 +37,13 @@ class _HealthScreenState extends State<HealthScreen> {
   bool _sparklineLoading = true;
   Timer? _liveBpmTimer;
 
-  // Status banner state — reads from HealthAlertService state stream.
+  // Status banner state — injected via [HealthAlertService].
   _RuleStatus _ruleStatus = _RuleStatus.ok;
   String _ruleStatusDetail = '';
   StreamSubscription<HealthAlertState>? _cueSubscription;
+
+  HealthAlertService get _healthAlertService =>
+      widget._healthAlertService ?? HealthAlertService.instance;
 
   @override
   void initState() {
@@ -54,7 +62,7 @@ class _HealthScreenState extends State<HealthScreen> {
   }
 
   void _startCueListener() {
-    _cueSubscription = HealthAlertService.instance.healthAlertStateStream.listen((state) {
+    _cueSubscription = _healthAlertService.healthAlertStateStream.listen((state) {
       if (!mounted) return;
       setState(() {
         _ruleStatus = state.status == HealthRuleStatus.ok ? _RuleStatus.ok : _RuleStatus.low;
