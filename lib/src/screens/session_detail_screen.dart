@@ -73,14 +73,8 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
       final timeInZone = await sessionSummaryTimeInZone(session: session);
 
       // Load HR samples
-      final sampleCount = await sessionHrSamplesCount(session: session);
-      final List<(int, int)> hrSamples = [];
-      for (var i = BigInt.zero; i < sampleCount; i += BigInt.one) {
-        final sample = await sessionHrSampleAt(session: session, index: i);
-        if (sample != null) {
-          hrSamples.add((sample.$1.toInt(), sample.$2));
-        }
-      }
+      final rawSamples = await sessionHrSamples(session: session);
+      final hrSamples = rawSamples.map((s) => (s.$1.toInt(), s.$2)).toList();
 
       if (!mounted) return;
 

@@ -2105,6 +2105,16 @@ pub fn session_hr_sample_at(session: &ApiCompletedSession, index: usize) -> Opti
         .map(|sample| (sample.timestamp.timestamp_millis(), sample.bpm))
 }
 
+/// Get all heart rate samples from a completed session in a single call.
+/// Returns a vector of tuples of (timestamp_millis, bpm) in chronological order.
+pub fn session_hr_samples(session: &ApiCompletedSession) -> Vec<(i64, u16)> {
+    session
+        .hr_samples
+        .iter()
+        .map(|sample| (sample.timestamp.timestamp_millis(), sample.bpm))
+        .collect()
+}
+
 // =============================================================================
 // Workout Execution API
 // =============================================================================

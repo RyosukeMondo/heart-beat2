@@ -425,6 +425,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<(PlatformInt64, int)> dco_decode_list_record_i_64_u_16(dynamic raw);
+
+  @protected
   List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw);
 
   @protected
@@ -898,6 +901,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<(PlatformInt64, int)> sse_decode_list_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<(int, BigInt)> sse_decode_list_record_u_16_u_64(
     SseDeserializer deserializer,
   );
@@ -1353,6 +1361,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     // Codec=Cst (C-struct based), see doc to use other codecs
     final ans = wire.cst_new_list_prim_u_8_strict(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_record_i_64_u_16> cst_encode_list_record_i_64_u_16(
+    List<(PlatformInt64, int)> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_record_i_64_u_16(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_record_i_64_u_16(raw[i], ans.ref.ptr[i]);
+    }
     return ans;
   }
 
@@ -2438,6 +2458,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_prim_u_8_strict(
     Uint8List self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_record_i_64_u_16(
+    List<(PlatformInt64, int)> self,
     SseSerializer serializer,
   );
 
@@ -3827,6 +3853,18 @@ class RustLibWire implements BaseWire {
       _wire__crate__api__session_hr_sample_atPtr
           .asFunction<void Function(int, int, int)>();
 
+  void wire__crate__api__session_hr_samples(int port_, int session) {
+    return _wire__crate__api__session_hr_samples(port_, session);
+  }
+
+  late final _wire__crate__api__session_hr_samplesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_heart_beat_wire__crate__api__session_hr_samples',
+      );
+  late final _wire__crate__api__session_hr_samples =
+      _wire__crate__api__session_hr_samplesPtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__session_hr_samples_count(int port_, int session) {
     return _wire__crate__api__session_hr_samples_count(port_, session);
   }
@@ -5119,6 +5157,21 @@ class RustLibWire implements BaseWire {
   late final _cst_new_list_prim_u_8_strict = _cst_new_list_prim_u_8_strictPtr
       .asFunction<ffi.Pointer<wire_cst_list_prim_u_8_strict> Function(int)>();
 
+  ffi.Pointer<wire_cst_list_record_i_64_u_16> cst_new_list_record_i_64_u_16(
+    int len,
+  ) {
+    return _cst_new_list_record_i_64_u_16(len);
+  }
+
+  late final _cst_new_list_record_i_64_u_16Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_record_i_64_u_16> Function(ffi.Int32)
+        >
+      >('frbgen_heart_beat_cst_new_list_record_i_64_u_16');
+  late final _cst_new_list_record_i_64_u_16 = _cst_new_list_record_i_64_u_16Ptr
+      .asFunction<ffi.Pointer<wire_cst_list_record_i_64_u_16> Function(int)>();
+
   ffi.Pointer<wire_cst_list_record_u_16_u_64> cst_new_list_record_u_16_u_64(
     int len,
   ) {
@@ -5370,6 +5423,13 @@ final class wire_cst_discovered_device extends ffi.Struct {
 
 final class wire_cst_list_discovered_device extends ffi.Struct {
   external ffi.Pointer<wire_cst_discovered_device> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+final class wire_cst_list_record_i_64_u_16 extends ffi.Struct {
+  external ffi.Pointer<wire_cst_record_i_64_u_16> ptr;
 
   @ffi.Int32()
   external int len;

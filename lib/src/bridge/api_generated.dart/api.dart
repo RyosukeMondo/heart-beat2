@@ -784,6 +784,12 @@ Future<(PlatformInt64, int)?> sessionHrSampleAt({
   index: index,
 );
 
+/// Get all heart rate samples from a completed session in a single call.
+/// Returns a vector of tuples of (timestamp_millis, bpm) in chronological order.
+Future<List<(PlatformInt64, int)>> sessionHrSamples({
+  required ApiCompletedSession session,
+}) => RustLib.instance.api.crateApiSessionHrSamples(session: session);
+
 /// List all available training plans.
 ///
 /// Returns a list of plan names from the data directory's plans/ subdirectory.

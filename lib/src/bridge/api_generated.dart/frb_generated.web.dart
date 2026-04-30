@@ -427,6 +427,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<(PlatformInt64, int)> dco_decode_list_record_i_64_u_16(dynamic raw);
+
+  @protected
   List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw);
 
   @protected
@@ -898,6 +901,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  List<(PlatformInt64, int)> sse_decode_list_record_i_64_u_16(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<(int, BigInt)> sse_decode_list_record_u_16_u_64(
@@ -1451,6 +1459,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   JSAny cst_encode_list_prim_u_8_strict(Uint8List raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return raw.jsify()!;
+  }
+
+  @protected
+  JSAny cst_encode_list_record_i_64_u_16(List<(PlatformInt64, int)> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.map(cst_encode_record_i_64_u_16).toList().jsify()!;
   }
 
   @protected
@@ -2273,6 +2287,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_record_i_64_u_16(
+    List<(PlatformInt64, int)> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_record_u_16_u_64(
     List<(int, BigInt)> self,
     SseSerializer serializer,
@@ -2735,6 +2755,11 @@ class RustLibWire implements BaseWire {
     int session,
     JSAny index,
   ) => wasmModule.wire__crate__api__session_hr_sample_at(port_, session, index);
+
+  void wire__crate__api__session_hr_samples(
+    NativePortType port_,
+    int session,
+  ) => wasmModule.wire__crate__api__session_hr_samples(port_, session);
 
   void wire__crate__api__session_hr_samples_count(
     NativePortType port_,
@@ -3470,6 +3495,11 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
     NativePortType port_,
     int session,
     JSAny index,
+  );
+
+  external void wire__crate__api__session_hr_samples(
+    NativePortType port_,
+    int session,
   );
 
   external void wire__crate__api__session_hr_samples_count(

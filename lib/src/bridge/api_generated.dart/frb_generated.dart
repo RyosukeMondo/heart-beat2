@@ -65,7 +65,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 308943982;
+  int get rustContentHash => -1431539882;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -311,6 +311,10 @@ abstract class RustLibApi extends BaseApi {
   Future<(PlatformInt64, int)?> crateApiSessionHrSampleAt({
     required ApiCompletedSession session,
     required BigInt index,
+  });
+
+  Future<List<(PlatformInt64, int)>> crateApiSessionHrSamples({
+    required ApiCompletedSession session,
   });
 
   Future<BigInt> crateApiSessionHrSamplesCount({
@@ -2671,6 +2675,35 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
+  Future<List<(PlatformInt64, int)>> crateApiSessionHrSamples({
+    required ApiCompletedSession session,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerApiCompletedSession(
+                session,
+              );
+          return wire.wire__crate__api__session_hr_samples(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_record_i_64_u_16,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiSessionHrSamplesConstMeta,
+        argValues: [session],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiSessionHrSamplesConstMeta => const TaskConstMeta(
+    debugName: "session_hr_samples",
+    argNames: ["session"],
+  );
+
+  @override
   Future<BigInt> crateApiSessionHrSamplesCount({
     required ApiCompletedSession session,
   }) {
@@ -4743,6 +4776,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<(PlatformInt64, int)> dco_decode_list_record_i_64_u_16(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_record_i_64_u_16).toList();
+  }
+
+  @protected
   List<(int, BigInt)> dco_decode_list_record_u_16_u_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_record_u_16_u_64).toList();
@@ -5885,6 +5924,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
+  }
+
+  @protected
+  List<(PlatformInt64, int)> sse_decode_list_record_i_64_u_16(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <(PlatformInt64, int)>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_record_i_64_u_16(deserializer));
+    }
+    return ans_;
   }
 
   @protected
@@ -7474,6 +7527,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
+  }
+
+  @protected
+  void sse_encode_list_record_i_64_u_16(
+    List<(PlatformInt64, int)> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_record_i_64_u_16(item, serializer);
+    }
   }
 
   @protected
