@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart_beat/src/bridge/api_generated.dart/api.dart' show ApiCue;
-import 'package:heart_beat/src/bridge/api_generated.dart/frb_generated.dart'
-    show RustLib;
+import 'package:heart_beat/src/bridge/api_generated.dart/api.dart'
+    show ApiCue, createCoachingCueStream;
 import 'coaching_cue.dart';
 import 'voice_coaching_handler.dart';
 
@@ -209,7 +208,7 @@ class CoachingCueService {
   StreamController<Cue> _createCueStreamController() {
     final controller = StreamController<Cue>.broadcast();
     controller.addStream(
-      RustLib.instance.api.crateApiCreateCoachingCueStream().map(_toCue),
+      createCoachingCueStream().map(_toCue),
     );
     return controller;
   }
