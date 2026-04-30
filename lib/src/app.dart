@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:heart_beat/src/services/diagnosis_log_service.dart';
+import 'package:heart_beat/src/services/device_service.dart';
 import 'package:heart_beat/src/services/profile_service.dart';
 import 'package:heart_beat/src/services/background_service_provider.dart';
 import 'package:heart_beat/src/services/connection_status_service.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ConnectionStatusServiceProvider>.value(
           value: ConnectionStatusServiceProvider.instance,
+        ),
+        Provider<DeviceService>.value(
+          value: DeviceService.instance,
         ),
       ],
       child: DebugConsoleOverlay(

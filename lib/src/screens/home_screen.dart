@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:provider/provider.dart';
 import '../bridge/api_generated.dart/api.dart';
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../services/device_service.dart';
 import '../services/readiness_service.dart';
 
@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _scanForDevices() async {
+    final deviceService = context.read<DeviceService>();
     setState(() {
       _isScanning = true;
       _error = null;
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      final devices = await DeviceService.instance.scanForDevices();
+      final devices = await deviceService.scanForDevices();
       if (!mounted) return;
       setState(() {
         _devices = devices;
