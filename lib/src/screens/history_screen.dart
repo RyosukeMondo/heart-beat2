@@ -132,6 +132,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       final archive = Archive();
 
       int exportCount = 0;
+      final failedSessionIds = <String>[];
       for (final sessionId in _selectedSessionIds) {
         try {
           // Export session as JSON
@@ -147,9 +148,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           exportCount++;
         } catch (e) {
-          debugPrint('Failed to export session $sessionId: $e');
+          failedSessionIds.add(sessionId);
           // Continue with other sessions
         }
+      }
+
+      if (failedSessionIds.isNotEmpty) {
+        debugPrint('Failed to export ${failedSessionIds.length} session(s): $failedSessionIds');
       }
 
       if (exportCount == 0) {
