@@ -1,16 +1,9 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../models/hr_sample.dart';
 import '../services/hr_history_service.dart';
 import '../services/health_alert_service.dart';
-
-/// A single HR sample with resolved BPM and timestamp for synchronous access.
-class _SamplePoint {
-  final int bpm;
-  final int tsMs;
-
-  _SamplePoint({required this.bpm, required this.tsMs});
-}
 
 /// Health screen showing rolling HR averages over 1h / 24h / 7d.
 ///
@@ -113,7 +106,7 @@ class _HealthScreenState extends State<HealthScreen> {
 
     // Resolve BPM and timestamp for all samples in a single batch call.
     final resolved = await HrHistoryService.instance.samplesBpmAndTs(samples: samples);
-    final points = resolved.map((r) => _SamplePoint(bpm: r.$1, tsMs: r.$2)).toList();
+    final points = resolved.map((r) => HrSample(bpm: r.$1, tsMs: r.$2)).toList();
 
     if (!mounted) return;
     setState(() {
@@ -123,7 +116,7 @@ class _HealthScreenState extends State<HealthScreen> {
   }
 
   /// Downsamples [points] to at most [maxPoints] FlSpots using 5-min buckets.
-  List<FlSpot> _downsample(List<_SamplePoint> points, int maxPoints) {
+  List<FlSpot> _downsample(List<HrSample> points, int maxPoints) {
     if (points.isEmpty) return [];
 
     // Sort chronologically just in case
