@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'diagnosis/diagnosis_body.dart';
+import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import '../services/connection_status_service.dart';
 import '../services/diagnosis_service.dart';
 
@@ -41,7 +42,25 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
     try {
       final devices = await _svc.scanDevices();
       if (!context.mounted) return;
-      await _svc.pickAndConnectDevice(context, devices);
+      final device = await showModalBottomSheet<DiscoveredDevice>(
+        context: context,
+        builder: (ctx) => ListView.builder(
+          itemCount: devices.length,
+          itemBuilder: (ctx, index) {
+            final device = devices[index];
+            return ListTile(
+              leading: const Icon(Icons.bluetooth),
+              title: Text(device.name ?? 'Unknown'),
+              subtitle: Text(device.id),
+              onTap: () => Navigator.pop(ctx, device),
+            );
+          },
+        ),
+      );
+      if (!context.mounted) return;
+      if (device != null) {
+        await _svc.connectDevice(device.id);
+      }
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

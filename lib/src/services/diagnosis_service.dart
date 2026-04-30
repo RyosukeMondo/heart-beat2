@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../bridge/api_generated.dart/api.dart';
-import '../bridge/api_generated.dart/domain/heart_rate.dart';
 import 'device_service.dart';
 import 'log_service.dart';
 
@@ -20,32 +18,6 @@ class DiagnosisService {
   /// Scan for BLE devices and return the list.
   Future<List<DiscoveredDevice>> scanDevices() async {
     return DeviceService.instance.scanForDevices();
-  }
-
-  /// Show device picker and connect to selected device.
-  Future<String?> pickAndConnectDevice(
-    BuildContext context,
-    List<DiscoveredDevice> devices,
-  ) async {
-    final device = await showModalBottomSheet<DiscoveredDevice>(
-      context: context,
-      builder: (ctx) => ListView.builder(
-        itemCount: devices.length,
-        itemBuilder: (ctx, index) {
-          final device = devices[index];
-          return ListTile(
-            leading: const Icon(Icons.bluetooth),
-            title: Text(device.name ?? 'Unknown'),
-            subtitle: Text(device.id),
-            onTap: () => Navigator.pop(ctx, device),
-          );
-        },
-      ),
-    );
-
-    if (device == null) return null;
-    await connectDevice(device.id);
-    return device.id;
   }
 
   /// Connect to a device by ID.
