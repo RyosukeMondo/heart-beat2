@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-04-30T00:01:58Z",
+  "generated_at": "2026-04-30T05:41:40Z",
   "audited_dimensions": [
     "arch",
     "types",
@@ -23569,7 +23569,7 @@
       "line": 8,
       "symbol": "coaching_screen_streams.dart",
       "why": "dead import \u2014 file deleted from repo but still imported here; build will fail",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "1e705a4d775f",
@@ -23579,7 +23579,7 @@
       "line": 4,
       "symbol": "api.dart as api",
       "why": "screens layer imports bridge internal api_generated.dart directly, breaking layer boundary",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "d72cf30a6ced",
@@ -23589,7 +23589,7 @@
       "line": 7,
       "symbol": "_PlanPhase",
       "why": "parallel struct duplicating Phase concept in workout_library_screen.dart; should be shared domain model",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "1829f78f3304",
@@ -23599,7 +23599,7 @@
       "line": 5,
       "symbol": "_Phase",
       "why": "parallel struct duplicating Phase concept in plan_builder_screen.dart; should be shared domain model",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "899110a9d528",
@@ -23609,7 +23609,7 @@
       "line": 206,
       "symbol": "_OverviewCardTestWidget",
       "why": "Test replicates OverviewCard widget locally \u2014 tests the replica, not the actual _AnalyticsScreenState._OverviewCard implementation",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "e30578a6fe44",
@@ -23619,7 +23619,7 @@
       "line": 244,
       "symbol": "_EmptyStateTestWidget",
       "why": "Test replicates empty state widget locally \u2014 tests replica, not actual screen empty state rendering",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "fff3852642b8",
@@ -23629,7 +23629,7 @@
       "line": 23,
       "symbol": "CalendarScreen can be instantiated with key",
       "why": "Smoke test \u2014 only asserts widget exists, no meaningful behavior verification",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "c12ac191f0e6",
@@ -23639,7 +23639,7 @@
       "line": 35,
       "symbol": "CalendarScreen can be created with default key",
       "why": "Duplicate smoke test of above \u2014 redundant instantiation check with no behavior assertion",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "74fa2abc0938",
@@ -23649,7 +23649,7 @@
       "line": 16,
       "symbol": "HrDisplay",
       "why": "Tests HrDisplay widget directly rather than in actual CoachingScreen context \u2014 FFI stream setup commented as blocker",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "4668bfb11a3d",
@@ -23659,7 +23659,7 @@
       "line": 17,
       "symbol": "buildBanner",
       "why": "Replicates _StatusBanner logic locally \u2014 tests the replication, not actual _HealthScreenState._StatusBanner",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "eae6fb427cd0",
@@ -23669,7 +23669,7 @@
       "line": 60,
       "symbol": "buildAverageCard",
       "why": "Replicates _AverageCard logic locally \u2014 tests replica, not actual screen's _AverageCard widget",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "bc61ac021e92",
@@ -23679,7 +23679,7 @@
       "line": 72,
       "symbol": "TimeOfDay validation: hour > 23 is invalid",
       "why": "Tests TimeOfDay object property, not screen's quiet-hours validation logic \u2014 boundary condition only, no integration",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "ba19427d3dbc",
@@ -23689,7 +23689,7 @@
       "line": 78,
       "symbol": "TimeOfDay parsing: valid HH:mm round-trips",
       "why": "Tests TimeOfDay formatting, not actual quiet-hours TextField parsing or validation in screen",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "11e2d30a0aa3",
@@ -23699,7 +23699,7 @@
       "line": 18,
       "symbol": "HomeScreen can be instantiated with key",
       "why": "Smoke test with many find.text assertions but no state change or interaction testing \u2014 just confirms widget mounts",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "a0ba527da8c1",
@@ -23709,7 +23709,7 @@
       "line": 23,
       "symbol": "buildErrorWidget",
       "why": "Replicates _buildError locally \u2014 tests replica, not actual ReadinessScreen._buildError behavior",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "5d0f19ec72db",
@@ -23719,7 +23719,7 @@
       "line": 84,
       "symbol": "buildMorningCheckSheet",
       "why": "Replicates _MorningCheckSheet locally \u2014 tests replica, not actual screen's sheet",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "1f68338e34e6",
@@ -23729,7 +23729,7 @@
       "line": 16,
       "symbol": "SessionScreen can be instantiated with key",
       "why": "Smoke test \u2014 no interaction or state verification, just confirms widget builds",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "40b067747238",
@@ -23739,7 +23739,7 @@
       "line": 54,
       "symbol": "SessionScreen shows error state when connection fails",
       "why": "Test relies on FFI failing naturally \u2014 no mock of api.createHrStream, so test is non-deterministic timing-based rather than controlled",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "9b49a0ea6da3",
@@ -23749,7 +23749,7 @@
       "line": 27,
       "symbol": "_buildLoadingWrapper",
       "why": "Replicates _Loading state locally \u2014 tests replica, not actual TrainingLoadScreen._Loading widget",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "054413ae9334",
@@ -23759,7 +23759,7 @@
       "line": 40,
       "symbol": "_buildErrorWrapper",
       "why": "Replicates error state locally \u2014 tests replica, not actual screen error state",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "c4fb5f4d1623",
@@ -23769,7 +23769,7 @@
       "line": 17,
       "symbol": "WorkoutLibraryScreen shows loading indicator initially",
       "why": "Test acknowledges async timing issue \u2014 asserts only that widget can be constructed, not that loading state is actually shown",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "e022d6951fb3",
@@ -23779,7 +23779,7 @@
       "line": 195,
       "symbol": "_buildFilterChipsWidget",
       "why": "Replicates filter UI locally \u2014 tests replica, not actual WorkoutLibraryScreen filter chip rendering and behavior",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "4ddb52a3c552",
@@ -23789,7 +23789,7 @@
       "line": 233,
       "symbol": "filter by sport returns only matching sport",
       "why": "Tests filter logic on local _TestTemplate data, not actual screen's template filtering from API/mock data",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "54479b1aa473",
@@ -23799,7 +23799,7 @@
       "line": 279,
       "symbol": "template phases have valid zone values (1-5)",
       "why": "Tests invariants on local _TestTemplate, not actual Template model from API",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "e08fc63d5009",
@@ -23809,7 +23809,7 @@
       "line": 202,
       "symbol": "pauseWorkout",
       "why": "catch (_) silently discards all exceptions \u2014 user thinks workout is paused but the command may have failed",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "a0cdac29cd29",
@@ -23819,7 +23819,7 @@
       "line": 210,
       "symbol": "resumeWorkout",
       "why": "catch (_) silently discards all exceptions \u2014 user thinks workout resumed but the command may have failed",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "fd0a6e5d6113",
@@ -23829,7 +23829,7 @@
       "line": 218,
       "symbol": "stopWorkout",
       "why": "catch (_) silently discards all exceptions \u2014 user thinks workout stopped but the command may have failed",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "68850625102f",
@@ -23839,7 +23839,7 @@
       "line": 149,
       "symbol": "_exportSelectedSessions",
       "why": "catch (e) inside export loop only debugPrints \u2014 individual session export failures are hidden while operation continues",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "dcb1a2b7949b",
@@ -23849,7 +23849,7 @@
       "line": 195,
       "symbol": "build",
       "why": "function has 289 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "2bb595793040",
@@ -23859,7 +23859,7 @@
       "line": 99,
       "symbol": "_exportSelectedSessions",
       "why": "function has 79 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "b471f8fd88f6",
@@ -23869,7 +23869,7 @@
       "line": 88,
       "symbol": "build",
       "why": "function has 223 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "e8bdd04f47f8",
@@ -23879,7 +23879,7 @@
       "line": 123,
       "symbol": "build",
       "why": "function has 131 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "17568c847be6",
@@ -23889,7 +23889,7 @@
       "line": 341,
       "symbol": "_buildZonePreview",
       "why": "function has 105 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "c9f13c2a6c7f",
@@ -23899,7 +23899,7 @@
       "line": 229,
       "symbol": "_buildSparklineChart",
       "why": "function has 110 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "3fad136f6a4d",
@@ -23909,7 +23909,7 @@
       "line": 110,
       "symbol": "build",
       "why": "function has 114 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "79687f8cb165",
@@ -23919,7 +23919,7 @@
       "line": 231,
       "symbol": "_buildTodayCard",
       "why": "function has 94 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "2baec0197877",
@@ -23929,7 +23929,7 @@
       "line": 251,
       "symbol": "_buildTimeline",
       "why": "function has 84 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "43c3a50963a7",
@@ -23939,7 +23939,7 @@
       "line": 194,
       "symbol": "_buildSummary",
       "why": "function has 54 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "c2f8a0f1558e",
@@ -23949,7 +23949,7 @@
       "line": 519,
       "symbol": "build",
       "why": "function has 85 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "ab6b6ad7ba4c",
@@ -23959,7 +23959,7 @@
       "line": 425,
       "symbol": "_buildTemplateCard",
       "why": "function has 61 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "7ec265db68b0",
@@ -23969,7 +23969,7 @@
       "line": 205,
       "symbol": "_loadTemplates",
       "why": "function has 56 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "9d1768c3b861",
@@ -23979,7 +23979,7 @@
       "line": 219,
       "symbol": "build",
       "why": "function has 100 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "db0e5c61c15b",
@@ -23989,7 +23989,7 @@
       "line": 104,
       "symbol": "_handleExportAction",
       "why": "function has 58 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "aa4d8c2432f1",
@@ -23999,7 +23999,7 @@
       "line": 221,
       "symbol": "_buildBody",
       "why": "function has 64 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "2426e8c1b435",
@@ -24009,7 +24009,7 @@
       "line": 41,
       "symbol": "build",
       "why": "function has 117 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "00de5b139e87",
@@ -24019,7 +24019,7 @@
       "line": 162,
       "symbol": "_getCardData",
       "why": "function has 69 lines \u2014 exceeds 50-line limit",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "a5aa628442cf",
@@ -24029,7 +24029,7 @@
       "line": 220,
       "symbol": "parse_heart_rate",
       "why": "Pure parsing function used by multiple CLI handlers but has no unit test that runs without BLE hardware",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "079fdc2fee2d",
@@ -24039,7 +24039,7 @@
       "line": 1846,
       "symbol": "handle_plan_validate",
       "why": "Plan validation business logic embedded in CLI with no dedicated unit test",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "7e25f5e9e837",
@@ -24049,7 +24049,7 @@
       "line": 1,
       "symbol": "HrStore",
       "why": "HR store rotates only by date (YYYY-MM-DD.jsonl). No size-based rotation in either Dart or Rust logging",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "c8a0e8027235",
@@ -24059,6 +24059,3696 @@
       "line": 1,
       "symbol": "SessionExportMenu",
       "why": "Export menu only handles session data (CSV/JSON/TCX/GPX), not diagnosis logs \u2014 no log export in any UI surface",
+      "status": "fixed"
+    },
+    {
+      "id": "b921c0dc25f8",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/services/coaching_screen_streams.dart",
+      "line": 9,
+      "symbol": "CoachingScreenStreams",
+      "why": "coaching domain directly imports ProfileService \u2014 boundary violation; coaching should depend on a zone config abstraction, not the user profile service",
+      "status": "fixed"
+    },
+    {
+      "id": "285925ea4574",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/hr_processor.dart",
+      "line": 5,
+      "symbol": "HrProcessor",
+      "why": "coaching-domain HrProcessor directly depends on ProfileService, creating tight cross-domain coupling",
+      "status": "fixed"
+    },
+    {
+      "id": "4eaa5df5ed08",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/health_alert_service.dart",
+      "line": 73,
+      "symbol": "FlutterLocalNotificationsPlugin",
+      "why": "duplicates FlutterLocalNotificationsPlugin singleton owned by CoachingCueService \u2014 two independent notification instances in the same coaching subsystem",
+      "status": "fixed"
+    },
+    {
+      "id": "cc0bd31c2d47",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 12,
+      "symbol": "HomeScreen",
+      "why": "all tests only verify widget exists \u2014 no assertion of scan logic, device state, BLE behavior, or empty/loading/error paths",
+      "status": "fixed"
+    },
+    {
+      "id": "dfcedb8ab3eb",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 28,
+      "symbol": "HealthSettingsScreen",
+      "why": "tests only UI rendering \u2014 no test for HealthSettingsService behavior, threshold boundary (0, >200), sustained window extremes, quiet-hours interaction",
+      "status": "fixed"
+    },
+    {
+      "id": "c4cca47da379",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/session_screen_test.dart",
+      "line": 56,
+      "symbol": "SessionScreen",
+      "why": "error state test relies on uncaught FFI failure not mocked error callback \u2014 not a controlled unit test of the error path",
+      "status": "fixed"
+    },
+    {
+      "id": "6e40fdf4c6d1",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 14,
+      "symbol": "CalendarScreen",
+      "why": "most tests assert widget type exists \u2014 shallow coverage of week navigation logic, plan rendering, compliance calculation",
+      "status": "fixed"
+    },
+    {
+      "id": "8439630ddd6b",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/workout_library_screen_test.dart",
+      "line": 67,
+      "symbol": "filter by sport",
+      "why": "filter logic tests operate on in-memory _buildTestTemplates \u2014 not the actual WorkoutLibraryScreen filtering behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "32a51b9877a2",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 386,
+      "symbol": "onDismissed callback",
+      "why": "catch (e) inside onDismissed catches delete failure but still calls _loadSessions() after showing error \u2014 error handled but onDismissed shouldn't throw",
+      "status": "fixed"
+    },
+    {
+      "id": "95d8236f9b34",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/connection_status_stream_provider.dart",
+      "line": 1,
+      "symbol": "ApiConnectionStatus",
+      "why": "imported but only used in export statement, not referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "65e089df8d4b",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/voice_coaching_service.dart",
+      "line": 5,
+      "symbol": "SharedPreferences",
+      "why": "imported but never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "7d9536b03df5",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/background_service.dart",
+      "line": 47,
+      "symbol": "onStart",
+      "why": "line is 136 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "5586ced9cf78",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 214,
+      "symbol": "_showNotification",
+      "why": "line is 128 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "946aab44062d",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 216,
+      "symbol": "_showNotification",
+      "why": "line is 123 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "9cf1aa2e420b",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 37,
+      "symbol": "pickAndConnectDevice",
+      "why": "line is 129 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "d130004a4f5a",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/session_detail_screen.dart",
+      "line": 74,
+      "symbol": "_loadSession",
+      "why": "manual BigInt.for-loop to collect hr samples instead of a batch API; duplicated from history_screen pattern; likely missing a higher-level accessor",
+      "status": "fixed"
+    },
+    {
+      "id": "5ae8cde93280",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/widgets/audio_settings_card.dart",
+      "line": 83,
+      "symbol": "onPressed callback",
+      "why": "async closure passed to onPressed has no return type annotation (Future<void> inferred)",
+      "status": "fixed"
+    },
+    {
+      "id": "2d10f971156c",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/widgets/training_zones_card.dart",
+      "line": 27,
+      "symbol": "onPressed callback",
+      "why": "async closure passed to onPressed has no return type annotation (Future<void> inferred)",
+      "status": "fixed"
+    },
+    {
+      "id": "26764d63a7f8",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/widgets/debug_console_overlay.dart",
+      "line": 144,
+      "symbol": "onVerticalDragStart callback",
+      "why": "details parameter on DragStartDetails callback lacks explicit type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "cc7848586bf8",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/widgets/debug_console_overlay.dart",
+      "line": 145,
+      "symbol": "onVerticalDragUpdate callback",
+      "why": "details parameter on DragUpdateDetails callback lacks explicit type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "b8016ce47e1c",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/widgets/debug_console_overlay.dart",
+      "line": 155,
+      "symbol": "onVerticalDragEnd callback",
+      "why": "details parameter on DragEndDetails callback lacks explicit type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "57c89a7170bd",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 64,
+      "symbol": "initialize",
+      "why": "test only checks isA<Function> without calling it and verifying behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "d10d30cb842f",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 34,
+      "symbol": "latestSample",
+      "why": "test only verifies method is not null, never calls it with actual Rust FFI",
+      "status": "fixed"
+    },
+    {
+      "id": "a105287d98a1",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 39,
+      "symbol": "samplesInRange",
+      "why": "test only verifies method is not null, never calls it with real parameters",
+      "status": "fixed"
+    },
+    {
+      "id": "0a15b39f82d6",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 44,
+      "symbol": "rollingAvg",
+      "why": "test only verifies method is not null, never tests actual rolling avg computation",
+      "status": "fixed"
+    },
+    {
+      "id": "8cf95c70c06c",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 29,
+      "symbol": "getStatusData",
+      "why": "test only checks Future<ConnectionStatusData> Function() type, never calls getStatusData",
+      "status": "fixed"
+    },
+    {
+      "id": "eaf1d6d4736e",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/share_service_test.dart",
+      "line": 24,
+      "symbol": "shareFile",
+      "why": "test only checks shareFile is not null, never calls it with a real file",
+      "status": "fixed"
+    },
+    {
+      "id": "354ee1832b22",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/share_service_test.dart",
+      "line": 30,
+      "symbol": "shareFiles",
+      "why": "test only checks shareFiles is not null, never tests multi-file sharing",
+      "status": "fixed"
+    },
+    {
+      "id": "458356e3dc09",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/device_service_test.dart",
+      "line": 23,
+      "symbol": "requestBluetoothPermissions",
+      "why": "only asserts result.granted isA<bool> \u2014 does not verify permission grant logic",
+      "status": "fixed"
+    },
+    {
+      "id": "7aac3803bdbe",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 73,
+      "symbol": "playZoneTooLow",
+      "why": "only checks completes without error \u2014 no assertion on audio playback or debounce",
+      "status": "fixed"
+    },
+    {
+      "id": "8b5511bd7b89",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 76,
+      "symbol": "playPhaseTransition",
+      "why": "only checks completes without error \u2014 no assertion on phase transition audio",
+      "status": "fixed"
+    },
+    {
+      "id": "77e298b45ca4",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 79,
+      "symbol": "stopAudio",
+      "why": "only checks completes without error \u2014 no assertion that audio was actually stopped",
+      "status": "fixed"
+    },
+    {
+      "id": "53911ae19ad6",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 58,
+      "symbol": "debouncing",
+      "why": "conceptual test per comment \u2014 does not verify debounce timing or actual prevention",
+      "status": "fixed"
+    },
+    {
+      "id": "6a3e3feceb48",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 41,
+      "symbol": "onZoneTick",
+      "why": "calls onZoneTick twice but comment says 'zoneTime is unmodifiable' \u2014 zoneTime accumulation not verified",
+      "status": "fixed"
+    },
+    {
+      "id": "7c846119b377",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 22,
+      "symbol": "start",
+      "why": "test only checks getStats is null after start \u2014 never tests recordSample path or percentile calculations",
+      "status": "fixed"
+    },
+    {
+      "id": "2fcc65c2fc9c",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 86,
+      "symbol": "_TestableDartLogWriter",
+      "why": "tests _TestableDartLogWriter instead of actual LogService \u2014 integration group only covers debugPrint hook",
+      "status": "fixed"
+    },
+    {
+      "id": "58a177d38cbe",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/cloud_sync_service_test.dart",
+      "line": 66,
+      "symbol": "exportAllSessions",
+      "why": "exportAllSessions not exercised \u2014 only importSessions and dispose are tested",
+      "status": "fixed"
+    },
+    {
+      "id": "f63d0ca8fbaf",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 38,
+      "symbol": "speak",
+      "why": "only verifies function type, never calls speak with actual text",
+      "status": "fixed"
+    },
+    {
+      "id": "4dfcb1b0b8e4",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 25,
+      "symbol": "stream",
+      "why": "subscription listens but does not emit any data \u2014 stream behavior not actually tested",
+      "status": "fixed"
+    },
+    {
+      "id": "03237cdb2c71",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 68,
+      "symbol": "stopSession",
+      "why": "calls api.disconnect() with no try/catch \u2014 disconnect failure is silently propagated",
+      "status": "fixed"
+    },
+    {
+      "id": "884dfacb1596",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 70,
+      "symbol": "_stopSession",
+      "why": "awaits _state.stopSession() with no try/catch \u2014 session-end failure leaves UI in inconsistent state",
+      "status": "fixed"
+    },
+    {
+      "id": "d4b002c1effa",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "rust/src/debug_http.rs",
+      "line": 68,
+      "symbol": "/debug/logs route",
+      "why": "REST endpoint exists in debug server but Flutter has no HTTP client to call GET /debug/logs for on-demand log retrieval from backend",
+      "status": "fixed"
+    },
+    {
+      "id": "f45e8e37e3ee",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/home_screen.dart",
+      "line": 5,
+      "symbol": "DeviceService",
+      "why": "screen imports service directly \u2014 boundary violation. Should receive DeviceService via DI/InheritedWidget, not import singleton directly.",
+      "status": "fixed"
+    },
+    {
+      "id": "3f5866a253a7",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/home_screen.dart",
+      "line": 6,
+      "symbol": "ReadinessService",
+      "why": "screen imports service directly \u2014 boundary violation. ReadinessService.instance accessed from screen widget, violating layered architecture.",
+      "status": "fixed"
+    },
+    {
+      "id": "9fd3ce0d656e",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 13,
+      "symbol": "HrProcessor",
+      "why": "screen directly instantiates HrProcessor instead of receiving it via DI. Tight coupling to service implementation.",
+      "status": "fixed"
+    },
+    {
+      "id": "eaa90d1f19cf",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 14,
+      "symbol": "LatencyServiceBase",
+      "why": "screen imports concrete service class LatencyServiceBase directly instead of abstraction, violating dependency inversion.",
+      "status": "fixed"
+    },
+    {
+      "id": "a6a71e92d9ef",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 10,
+      "symbol": "HrHistoryService",
+      "why": "screen directly imports service singleton HrHistoryService.instance \u2014 boundary violation. Multiple service singletons accessed from screen layer.",
+      "status": "fixed"
+    },
+    {
+      "id": "aefba39957de",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 11,
+      "symbol": "HealthAlertService",
+      "why": "screen directly imports service singleton HealthAlertService.instance \u2014 boundary violation. Screen connects to streams on service class directly.",
+      "status": "fixed"
+    },
+    {
+      "id": "42ddc499b64a",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 47,
+      "symbol": "_createDefaultState",
+      "why": "Widget creates CoachingScreenState via factory method instead of receiving it \u2014 coaching screen wires its own dependencies breaking inversion of control.",
+      "status": "fixed"
+    },
+    {
+      "id": "fdb5e2876948",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 56,
+      "symbol": "_defaults",
+      "why": "dead module \u2014 hardcoded fallback never referenced unless API fails; 9 template constants exist only to avoid empty state on error path.",
+      "status": "fixed"
+    },
+    {
+      "id": "5a1d1b02ef20",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 6,
+      "symbol": "archive_io",
+      "why": "heavy archive package imported only for ZipEncoder \u2014 dead weight since only encoding is needed, not full archive read/write.",
+      "status": "fixed"
+    },
+    {
+      "id": "6ee69d95aebf",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_session_state.dart",
+      "line": 11,
+      "symbol": "CoachingSessionState.onUpdate",
+      "why": "Field is documented with `/// Callback invoked on every tick...` but has no explicit type annotation \u2014 no `void Function(...)` declaration, just a comment",
+      "status": "fixed"
+    },
+    {
+      "id": "91be11c7b60c",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_session_state.dart",
+      "line": 43,
+      "symbol": "CoachingSessionStateImpl.onUpdate",
+      "why": "Field overrides parent without explicit type annotation; comment `#\u74dc`` only exists on the abstract declaration",
+      "status": "fixed"
+    },
+    {
+      "id": "0557fb694012",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/screens/health_screen_test.dart",
+      "line": 12,
+      "symbol": "buildBanner",
+      "why": "Widget test replicates _StatusBanner as a local function instead of testing the actual screen widget \u2014 tests a mock, not the production code",
+      "status": "fixed"
+    },
+    {
+      "id": "788df0f03d0f",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/screens/health_screen_test.dart",
+      "line": 81,
+      "symbol": "buildAverageCard",
+      "why": "Widget test replicates _AverageCard as a local function instead of testing the actual screen widget \u2014 tests a mock, not the production code",
+      "status": "fixed"
+    },
+    {
+      "id": "92844eaf68c1",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 25,
+      "symbol": "singleton stream accessor",
+      "why": "Test only verifies stream exists and isA<Stream>, not that it emits readiness data \u2014 no real assertions on stream behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "c8364b5c812a",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/session_service_test.dart",
+      "line": 26,
+      "symbol": "exportSession method exists",
+      "why": "Test only checks method exists (isA<Function>) without verifying actual export behavior or output format",
+      "status": "fixed"
+    },
+    {
+      "id": "1864728ac477",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 90,
+      "symbol": "should throw error for volume above 1.0",
+      "why": "Test is skipped with 'TODO: investigate' \u2014 boundary condition (volume > 1.0) is not verified despite being implemented in setter",
+      "status": "fixed"
+    },
+    {
+      "id": "5c89e082ff63",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/coaching_cue_service_test.dart",
+      "line": 105,
+      "symbol": "dispose should complete without error",
+      "why": "Test only checks dispose completes \u2014 does not verify resources are actually released or state is reset",
+      "status": "fixed"
+    },
+    {
+      "id": "14114f6d8b63",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 20,
+      "symbol": "testWidgets 'CalendarScreen shows error state with retry'",
+      "why": "Test verifies error state when FFI fails but never asserts the FFI failure trigger \u2014 relies on implicit setup rather than explicit mock",
+      "status": "fixed"
+    },
+    {
+      "id": "96b22c4e43ba",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "integration_test/connection_flow_test.dart",
+      "line": 34,
+      "symbol": "expect(find.byType(ListTile), findsAtLeastNWidgets(1))",
+      "why": "E2E test checks device count but does not verify device properties (name, signal strength) \u2014 weak assertion on scan results",
+      "status": "fixed"
+    },
+    {
+      "id": "6ba50ab8e88b",
+      "dim": "tests",
+      "sev": "low",
+      "file": "integration_test/app_test.dart",
+      "line": 60,
+      "symbol": "expectWidgetWithKey($hrDisplay)",
+      "why": "E2E test verifies hrDisplay key exists but does not verify HR value is displayed or updates during session",
+      "status": "fixed"
+    },
+    {
+      "id": "c6f3f9506e23",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/diagnosis_service_test.dart",
+      "line": 1,
+      "symbol": "DiagnosisService",
+      "why": "DiagnosisService has no dedicated test file \u2014 device scan/connect/export operations lack unit test coverage",
+      "status": "fixed"
+    },
+    {
+      "id": "527c693f7dfc",
+      "dim": "tests",
+      "sev": "high",
+      "file": "lib/src/services/coaching_screen_streams.dart",
+      "line": 14,
+      "symbol": "CoachingScreenStreams",
+      "why": "CoachingScreenStreams (manages HR/connection streams) has no test file \u2014 stream subscription lifecycle not tested",
+      "status": "fixed"
+    },
+    {
+      "id": "fdf187ed0add",
+      "dim": "tests",
+      "sev": "high",
+      "file": "lib/src/services/hr_processor.dart",
+      "line": 9,
+      "symbol": "HrProcessor",
+      "why": "HrProcessor (processes HR data, maps to zones) has no test file \u2014 BPM extraction and zone mapping logic not tested",
+      "status": "fixed"
+    },
+    {
+      "id": "564223d458f4",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/session_screen_test.dart",
+      "line": 46,
+      "symbol": "SessionScreen shows error state when connection fails",
+      "why": "Test relies on connection failure to trigger error state \u2014 does not explicitly mock the failure for deterministic behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "516e7c08c6eb",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 64,
+      "symbol": "CalendarScreen retry button is tappable",
+      "why": "Test verifies button tap does not crash but does not assert retry actually reloads data or changes UI state",
+      "status": "fixed"
+    },
+    {
+      "id": "a78a04b4133a",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 44,
+      "symbol": "HomeScreen renders quick action chips",
+      "why": "Test verifies chips are present but does not verify tap interaction or navigation behavior for any chip",
+      "status": "fixed"
+    },
+    {
+      "id": "032b8ca3e8ad",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/workout_library_screen_test.dart",
+      "line": 175,
+      "symbol": "test 'filter returns empty for non-matching combination'",
+      "why": "Test uses _buildTestTemplates local mock instead of actual WorkoutTemplate models \u2014 not a true integration test",
+      "status": "fixed"
+    },
+    {
+      "id": "19b4129cef38",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "integration_test/workout_execution_test.dart",
+      "line": 62,
+      "symbol": "hasStartingText conditional branch",
+      "why": "Test branches on UI state but does not assert a deterministic outcome \u2014 outcome depends on timing, not explicit mock",
+      "status": "fixed"
+    },
+    {
+      "id": "36074ad6bcad",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 259,
+      "symbol": "_loadTemplates",
+      "why": "catch (_) silently swallows all exceptions without logging or user feedback",
+      "status": "fixed"
+    },
+    {
+      "id": "daab7d3d9bee",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/coaching_screen_streams.dart",
+      "line": 8,
+      "symbol": "coaching_cue_service",
+      "why": "imported but never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "f9cf14412f67",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 17,
+      "symbol": "",
+      "why": "import line is 152 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "d1f1ce84dccd",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 247,
+      "symbol": "",
+      "why": "NotificationDetails construction is ~135 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "5d9e55e377a6",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 268,
+      "symbol": "_notificationTitle",
+      "why": "switch statement with long case labels spans multiple lines \u2014 consider refactoring",
+      "status": "fixed"
+    },
+    {
+      "id": "8bb02654cd98",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/bin/cli.rs",
+      "line": 1,
+      "symbol": "handle_devices_scan / handle_session_start / handle_analytics_*",
+      "why": "CLI business logic has no fast local unit test\u2014cargo test runs full integration suite",
+      "status": "fixed"
+    },
+    {
+      "id": "9e18786ffdab",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 30,
+      "symbol": "pickAndConnectDevice",
+      "why": "boundary violation: showModalBottomSheet is a UI widget used directly in a service class",
+      "status": "fixed"
+    },
+    {
+      "id": "907e60e55eda",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/services/health_alert_service.dart",
+      "line": 4,
+      "symbol": "HealthAlertService",
+      "why": "health domain coupled to coaching domain via coaching_cue_service.dart import; RawCue could be local",
+      "status": "fixed"
+    },
+    {
+      "id": "d66bf889b860",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 77,
+      "symbol": "playZoneTooLow",
+      "why": "test uses expectLater(service.playZoneTooLow(), completes) \u2014 no assertion on audio playback, just verifies no throw",
+      "status": "fixed"
+    },
+    {
+      "id": "fed7047bdd96",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 83,
+      "symbol": "stopAudio",
+      "why": "test uses expectLater(service.stopAudio(), completes) \u2014 no assertion on stop behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "7dd951290250",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 86,
+      "symbol": "dispose",
+      "why": "test uses expectLater(service.dispose(), completes) \u2014 no assertion on resource cleanup",
+      "status": "fixed"
+    },
+    {
+      "id": "104452138107",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 36,
+      "symbol": "singleton has all expected accessors",
+      "why": "test only checks isNotNull on accessors \u2014 no test of actual settings values or setX behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "8ee6cf2849d6",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 21,
+      "symbol": "has correct method signatures",
+      "why": "test only verifies methods are not null via isNotNull \u2014 no invocation or behavioral assertion (requires Rust FFI, acknowledged in test)",
+      "status": "fixed"
+    },
+    {
+      "id": "ecf1016225f3",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/latency_service_test.dart",
+      "line": 35,
+      "symbol": "start() sets _isActive to true and clears previous samples",
+      "why": "test has no real assertion \u2014 only calls start() then stop(), result is not asserted",
+      "status": "fixed"
+    },
+    {
+      "id": "596cb3f2aca3",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/latency_service_test.dart",
+      "line": 41,
+      "symbol": "stop() sets _isActive to false",
+      "why": "test has no real assertion \u2014 only calls start() then stop(), result is not asserted",
+      "status": "fixed"
+    },
+    {
+      "id": "86c3d41f134d",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/latency_service_test.dart",
+      "line": 47,
+      "symbol": "clearSamples() empties the sample queue",
+      "why": "test has no real assertion \u2014 only calls clearSamples() then getStats(), result is not asserted",
+      "status": "fixed"
+    },
+    {
+      "id": "bd740717d2d8",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/session_service_test.dart",
+      "line": 17,
+      "symbol": "listSessions actually invokes Rust FFI",
+      "why": "test only asserts that listSessions throws \u2014 no behavioral test of export formats, error paths, or session data correctness",
+      "status": "fixed"
+    },
+    {
+      "id": "182a1f82bfda",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 151,
+      "symbol": "_TestableDartLogWriter.append",
+      "why": "bare except silently swallows File.writeAsStringSync failures",
+      "status": "fixed"
+    },
+    {
+      "id": "d4e076f1a82a",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 164,
+      "symbol": "_TestableDartLogWriter.sweepOldFiles",
+      "why": "bare except silently swallows Directory.list and file delete failures",
+      "status": "fixed"
+    },
+    {
+      "id": "4d6f29d0ffe4",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 68,
+      "symbol": "exportAndShareLogs",
+      "why": "Flutter has no embedded HTTP server; REST API for logs only available via standalone debug server binary",
+      "status": "fixed"
+    },
+    {
+      "id": "cbd48e81da3b",
+      "dim": "verify",
+      "sev": "low",
+      "file": "lib/src/services/log_service.dart",
+      "line": 161,
+      "symbol": "exportAsJson",
+      "why": "LogService.exportAsJson() exists but GUI provides no direct JSON output - only share dialog triggers it",
+      "status": "fixed"
+    },
+    {
+      "id": "0e27223f0e0c",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/log_line.dart",
+      "line": 1,
+      "symbol": "LogMessage",
+      "why": "imports LogMessage from FFI bridge \u2014 UI layer directly couples to a Rust-generated struct rather than going through DiagnosisLogService",
+      "status": "fixed"
+    },
+    {
+      "id": "2ced91d12bd2",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 45,
+      "symbol": "DropdownButtonFormField",
+      "why": "uses DropdownButtonFormField but is not wrapped in a Form widget \u2014 runtime error when onChanged fires with no Form ancestor",
+      "status": "fixed"
+    },
+    {
+      "id": "7f315cbce856",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 66,
+      "symbol": "playZoneTooLow",
+      "why": "test only checks `completes` \u2014 no assertion on actual behavior, verifies nothing about the call",
+      "status": "fixed"
+    },
+    {
+      "id": "98d5ca8ddfc5",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 69,
+      "symbol": "playPhaseTransition",
+      "why": "test only checks `completes` \u2014 no assertion on actual behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "53854df29f96",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 93,
+      "symbol": "stopAudio",
+      "why": "test only checks `completes` \u2014 no verification of what stopAudio does",
+      "status": "fixed"
+    },
+    {
+      "id": "5d3a7a31c042",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 98,
+      "symbol": "dispose",
+      "why": "test only checks `completes` \u2014 no verification of dispose side effects",
+      "status": "fixed"
+    },
+    {
+      "id": "9edf48e3d7f8",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/cloud_sync_service_test.dart",
+      "line": 35,
+      "symbol": "initialize (completes without error)",
+      "why": "test only checks `completes` \u2014 no assertion on what initialize produces or persists",
+      "status": "fixed"
+    },
+    {
+      "id": "7324aab035e4",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 50,
+      "symbol": "onZoneTick",
+      "why": "test calls onZoneTick but never asserts that zoneTime was actually accumulated",
+      "status": "fixed"
+    },
+    {
+      "id": "8194127625b0",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 47,
+      "symbol": "getStatusData",
+      "why": "test only checks the method is callable and has correct type signature \u2014 no behavioral verification of status mapping",
+      "status": "fixed"
+    },
+    {
+      "id": "4055b85c4122",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/device_service_test.dart",
+      "line": 57,
+      "symbol": "requestBluetoothPermissions",
+      "why": "test verifies the method runs without throwing but doesn't verify actual permission-requested behavior beyond checking result.granted is-a-bool",
+      "status": "fixed"
+    },
+    {
+      "id": "4172cf2f9387",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 23,
+      "symbol": "latestSample",
+      "why": "test only verifies the method is not null \u2014 no actual invocation or return-value check; Rust FFI unavailable so behavior is unknown",
+      "status": "fixed"
+    },
+    {
+      "id": "d3e7c3dbe651",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 29,
+      "symbol": "samplesInRange",
+      "why": "test only verifies the method is not null \u2014 no boundary-condition testing (empty range, reversed start/end)",
+      "status": "fixed"
+    },
+    {
+      "id": "5a41bec9f23c",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 35,
+      "symbol": "rollingAvg",
+      "why": "test only verifies the method is not null \u2014 no edge cases tested (window=0, very large window)",
+      "status": "fixed"
+    },
+    {
+      "id": "0ae9647ad986",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/latency_service_test.dart",
+      "line": 27,
+      "symbol": "start()",
+      "why": "test calls start() then checks getStats() is null \u2014 only verifies null path, no assertion on non-null stats after samples are added",
+      "status": "fixed"
+    },
+    {
+      "id": "4fdab761e9bf",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/latency_service_test.dart",
+      "line": 31,
+      "symbol": "stop()",
+      "why": "test calls stop() with no assertion \u2014 verifies nothing about what stop() produces",
+      "status": "fixed"
+    },
+    {
+      "id": "070390e5cc20",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/latency_service_test.dart",
+      "line": 35,
+      "symbol": "clearSamples()",
+      "why": "test calls clearSamples() then checks getStats() is null \u2014 only null path tested",
+      "status": "fixed"
+    },
+    {
+      "id": "e0d5d3aa7fc2",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 40,
+      "symbol": "stream",
+      "why": "test creates subscription and checks stream type but never emits data through the stream to verify actual behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "67d561acfddd",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/session_service_test.dart",
+      "line": 26,
+      "symbol": "exportSession",
+      "why": "test only checks method exists (isA<Function>) \u2014 no verification of export behavior or format handling",
+      "status": "fixed"
+    },
+    {
+      "id": "119ac939bb6c",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/session_service_test.dart",
+      "line": 31,
+      "symbol": "sessionPreviewId",
+      "why": "test only checks method exists \u2014 no verification of how preview is constructed or validated",
+      "status": "fixed"
+    },
+    {
+      "id": "33adb05a69fc",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 172,
+      "symbol": "_TestableDartLogWriter.append",
+      "why": "catch (_) {} silently swallows any file write error \u2014 caller has no indication of failure",
+      "status": "fixed"
+    },
+    {
+      "id": "93cd282f2fea",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/diagnosis_screen.dart",
+      "line": 3,
+      "symbol": "Zone (from heart_rate.dart)",
+      "why": "imported type never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "f3f4e1fab40e",
+      "dim": "verify",
+      "sev": "critical",
+      "file": "rust/src/bin/cli.rs",
+      "line": 986,
+      "symbol": "handle_session_stop",
+      "why": "CLI business logic has no fast local test \u2014 session stop handler computes summary and manages checkpoint cleanup with zero unit tests",
+      "status": "fixed"
+    },
+    {
+      "id": "0e4021eded12",
+      "dim": "verify",
+      "sev": "high",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 62,
+      "symbol": "exportAndShareLogs",
+      "why": "export delegates locally to LogService without REST API call \u2014 no path to retrieve historical logs from rolling files",
+      "status": "fixed"
+    },
+    {
+      "id": "c94792005d1d",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "lib/src/bridge/api_generated.dart/api.dart",
+      "line": 1,
+      "symbol": "get_recent_logs",
+      "why": "FFI binding to retrieve past logs is missing \u2014 only live streaming (initLogging) exists, no get_recent_logs equivalent",
+      "status": "fixed"
+    },
+    {
+      "id": "6244cdbae70c",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "rust/src/debug_http.rs",
+      "line": 68,
+      "symbol": "GET /debug/logs",
+      "why": "REST endpoint for on-demand log retrieval exists in Rust but Flutter has no HTTP client to call it",
+      "status": "fixed"
+    },
+    {
+      "id": "62142ae10375",
+      "dim": "arch",
+      "sev": "high",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 3,
+      "symbol": "CoachingSessionState",
+      "why": "boundary violation: tests a screen-layer class (src/screens/coaching_session_state.dart) from within the services test module; the source file was recently deleted per git status",
+      "status": "fixed"
+    },
+    {
+      "id": "5af86681762d",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 1,
+      "symbol": "coaching_session_state_test.dart",
+      "why": "dead module: entire test file imports a deleted class and cannot execute",
+      "status": "fixed"
+    },
+    {
+      "id": "3f949cd21301",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/widgets/session_controls.dart",
+      "line": 93,
+      "symbol": "_handleStop",
+      "why": "async method returns Future<void> but lacks return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "0604ae5335ea",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/widgets/plan_selector.dart",
+      "line": 43,
+      "symbol": "PlanSelector.show",
+      "why": "static async method returns Future<void> but has no return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "ef5f7da3258a",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 78,
+      "symbol": "playZoneTooLow",
+      "why": "uses expectLater(service.playZoneTooLow(), completes) \u2014 only checks no exception, no verification of actual audio playback or side effects",
+      "status": "fixed"
+    },
+    {
+      "id": "ccb67197f9b6",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 82,
+      "symbol": "playPhaseTransition",
+      "why": "uses completes \u2014 weak assertion, no verification of actual behavior or audio output",
+      "status": "fixed"
+    },
+    {
+      "id": "85c58176cc1d",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 86,
+      "symbol": "stopAudio",
+      "why": "uses completes \u2014 only checks no exception is thrown, does not verify audio actually stops",
+      "status": "fixed"
+    },
+    {
+      "id": "38fff8c0db46",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 100,
+      "symbol": "debouncing test",
+      "why": "test comment admits 'In a real test we'd verify no audio was played' \u2014 current test just checks completes, no debounce verification",
+      "status": "fixed"
+    },
+    {
+      "id": "be25088c1f5f",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 47,
+      "symbol": "volume=1.1 throws",
+      "why": "test is skipped \u2014 'TODO: investigate' \u2014 volume boundary above 1.0 is not covered",
+      "status": "fixed"
+    },
+    {
+      "id": "23403d932393",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/coaching_cue_service_test.dart",
+      "line": 61,
+      "symbol": "dispose",
+      "why": "uses completes \u2014 no verification of cleanup behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "788c958e90b1",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 41,
+      "symbol": "onZoneTick accumulates",
+      "why": "test calls onZoneTick multiple times but never asserts zoneTime values changed \u2014 comment says 'we can verify via onUpdate callbacks' but no actual assertion on accumulated time",
+      "status": "fixed"
+    },
+    {
+      "id": "d54594d5b571",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 45,
+      "symbol": "onZoneTick paused",
+      "why": "test title says 'does not accumulate when paused' but only checks no exception \u2014 never asserts zoneTime is unchanged",
+      "status": "fixed"
+    },
+    {
+      "id": "e51851ce9fa9",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/coaching_session_state_test.dart",
+      "line": 49,
+      "symbol": "dispose cancels",
+      "why": "only checks dispose doesn't throw twice \u2014 never verifies timer was actually cancelled or pending callbacks were cleared",
+      "status": "fixed"
+    },
+    {
+      "id": "cde81dcfcbf5",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 25,
+      "symbol": "default values test",
+      "why": "tests are purely type-checking \u2014 only uses isNotNull and isA<Function>() assertions, no behavioral tests of actual getter/setter values",
+      "status": "fixed"
+    },
+    {
+      "id": "e3cfae138be5",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 19,
+      "symbol": "stream accessor",
+      "why": "only asserts stream type \u2014 does not verify stream emits actual readiness data",
+      "status": "fixed"
+    },
+    {
+      "id": "02a4146e9425",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 29,
+      "symbol": "stream emits",
+      "why": "subscription callback uses expect inside listener but never awaits or asserts the emitted value \u2014 test completes before any emission is verified",
+      "status": "fixed"
+    },
+    {
+      "id": "d0d37e60df64",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 19,
+      "symbol": "start sets active",
+      "why": "only checks getStats returns null \u2014 doesn't assert _isActive is true after start()",
+      "status": "fixed"
+    },
+    {
+      "id": "03fb47da607a",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 24,
+      "symbol": "stop sets inactive",
+      "why": "no assertion \u2014 only checks stop() doesn't throw, doesn't verify _isActive state",
+      "status": "fixed"
+    },
+    {
+      "id": "15036c9197d7",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 39,
+      "symbol": "start twice idempotent",
+      "why": "no actual verification that double-start doesn't double-activate \u2014 just checks it doesn't throw",
+      "status": "fixed"
+    },
+    {
+      "id": "34a674089631",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 27,
+      "symbol": "method signatures test",
+      "why": "assigns throw UnimplementedError to local variables and checks isA<Function> \u2014 doesn't test actual service methods",
+      "status": "fixed"
+    },
+    {
+      "id": "f81d8555baac",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 52,
+      "symbol": "has all methods",
+      "why": "only checks isA<bool>()/isA<Function>() types \u2014 doesn't call or verify behavior of any method",
+      "status": "fixed"
+    },
+    {
+      "id": "b16d8094a511",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/diagnosis_screen.dart",
+      "line": 3,
+      "symbol": "flutter/material.dart",
+      "why": "imported module not directly referenced; DiagnosisBody from diagnosis package provides all UI",
+      "status": "fixed"
+    },
+    {
+      "id": "2feb250ea313",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 192,
+      "symbol": "_WorkoutLibraryScreenState",
+      "why": "state class body has ~270 non-blank/non-comment lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "4a2ac92f1fa7",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 242,
+      "symbol": "_buildSparklineChart",
+      "why": "function body has 118 non-blank/non-comment lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "8878fabed864",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 434,
+      "symbol": "_MorningCheckSheet",
+      "why": "statelesswidget build method has 52 non-blank/non-comment lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "45d6ca066a96",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 519,
+      "symbol": "_buildInfoCard",
+      "why": "function body has 50 non-blank/non-comment lines \u2014 at 50-line threshold",
+      "status": "fixed"
+    },
+    {
+      "id": "c9553104763e",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/zone_editor_screen.dart",
+      "line": 265,
+      "symbol": "_buildZoneSlider",
+      "why": "function body has 47 non-blank/non-comment lines \u2014 approaching 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "64e04c8eaad5",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 124,
+      "symbol": "",
+      "why": "line is 122 characters \u2014 exceeds 120-character limit",
+      "status": "fixed"
+    },
+    {
+      "id": "1b67ca6a8c86",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/calendar_screen.dart",
+      "line": 216,
+      "symbol": "",
+      "why": "line is 121 characters \u2014 exceeds 120-character limit",
+      "status": "fixed"
+    },
+    {
+      "id": "6b0fa0314562",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 124,
+      "symbol": "",
+      "why": "line is 122 characters \u2014 exceeds 120-character limit",
+      "status": "fixed"
+    },
+    {
+      "id": "c3c630f956bb",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/bin/cli.rs",
+      "line": 1186,
+      "symbol": "handle_mock_ramp",
+      "why": "CLI mock ramp handler with ~120 lines of logic and no unit tests",
+      "status": "fixed"
+    },
+    {
+      "id": "1824f861e663",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/bin/cli.rs",
+      "line": 1619,
+      "symbol": "handle_plan_list",
+      "why": "CLI plan list handler with business logic and no unit tests",
+      "status": "fixed"
+    },
+    {
+      "id": "a4ec4c87b620",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 16,
+      "symbol": "_SamplePoint",
+      "why": "private domain model (BPM+timestamp) defined inside a screen file \u2014 boundary violation, should live in models/",
+      "status": "fixed"
+    },
+    {
+      "id": "de192c37400e",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_session_state.dart",
+      "line": 14,
+      "symbol": "CoachingSessionStateImpl",
+      "why": "pure business logic (timer/zone tracking) lives in screens layer \u2014 belongs in services/; its only test was deleted, leaving zero coverage",
+      "status": "fixed"
+    },
+    {
+      "id": "cd6417dbdb78",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 43,
+      "symbol": "HrProcessor",
+      "why": "screen directly instantiates HrProcessor concrete class rather than receiving via DI \u2014 couples to impl",
+      "status": "fixed"
+    },
+    {
+      "id": "55bbdb04714f",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 44,
+      "symbol": "LatencyService",
+      "why": "screen directly instantiates LatencyService concrete class rather than receiving via DI \u2014 couples to impl",
+      "status": "fixed"
+    },
+    {
+      "id": "b624c4d4544a",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis/connection_status_card.dart",
+      "line": 3,
+      "symbol": "export",
+      "why": "screen file re-exports ConnectionStatusServiceProvider from services layer \u2014 unusual pattern, screens should not re-export services",
+      "status": "fixed"
+    },
+    {
+      "id": "5637a4a09cf5",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 79,
+      "symbol": "should throw error for volume above 1.0",
+      "why": "test is skipped \u2014 boundary condition (volume > 1.0) is not verified",
+      "status": "fixed"
+    },
+    {
+      "id": "550bfae4cd97",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 95,
+      "symbol": "playZoneTooLow",
+      "why": "uses expectLater(service.playZoneTooLow(), completes) \u2014 only checks no throw, not audio behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "1cb72daaf412",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 26,
+      "symbol": "getStatusData returns ConnectionStatusData with correct mapping",
+      "why": "only verifies method is not null and type signature \u2014 no behavioral assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "98ccd6ba5fd1",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 22,
+      "symbol": "has correct default values",
+      "why": "creates expected object but never calls service methods to verify actual defaults match",
+      "status": "fixed"
+    },
+    {
+      "id": "8c1219fc7112",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 13,
+      "symbol": "has correct method signatures",
+      "why": "only checks methods are not null \u2014 no invocation to verify actual query behavior against a test DB",
+      "status": "fixed"
+    },
+    {
+      "id": "67f76c5f1d56",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 22,
+      "symbol": "singleton stream emits readiness data",
+      "why": "subscription listener only checks types (score isA<int>(), level isA<String>()) \u2014 never asserts on actual emitted values",
+      "status": "fixed"
+    },
+    {
+      "id": "daa6466572a5",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/session_service_test.dart",
+      "line": 10,
+      "symbol": "listSessions actually invokes Rust FFI",
+      "why": "only asserts it throws \u2014 does not verify correct session data is returned when FFI is available",
+      "status": "fixed"
+    },
+    {
+      "id": "b251870862b8",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 42,
+      "symbol": "singleton has all VoiceCoachingHandler methods",
+      "why": "checks isA<bool>()/isA<Function>() but never calls initialize, setEnabled, speak, or dispose",
+      "status": "fixed"
+    },
+    {
+      "id": "822164d94437",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 315,
+      "symbol": "_buildHrDisplay",
+      "why": "function has ~63 lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "2573967d5359",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 1175,
+      "symbol": "",
+      "why": "line has 144 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "9b2e9837c8f5",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 1192,
+      "symbol": "",
+      "why": "line has 121 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "7cc6a35af375",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 1195,
+      "symbol": "",
+      "why": "line has 126 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "89f0975ea732",
+      "dim": "verify",
+      "sev": "critical",
+      "file": "rust/src/cli.rs",
+      "line": 1,
+      "symbol": "",
+      "why": "CLI business logic has no fast local test",
+      "status": "fixed"
+    },
+    {
+      "id": "dc6c21af8ffd",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/logging.rs",
+      "line": 1,
+      "symbol": "",
+      "why": "backend has no rolling log file save \u2014 logs stay in memory only",
+      "status": "fixed"
+    },
+    {
+      "id": "5428f9c8b3ee",
+      "dim": "verify",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis/diagnosis_operations_panel_wrapper.dart",
+      "line": 23,
+      "symbol": "onDumpLogs",
+      "why": "dump-logs uses share intent, not structured JSON output",
+      "status": "fixed"
+    },
+    {
+      "id": "4cc8a9f9b6f1",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 12,
+      "symbol": "RustLib",
+      "why": "Direct FFI bridge import violates clean-arch boundary; other services use provider abstractions instead",
+      "status": "fixed"
+    },
+    {
+      "id": "0ea63bf5a888",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 3,
+      "symbol": "DiagnosisService",
+      "why": "Directly calls FFI top-levels (listSessions, seedDefaultPlans) bypassing service-layer abstraction",
+      "status": "fixed"
+    },
+    {
+      "id": "f399e80c3609",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 27,
+      "symbol": "HealthSettingsService",
+      "why": "God object: ChangeNotifier state + SharedPreferences persistence + FFI bridge push in one class",
+      "status": "fixed"
+    },
+    {
+      "id": "aa016ca6af15",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/services/log_service.dart",
+      "line": 23,
+      "symbol": "LogService",
+      "why": "God object: log buffering, stream distribution, error hooking, and 4 rolling file writers",
+      "status": "fixed"
+    },
+    {
+      "id": "3e4094d97db1",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/services/latency_service.dart",
+      "line": 19,
+      "symbol": "LatencyServiceBase",
+      "why": "Abstract base class with no implementations other than LatencyService itself \u2014 over-engineered abstraction",
+      "status": "fixed"
+    },
+    {
+      "id": "964f9a717410",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/services/latency_service.dart",
+      "line": 20,
+      "symbol": "LatencyServiceBase",
+      "why": "abstract class with 5 untyped methods: start(), stop(), recordSample(ApiFilteredHeartRate), getStats(), clearSamples() \u2014 no return type annotations",
+      "status": "fixed"
+    },
+    {
+      "id": "3c2be9f707dc",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 44,
+      "symbol": "onZoneTick accumulates time for the current zone",
+      "why": "test calls onZoneTick but has no actual assertions on elapsed or zoneTime state \u2014 only a comment about callbacks",
+      "status": "fixed"
+    },
+    {
+      "id": "eb3d71133db0",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 49,
+      "symbol": "onZoneTick does not accumulate when paused",
+      "why": "no assertion \u2014 only checks that no exception is thrown; does not verify elapsed or zoneTime values",
+      "status": "fixed"
+    },
+    {
+      "id": "8b4f4fd03b31",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 55,
+      "symbol": "dispose cancels the timer",
+      "why": "calls dispose twice with no state assertions \u2014 verifies no crash but not actual cancellation behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "482c3f9dbd83",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 10,
+      "symbol": "CalendarScreen can be instantiated with key",
+      "why": "shallow test \u2014 only asserts find.byType (widget renders), no behavior or state assertions",
+      "status": "fixed"
+    },
+    {
+      "id": "dd2d47385bbc",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 16,
+      "symbol": "CalendarScreen can be created with default key",
+      "why": "shallow test \u2014 duplicate of line 10, only checks widget renders without key",
+      "status": "fixed"
+    },
+    {
+      "id": "3173c46df0a0",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 36,
+      "symbol": "retry button is tappable",
+      "why": "tap followed by pumpAndSettle but no assertion on resulting state \u2014 only checks widget still present",
+      "status": "fixed"
+    },
+    {
+      "id": "92423982c4dc",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 7,
+      "symbol": "HomeScreen can be instantiated with key",
+      "why": "shallow widget rendering test \u2014 checks find.byType and static text presence, no behavioral assertions",
+      "status": "fixed"
+    },
+    {
+      "id": "92b3941b20b8",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 20,
+      "symbol": "HomeScreen can be created with default key",
+      "why": "shallow duplicate test \u2014 only checks widget renders, no state or behavior verification",
+      "status": "fixed"
+    },
+    {
+      "id": "ad3cc5320329",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 27,
+      "symbol": "HomeScreen body contains scan button",
+      "why": "asserts button text exists but does not verify button is actually tappable or triggers action",
+      "status": "fixed"
+    },
+    {
+      "id": "98f7af688670",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/session_screen_test.dart",
+      "line": 51,
+      "symbol": "SessionScreen shows HR display when stream has data",
+      "why": "test description says 'stream has data' but no mocking/stubbing of stream \u2014 only checks widget tree structure",
+      "status": "fixed"
+    },
+    {
+      "id": "dabe50d72f79",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/training_load_screen_test.dart",
+      "line": 67,
+      "symbol": "tapping retry button triggers callback",
+      "why": "only asserts callback boolean, does not verify UI actually re-renders or reloads data",
+      "status": "fixed"
+    },
+    {
+      "id": "8c2f869ba357",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 55,
+      "symbol": "TimeOfDay validation: hour > 23 is invalid",
+      "why": "tests TimeOfDay construction that Flutter would not permit \u2014 not a realistic validation path",
+      "status": "fixed"
+    },
+    {
+      "id": "27f14a586f6e",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 60,
+      "symbol": "TimeOfDay validation: minute > 59 is invalid",
+      "why": "tests TimeOfDay construction that Flutter would not permit \u2014 not a realistic validation path",
+      "status": "fixed"
+    },
+    {
+      "id": "b5186fcb1248",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/readiness_screen_test.dart",
+      "line": 76,
+      "symbol": "error text is centered",
+      "why": "asserts TextAlign.center but this is a style property \u2014 doesn't test actual centering in layout",
+      "status": "fixed"
+    },
+    {
+      "id": "e60f37bbda2f",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/diagnosis/connection_status_card.dart",
+      "line": 3,
+      "symbol": "export '../../services/connection_status_service.dart'",
+      "why": "export re-exports ConnectionStatusServiceProvider which is already accessible via direct import on line 2",
+      "status": "fixed"
+    },
+    {
+      "id": "581eae8f7096",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 285,
+      "symbol": "_loadSessionData callback",
+      "why": "line is ~210 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "282fa374b000",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "rust/src/api.rs",
+      "line": 1,
+      "symbol": "",
+      "why": "Backend has rolling daily log files via tracing-appender but no FFI-exposed function for Flutter to retrieve persisted logs on demand",
+      "status": "fixed"
+    },
+    {
+      "id": "9d96664606f2",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 14,
+      "symbol": "coaching_screen_streams",
+      "why": "broken import: this file imports coaching_screen_streams.dart which is deleted but still referenced",
+      "status": "fixed"
+    },
+    {
+      "id": "26452b1905f9",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 5,
+      "symbol": "coaching_screen_streams",
+      "why": "broken import: coaching_screen_streams.dart is deleted but still imported here",
+      "status": "fixed"
+    },
+    {
+      "id": "744611f26158",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 1,
+      "symbol": "Zone",
+      "why": "boundary violation: Zone imported from domain/heart_rate.dart (screens) while services layer uses Zone from models/zone.dart \u2014 two distinct enum types causing confusion at the boundary",
+      "status": "fixed"
+    },
+    {
+      "id": "90d52f437514",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 13,
+      "symbol": "onSourceChanged",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "ba6ef48399e6",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 14,
+      "symbol": "onLevelChanged",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "9242cd069c24",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 15,
+      "symbol": "onSearchChanged",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "ab3bbef5a8d1",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 16,
+      "symbol": "onAutoScrollToggled",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "0f3fe98f3e9e",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/operations_panel.dart",
+      "line": 13,
+      "symbol": "onDisconnect",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "215452f13736",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/operations_panel.dart",
+      "line": 14,
+      "symbol": "onToggleMock",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "e6f50958d56b",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/operations_panel.dart",
+      "line": 15,
+      "symbol": "onExport",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "52f7583f61de",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/operations_panel.dart",
+      "line": 16,
+      "symbol": "onClearCache",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "f973f58be726",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/diagnosis/operations_panel.dart",
+      "line": 17,
+      "symbol": "onDumpLogs",
+      "why": "callback parameter has no type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "c6b00a9f6555",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/calendar_screen.dart",
+      "line": 72,
+      "symbol": "_refreshSessions",
+      "why": "instance method lacks return type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "bc0a2cd4a395",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 44,
+      "symbol": "initialize",
+      "why": "method lacks void return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "223603a13d91",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 60,
+      "symbol": "dispose",
+      "why": "method lacks void return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "ec903d07828d",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_session_state.dart",
+      "line": 47,
+      "symbol": "_startTimer",
+      "why": "instance method lacks return type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "76fcf6da40ae",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 59,
+      "symbol": "_startCueListener",
+      "why": "instance method lacks void return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "871f5a3e7a0e",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 69,
+      "symbol": "_startLiveBpmPolling",
+      "why": "instance method lacks void return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "86351d31112a",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 111,
+      "symbol": "_downsample",
+      "why": "parameter 'points' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "c90dbac460ef",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 247,
+      "symbol": "_sessionRow",
+      "why": "parameter 's' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "1c822d2279ac",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 333,
+      "symbol": "_loadSessionData",
+      "why": "parameter 'session' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "27cc5c4c078f",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 42,
+      "symbol": "_loadReadiness",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "523935b71cae",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 53,
+      "symbol": "_scoreColor",
+      "why": "instance method lacks Color return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "d5b244c510f6",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 59,
+      "symbol": "_componentColor",
+      "why": "instance method lacks Color return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "a1ecd9a6f871",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 64,
+      "symbol": "_fmtDate",
+      "why": "instance method lacks String return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "b88bffe0882e",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 70,
+      "symbol": "_levelLabel",
+      "why": "instance method lacks String return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "f76b7f031bcf",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 66,
+      "symbol": "_connectToDevice",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "83418054c429",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 104,
+      "symbol": "_startBackgroundService",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "bf89afab407d",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 123,
+      "symbol": "_disconnectDevice",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "a78b28f2254e",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 219,
+      "symbol": "_processHrData",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "51d46bd4611c",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/settings_screen.dart",
+      "line": 47,
+      "symbol": "_loadProfile",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "2e4dfe23546e",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/settings_screen.dart",
+      "line": 79,
+      "symbol": "_saveProfile",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "9c4b9b5aac37",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 29,
+      "symbol": "_loadData",
+      "why": "instance method lacks Future<void> return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "b1efafaba53b",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 47,
+      "symbol": "_fmtDate",
+      "why": "instance method lacks String return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "b76c884a33d1",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 213,
+      "symbol": "_chipRow",
+      "why": "parameter 'opts' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "7bfabdf32dc6",
+      "dim": "types",
+      "sev": "medium",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 226,
+      "symbol": "_buildTemplateList",
+      "why": "instance method lacks Widget return type annotation",
+      "status": "fixed"
+    },
+    {
+      "id": "2aa7110cf712",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/zone_editor_screen.dart",
+      "line": 137,
+      "symbol": "_buildZoneSlider",
+      "why": "parameter 'name' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "5cf66a581d43",
+      "dim": "types",
+      "sev": "high",
+      "file": "lib/src/screens/zone_editor_screen.dart",
+      "line": 174,
+      "symbol": "_buildZoneFinalInfo",
+      "why": "parameter 'name' lacks type annotation; defaults to dynamic",
+      "status": "fixed"
+    },
+    {
+      "id": "b1764e38bb5f",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 15,
+      "symbol": "test_latestSample",
+      "why": "test only verifies method isNotNull/isA<Function>, never calls it to verify rollingAvg/samplesInRange/latestSample behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "f1eced354b26",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 42,
+      "symbol": "singleton_has_all_expected_accessors",
+      "why": "test only checks isNotNull for all accessors \u2014 never validates threshold bounds (e.g. threshold=0, negative, >999)",
+      "status": "fixed"
+    },
+    {
+      "id": "e2737adf9c88",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 30,
+      "symbol": "singleton_stream_emits",
+      "why": "test starts a listener but never awaits any data \u2014 verifies stream type, not that data is actually emitted or parsed correctly",
+      "status": "fixed"
+    },
+    {
+      "id": "288aa52269be",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/latency_service_test.dart",
+      "line": 29,
+      "symbol": "start_clears_samples",
+      "why": "test asserts getStats() returns null then calls stop \u2014 no meaningful assertion on actual latency computation or P50/P95/P99 values",
+      "status": "fixed"
+    },
+    {
+      "id": "929e0f8f157b",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 21,
+      "symbol": "correct_method_signatures",
+      "why": "test only validates method signatures exist via isA<Function> checks \u2014 never calls speak() to verify TTS output",
+      "status": "fixed"
+    },
+    {
+      "id": "88ee68df8f6f",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_screen_test.dart",
+      "line": 26,
+      "symbol": "buildBanner",
+      "why": "_BannerStatus enum only has ok/low but _BannerStatus is internal \u2014 no test for unexpected status value or null detail string",
+      "status": "fixed"
+    },
+    {
+      "id": "047bd6f9b548",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/coaching_screen_test.dart",
+      "line": 49,
+      "symbol": "duration_formatting",
+      "why": "CoachingHelpers.formatDuration tests only normal ranges \u2014 no boundary test for Duration.zero or very large Duration (e.g. 100+ hours)",
+      "status": "fixed"
+    },
+    {
+      "id": "fa57d2d9658c",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/analytics_screen_test.dart",
+      "line": 130,
+      "symbol": "zone_distribution",
+      "why": "zone distribution test computes total from zone list then divides \u2014 division-by-zero case when all zones=0 not tested (line 143 shows total=0 but no assertion)",
+      "status": "fixed"
+    },
+    {
+      "id": "07f9c3a02ff4",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/readiness_screen_test.dart",
+      "line": 233,
+      "symbol": "scoreColorFor",
+      "why": "boundary condition score==70 returns green but test doesn't check score==69.9 vs score==70.0 exact threshold separation",
+      "status": "fixed"
+    },
+    {
+      "id": "cb687e153a2a",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 159,
+      "symbol": "_TestableDartLogWriter.append",
+      "why": "catch (_) {} silently swallows all exceptions \u2014 file write failures are ignored",
+      "status": "fixed"
+    },
+    {
+      "id": "a4acbe728da4",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "test/services/log_service_test.dart",
+      "line": 175,
+      "symbol": "_TestableDartLogWriter.sweepOldFiles",
+      "why": "catch (_) {} silently swallows all exceptions \u2014 file deletion failures are ignored",
+      "status": "fixed"
+    },
+    {
+      "id": "6668106849b8",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 4,
+      "symbol": "user_profile.dart",
+      "why": "unused import \u2014 UserProfile type not referenced anywhere in this file",
+      "status": "fixed"
+    },
+    {
+      "id": "11063d631a7e",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 5,
+      "symbol": "zone_helpers.dart",
+      "why": "unused import \u2014 ZoneHelpers not referenced in this file",
+      "status": "fixed"
+    },
+    {
+      "id": "3af29d40c6d6",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 6,
+      "symbol": "HealthAlertService",
+      "why": "boundary violation \u2014 widget directly subscribes to singleton service stream; should be injected via provider/BLoC",
+      "status": "fixed"
+    },
+    {
+      "id": "ab17dcacfacf",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_session_state.dart",
+      "line": 27,
+      "symbol": "CoachingSessionStateImpl",
+      "why": "god object \u2014 timer, zoneTime map, pause state, and elapsed all in one class; mixing timer logic with zone tracking",
+      "status": "fixed"
+    },
+    {
+      "id": "ababdfa3dedd",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 1,
+      "symbol": "getStatusData",
+      "why": "test only verifies method signature is Future<ConnectionStatusData> Function() \u2014 no behavioral assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "4734b6954768",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/session_service_test.dart",
+      "line": 1,
+      "symbol": "SessionService",
+      "why": "only exportSession/sessionPreviewId methods checked as isA<Function>() \u2014 no export format or session preview tests",
+      "status": "fixed"
+    },
+    {
+      "id": "fec567b225e3",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 92,
+      "symbol": "_stopSession",
+      "why": "api.disconnect() called without try-catch \u2014 disconnect failure leaves session state inconsistent",
+      "status": "fixed"
+    },
+    {
+      "id": "4e9fca40f9cc",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 78,
+      "symbol": "stopSession",
+      "why": "api.disconnect() called without try-catch \u2014 disconnect failure silently ignored",
+      "status": "fixed"
+    },
+    {
+      "id": "bf99b2e52dbf",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/calendar_screen.dart",
+      "line": 1,
+      "symbol": "fl_chart",
+      "why": "imported module never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "c1fa10b04c89",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/bin/cli.rs",
+      "line": 1,
+      "symbol": "main, handle_devices_connect, handle_session_start, handle_mock_steady",
+      "why": "CLI binary has no #[test] modules \u2014 heavy business logic (BLE connect, HR filter, session executor) inaccessible via fast local test",
+      "status": "fixed"
+    },
+    {
+      "id": "1c0e7a7b9910",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 1,
+      "symbol": "exportAndShareLogs",
+      "why": "Flutter has no HTTP client to call Rust debug server GET /debug/logs \u2014 uses Share.share on in-memory buffer instead of REST retrieval",
+      "status": "fixed"
+    },
+    {
+      "id": "9f4f0038545f",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 4,
+      "symbol": "CoachingScreen",
+      "why": "Screen layer imports coaching_screen_streams.dart (a service) directly \u2014 violates layer boundary. Should access via coaching_screen_state.dart abstraction only.",
+      "status": "fixed"
+    },
+    {
+      "id": "1d45766bb26f",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen_state.dart",
+      "line": 5,
+      "symbol": "CoachingScreenState._streams",
+      "why": "State object in screen layer holds direct reference to CoachingScreenStreams service, creating hidden coupling. The streams dependency should be surfaced at construction boundary only.",
+      "status": "fixed"
+    },
+    {
+      "id": "8e49cc388744",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis/connection_status_card.dart",
+      "line": 2,
+      "symbol": "export '../../services/connection_status_service.dart'",
+      "why": "Redundant re-export \u2014 file already imports the same module. Re-export serves no purpose since consumers can import directly from the service.",
+      "status": "fixed"
+    },
+    {
+      "id": "cccee23e94db",
+      "dim": "tests",
+      "sev": "critical",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 36,
+      "symbol": "test('onZoneTick accumulates time for the current zone')",
+      "why": "test calls onZoneTick twice then has no assertion \u2014 verifies nothing about zoneTime accumulation",
+      "status": "fixed"
+    },
+    {
+      "id": "dfb9a895614d",
+      "dim": "tests",
+      "sev": "critical",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 42,
+      "symbol": "test('onZoneTick does not accumulate when paused')",
+      "why": "test calls onZoneTick while paused with no assertion \u2014 does not verify that zone time stayed at zero",
+      "status": "fixed"
+    },
+    {
+      "id": "c5ad0ecf0358",
+      "dim": "tests",
+      "sev": "critical",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 48,
+      "symbol": "test('dispose cancels the timer')",
+      "why": "test calls dispose twice with no assertion \u2014 does not verify timer was actually cancelled or elapsed stopped",
+      "status": "fixed"
+    },
+    {
+      "id": "a3ac65db6466",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/screens/workout_library_screen_test.dart",
+      "line": 162,
+      "symbol": "test('null sport filter returns all')",
+      "why": "filter lambda uses hardcoded null: 'null != null' is always false \u2014 test always passes regardless of filter logic",
+      "status": "fixed"
+    },
+    {
+      "id": "531fb8c758e7",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/screens/workout_library_screen_test.dart",
+      "line": 171,
+      "symbol": "test('null difficulty filter returns all')",
+      "why": "filter lambda uses hardcoded null: 'null != null' is always false \u2014 test always passes regardless of filter logic",
+      "status": "fixed"
+    },
+    {
+      "id": "21c2578cefaa",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/calendar_screen_test.dart",
+      "line": 14,
+      "symbol": "testWidgets('CalendarScreen renders AppBar with title')",
+      "why": "all 9 tests exercise only the FFI-unavailable error path \u2014 no test coverage for the happy path (FFI available, plan loaded)",
+      "status": "fixed"
+    },
+    {
+      "id": "ec111a3470e9",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/home_screen_test.dart",
+      "line": 8,
+      "symbol": "testWidgets('HomeScreen can be instantiated with key')",
+      "why": "tests only FFI-unavailable empty/scan state \u2014 no coverage for connected device list, device selection, or scanning state",
+      "status": "fixed"
+    },
+    {
+      "id": "88f503cf6d7e",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/session_screen_test.dart",
+      "line": 88,
+      "symbol": "testWidgets('SessionScreen shows session timer during active session')",
+      "why": "skip: false on a timing-dependent test \u2014 comment acknowledges connection-dependent behavior; likely flaky in CI",
+      "status": "fixed"
+    },
+    {
+      "id": "fa366575ebd6",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 58,
+      "symbol": "testWidgets('TimeOfDay validation: hour > 23 is invalid')",
+      "why": "tests Dart TimeOfDay constructor behavior not app validation logic \u2014 TimeOfDay(hour:25) is a language guarantee, not app code",
+      "status": "fixed"
+    },
+    {
+      "id": "1159f5ae2aca",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 63,
+      "symbol": "testWidgets('TimeOfDay validation: minute > 59 is invalid')",
+      "why": "tests Dart TimeOfDay constructor behavior not app validation logic \u2014 TimeOfDay(minute:99) is a language guarantee, not app code",
+      "status": "fixed"
+    },
+    {
+      "id": "1b5d2f1b0299",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/analytics_screen_test.dart",
+      "line": 1,
+      "symbol": "_OverviewCardTestWidget, _EmptyStateTestWidget, _ErrorStateTestWidget",
+      "why": "test widget builders replicate source code \u2014 fragile duplication that will diverge when source changes; should test actual widgets via golden or mock FFI",
+      "status": "fixed"
+    },
+    {
+      "id": "d1e389df1b67",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/health_screen_test.dart",
+      "line": 1,
+      "symbol": "_BannerStatus enum, buildBanner, buildAverageCard",
+      "why": "test replicates enum and widget builders from source \u2014 should import and test actual HealthScreen widgets with mocked FFI",
+      "status": "fixed"
+    },
+    {
+      "id": "baf5a8986f25",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/screens/training_load_screen_test.dart",
+      "line": 300,
+      "symbol": "_buildLegendContent, _buildInfoContent, _infoRow, _legendRow",
+      "why": "test widget builders replicate source \u2014 fragile duplication; should test actual screen widgets via golden or mock FFI",
+      "status": "fixed"
+    },
+    {
+      "id": "73b3586aad81",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 196,
+      "symbol": "_exportSelectedSessions",
+      "why": "inner except catches all exceptions silently \u2014 user is not notified which sessions failed",
+      "status": "fixed"
+    },
+    {
+      "id": "e70571280d85",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/analytics_screen.dart",
+      "line": 2,
+      "symbol": "intl",
+      "why": "imported but never used \u2014 DateFormat is accessed via package:fl_chart's own date formatting",
+      "status": "fixed"
+    },
+    {
+      "id": "a9ab4019f570",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 120,
+      "symbol": "_loadSparklineData",
+      "why": "function has 63 lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "ef5f91d24e36",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 147,
+      "symbol": "_downsample",
+      "why": "function has 51 lines \u2014 exceeds 50-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "90c53eb432f2",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 100,
+      "symbol": "",
+      "why": "line has 184 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "4487a70f4543",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 101,
+      "symbol": "",
+      "why": "line has 162 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "68964d89a396",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 300,
+      "symbol": "",
+      "why": "line has 145 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "46b42ffdebb4",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 310,
+      "symbol": "",
+      "why": "line has 148 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "c5bc531443ec",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 320,
+      "symbol": "",
+      "why": "line has 146 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "c4976b34393f",
+      "dim": "verify",
+      "sev": "critical",
+      "file": "rust/src/bin/cli.rs",
+      "line": 319,
+      "symbol": "handle_devices_scan, handle_mock_steady, handle_mock_ramp, handle_mock_interval, handle_analytics_summary",
+      "why": "CLI business logic has no fast local unit test \u2014 tests in rust/tests/ are integration tests requiring tokio runtime and BLE hardware",
+      "status": "fixed"
+    },
+    {
+      "id": "68747a451f6e",
+      "dim": "verify",
+      "sev": "low",
+      "file": "lib/src/services/log_service.dart",
+      "line": 299,
+      "symbol": "exportAsJson",
+      "why": "LogService has exportAsJson but GUI has no button to trigger JSON output directly \u2014 only share sheet trigger via exportAndShareLogs",
+      "status": "fixed"
+    },
+    {
+      "id": "c9f3d5eef058",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis_screen.dart",
+      "line": 3,
+      "symbol": "Zone (heart_rate.dart)",
+      "why": "imported but never referenced in this file \u2014 dead import",
+      "status": "fixed"
+    },
+    {
+      "id": "2a386f14bd65",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis/connection_status_card.dart",
+      "line": 3,
+      "symbol": "ConnectionStatusServiceProvider re-export",
+      "why": "re-exports same symbol from same package with no transformation \u2014 adds no value, obscures real import path",
+      "status": "fixed"
+    },
+    {
+      "id": "5e39d2915b4e",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 6,
+      "symbol": "ProfileService import",
+      "why": "screen layer directly depends on service \u2014 violates layering; use controller/provider instead",
+      "status": "fixed"
+    },
+    {
+      "id": "cff13f90041c",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/health_screen.dart",
+      "line": 6,
+      "symbol": "HealthAlertService import",
+      "why": "screen layer directly depends on service \u2014 violates layering; should go through a controller",
+      "status": "fixed"
+    },
+    {
+      "id": "d02dcf2fb022",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 6,
+      "symbol": "HrProcessor import",
+      "why": "screen layer directly depends on service \u2014 violates layering; processing logic should be behind an abstraction",
+      "status": "fixed"
+    },
+    {
+      "id": "1c3b861f32bc",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/share_service_test.dart",
+      "line": 17,
+      "symbol": "has shareText method",
+      "why": "test only checks method exists \u2014 no behavioral assertions on shareText/shareFile/shareFiles",
+      "status": "fixed"
+    },
+    {
+      "id": "0bb387b2f3d2",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/session_service_test.dart",
+      "line": 31,
+      "symbol": "sessionPreviewId method exists",
+      "why": "test only checks method is a Function \u2014 no behavior or return-type assertions",
+      "status": "fixed"
+    },
+    {
+      "id": "c419f2298cfd",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 25,
+      "symbol": "VoiceCoachingHandler cannot be directly instantiated",
+      "why": "always-true bool assertion \u2014 not a real test, just documents abstract class design",
+      "status": "fixed"
+    },
+    {
+      "id": "48cff5d97bcc",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 29,
+      "symbol": "has correct method signatures",
+      "why": "tests assign lambdas to function variables to check types \u2014 not testing the service itself",
+      "status": "fixed"
+    },
+    {
+      "id": "125f60d40da9",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 38,
+      "symbol": "getStatusData returns ConnectionStatusData",
+      "why": "checks only the method's type signature \u2014 no behavioral assertions on actual mapping",
+      "status": "fixed"
+    },
+    {
+      "id": "83ceb21a8b73",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 64,
+      "symbol": "singleton has initialize and reload methods",
+      "why": "checks only that methods exist \u2014 no behavior or side-effect assertions",
+      "status": "fixed"
+    },
+    {
+      "id": "809a6032d953",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 33,
+      "symbol": "singleton has all three query methods",
+      "why": "only verifies methods are not null and are Functions \u2014 no actual invocation or behavior test",
+      "status": "fixed"
+    },
+    {
+      "id": "aeffdcd553d1",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 76,
+      "symbol": "playZoneTooLow should complete without error",
+      "why": "expectLater(someAsyncCall(), completes) only verifies no exception \u2014 no behavior assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "0a91ff4200bd",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 79,
+      "symbol": "playPhaseTransition should complete without error",
+      "why": "expectLater(someAsyncCall(), completes) only verifies no exception \u2014 no behavior assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "3e6a2344c002",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 85,
+      "symbol": "dispose should complete without error",
+      "why": "expectLater(someAsyncCall(), completes) only verifies no exception \u2014 no behavior assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "c1cd4907f2cb",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_settings_service.dart",
+      "line": 63,
+      "symbol": "setLowHrThreshold",
+      "why": "setter exists but no boundary test (e.g., threshold < 40 or > 200)",
+      "status": "fixed"
+    },
+    {
+      "id": "636c9f75f640",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_service.dart",
+      "line": 115,
+      "symbol": "setVolume",
+      "why": "no boundary test for vol < 0.0 or > 1.0 despite validation logic in source",
+      "status": "fixed"
+    },
+    {
+      "id": "5ac7ec4c1eec",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_service.dart",
+      "line": 124,
+      "symbol": "setRate",
+      "why": "no boundary test for rate < 0.0 or > 1.0 despite validation logic in source",
+      "status": "fixed"
+    },
+    {
+      "id": "8d40bb0f623d",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/coaching_cue_service_test.dart",
+      "line": 68,
+      "symbol": "dispose should complete without error",
+      "why": "expectLater(someAsyncCall(), completes) only verifies no exception \u2014 no behavior assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "3573cf870e9c",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/coaching_cue_service_test.dart",
+      "line": 51,
+      "symbol": "initialize should complete without error",
+      "why": "expectLater(someAsyncCall(), completes) only verifies no exception \u2014 no behavior assertion",
+      "status": "fixed"
+    },
+    {
+      "id": "3084e2d3820c",
+      "dim": "errors",
+      "sev": "medium",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 150,
+      "symbol": "_exportSelectedSessions",
+      "why": "catch(e) per session only debugPrints and continues \u2014 per-session failure is not surfaced to user, only an aggregated log line",
+      "status": "fixed"
+    },
+    {
+      "id": "8660a0405e4d",
+      "dim": "arch",
+      "sev": "medium",
+      "file": "lib/src/screens/diagnosis/connection_status_card.dart",
+      "line": 3,
+      "symbol": "export '../../services/connection_status_service.dart'",
+      "why": "widget file re-exports a service \u2014 screens that import this card transitively expose the service layer API, violating layer boundaries",
+      "status": "fixed"
+    },
+    {
+      "id": "be8e703bc4f5",
+      "dim": "arch",
+      "sev": "low",
+      "file": "lib/src/screens/session_screen.dart",
+      "line": 38,
+      "symbol": "_hrProcessor",
+      "why": "direct instantiation of HrProcessor instead of DI \u2014 couples screen to concrete impl, harder to test in isolation",
+      "status": "fixed"
+    },
+    {
+      "id": "b8bd049db9a0",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/screens/analytics_screen.dart",
+      "line": 309,
+      "symbol": "_titles.<anonymous>.getTitlesWidget",
+      "why": "Parameters `v` and `meta` in getTitlesWidget lambda lack explicit type annotations; fl_chart's TitleMeta and double are inferred",
+      "status": "fixed"
+    },
+    {
+      "id": "91ea9cc67207",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/screens/health_settings_screen.dart",
+      "line": 193,
+      "symbol": "_HealthSettingsScreenState.<anonymous>.onChanged",
+      "why": "Slider onChanged callback parameter `val` lacks explicit type annotation; inferred as double from Slider's ValueChanged<double>",
+      "status": "fixed"
+    },
+    {
+      "id": "118abb8941b4",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/screens/diagnosis/filter_bar.dart",
+      "line": 45,
+      "symbol": "DiagnosisFilterBar.<anonymous>.onSelected",
+      "why": "FilterChip onSelected callback parameter `_` lacks explicit type annotation; inferred as bool? from FilterChip's signature",
+      "status": "fixed"
+    },
+    {
+      "id": "7ec220c5fa6b",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 267,
+      "symbol": "_buildTrimpChart.<anonymous>.getTitlesWidget",
+      "why": "Parameters `v` and `meta` in getTitlesWidget lambda lack explicit type annotations",
+      "status": "fixed"
+    },
+    {
+      "id": "77fe3f569a02",
+      "dim": "types",
+      "sev": "low",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 178,
+      "symbol": "_pmcLineChart.<anonymous>.getTitlesWidget",
+      "why": "Parameters `v` and `meta` in getTitlesWidget lambda lack explicit type annotations",
+      "status": "fixed"
+    },
+    {
+      "id": "a4f41f7ed938",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 1,
+      "symbol": "ConnectionStatusServiceProvider",
+      "why": "all 3 provider tests only verify isNotNull/isA<Function> \u2014 getStatusData mapping from ApiConnectionStatus is untested",
+      "status": "fixed"
+    },
+    {
+      "id": "135c29a70999",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 29,
+      "symbol": "test('start() sets _isActive to true and clears previous samples')",
+      "why": "test has no meaningful assertion \u2014 checks getStats()==null but never asserts _isActive state or validates that samples were actually cleared",
+      "status": "fixed"
+    },
+    {
+      "id": "f2638e12908c",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/latency_service_test.dart",
+      "line": 35,
+      "symbol": "test('stop() sets _isActive to false')",
+      "why": "test has no assertion \u2014 calls start()/stop() with no expect() to verify isActive state",
+      "status": "fixed"
+    },
+    {
+      "id": "68f1a837fd0c",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/session_screen_test.dart",
+      "line": 46,
+      "symbol": "testWidgets('SessionScreen shows error state when connection fails')",
+      "why": "test verifies error icon/retry button appear but never checks the actual error message content \u2014 error-message correctness is unverified",
+      "status": "fixed"
+    },
+    {
+      "id": "096f1647b642",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/coaching_session_state_test.dart",
+      "line": 70,
+      "symbol": "test('dispose cancels the timer')",
+      "why": "dispose is called twice with no assertion \u2014 cannot verify timer was actually cancelled without checking internal state or using a mock timer",
+      "status": "fixed"
+    },
+    {
+      "id": "99e96d740450",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/health_alert_service_test.dart",
+      "line": 133,
+      "symbol": "test('showSustainedLowHrNotification parses HealthAlert correctly')",
+      "why": "mock platform show() is no-op \u2014 test only verifies it doesn't throw, not that notification content/ID was constructed correctly",
+      "status": "fixed"
+    },
+    {
+      "id": "e5bcadaef2cd",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 52,
+      "symbol": "testWidgets('TimeOfDay validation: hour > 23 is invalid')",
+      "why": "validation test only checks hour>23 flag without expect() \u2014 creates invalid TimeOfDay and asserts the flag is true, not that validation rejects it",
+      "status": "fixed"
+    },
+    {
+      "id": "3b3f984586cb",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/health_settings_screen_test.dart",
+      "line": 56,
+      "symbol": "testWidgets('TimeOfDay validation: minute > 59 is invalid')",
+      "why": "validation test only checks minute>59 flag without expect() \u2014 same issue as hour validation",
+      "status": "fixed"
+    },
+    {
+      "id": "f55d5778b6d5",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/screens/workout_library_screen_test.dart",
+      "line": 258,
+      "symbol": "test('null sport filter returns all')",
+      "why": "filter logic uses 'if (null != null && ...)' which is always false \u2014 bug in test\u4f7f\u5f97null filter case always passes regardless of real filter behavior",
+      "status": "fixed"
+    },
+    {
+      "id": "3faa6d2bab3d",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/profile_service_test.dart",
+      "line": 1,
+      "symbol": "ProfileService",
+      "why": "tests load JSON and check field nullability but never test round-trip save/load or validation of age, maxHR, or custom zones bounds",
+      "status": "fixed"
+    },
+    {
+      "id": "cd12e93313fe",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/device_service_test.dart",
+      "line": 48,
+      "symbol": "test('requestBluetoothPermissions actually invokes permission logic')",
+      "why": "test calls real method but only checks result type, not that correct platform channels were invoked with expected arguments",
+      "status": "fixed"
+    },
+    {
+      "id": "06c6c8c9e319",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_service_test.dart",
+      "line": 1,
+      "symbol": "VoiceCoachingService",
+      "why": "no test file found for VoiceCoachingService \u2014 TTS speak content, language fallback, speech rate bounds, and error recovery are untested",
+      "status": "fixed"
+    },
+    {
+      "id": "6d067e165e10",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/background_service_test.dart",
+      "line": 1,
+      "symbol": "BackgroundService",
+      "why": "no test file found for BackgroundService \u2014 background hr sampling, background task scheduling, and battery optimization handling are untested",
+      "status": "fixed"
+    },
+    {
+      "id": "3d9c3bec9495",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/diagnosis_log_service_test.dart",
+      "line": 1,
+      "symbol": "DiagnosisLogService",
+      "why": "no test file found for DiagnosisLogService \u2014 log rotation, entry formatting, and severity filtering are untested",
+      "status": "fixed"
+    },
+    {
+      "id": "be5c8d199d94",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/hr_processor_test.dart",
+      "line": 1,
+      "symbol": "HrProcessor",
+      "why": "no test file found for HrProcessor \u2014 HR spike filtering, outlier rejection, and sample windowing logic are untested",
+      "status": "fixed"
+    },
+    {
+      "id": "d07b1a6c3259",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/coaching_screen_streams_test.dart",
+      "line": 1,
+      "symbol": "CoachingScreenStreams",
+      "why": "no test file found for CoachingScreenStreams \u2014 stream lifecycle, dispose behavior, and stream error propagation are untested",
+      "status": "fixed"
+    },
+    {
+      "id": "a4728ad8be54",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/voice_coaching_service.dart",
+      "line": 302,
+      "symbol": "_RollingFileWriter._append",
+      "why": "on Exception catch (_) silently swallows all exceptions \u2014 best-effort log writer loses writes with no indication",
+      "status": "fixed"
+    },
+    {
+      "id": "cd2748931afb",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/voice_coaching_service.dart",
+      "line": 318,
+      "symbol": "_RollingFileWriter.appendLine",
+      "why": "on Exception catch (_) silently swallows all exceptions \u2014 native log lines can be lost without any signal",
+      "status": "fixed"
+    },
+    {
+      "id": "d3cedce67038",
+      "dim": "errors",
+      "sev": "low",
+      "file": "lib/src/services/voice_coaching_service.dart",
+      "line": 343,
+      "symbol": "_RollingFileWriter.sweepOldFiles",
+      "why": "catch (_) in retention cleanup \u2014 acceptable best-effort, but suppression masks failures",
+      "status": "fixed"
+    },
+    {
+      "id": "68a99b56d647",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/calendar_screen.dart",
+      "line": 2,
+      "symbol": "intl",
+      "why": "imported module never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "15906ed3ca4b",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/readiness_screen.dart",
+      "line": 2,
+      "symbol": "intl",
+      "why": "imported module never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "657810f855c4",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 2,
+      "symbol": "intl",
+      "why": "imported module never referenced in file body",
+      "status": "fixed"
+    },
+    {
+      "id": "5122962a1b30",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/history_screen.dart",
+      "line": 532,
+      "symbol": "",
+      "why": "file has 532 lines \u2014 exceeds 500-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "cd25fe9e2542",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/plan_builder_screen.dart",
+      "line": 538,
+      "symbol": "",
+      "why": "file has 538 lines \u2014 exceeds 500-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "86b0c8370da6",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/training_load_screen.dart",
+      "line": 573,
+      "symbol": "",
+      "why": "file has 573 lines \u2014 exceeds 500-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "190405a8a3c0",
+      "dim": "style",
+      "sev": "high",
+      "file": "lib/src/screens/workout_library_screen.dart",
+      "line": 651,
+      "symbol": "",
+      "why": "file has 651 lines \u2014 exceeds 500-line limit",
+      "status": "fixed"
+    },
+    {
+      "id": "471dbc23a112",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 147,
+      "symbol": "",
+      "why": "line is 135 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "e4820476182f",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/screens/coaching_screen.dart",
+      "line": 150,
+      "symbol": "",
+      "why": "line is 124 chars \u2014 exceeds 120-char limit",
+      "status": "fixed"
+    },
+    {
+      "id": "33a916dcedb7",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/logging.rs",
+      "line": 198,
+      "symbol": "file_appender",
+      "why": "Backend uses tracing_appender rolling daily but never cleans up old files \u2014 log files accumulate forever with no retention policy",
+      "status": "fixed"
+    },
+    {
+      "id": "c5d963fc3fe0",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "lib/src/services/log_service.dart",
+      "line": 37,
+      "symbol": "LogService",
+      "why": "Frontend retrieves logs only via FFI StreamSubscription \u2014 no HTTP client to call backend /debug/logs REST endpoint for persisted log retrieval",
+      "status": "fixed"
+    },
+    {
+      "id": "2855d1e32272",
+      "dim": "verify",
+      "sev": "medium",
+      "file": "lib/src/widgets/debug_console.dart",
+      "line": 138,
+      "symbol": "DebugConsole",
+      "why": "DebugConsole has close button but no export/share button \u2014 LogService.exportAsJson and DiagnosisService.exportAndShareLogs exist but have no UI trigger",
+      "status": "fixed"
+    },
+    {
+      "id": "c6ea07743322",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/widgets/audio_settings_card.dart",
+      "line": 78,
+      "symbol": "AudioFeedbackService",
+      "why": "widget layer directly instantiates service singleton \u2014 violates clean architecture boundary",
+      "status": "fixed"
+    },
+    {
+      "id": "ba387d56eee4",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/widgets/cue_card.dart",
+      "line": 2,
+      "symbol": "coaching_cue",
+      "why": "widget imports from ../services/ \u2014 service dependency in widget layer",
+      "status": "open"
+    },
+    {
+      "id": "21216edaeecb",
+      "dim": "arch",
+      "sev": "high",
+      "file": "lib/src/widgets/debug_console_overlay.dart",
+      "line": 3,
+      "symbol": "log_service",
+      "why": "widget imports from ../services/ \u2014 service dependency in widget layer",
+      "status": "open"
+    },
+    {
+      "id": "b116de2d291b",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 92,
+      "symbol": "test('playZoneTooLow should complete without error')",
+      "why": "expectLater(service.playZoneTooLow(), completes) is a no-op assertion \u2014 only verifies future resolves, not audio playback",
+      "status": "open"
+    },
+    {
+      "id": "7c435a4a9fcc",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 94,
+      "symbol": "test('playPhaseTransition should complete without error')",
+      "why": "expectLater(service.playPhaseTransition(), completes) is a no-op \u2014 does not verify TTS or audio was actually invoked",
+      "status": "open"
+    },
+    {
+      "id": "511004e2ab5d",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 96,
+      "symbol": "test('stopAudio should complete without error')",
+      "why": "expectLater(service.stopAudio(), completes) is a no-op assertion",
+      "status": "open"
+    },
+    {
+      "id": "8f843940a789",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 98,
+      "symbol": "test('dispose should complete without error')",
+      "why": "expectLater(service.dispose(), completes) is a no-op \u2014 does not verify resource cleanup",
+      "status": "open"
+    },
+    {
+      "id": "e9b29ddd38c6",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/audio_feedback_service_test.dart",
+      "line": 90,
+      "symbol": "test skip: 'Volume setter throws ArgumentError synchronously'",
+      "why": "Known-skipped TODO \u2014 ArgumentError behavior for volume > 1.0 is unverified and may regress",
+      "status": "open"
+    },
+    {
+      "id": "d5125a1a6963",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/health_settings_service_test.dart",
+      "line": 9,
+      "symbol": "HealthSettingsService tests",
+      "why": "Only tests singleton identity and method signatures \u2014 no test of actual get/set/persist behavior, validation, or error paths",
+      "status": "open"
+    },
+    {
+      "id": "075949f8143a",
+      "dim": "tests",
+      "sev": "high",
+      "file": "test/services/hr_history_service_test.dart",
+      "line": 9,
+      "symbol": "HrHistoryService tests",
+      "why": "Only compile-time signature checks and singleton identity \u2014 latestSample/samplesInRange/rollingAvg not invoked because they require Rust FFI",
+      "status": "open"
+    },
+    {
+      "id": "b6f245e0f4af",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/readiness_service_test.dart",
+      "line": 26,
+      "symbol": "test('singleton stream emits readiness data')",
+      "why": "Creates subscription with listen() callback but never cancels it, and callback assertions run without verification that emissions occurred",
+      "status": "open"
+    },
+    {
+      "id": "fe875583ffa4",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/connection_status_service_test.dart",
+      "line": 18,
+      "symbol": "test('getStatusData returns ConnectionStatusData with correct mapping')",
+      "why": "Explicitly skips behavioral mapping test because ApiConnectionStatus is opaque Rust type \u2014 real FFI behavior untested",
+      "status": "open"
+    },
+    {
+      "id": "3842d85df683",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/device_service_test.dart",
+      "line": 49,
+      "symbol": "test('requestBluetoothPermissions actually invokes permission logic')",
+      "why": "Only checks result structure, not that granted field is correct \u2014 permission granted flag unverified",
+      "status": "open"
+    },
+    {
+      "id": "fccb8f3a82f2",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/voice_coaching_handler_test.dart",
+      "line": 21,
+      "symbol": "VoiceCoachingHandler tests",
+      "why": "Only interface-contract tests \u2014 isEnabled, initialize, setEnabled, speak, dispose never exercised with real state changes",
+      "status": "open"
+    },
+    {
+      "id": "321263eb5da3",
+      "dim": "tests",
+      "sev": "medium",
+      "file": "test/services/session_service_test.dart",
+      "line": 9,
+      "symbol": "SessionService tests",
+      "why": "listSessions is expected to throw without Rust FFI, exportSession/sessionPreviewId only checked for method existence",
+      "status": "open"
+    },
+    {
+      "id": "5da13956272c",
+      "dim": "tests",
+      "sev": "low",
+      "file": "test/services/health_alert_service_test.dart",
+      "line": 69,
+      "symbol": "test('showSustainedLowHrNotification parses HealthAlert correctly')",
+      "why": "Only verifies it does not throw \u2014 notification text or alert state after show is unverified",
+      "status": "open"
+    },
+    {
+      "id": "b6179ef4b84e",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/coaching_screen_streams.dart",
+      "line": 57,
+      "symbol": "_handleHrData",
+      "why": "await _hrProcessor.process() and onHrData?.call() have no try/catch \u2014 uncaught errors terminate stream subscribers",
+      "status": "open"
+    },
+    {
+      "id": "e19e95175475",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/coaching_screen_streams.dart",
+      "line": 62,
+      "symbol": "_handleStatusChange",
+      "why": "await connectionStatusIsConnected() has no try/catch \u2014 uncaught errors terminate stream subscribers",
+      "status": "open"
+    },
+    {
+      "id": "e8f38815dd5d",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 63,
+      "symbol": "setLowHrThreshold",
+      "why": "await _bridge.push() has no try/catch \u2014 FFI failure propagates uncaught to UI callers",
+      "status": "open"
+    },
+    {
+      "id": "2b881d08eee9",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 71,
+      "symbol": "setSustainedMinutes",
+      "why": "await _bridge.push() has no try/catch \u2014 FFI failure propagates uncaught to UI callers",
+      "status": "open"
+    },
+    {
+      "id": "e09d21eb7da2",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 79,
+      "symbol": "setSampleCadenceSecs",
+      "why": "await _bridge.push() has no try/catch \u2014 FFI failure propagates uncaught to UI callers",
+      "status": "open"
+    },
+    {
+      "id": "f8937d55a921",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 87,
+      "symbol": "setQuietStart",
+      "why": "await _bridge.push() has no try/catch \u2014 FFI failure propagates uncaught to UI callers",
+      "status": "open"
+    },
+    {
+      "id": "1de508f03066",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 95,
+      "symbol": "setQuietEnd",
+      "why": "await _bridge.push() has no try/catch \u2014 FFI failure propagates uncaught to UI callers",
+      "status": "open"
+    },
+    {
+      "id": "4de0335300e5",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 51,
+      "symbol": "reload",
+      "why": "No try/catch around 6 repository load calls \u2014 any exception propagates uncaught to callers",
+      "status": "open"
+    },
+    {
+      "id": "5d5d6f76c631",
+      "dim": "errors",
+      "sev": "high",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 154,
+      "symbol": "onCue",
+      "why": "Three sequential awaits (_showInAppToast, _speakCue, _showNotification) have no try/catch \u2014 first failure propagates uncaught",
+      "status": "open"
+    },
+    {
+      "id": "0d27e36238bc",
+      "dim": "style",
+      "sev": "medium",
+      "file": "lib/src/services/coaching_cue_service.dart",
+      "line": 2,
+      "symbol": "dart:collection",
+      "why": "imported but no Queue, List, or Map type from this import is used in file",
+      "status": "open"
+    },
+    {
+      "id": "75901cf67105",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 42,
+      "symbol": "",
+      "why": "line is 138 chars \u2014 exceeds 120-char limit",
+      "status": "open"
+    },
+    {
+      "id": "ad70182d6447",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 57,
+      "symbol": "",
+      "why": "line is 138 chars \u2014 exceeds 120-char limit",
+      "status": "open"
+    },
+    {
+      "id": "234b166a32cd",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 76,
+      "symbol": "_prefNotificationsEnabled",
+      "why": "naming inconsistency \u2014 other services use unprefixed names (e.g. HealthSettingsRepository.prefLowHrThreshold)",
+      "status": "open"
+    },
+    {
+      "id": "760aadb4768b",
+      "dim": "style",
+      "sev": "low",
+      "file": "lib/src/services/health_settings_service.dart",
+      "line": 77,
+      "symbol": "_prefInAppToastEnabled",
+      "why": "naming inconsistency \u2014 other services use unprefixed names",
+      "status": "open"
+    },
+    {
+      "id": "d4ad292b91b2",
+      "dim": "verify",
+      "sev": "high",
+      "file": "rust/src/bin/cli.rs",
+      "line": 320,
+      "symbol": "async fn handle_devices_scan",
+      "why": "All 14 handle_* functions (devices_scan/connect/info/disconnect, session_*/mock_*/plan_*/analytics_*/export_) have zero #[test] coverage \u2014 require interactive CLI runs to verify",
+      "status": "open"
+    },
+    {
+      "id": "d90787abbc5a",
+      "dim": "verify",
+      "sev": "high",
+      "file": "lib/src/services/diagnosis_service.dart",
+      "line": 62,
+      "symbol": "exportAndShareLogs()",
+      "why": "Method only calls Share.share() \u2014 no HTTP client to hit debug server endpoint for on-demand log retrieval",
       "status": "open"
     }
   ]

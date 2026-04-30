@@ -49,6 +49,9 @@ android/local.properties
 # Task execution logs
 logs/
 
+# Tech debt cleaner session logs
+.tech_debt_cleaner/records/sessions/
+
 # Symbolication related
 app.*.symbols
 
