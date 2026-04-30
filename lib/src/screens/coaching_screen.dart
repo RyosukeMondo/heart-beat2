@@ -4,9 +4,7 @@ import '../models/user_profile.dart';
 import '../utils/zone_helpers.dart';
 import 'coaching_screen_state.dart';
 import '../services/profile_service.dart';
-import '../services/coaching_screen_streams.dart';
 import 'coaching_session_state.dart';
-import '../services/coaching_cue_service.dart';
 import '../widgets/cue_card.dart';
 import '../widgets/target_band_visualization.dart';
 import '../widgets/session_stats_card.dart';
@@ -29,11 +27,7 @@ class CoachingScreen extends StatefulWidget {
   State<CoachingScreen> createState() => _CoachingScreenState(_state ?? _createDefaultState());
 
   static CoachingScreenState _createDefaultState([CoachingSessionState? sessionState]) =>
-      CoachingScreenState(
-        streams: CoachingScreenStreams(),
-        sessionState: sessionState ?? CoachingSessionStateImpl(),
-        cueService: CoachingCueService.instance,
-      );
+      CoachingScreenState.withDefaults(sessionState);
 }
 
 class _CoachingScreenState extends State<CoachingScreen> {

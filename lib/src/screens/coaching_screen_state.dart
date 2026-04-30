@@ -23,6 +23,14 @@ class CoachingScreenState {
     _sessionState.onUpdate = (_, __) => _onStateChange?.call();
   }
 
+  factory CoachingScreenState.withDefaults([CoachingSessionState? sessionState]) {
+    return CoachingScreenState(
+      streams: CoachingScreenStreams(),
+      sessionState: sessionState ?? CoachingSessionStateImpl(),
+      cueService: CoachingCueService.instance,
+    );
+  }
+
   final CoachingScreenStreams _streams;
   final CoachingSessionState _sessionState;
   final CoachingCueService _cueService;
