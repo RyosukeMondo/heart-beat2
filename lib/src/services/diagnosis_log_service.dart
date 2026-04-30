@@ -2,6 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:heart_beat/src/bridge/api_generated.dart/api.dart';
 import 'log_service.dart';
 
+/// Plain data type for UI-layer log display.
+///
+/// Decouples the UI from the FFI-generated LogMessage struct.
+class LogEntry {
+  final String level;
+  final String target;
+  final BigInt timestamp;
+  final String message;
+
+  const LogEntry({
+    required this.level,
+    required this.target,
+    required this.timestamp,
+    required this.message,
+  });
+
+  int get timestampMs => timestamp.toInt();
+
+  static LogEntry fromLogMessage(LogMessage m) => LogEntry(
+        level: m.level,
+        target: m.target,
+        timestamp: m.timestamp,
+        message: m.message,
+      );
+}
+
 /// Filter criteria for log messages.
 class DiagnosisLogFilter {
   final String? sourceFilter;
@@ -69,9 +95,11 @@ class DiagnosisLogService extends ChangeNotifier {
   // Log stream — delegate to LogService
   // ---------------------------------------------------------------------------
 
-  Stream<LogMessage> get stream => LogService.instance.stream;
+  Stream<LogEntry> get stream =>
+      LogService.instance.stream.map(LogEntry.fromLogMessage);
 
-  List<LogMessage> get logs => LogService.instance.logs;
+  List<LogEntry> get logs =>
+      LogService.instance.logs.map(LogEntry.fromLogMessage).toList();
 
   // ---------------------------------------------------------------------------
   // Filtering
@@ -102,7 +130,7 @@ class DiagnosisLogService extends ChangeNotifier {
     }
   }
 
-  List<LogMessage> filterLogs(List<LogMessage> logs) {
+  List<LogEntry> filterLogs(List<LogEntry> logs) {
     return logs.where((log) {
       if (_levelFilter != null && _levelFilter != 'all') {
         if (!_meetsLevelFilter(log.level, _levelFilter!)) return false;

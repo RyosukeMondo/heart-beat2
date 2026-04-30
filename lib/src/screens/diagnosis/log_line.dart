@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../bridge/api_generated.dart/api.dart';
+import '../../services/diagnosis_log_service.dart';
 
 class DiagnosisLogLine extends StatelessWidget {
-  final LogMessage log;
+  final LogEntry log;
   final Color levelColor;
   final bool isPinned;
   final VoidCallback onTap;
@@ -19,7 +19,7 @@ class DiagnosisLogLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final timestamp = DateTime.fromMillisecondsSinceEpoch(
-      log.timestamp.toInt(),
+      log.timestampMs,
     );
 
     return GestureDetector(
